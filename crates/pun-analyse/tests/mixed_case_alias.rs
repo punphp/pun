@@ -9,7 +9,10 @@ fn check(case: &str) {
     let mut project = Project::new(vec![root.join(format!("{case}.php"))], Vec::new());
     project.level = 5;
     project.php_version = 80500;
-    project.strict_rules.matching_inherited_method_names = case == "strict";
+    project.strict_rules.set(
+        pun_analyse::StrictRules::MATCHING_INHERITED_METHOD_NAMES,
+        case == "strict",
+    );
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()

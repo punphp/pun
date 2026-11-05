@@ -655,7 +655,7 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
         let tip = (!param_out).then(|| NARROW_TIP.to_string());
         let narrowed = narrow(c, &out, &actual);
         if narrowed == out {
-            if !c.too_wide.report_nested {
+            if !c.too_wide.contains(crate::TooWide::REPORT_NESTED) {
                 continue;
             }
             let nested = traverse(&out, &actual, &|d, a| narrow(c, d, a));
@@ -725,7 +725,7 @@ fn narrow(c: &Checker, declared: &Type, actual: &Type) -> Type {
         }
         return union(members.iter().filter(|m| !is_super_type_of(m, actual).no()).cloned().collect());
     }
-    if !c.too_wide.report_bool || !declared.is_boolean().yes() || matches!(declared, Type::ConstBool(_)) {
+    if !c.too_wide.contains(crate::TooWide::REPORT_BOOL) || !declared.is_boolean().yes() || matches!(declared, Type::ConstBool(_)) {
         return declared.clone();
     }
     union(
@@ -856,7 +856,7 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
         || context.original_name.as_bytes().starts_with(b"{anonymous-class:")
         || m.modifiers.contains_final()
         || has_tag(&c.tags_before(m), &["@final"])
-        || c.too_wide.param_out_in_protected_and_public_methods;
+        || c.too_wide.contains(crate::TooWide::PARAM_OUT_IN_PROTECTED_AND_PUBLIC_METHODS);
     check(c, Body { block, span: m.span(), of, params, too_wide: checked });
 }
 

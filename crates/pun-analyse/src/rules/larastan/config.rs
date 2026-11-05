@@ -37,7 +37,7 @@ pub(super) fn collection<'a, 'arena>(
 }
 
 pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
-    let Some(larastan) = c.larastan.filter(|l| l.check_config_types) else {
+    let Some(larastan) = c.larastan.filter(|l| l.switches.contains(crate::LarastanSwitches::CHECK_CONFIG_TYPES)) else {
         return;
     };
     let Some(args @ [first, ..]) = collection(c.names, call) else {

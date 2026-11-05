@@ -142,7 +142,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     }
 
     fn implicit_throws(&self) -> bool {
-        self.c.exceptions.implicit_throws
+        self.c.exceptions.checks.contains(crate::ExceptionChecks::IMPLICIT_THROWS)
     }
 
     /// An implicit point, when `implicitThrows` is on.

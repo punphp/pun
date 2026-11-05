@@ -16,7 +16,10 @@ fn refined_offset_keys_match_complete_phpstan_records() {
             let mut project = Project::new(vec![root.join(format!("{case}.php"))], vec![]);
             project.level = level;
             project.php_version = 80500;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level > 0,
+            );
             let mut actual: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()
@@ -270,7 +273,10 @@ fn sequential_offset_history_matches_complete_phpstan_records() {
             let mut project = Project::new(vec![root.join(format!("{case}.php"))], vec![]);
             project.level = level;
             project.php_version = 80500;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level > 0,
+            );
             let mut actual: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()
@@ -320,7 +326,10 @@ fn array_keys_and_raw_string_offsets_remain_asymmetric() {
         let mut project = Project::new(vec![root.join("asymmetric.php")], vec![]);
         project.level = level;
         project.php_version = 80500;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level > 0,
+        );
         let mut actual: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
@@ -368,7 +377,10 @@ fn prepared_offset_existence_is_independent_of_failed_read_values() {
         let mut project = Project::new(vec![root.join("prepared.php")], vec![]);
         project.level = level;
         project.php_version = 80500;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level > 0,
+        );
         let mut actual: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
@@ -418,7 +430,10 @@ fn written_offset_holders_do_not_require_array_receivers() {
         let mut project = Project::new(vec![root.join("written.php")], vec![]);
         project.level = level;
         project.php_version = 80500;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level > 0,
+        );
         let mut actual: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
@@ -468,7 +483,10 @@ fn finite_array_keys_select_only_their_own_values() {
         let mut project = Project::new(vec![root.join("finite.php")], vec![]);
         project.level = level;
         project.php_version = 80500;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level > 0,
+        );
         let mut actual: Vec<_> = run(&project)
             .unwrap()
             .into_iter()

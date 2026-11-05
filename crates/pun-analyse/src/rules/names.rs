@@ -1062,7 +1062,7 @@ pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
     let name = if fallback { written } else { resolved };
     // Scope tests the Name itself before namespaced fallback, reflection or defined() guards.
     let found = if name == "__COMPILER_HALT_OFFSET__" {
-        c.has_compiler_halt
+        c.walk.contains(super::Walk::COMPILER_HALT)
     } else {
         candidates.iter().any(|name| {
             ["true", "false", "null"].iter().any(|k| name.eq_ignore_ascii_case(k))

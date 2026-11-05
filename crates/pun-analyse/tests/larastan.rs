@@ -84,11 +84,11 @@ fn larastan_rule_fixtures() {
         .iter()
         .map(|d| data.join(d).to_string_lossy().into_owned())
         .collect();
-    larastan.check_octane_compatibility = true;
-    larastan.check_model_method_visibility = true;
-    larastan.check_auth_calls_when_in_request_scope = true;
-    larastan.check_config_types = true;
-    larastan.no_unnecessary_enumerable_to_array_calls = true;
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_OCTANE_COMPATIBILITY, true);
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY, true);
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE, true);
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_CONFIG_TYPES, true);
+    larastan.switches.set(pun_analyse::LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS, true);
     let mut failing = BTreeSet::new();
     let mut details = Vec::new();
     let mut compared = 0;
@@ -240,10 +240,10 @@ fn larastan_switches_from_the_config() {
         "parameters:\n\tnoModelMake: false\n\tcheckOctaneCompatibility: true\n\tconfigDirectories:\n\t\t- modules/*/config\n",
     )
     .unwrap();
-    assert!(!l.no_model_make);
-    assert!(l.check_octane_compatibility);
-    assert!(l.no_env_calls_outside_of_config);
-    assert!(!l.check_model_method_visibility);
+    assert!(!l.switches.contains(pun_analyse::LarastanSwitches::NO_MODEL_MAKE));
+    assert!(l.switches.contains(pun_analyse::LarastanSwitches::CHECK_OCTANE_COMPATIBILITY));
+    assert!(l.switches.contains(pun_analyse::LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG));
+    assert!(!l.switches.contains(pun_analyse::LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY));
     assert_eq!(l.config_directories, ["/app/modules/*/config"]);
     let defaults = switches("parameters:\n\tnoModelMake: true\n").unwrap();
     assert_eq!(defaults.config_directories, ["/app/config"]);
@@ -334,7 +334,7 @@ fn larastan_console_commands() {
 fn larastan_config_collection() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan/data/Config");
     let mut larastan = Larastan::new(&dir);
-    larastan.check_config_types = true;
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_CONFIG_TYPES, true);
     oracle_case(&dir, larastan.clone(), "larastan.configCollection");
     // configured directories without config files fall back to config_path()
     larastan.config_directories = vec![dir.join("missing").to_string_lossy().into_owned()];
@@ -342,7 +342,7 @@ fn larastan_config_collection() {
     // configDirectories, with config files Larastan cannot type
     let extra = dir.with_file_name("ConfigExtra");
     let mut configured = Larastan::new(&dir);
-    configured.check_config_types = true;
+    configured.switches.set(pun_analyse::LarastanSwitches::CHECK_CONFIG_TYPES, true);
     configured.config_directories = vec![extra.join("config").to_string_lossy().into_owned()];
     oracle_case(&extra, configured, "larastan.configCollection");
     // off by default
@@ -374,7 +374,7 @@ fn larastan_unnecessary_collection_calls() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
     let dir = root.join("data/Collections");
     let mut larastan = Larastan::new(&root.join("application"));
-    larastan.no_unnecessary_enumerable_to_array_calls = true;
+    larastan.switches.set(pun_analyse::LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS, true);
     oracle_case(&dir, larastan.clone(), "larastan.");
     // noUnnecessaryCollectionCallOnly and noUnnecessaryCollectionCallExcept
     let config = pun_phpstan::neon::decode(
@@ -397,7 +397,7 @@ fn larastan_unnecessary_collection_calls() {
         .collect();
     assert_eq!(lines, BTreeSet::from([14, 20, 33, 34]));
     // off
-    only.no_unnecessary_collection_call = false;
+    only.switches.set(pun_analyse::LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL, false);
     project.larastan = Some(only);
     assert!(
         run(&project)
@@ -414,14 +414,14 @@ fn larastan_views_and_translations() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
     let dir = root.join("data/Views");
     let mut larastan = Larastan::new(&dir);
-    larastan.check_unused_views = true;
-    larastan.check_missing_translations = true;
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_UNUSED_VIEWS, true);
+    larastan.switches.set(pun_analyse::LarastanSwitches::CHECK_MISSING_TRANSLATIONS, true);
     oracle_case(&dir, larastan.clone(), "larastan.");
     // views that do not parse, vendor and error views, and lang/ with other files and PHP arrays of every shape
     let edge = root.join("data/ViewsEdge");
     let mut views = Larastan::new(&edge);
-    views.check_unused_views = true;
-    views.check_missing_translations = true;
+    views.switches.set(pun_analyse::LarastanSwitches::CHECK_UNUSED_VIEWS, true);
+    views.switches.set(pun_analyse::LarastanSwitches::CHECK_MISSING_TRANSLATIONS, true);
     oracle_case(&edge, views, "larastan.");
     // configured directories replace the finder's paths and lang_path(); names relative to them that the finder
     // does not find (`mailable.view` below `emails`) are no views

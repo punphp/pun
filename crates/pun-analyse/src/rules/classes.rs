@@ -36,7 +36,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         expr => {
             // php-parser drops the parentheses of `new ($expr)`
             let expr = super::types::flow::unparen(expr);
-            if c.toggled.new_on_non_object && non_object(c, new, expr) {
+            if c.toggled.on.contains(crate::rules::driver::Toggles::NEW_ON_NON_OBJECT) && non_object(c, new, expr) {
                 return;
             }
             for (name, is_name) in class_names(c, expr) {

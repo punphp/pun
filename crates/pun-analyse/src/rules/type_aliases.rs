@@ -10,6 +10,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::sync::atomic::Ordering::Relaxed;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
@@ -352,16 +353,11 @@ impl<'c, 'a, 'arena> Resolver<'c, 'a, 'arena> {
     }
 }
 
-thread_local! {
-    /// [`class_aliases()`] is resolving (a type alias's own NameScope has no aliases of its class but through it).
-    static RESOLVING: Cell<bool> = const { Cell::new(false) };
-}
-
 /// Runs `f` with the NameScopes of class-likes' PHPDocs without their aliases (the rules checking the aliases).
-fn without_aliases<R>(f: impl FnOnce() -> R) -> R {
-    let previous = RESOLVING.with(|r| r.replace(true));
+fn without_aliases<R>(c: &Checker, f: impl FnOnce() -> R) -> R {
+    let previous = c.resolving_aliases.swap(true, Relaxed);
     let out = f();
-    RESOLVING.with(|r| r.set(previous));
+    c.resolving_aliases.store(previous, Relaxed);
     out
 }
 
@@ -369,7 +365,7 @@ fn without_aliases<R>(f: impl FnOnce() -> R) -> R {
 /// PHPDocs): the NameScope of a member's PHPDoc tries them just before the templates.
 /// A trait's (`k`) in the context of `using`, the class using it.
 pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&ClassLikeMetadata>) -> Vec<(String, Type)> {
-    if RESOLVING.with(|r| r.replace(true)) {
+    if c.resolving_aliases.swap(true, Relaxed) {
         return Vec::new();
     }
     // (a PHPDoc without alias tags defines and imports none, so its scope need not be built)
@@ -377,7 +373,7 @@ pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&C
         entry.tags.iter().any(|(tag, _)| ALIAS_TAGS.contains(&tag.as_str()))
     });
     if !tagged {
-        RESOLVING.with(|r| r.set(false));
+        c.resolving_aliases.store(false, Relaxed);
         return Vec::new();
     }
     let resolver = Resolver::new(c);
@@ -392,7 +388,7 @@ pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&C
             .filter_map(|n| Some((n.clone(), resolver.local(n, &doc.alias_class, &names)?)))
             .collect()
     });
-    RESOLVING.with(|r| r.set(false));
+    c.resolving_aliases.store(false, Relaxed);
     aliases
 }
 
@@ -707,7 +703,7 @@ fn report(c: &mut Checker, at: Span, found: Vec<Found>) {
 /// LocalTypeAliasesRule on a class, interface or enum declaration.
 pub fn class_like(c: &mut Checker, at: Span) {
     let mut found = Vec::new();
-    without_aliases(|| with_classes(c, || {
+    without_aliases(c, || with_classes(c, || {
         let r = Resolver::new(c);
         // (the walk entered the class)
         let k = c.class_scope().expect("a class scope");
@@ -723,7 +719,7 @@ pub fn class_like(c: &mut Checker, at: Span) {
 /// LocalTypeTraitAliasesRule on a trait declaration (outside a class's context).
 pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     let mut found = Vec::new();
-    without_aliases(|| with_classes(c, || {
+    without_aliases(c, || with_classes(c, || {
         let r = Resolver::new(c);
         if let Some(k) = c.codebase.get_class_like(name.as_bytes()) {
             definition_context(&r, k, &original_name(k), &mut found);
@@ -748,7 +744,7 @@ fn in_context(c: &Checker, k: &ClassLikeMetadata, using: &ClassLikeMetadata) -> 
 pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     let using = c.codebase.get_class_like(class.as_bytes());
     let mut found = Vec::new();
-    without_aliases(|| with_classes(c, || {
+    without_aliases(c, || with_classes(c, || {
         let r = Resolver::new(c);
         let k = c.codebase.get_class_like(name.as_bytes());
         // (the walked class using the trait is in the codebase)

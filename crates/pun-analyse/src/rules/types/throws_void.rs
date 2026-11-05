@@ -154,7 +154,7 @@ fn check(c: &mut Checker, at: Span, of: &str, walk: impl FnOnce(&mut Points)) {
     for (at, ty) in points {
         for t in flatten(ty) {
             // (MissingCheckedExceptionInThrowsCheck reports it instead)
-            if c.exceptions.missing_checked_exception_in_throws
+            if c.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS)
                 && t.object_class_names().iter().all(|n| super::throws::is_checked_exception(c, n))
             {
                 continue;

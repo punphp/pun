@@ -9,7 +9,10 @@ use super::{MODEL, class_is};
 
 /// ModelAppendsRule on a property declaration.
 pub(crate) fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
-    let Some(larastan) = c.larastan.filter(|l| l.check_model_appends) else {
+    let Some(larastan) = c.larastan.filter(|l| {
+        l.switches
+            .contains(crate::LarastanSwitches::CHECK_MODEL_APPENDS)
+    }) else {
         return;
     };
     let first = match p {

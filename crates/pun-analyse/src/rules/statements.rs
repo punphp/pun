@@ -126,7 +126,7 @@ pub fn magic_constant(c: &mut Checker, m: &MagicConstant) {
         MagicConstant::Class(_) if c.classes.is_empty() => {
             ("__CLASS__", "magicConstant.outOfClass", "outside a class")
         }
-        MagicConstant::Trait(_) if !c.in_target => {
+        MagicConstant::Trait(_) if !c.walk.contains(super::Walk::IN_TARGET) => {
             ("__TRAIT__", "magicConstant.outOfTrait", "outside a trait")
         }
         MagicConstant::Method(_) | MagicConstant::Function(_)
@@ -167,18 +167,19 @@ pub fn parameter_default(c: &mut Checker, p: &FunctionLikeParameter) {
 pub fn statement_position(c: &mut Checker, s: &Statement) {
     match s {
         Statement::OpeningTag(_) | Statement::ClosingTag(_) => {}
-        Statement::Inline(i) if c.first_statement && i.value.starts_with(b"#!") => {}
+        Statement::Inline(i)
+            if c.walk.contains(super::Walk::FIRST_STATEMENT) && i.value.starts_with(b"#!") => {}
         // PHP's `?>` token takes the newline after it, so php-parser has no InlineHTML for it
         Statement::Inline(i)
             if matches!(i.value, b"\n" | b"\r\n")
                 && c.file.contents[..i.span.start.offset as usize].ends_with(b"?>") => {}
         Statement::Declare(d) => {
-            if !c.first_statement {
+            if !c.walk.contains(super::Walk::FIRST_STATEMENT) {
                 c.declares_not_first.push(d.span());
             }
-            c.first_statement = false;
+            c.walk.remove(super::Walk::FIRST_STATEMENT);
         }
-        _ => c.first_statement = false,
+        _ => c.walk.remove(super::Walk::FIRST_STATEMENT),
     }
 }
 
@@ -231,7 +232,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
         return;
     };
     let mut name = m.name.value.to_ascii_lowercase();
-    if c.in_target {
+    if c.walk.contains(super::Walk::IN_TARGET) {
         // processNodesForTraitUse: a method the class aliases is analysed under the alias, remembering its name
         let alias = class
             .trait_alias_map

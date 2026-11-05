@@ -146,28 +146,36 @@ pub(crate) struct Checks {
 /// Rules that config.levelN.neon registers with a feature toggle (all on with bleedingEdge).
 #[derive(Default)]
 pub(super) struct Toggled {
-    /// AssignToByRefExprFromForeachRule: level 1 with `featureToggles.assignToByRefForeachExpr`.
-    pub(super) by_ref_foreach: bool,
+    pub(super) on: Toggles,
     /// ValueAssignedToGlobalConstantRule and ValueAssignedToDefineRule: level 2 with
     /// `featureToggles.checkDynamicConstantNameValues`, over `dynamicConstantNames`' typed entries.
     pub(super) constant_types: Option<Vec<(String, String)>>,
-    /// DateIntervalInstantiationRule: level 5 with `featureToggles.checkDateIntervalConstructor`.
-    pub(super) date_interval: bool,
-    /// ParameterCastableToNumberRule: level 5 with `featureToggles.checkParameterCastableToNumberFunctions`.
-    pub(super) castable_to_number: bool,
     /// PrintfParameterTypeRule: level 5 with `featureToggles.checkPrintfParameterTypes`, then whether
     /// `checkStrictPrintfPlaceholderTypes` is on.
     pub(super) printf_types: Option<bool>,
-    /// ImpossibleInArrayHaystackFiniteTypesRule: level 4 with `featureToggles.finiteTypesInHaystack`.
-    pub(super) finite_haystack: bool,
-    /// UnusedVariableRule: level 4 with `featureToggles.unusedVariable`.
-    pub(super) unused_variable: bool,
-    /// Unused{Function,Method}ParametersRule: level 4 with `featureToggles.unusedParameters`.
-    pub(super) unused_parameters: bool,
-    /// `featureToggles.unusedParameters` itself: the closure use and constructor parameter flow findings.
-    pub(super) unused_flow: bool,
-    /// InstantiationRule's `featureToggles.newOnNonObject` check.
-    pub(super) new_on_non_object: bool,
+}
+
+bitflags::bitflags! {
+    /// The feature-toggled rules that are on.
+    #[derive(Clone, Copy, Default)]
+    pub(super) struct Toggles: u8 {
+        /// AssignToByRefExprFromForeachRule: level 1 with `featureToggles.assignToByRefForeachExpr`.
+        const BY_REF_FOREACH = 1;
+        /// DateIntervalInstantiationRule: level 5 with `featureToggles.checkDateIntervalConstructor`.
+        const DATE_INTERVAL = 1 << 1;
+        /// ParameterCastableToNumberRule: level 5 with `featureToggles.checkParameterCastableToNumberFunctions`.
+        const CASTABLE_TO_NUMBER = 1 << 2;
+        /// ImpossibleInArrayHaystackFiniteTypesRule: level 4 with `featureToggles.finiteTypesInHaystack`.
+        const FINITE_HAYSTACK = 1 << 3;
+        /// UnusedVariableRule: level 4 with `featureToggles.unusedVariable`.
+        const UNUSED_VARIABLE = 1 << 4;
+        /// Unused{Function,Method}ParametersRule: level 4 with `featureToggles.unusedParameters`.
+        const UNUSED_PARAMETERS = 1 << 5;
+        /// `featureToggles.unusedParameters` itself: the closure use and constructor parameter flow findings.
+        const UNUSED_FLOW = 1 << 6;
+        /// InstantiationRule's `featureToggles.newOnNonObject` check.
+        const NEW_ON_NON_OBJECT = 1 << 7;
+    }
 }
 
 /// Each declaration a stub with a PHPDoc patches (a method, a function, a class-like) with the stub declaration's span:
@@ -262,18 +270,22 @@ impl Checks {
                 path_constants: project.options.contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
             },
             toggled: Toggled {
-                by_ref_foreach: project.level >= 1 && project.options.contains(crate::ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR),
+                on: {
+                    let mut on = Toggles::empty();
+                    on.set(Toggles::BY_REF_FOREACH, project.level >= 1 && project.options.contains(crate::ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR));
+                    on.set(Toggles::DATE_INTERVAL, project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR));
+                    on.set(Toggles::CASTABLE_TO_NUMBER, project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS));
+                    on.set(Toggles::FINITE_HAYSTACK, project.level >= 4 && project.options.contains(crate::ProjectOptions::FINITE_TYPES_IN_HAYSTACK));
+                    on.set(Toggles::UNUSED_VARIABLE, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_VARIABLE));
+                    on.set(Toggles::UNUSED_PARAMETERS, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS));
+                    on.set(Toggles::UNUSED_FLOW, project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS));
+                    on.set(Toggles::NEW_ON_NON_OBJECT, project.options.contains(crate::ProjectOptions::NEW_ON_NON_OBJECT));
+                    on
+                },
                 constant_types: (project.level >= 2 && project.options.contains(crate::ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES))
                     .then(|| project.dynamic_constant_types.clone()),
-                date_interval: project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR),
-                castable_to_number: project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS),
                 printf_types: (project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES))
                     .then_some(project.options.contains(crate::ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES)),
-                finite_haystack: project.level >= 4 && project.options.contains(crate::ProjectOptions::FINITE_TYPES_IN_HAYSTACK),
-                unused_variable: project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_VARIABLE),
-                unused_parameters: project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS),
-                unused_flow: project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS),
-                new_on_non_object: project.options.contains(crate::ProjectOptions::NEW_ON_NON_OBJECT),
             },
             function_likes,
         }
@@ -322,11 +334,11 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, &facts.comments, project.level,
         project.switches.contains(Switches::CHECK_ARGUMENT_TYPES) || project.switches.contains(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE), project.switches.contains(Switches::CHECK_THIS_ONLY)));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
-    typed.extend(super::dead_code::bodies(program, project.level, project.toggled.unused_parameters || project.toggled.unused_variable));
+    typed.extend(super::dead_code::bodies(program, project.level, project.toggled.on.intersects(Toggles::UNUSED_PARAMETERS | Toggles::UNUSED_VARIABLE)));
     typed.extend(super::operators::typed_expressions(project.strict, program));
     typed.extend(super::types::throw_points::typed(
         program,
-        project.level >= 4 || project.exceptions.missing_checked_exception_in_throws,
+        project.level >= 4 || project.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS),
     ));
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), &project.include_file, &facts.comments, functions);
     typed.extend(include_typed);
@@ -351,7 +363,6 @@ fn checker<'a, 'arena>(
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
-        has_compiler_halt: false,
         types,
         keep_void_types,
         native_types,
@@ -379,17 +390,17 @@ fn checker<'a, 'arena>(
         rebound: HashMap::new(),
         label: String::from_utf8_lossy(&file.name).into_owned(),
         trait_context: None,
-        in_target: false,
         trait_uses: Vec::new(),
         renamed: None,
         php_version,
         builtins: reflection::builtins(php_version),
         natives: &project.natives,
+        resolving_aliases: Default::default(),
         trait_lines: Vec::new(),
         frames: Vec::new(),
         namespaces: Vec::new(),
         magic_defaults: HashSet::new(),
-        first_statement: true,
+        walk: super::Walk::FIRST_STATEMENT,
         declares_not_first: Vec::new(),
         decls: Vec::new(),
         immutable: HashMap::new(),

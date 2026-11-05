@@ -108,7 +108,7 @@ pub(crate) use driver::Switches;
 pub(crate) use facts::Comments;
 pub(crate) use facts::Facts;
 pub(crate) use driver::{Checks, check_file};
-pub use larastan::Larastan;
+pub use larastan::{Larastan, LarastanSwitches};
 pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use dead_code::impure_points;
 pub(crate) use named_argument::resolve as renamed_named_arguments;
@@ -849,10 +849,22 @@ pub enum FunctionScopeKind {
     Method { is_static: bool },
 }
 
+bitflags::bitflags! {
+    /// What a [`Checker`]'s walk has seen of its file.
+    #[derive(Clone, Copy)]
+    struct Walk: u8 {
+        /// `MutatingScope::fileHasCompilerHaltStatementCalls()` for this file's parsed program.
+        const COMPILER_HALT = 1;
+        /// Inside the context walk's trait (in a context walk, nothing else reports).
+        const IN_TARGET = 1 << 1;
+        /// DeclarePositionVisitor: no statement seen yet.
+        const FIRST_STATEMENT = 1 << 2;
+    }
+}
+
 pub struct Checker<'a, 'arena> {
     file: &'a File,
-    /// `MutatingScope::fileHasCompilerHaltStatementCalls()` for this file's parsed program.
-    has_compiler_halt: bool,
+    walk: Walk,
     /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
     anonymous: HashMap<Vec<u8>, String>,
     property_access: property_access::State,
@@ -908,8 +920,6 @@ pub struct Checker<'a, 'arena> {
     label: String,
     /// Set when walking a trait in a class's context (`$scope->isInTrait()`).
     trait_context: Option<TraitContext>,
-    /// Inside the context walk's trait (in a context walk, nothing else reports).
-    in_target: bool,
     /// Each `use T;` in a class body, to analyse T in the class's context.
     trait_uses: Vec<driver::TraitUse>,
     /// The trait method being walked under its alias (span, alias).
@@ -919,6 +929,9 @@ pub struct Checker<'a, 'arena> {
     builtins: &'static pun_phpstan::symbols::Symbols,
     /// The reflection data beside it.
     natives: &'a driver::Natives,
+    /// [`type_aliases::class_aliases()`] is resolving (a type alias's own NameScope has no aliases of its class but
+    /// through it).
+    resolving_aliases: std::sync::atomic::AtomicBool,
     /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
     trait_lines: Vec<(i64, i64)>,
     /// Scope boundaries: what `$scope->getFunction()` & co. see, and the goto labels of each.
@@ -927,8 +940,7 @@ pub struct Checker<'a, 'arena> {
     namespaces: Vec<Option<String>>,
     /// Magic constants that are a parameter's default (MagicConstantParamDefaultVisitor).
     magic_defaults: HashSet<Span>,
-    /// DeclarePositionVisitor: no statement seen yet, and the `declare`s that came after one.
-    first_statement: bool,
+    /// DeclarePositionVisitor: the `declare`s that came after a statement.
     declares_not_first: Vec<Span>,
     /// The class-likes being declared (InClassNode's ClassReflection), innermost last.
     decls: Vec<declarations::Decl>,
@@ -1044,7 +1056,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn in_trait(&self) -> Option<&str> {
         self.trait_context
             .as_ref()
-            .filter(|_| self.in_target)
+            .filter(|_| self.walk.contains(Walk::IN_TARGET))
             .map(|t| t.trait_name.as_str())
     }
 
@@ -1063,7 +1075,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn report_at_line(&mut self, line: i64, identifier: &str, message: String, tip: Option<&str>) {
         debug_assert!(reports(identifier), "{identifier} is not in IDENTIFIERS");
-        if self.trait_context.is_some() && !self.in_target {
+        if self.trait_context.is_some() && !self.walk.contains(Walk::IN_TARGET) {
             return;
         }
         self.errors.push(Error {
@@ -1482,7 +1494,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.enter_class(None, t.members.as_slice());
         self.classes[saved].name = Some(class.clone());
         self.decls.push(decl);
-        self.in_target = true;
+        self.walk.insert(Walk::IN_TARGET);
         self.types.extend(crate::codebase::trait_initializer_types(
             self.codebase, self.file, t.span(), mago_word::word(&class), self.php_version,
         ));
@@ -1511,7 +1523,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             }
             self.walk_class_like_member(member, c);
         }
-        self.in_target = false;
+        self.walk.remove(Walk::IN_TARGET);
         self.classes.truncate(saved);
         self.decls.pop();
     }
@@ -1881,7 +1893,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_if(&mut self, r#if: &'ast If<'arena>, c: &mut ()) {
         dead_code::if_statement(self, r#if);
-        if self.strict.booleans_in_conditions {
+        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS) {
             operators::condition(self, r#if.span(), r#if.condition, "an if condition", "if.condNotBoolean");
             for (at, cond) in operators::else_if_conditions(r#if) {
                 operators::condition(self, at, cond, "an elseif condition", "elseif.condNotBoolean");
@@ -1996,7 +2008,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
         dead_code::ternary(self, cond);
         // an elvis `?:` is not checked
-        if self.strict.booleans_in_conditions && cond.then.is_some() {
+        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS) && cond.then.is_some() {
             let place = "a ternary operator condition";
             operators::condition(self, cond.span(), cond.condition, place, "ternary.condNotBoolean");
         }
@@ -2616,11 +2628,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
-        self.has_compiler_halt = names::file_has_compiler_halt_statement_calls(program);
+        self.walk.set(Walk::COMPILER_HALT, names::file_has_compiler_halt_statement_calls(program));
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.conditions = dead_code::condition_facts(self, program);
-        if self.toggled.by_ref_foreach {
+        if self.toggled.on.contains(crate::rules::driver::Toggles::BY_REF_FOREACH) {
             self.by_ref_foreach = by_ref_foreach::entries(program);
         }
         self.push_frame(FrameKind::Top);
@@ -2787,7 +2799,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_while(&mut self, w: &'ast While<'arena>, c: &mut ()) {
         dead_code::while_loop(self, w);
-        if self.strict.booleans_in_loop_conditions {
+        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS) {
             operators::condition(self, w.span(), w.condition, "a while condition", "while.condNotBoolean");
         }
         self.syntax.parents.push(syntax::Parent::Loop);
@@ -2803,7 +2815,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
         dead_code::do_while(self, d);
-        if self.strict.booleans_in_loop_conditions {
+        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS) {
             operators::condition(self, d.span(), d.condition, "a do-while condition", "doWhile.condNotBoolean");
         }
         self.syntax.parents.push(syntax::Parent::Loop);

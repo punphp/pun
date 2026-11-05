@@ -23,18 +23,52 @@ pub(crate) struct Facts {
 impl Facts {
     /// `analysed`: the rules check this file, so they read every tag of its doc comments.
     pub fn of(contents: &[u8], program: &Program, analysed: bool) -> Facts {
-        let scopes = FileScopes::of(program);
+        let mut scopes = FileScopes::of(program);
         let mut declarations = Declarations::default();
         let mut traits = Vec::new();
-        DeclarationWalker { out: &mut declarations, scopes: &scopes, traits: &mut traits }.walk_program(program, &mut ());
-        let text: Vec<u8> = contents.iter().filter(|b| !b.is_ascii_whitespace()).map(u8::to_ascii_lowercase).collect();
-        let strict_types = text.windows(23).any(|w| w == b"declare(strict_types=1)");
+        let mut trait_uses = Vec::new();
+        DeclarationWalker {
+            out: &mut declarations,
+            scopes: &scopes,
+            traits: &mut traits,
+            trait_uses: &mut trait_uses,
+        }
+        .walk_program(program, &mut ());
+        scopes.trait_uses = trait_uses;
+        let strict_types = strict_types(contents);
         let mut comments = Comments::of(contents, analysed);
         if !analysed {
             comments.keep_trait_tags(contents, &traits);
         }
-        Facts { comments, declarations, scopes, strict_types }
+        Facts {
+            comments,
+            declarations,
+            scopes,
+            strict_types,
+        }
     }
+}
+
+/// `declare(strict_types=1)` anywhere in `contents`, ignoring whitespace and case.
+fn strict_types(contents: &[u8]) -> bool {
+    const PATTERN: &[u8] = b"declare(strict_types=1)";
+    // the pattern's first byte occurs nowhere else in it, so a mismatch restarts the match at that byte
+    let mut matched = 0;
+    for b in contents
+        .iter()
+        .filter(|b| !b.is_ascii_whitespace())
+        .map(u8::to_ascii_lowercase)
+    {
+        matched = if b == PATTERN[matched] {
+            matched + 1
+        } else {
+            usize::from(b == PATTERN[0])
+        };
+        if matched == PATTERN.len() {
+            return true;
+        }
+    }
+    false
 }
 
 /// What the rules read of one doc comment.
@@ -82,6 +116,17 @@ const SCANNED_TAGS: &[&str] = &[
     "@phpstan-sealed",
 ];
 
+/// A prefix of each of [`SCANNED_TAGS`]: a doc comment without one has none of them.
+const SCANNED_PREFIXES: &[&[u8]] = &[
+    b"@phpstan-",
+    b"@psalm-",
+    b"@phan-",
+    b"@throws",
+    b"@method",
+    b"@property",
+    b"@mixin",
+];
+
 /// The class-like tags [`Comments::keep_trait_tags()`] keeps only on traits.
 const TRAIT_TAGS: &[&str] = &[
     "@method",
@@ -99,8 +144,13 @@ const TRAIT_TAGS: &[&str] = &[
 
 impl DocEntry {
     pub fn parse(raw: &[u8], analysed: bool) -> DocEntry {
-        let mut tags = phpdoc::tags(raw).unwrap_or_default();
-        if !analysed {
+        let mut tags = Vec::new();
+        if analysed {
+            tags = phpdoc::tags(raw).unwrap_or_default();
+        } else if (0..raw.len())
+            .any(|at| raw[at] == b'@' && SCANNED_PREFIXES.iter().any(|p| raw[at..].starts_with(p)))
+        {
+            tags = phpdoc::tags(raw).unwrap_or_default();
             tags.retain(|t| SCANNED_TAGS.contains(&t.name.as_str()));
             tags.shrink_to_fit();
         }
@@ -156,7 +206,11 @@ impl Comments {
                     out.doc.push(match doc {
                         Some(start) => {
                             let raw = &contents[start..end];
-                            out.docs.push((start as u32, end as u32, DocEntry::parse(raw, analysed)));
+                            out.docs.push((
+                                start as u32,
+                                end as u32,
+                                DocEntry::parse(raw, analysed),
+                            ));
                             (out.docs.len() - 1) as u32
                         }
                         None => NONE,
@@ -182,7 +236,9 @@ impl Comments {
             .collect();
         for (start, _, entry) in &mut self.docs {
             if !kept.contains(start) {
-                entry.phpdoc.retain(|t| !TRAIT_TAGS.contains(&t.name.as_str()));
+                entry
+                    .phpdoc
+                    .retain(|t| !TRAIT_TAGS.contains(&t.name.as_str()));
                 entry.phpdoc.shrink_to_fit();
             }
         }
@@ -195,10 +251,18 @@ impl Comments {
 
     /// The doc comment (`/**` ... `*/`) that ends right before `offset`, skipping other comments in between: the one
     /// PHP's tokenizer reads (the start is the last `/**` before its `*/`, so `/*` inside the text is no start).
-    pub fn doc_before<'c>(&'c self, contents: &'c [u8], offset: usize) -> Option<(&'c [u8], &'c DocEntry)> {
+    pub fn doc_before<'c>(
+        &'c self,
+        contents: &'c [u8],
+        offset: usize,
+    ) -> Option<(&'c [u8], &'c DocEntry)> {
         let mut end = offset.min(contents.len());
         loop {
-            end -= contents[..end].iter().rev().take_while(|b| b.is_ascii_whitespace()).count();
+            end -= contents[..end]
+                .iter()
+                .rev()
+                .take_while(|b| b.is_ascii_whitespace())
+                .count();
             if !contents[..end].ends_with(b"*/") || end < 4 {
                 return None;
             }
@@ -218,7 +282,10 @@ impl Comments {
 
     /// The parsed doc comment at `start..end`, when it is one [`Comments::doc_before()`] finds.
     pub fn entry(&self, start: u32, end: u32) -> Option<&DocEntry> {
-        let i = self.docs.binary_search_by_key(&end, |(_, end, _)| *end).ok()?;
+        let i = self
+            .docs
+            .binary_search_by_key(&end, |(_, end, _)| *end)
+            .ok()?;
         let (found, _, entry) = &self.docs[i];
         (*found == start).then_some(entry)
     }
@@ -228,7 +295,11 @@ impl Comments {
     pub fn php_doc_comment<'c>(&self, contents: &'c [u8], offset: usize) -> Option<&'c [u8]> {
         let mut end = offset.min(contents.len());
         loop {
-            end -= contents[..end].iter().rev().take_while(|b| b.is_ascii_whitespace()).count();
+            end -= contents[..end]
+                .iter()
+                .rev()
+                .take_while(|b| b.is_ascii_whitespace())
+                .count();
             if !contents[..end].ends_with(b"*/") {
                 return None;
             }
@@ -263,28 +334,52 @@ struct DeclarationWalker<'d> {
     scopes: &'d FileScopes,
     /// The start of each trait declaration.
     traits: &'d mut Vec<u32>,
+    /// [`FileScopes`]' trait uses.
+    trait_uses: &'d mut Vec<(u32, Vec<String>)>,
 }
 
 impl DeclarationWalker<'_> {
-    fn parents<'n>(&mut self, at: Span, interface: bool, names: impl Iterator<Item = &'n Identifier<'n>>) {
+    fn parents<'n>(
+        &mut self,
+        at: Span,
+        interface: bool,
+        names: impl Iterator<Item = &'n Identifier<'n>>,
+    ) {
         let scope = self.scopes.at(at.start.offset);
         let resolved = names
             .map(|id| scope.resolve(NameKind::Default, id.value()).0.to_vec())
             .collect();
-        self.out.parents.insert(at.start.offset, (interface, resolved));
+        self.out
+            .parents
+            .insert(at.start.offset, (interface, resolved));
     }
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
+    fn walk_in_trait_use(&mut self, t: &'ast TraitUse<'arena>, _: &mut ()) {
+        let names = t
+            .trait_names
+            .iter()
+            .map(|n| String::from_utf8_lossy(n.value()).into_owned())
+            .collect();
+        self.trait_uses.push((t.span().start.offset, names));
+    }
+
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
         for v in p.variables() {
-            self.out.starts.insert(v.span.start.offset, p.span().start.offset);
+            self.out
+                .starts
+                .insert(v.span.start.offset, p.span().start.offset);
             if p.modifiers().iter().any(Modifier::is_readonly) {
                 self.out.readonly.insert(v.span.start.offset);
             }
         }
     }
-    fn walk_in_function_like_parameter(&mut self, p: &'ast FunctionLikeParameter<'arena>, _: &mut ()) {
+    fn walk_in_function_like_parameter(
+        &mut self,
+        p: &'ast FunctionLikeParameter<'arena>,
+        _: &mut (),
+    ) {
         if p.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(p.variable.span.start.offset);
         }
@@ -293,31 +388,51 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
         if c.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(c.span().start.offset);
         }
-        self.parents(c.span(), false, c.implements.iter().flat_map(|i| i.types.iter()));
+        self.parents(
+            c.span(),
+            false,
+            c.implements.iter().flat_map(|i| i.types.iter()),
+        );
     }
     fn walk_in_anonymous_class(&mut self, c: &'ast AnonymousClass<'arena>, _: &mut ()) {
         if c.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(c.span().start.offset);
         }
-        self.parents(c.span(), false, c.implements.iter().flat_map(|i| i.types.iter()));
+        self.parents(
+            c.span(),
+            false,
+            c.implements.iter().flat_map(|i| i.types.iter()),
+        );
     }
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
-        self.parents(e.span(), false, e.implements.iter().flat_map(|i| i.types.iter()));
+        self.parents(
+            e.span(),
+            false,
+            e.implements.iter().flat_map(|i| i.types.iter()),
+        );
     }
     fn walk_in_trait(&mut self, t: &'ast Trait<'arena>, _: &mut ()) {
         self.traits.push(t.span().start.offset);
     }
     fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
-        self.parents(i.span(), true, i.extends.iter().flat_map(|e| e.types.iter()));
+        self.parents(
+            i.span(),
+            true,
+            i.extends.iter().flat_map(|e| e.types.iter()),
+        );
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
         for item in k.items.iter() {
-            self.out.starts.insert(item.span().start.offset, k.span().start.offset);
+            self.out
+                .starts
+                .insert(item.span().start.offset, k.span().start.offset);
         }
     }
     fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
         for item in k.items.iter() {
-            self.out.starts.insert(item.span().start.offset, k.span().start.offset);
+            self.out
+                .starts
+                .insert(item.span().start.offset, k.span().start.offset);
         }
     }
 }

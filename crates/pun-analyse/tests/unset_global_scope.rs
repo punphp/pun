@@ -15,7 +15,10 @@ fn unset_global_and_extract_fallbacks_match_complete_phpstan_diagnostics() {
             let mut project = Project::new(vec![root.join(file)], Vec::new());
             project.php_version = 80500;
             project.level = level;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                true,
+            );
             let mut got: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()

@@ -29,7 +29,10 @@ fn coalesce_inputs_match_phpstan() {
         let mut project = Project::new(vec![file.clone()], Vec::new());
         project.level = level;
         project.php_version = 80400;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let relevant = |identifier: &str| {
             identifier.starts_with("nullCoalesce.")
                 || matches!(identifier, "variable.undefined" | "phpstan.dumpType")

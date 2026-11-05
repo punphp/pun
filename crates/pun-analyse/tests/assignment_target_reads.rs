@@ -70,7 +70,10 @@ fn check(level: u8, boundary_reads: bool) {
     let mut project = Project::new(files, Vec::new());
     project.php_version = 80500;
     project.level = level;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+        level >= 1,
+    );
     let actual = json!(
         analyse_project(&project)
             .unwrap()

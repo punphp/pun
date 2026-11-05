@@ -1376,7 +1376,7 @@ fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'
 /// class-like being walked written in another case than the same method of its parent class or of one of its
 /// interfaces (`hasNativeMethod()`, private ones included).
 pub fn inherited_case(c: &mut Checker, m: &Method, name: &str) {
-    if !c.strict.matching_inherited_method_names {
+    if !c.strict.contains(crate::StrictRules::MATCHING_INHERITED_METHOD_NAMES) {
         return;
     }
     let k = c.class_scope().expect("a method is walked inside its class-like");

@@ -193,7 +193,7 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     if writes.opaque {
         return;
     }
-    let flow = c.toggled.unused_flow;
+    let flow = c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_FLOW);
     let mut errors = Vec::new();
     for capture in uses.variables.iter() {
         let span = capture.variable.span();
@@ -318,7 +318,7 @@ fn no_op(body: &[Statement]) -> bool {
 /// UnusedFunctionParametersRule: level 4 with `featureToggles.unusedParameters`.
 pub(super) fn function_parameters(c: &mut Checker, f: &mago_syntax::cst::Function) {
     unused_variables(c, f.span(), Node::Function(f));
-    if !c.toggled.unused_parameters || no_op(f.body.statements.as_slice()) || f.parameter_list.parameters.is_empty() {
+    if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS) || no_op(f.body.statements.as_slice()) || f.parameter_list.parameters.is_empty() {
         return;
     }
     let name = c.resolved_span(f.name.span);
@@ -351,7 +351,7 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
         if c.level < 1 {
             return;
         }
-    } else if !c.toggled.unused_parameters
+    } else if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS)
         || !m.modifiers.contains_private()
         || no_op(body.statements.as_slice())
         || m.name.value.starts_with(b"__")
@@ -407,7 +407,7 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
         let unused = format!("{subject} has an unused parameter {{}}.");
         let flow = format!("{subject} has a parameter {{}} that only flows into values that are never used.");
         let exact = c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE);
-        let flow = c.toggled.unused_flow.then_some((flow.as_str(), "constructor.unusedParameterFlow"));
+        let flow = c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_FLOW).then_some((flow.as_str(), "constructor.unusedParameterFlow"));
         unused_parameters(c, m.span(), &m.parameter_list, &contract, (&unused, "constructor.unusedParameter"), exact, flow);
     } else {
         let method = format!("{}::{}()", c.display(class), String::from_utf8_lossy(m.name.value));

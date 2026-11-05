@@ -20,9 +20,12 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::{Exceptions, MethodRules, Project, ProjectOptions, Reported, StrictRules, TooWide};
+pub use project::{
+    ExceptionChecks, Exceptions, MethodRules, Project, ProjectOptions, Reported, StrictRules,
+    TooWide,
+};
 pub use relative_path::RelativePath;
-pub use rules::Larastan;
+pub use rules::{Larastan, LarastanSwitches};
 
 /// One reported error, as `phpstan analyse --error-format=json` prints it.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -92,7 +95,9 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
     let errors = rules::renamed_named_arguments(
         errors,
         &sources,
-        project.options.contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS),
+        project
+            .options
+            .contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS),
         project.method_rules.renamed_named_arguments,
     );
     // the codebase is large: freed off the critical path

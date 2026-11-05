@@ -84,7 +84,7 @@ fn unused(c: &Checker, declared: &Type, points: &[Point]) -> Vec<String> {
             points
                 .iter()
                 .map(|p| {
-                    if !c.exceptions.implicit_throws && !p.explicit && !p.unknown {
+                    if !c.exceptions.checks.contains(crate::ExceptionChecks::IMPLICIT_THROWS) && !p.explicit && !p.unknown {
                         Type::Never(pun_phpstan::types::NeverKind::Implicit)
                     } else {
                         p.ty.clone()
@@ -101,11 +101,11 @@ fn unused(c: &Checker, declared: &Type, points: &[Point]) -> Vec<String> {
 }
 
 fn too_wide_on(c: &Checker) -> bool {
-    c.level >= 4 && c.exceptions.too_wide_throw_type
+    c.level >= 4 && c.exceptions.checks.contains(crate::ExceptionChecks::TOO_WIDE_THROW_TYPE)
 }
 
 pub(in super::super) fn function(c: &mut Checker, f: &Function) {
-    let missing = c.exceptions.missing_checked_exception_in_throws;
+    let missing = c.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS);
     if !missing && !too_wide_on(c) {
         return;
     }
@@ -131,7 +131,7 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
 
 pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     let (MethodBody::Concrete(b), Some(context)) = (&m.body, c.class_scope()) else { return };
-    let missing = c.exceptions.missing_checked_exception_in_throws;
+    let missing = c.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS);
     if !missing && !too_wide_on(c) {
         return;
     }
@@ -153,7 +153,7 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     let private = meta.method_metadata.as_ref().is_some_and(|mm| mm.visibility == Visibility::Private);
     let is_final = meta.method_metadata.as_ref().is_some_and(|mm| mm.is_final) || m.modifiers.contains_final();
     if !private && !context.flags.is_final() && !is_final {
-        if !c.exceptions.check_too_wide_throw_types_in_protected_and_public_methods
+        if !c.exceptions.checks.contains(crate::ExceptionChecks::CHECK_TOO_WIDE_THROW_TYPES_IN_PROTECTED_AND_PUBLIC_METHODS)
             || first_declaration(c, context, &name)
         {
             return;
@@ -167,7 +167,7 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
         let scope = var_tags::scope(c, m.span());
         declared::with_classes(c, || invalid_throws::throws_type(&entry.phpdoc, &scope)).is_some()
     });
-    if !explicit && !c.exceptions.too_wide_implicit_throw_type {
+    if !explicit && !c.exceptions.checks.contains(crate::ExceptionChecks::TOO_WIDE_IMPLICIT_THROW_TYPE) {
         return;
     }
     let all: Vec<String> = declared::with_classes(c, || flatten(&declared).iter().map(|t| t.describe(Level::TypeOnly)).collect());
@@ -195,7 +195,7 @@ fn first_declaration(c: &Checker, class: &ClassLikeMetadata, name: &str) -> bool
 
 pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], list: &PropertyHookList) {
     let Some(context) = c.class_scope() else { return };
-    let missing = c.exceptions.missing_checked_exception_in_throws;
+    let missing = c.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS);
     if !missing && !too_wide_on(c) {
         return;
     }
@@ -227,7 +227,7 @@ pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], list: &PropertyHookL
         let is_final = property.is_some_and(|p| p.flags.is_final())
             || h.modifiers.iter().any(|m| matches!(m, Modifier::Final(_)));
         if !private && !context.flags.is_final() && !is_final
-            && !c.exceptions.check_too_wide_throw_types_in_protected_and_public_methods
+            && !c.exceptions.checks.contains(crate::ExceptionChecks::CHECK_TOO_WIDE_THROW_TYPES_IN_PROTECTED_AND_PUBLIC_METHODS)
         {
             continue;
         }
@@ -269,7 +269,7 @@ pub(in super::super) fn dead_catches(c: &mut Checker, t: &Try) {
                 caught.describe(Level::TypeOnly),
             )
         });
-        if !c.exceptions.report_unchecked_exception_dead_catch && !checked {
+        if !c.exceptions.checks.contains(crate::ExceptionChecks::REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH) && !checked {
             continue;
         }
         let message = format!("Dead catch - {described} is never thrown in the try block.");
@@ -281,7 +281,7 @@ pub(in super::super) fn dead_catches(c: &mut Checker, t: &Try) {
 /// the methods it overrides (ParentMethodHelper::collectParentMethods()).
 pub(in super::super) fn covariance(c: &mut Checker, m: &Method) {
     let Some(context) = c.class_scope() else { return };
-    if !c.exceptions.throw_type_covariance {
+    if !c.exceptions.checks.contains(crate::ExceptionChecks::THROW_TYPE_COVARIANCE) {
         return;
     }
     let name = method_name(c, m);
@@ -290,7 +290,7 @@ pub(in super::super) fn covariance(c: &mut Checker, m: &Method) {
         return;
     }
     let Some(meta) = c.codebase.get_method(context.name.as_bytes(), lower.as_bytes()) else { return };
-    let implicit = c.exceptions.implicit_throws;
+    let implicit = c.exceptions.checks.contains(crate::ExceptionChecks::IMPLICIT_THROWS);
     let Some(throws) = declared::with_classes(c, || declared::reflected_throws(c, meta, Some(context), &name))
         .or_else(|| implicit.then(throwable))
     else {

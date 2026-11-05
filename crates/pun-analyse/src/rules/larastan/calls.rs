@@ -41,7 +41,11 @@ pub(crate) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
     } else if name.eq_ignore_ascii_case("value") {
         useless_value(c, call, args.as_slice());
     }
-    if name == "env" && larastan.no_env_calls_outside_of_config && !in_config_directory(c, larastan)
+    if name == "env"
+        && larastan
+            .switches
+            .contains(crate::LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG)
+        && !in_config_directory(c, larastan)
     {
         c.report(
             call,
@@ -235,7 +239,12 @@ pub(crate) fn static_method_call<'arena>(
     let ClassLikeMemberSelector::Identifier(method) = &call.method else {
         return;
     };
-    if larastan.no_model_make && method.value == b"make" && called_on_model(c, call.class) {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::NO_MODEL_MAKE)
+        && method.value == b"make"
+        && called_on_model(c, call.class)
+    {
         c.report(
             call,
             "larastan.noModelMake",
@@ -244,7 +253,9 @@ pub(crate) fn static_method_call<'arena>(
             None,
         );
     }
-    if larastan.check_auth_calls_when_in_request_scope
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE)
         && let Expression::Identifier(id) = call.class
         && is_a(c, c.names.get(&id.span()), AUTH_FACADE)
     {
@@ -308,16 +319,28 @@ pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall
     super::console::check(c, call);
     super::relations::method_call(c, call);
     super::collectors::method_call(c, call);
-    if larastan.no_unnecessary_collection_call {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL)
+    {
         super::collections::unnecessary(c, call, &larastan.no_unnecessary_collection_call_methods);
     }
-    if larastan.no_unnecessary_enumerable_to_array_calls {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS)
+    {
         super::collections::check(c, call);
     }
-    if larastan.check_octane_compatibility {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::CHECK_OCTANE_COMPATIBILITY)
+    {
         octane::check(c, call);
     }
-    if !larastan.check_auth_calls_when_in_request_scope {
+    if !larastan
+        .switches
+        .contains(crate::LarastanSwitches::CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE)
+    {
         return;
     }
     let ClassLikeMemberSelector::Identifier(method) = &call.method else {

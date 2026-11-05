@@ -692,10 +692,19 @@ fn phpstan_level_fixtures() {
                     .collect();
                 let mut project = Project::new(paths("files"), paths("scan"));
                 project.level = level;
-                project.options.set(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, level >= 2);
+                project.options.set(
+                    pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+                    level >= 2,
+                );
                 // The pinned exports used PHP's register_argc_argv=0, independently of this host's INI.
-                project.options.set(pun_analyse::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED, false);
-                project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+                project.options.set(
+                    pun_analyse::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED,
+                    false,
+                );
+                project.options.set(
+                    pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                    level >= 1,
+                );
                 let got: BTreeSet<Key> = run(&project)
                     .unwrap()
                     .into_iter()

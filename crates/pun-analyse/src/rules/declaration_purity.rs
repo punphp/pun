@@ -136,7 +136,9 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
         return;
     }
     let doc = c.php_doc(c.file.id, f.span().start.offset);
-    let (raw, phpdoc) = doc.as_ref().map_or((&b""[..], &[][..]), |(raw, entry)| (*raw, &entry.phpdoc[..]));
+    let (raw, phpdoc) = doc.as_ref().map_or((&b""[..], &[][..]), |(raw, entry)| {
+        (*raw, &entry.phpdoc[..])
+    });
     let pure = effects::purity(raw);
     let unless_callable = declared::tagged_params(
         raw,
@@ -203,7 +205,9 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
     if declaring.kind == SymbolKind::Trait || c.trait_context.is_some() {
         return;
     }
-    let raw = c.php_doc_comment(c.file.id, m.span().start.offset).unwrap_or_default();
+    let raw = c
+        .php_doc_comment(c.file.id, m.span().start.offset)
+        .unwrap_or_default();
     let (unless_callable, unless_passed, throws) =
         declared::method_conditional_purity(c, context, m.name.value);
     let signature = declared::with_classes(c, || declared::method(c, m, declaring, context));
@@ -256,7 +260,9 @@ pub(super) fn hooks(c: &mut Checker, property: &[u8], list: &PropertyHookList) {
         let PropertyHookBody::Concrete(body) = &h.body else {
             continue;
         };
-        let raw = c.php_doc_comment(c.file.id, h.span().start.offset).unwrap_or_default();
+        let raw = c
+            .php_doc_comment(c.file.id, h.span().start.offset)
+            .unwrap_or_default();
         let pure = effects::purity(raw);
         let unless_callable = declared::tagged_params(
             raw,

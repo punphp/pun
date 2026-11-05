@@ -27,9 +27,14 @@ fn check(project: Project, errors: &Value) {
         .collect();
     want.sort_by(|a, b| (a.0, &a.2).cmp(&(b.0, &b.2)));
     assert_eq!(
-        got, want,
+        got,
+        want,
         "{:?}; PHP {}; bleeding edge {}",
-        project.analysed, project.php_version, project.options.contains(pun_analyse::ProjectOptions::BLEEDING_EDGE)
+        project.analysed,
+        project.php_version,
+        project
+            .options
+            .contains(pun_analyse::ProjectOptions::BLEEDING_EDGE)
     );
 }
 
@@ -181,7 +186,9 @@ fn unpacking(config: &str, php_version: u32, bleeding_edge: bool) {
     .unwrap();
     let mut project = Project::new(vec![root.join("unpacking.php")], Vec::new());
     project.php_version = php_version;
-    project.options.set(pun_analyse::ProjectOptions::BLEEDING_EDGE, bleeding_edge);
+    project
+        .options
+        .set(pun_analyse::ProjectOptions::BLEEDING_EDGE, bleeding_edge);
     check(project, &expected["files"]["unpacking.php"]["messages"]);
 }
 
@@ -208,7 +215,9 @@ fn quoted_shapes_reach_duplicate_keys_through_scanning_and_inline_annotations() 
             .unwrap();
     let mut project = Project::new(vec![root.join("quoted-shapes.php")], Vec::new());
     project.php_version = 80400;
-    project.options.set(pun_analyse::ProjectOptions::BLEEDING_EDGE, true);
+    project
+        .options
+        .set(pun_analyse::ProjectOptions::BLEEDING_EDGE, true);
     check(project, &oracle["errors"]);
 }
 
@@ -234,7 +243,9 @@ fn raw_phpdoc_ingestion_preserves_binary_values_and_error_offsets() {
         for level in [0, 2] {
             let mut project = Project::new(vec![file.clone()], Vec::new());
             project.level = level;
-            project.options.set(pun_analyse::ProjectOptions::BLEEDING_EDGE, true);
+            project
+                .options
+                .set(pun_analyse::ProjectOptions::BLEEDING_EDGE, true);
             check(project, &oracle["levels"][level.to_string()]);
         }
     });

@@ -310,7 +310,13 @@ impl IgnoredErrors {
     }
 
     /// `IgnoredError::shouldIgnore()`
-    fn should_ignore(&self, error: &Error, i: usize, fields: &Fields, path: Option<String>) -> bool {
+    fn should_ignore(
+        &self,
+        error: &Error,
+        i: usize,
+        fields: &Fields,
+        path: Option<String>,
+    ) -> bool {
         let (_, raw, identifier, rule) = fields.clone();
         if identifier.is_some() && error.identifier != identifier {
             return false;

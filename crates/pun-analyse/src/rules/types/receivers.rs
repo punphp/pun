@@ -315,7 +315,7 @@ impl<'a> Checker<'a, '_> {
                 if let Some(finder) = name.strip_prefix(b"where") {
                     let finder = String::from_utf8_lossy(finder);
                     let segments = super::super::larastan::where_segments(&finder);
-                    if !larastan.check_model_properties
+                    if !larastan.switches.contains(crate::LarastanSwitches::CHECK_MODEL_PROPERTIES)
                         || segments.iter().all(|s| {
                             let property = format!("${}", super::super::larastan::snake(s));
                             self.has_property(&model, property.as_bytes(), false).yes()

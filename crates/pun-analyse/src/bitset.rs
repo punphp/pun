@@ -10,7 +10,10 @@ pub struct BitSet {
 impl BitSet {
     /// `len` flags, all clear.
     pub fn new(len: usize) -> BitSet {
-        BitSet { words: vec![0; len.div_ceil(64)], len }
+        BitSet {
+            words: vec![0; len.div_ceil(64)],
+            len,
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -110,7 +113,15 @@ mod tests {
         flags.set(69, true);
         flags.set(0, false);
         assert_eq!(flags.len(), 70);
-        assert_eq!(flags.iter().enumerate().filter(|(_, f)| *f).map(|(i, _)| i).collect::<Vec<_>>(), [64, 69]);
+        assert_eq!(
+            flags
+                .iter()
+                .enumerate()
+                .filter(|(_, f)| *f)
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>(),
+            [64, 69]
+        );
         assert!(!flags.get(70));
         assert_eq!(flags.last(), Some(true));
         assert_eq!(flags.pop(), Some(true));
@@ -123,6 +134,9 @@ mod tests {
         assert_eq!(flags.len(), 71);
         assert_eq!(flags.iter().filter(|f| *f).count(), 1);
         let collected: BitSet = [true, false, true].into_iter().collect();
-        assert_eq!(collected.into_iter().collect::<Vec<_>>(), [true, false, true]);
+        assert_eq!(
+            collected.into_iter().collect::<Vec<_>>(),
+            [true, false, true]
+        );
     }
 }

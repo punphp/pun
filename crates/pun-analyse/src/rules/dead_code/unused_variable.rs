@@ -180,7 +180,7 @@ fn offset_value(t: &Type, key: &Type) -> Option<Type> {
 }
 
 pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: Node<'ast, 'arena>) {
-    if !c.toggled.unused_variable {
+    if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_VARIABLE) {
         return;
     }
     let Some(writes) = c.variable_writes.get(&span) else {

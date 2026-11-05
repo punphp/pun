@@ -1271,7 +1271,7 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
 impl Checker<'_, '_> {
     /// An error on `line` of the class's file, or of a trait's (`file`: its description and path).
     fn report_line(&mut self, line: i64, identifier: &str, message: String, file: Option<(String, String)>) {
-        if self.trait_context.is_some() && !self.in_target {
+        if self.trait_context.is_some() && !self.walk.contains(super::Walk::IN_TARGET) {
             return;
         }
         // a class declared in a trait's method is checked in each using class's context, with its own scope (not in

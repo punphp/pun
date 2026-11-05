@@ -22,7 +22,10 @@ fn generic_array_declaration_effects_match_complete_phpstan_records() {
             let mut project = Project::new(vec![root.join(format!("{file}.php"))], Vec::new());
             project.php_version = 80500;
             project.level = level;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level > 0,
+            );
             let analysis = analyse_project(&project).unwrap();
             assert!(analysis.general.is_empty(), "{:?}", analysis.general);
             let mut actual: Vec<_> = analysis
@@ -76,7 +79,10 @@ fn unset_declaration_effects_match_complete_phpstan_records() {
         let mut project = Project::new(vec![root.join("unset.php")], Vec::new());
         project.php_version = 80500;
         project.level = level;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level > 0,
+        );
         let mut actual: Vec<_> = analyse_project(&project)
             .unwrap()
             .errors
@@ -127,7 +133,10 @@ fn declaration_effects_match_the_oracle_without_claiming_unknown_producers() {
         );
         project.php_version = 80500;
         project.level = level;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let errors = analyse_project(&project).unwrap().errors;
         let actual = errors.into_iter()
             .map(|error| json!({
@@ -237,7 +246,10 @@ fn builtin_purity_overrides_match_complete_phpstan_records_through_project() {
         let mut project = Project::new(vec![root.join("contracts.php")], Vec::new());
         project.php_version = 80500;
         project.level = 3;
-        project.options.set(pun_analyse::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE, mode != "disabled");
+        project.options.set(
+            pun_analyse::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE,
+            mode != "disabled",
+        );
         project.method_rules.overriding_method = mode != "no-overrides";
         let mut actual: Vec<_> = analyse_project(&project)
             .unwrap()

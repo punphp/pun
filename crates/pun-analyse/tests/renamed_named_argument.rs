@@ -32,7 +32,10 @@ fn check(mode: &str) {
     let mut project = Project::new(files("analysed"), files("scanned"));
     project.level = case["level"].as_u64().unwrap() as u8;
     project.php_version = 80500;
-    project.options.set(pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, case["explainIgnores"].as_bool().unwrap_or(false));
+    project.options.set(
+        pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS,
+        case["explainIgnores"].as_bool().unwrap_or(false),
+    );
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()

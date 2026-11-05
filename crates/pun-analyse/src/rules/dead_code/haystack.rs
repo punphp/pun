@@ -10,7 +10,7 @@ use super::conditions::{finite, loose, scalar};
 use super::node_name;
 
 pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
-    if !c.toggled.finite_haystack {
+    if !c.toggled.on.contains(crate::rules::driver::Toggles::FINITE_HAYSTACK) {
         return;
     }
     let Expression::Identifier(id) = call.function else { return };

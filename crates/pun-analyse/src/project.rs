@@ -184,27 +184,29 @@ impl Default for MethodRules {
     }
 }
 
-/// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
-#[derive(Clone, Copy, Default)]
-pub struct StrictRules {
-    /// `closureUsesThis`: ClosureUsesThisRule.
-    pub closure_uses_this: bool,
-    /// `requireParentConstructorCall`: RequireParentConstructCallRule.
-    pub require_parent_constructor_call: bool,
-    /// `matchingInheritedMethodNames`: WrongCaseOfInheritedMethodRule.
-    pub matching_inherited_method_names: bool,
-    /// `dynamicCallOnStaticMethod`: DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
-    pub dynamic_call_on_static_method: bool,
-    /// `booleansInConditions`: BooleanInBooleanAndRule, BooleanInBooleanOrRule and BooleanInBooleanNotRule.
-    pub booleans_in_conditions: bool,
-    /// `numericOperandsInArithmeticOperators`: OperandsInArithmetic*Rule and OperandInArithmetic*Rule.
-    pub numeric_operands_in_arithmetic_operators: bool,
-    /// `booleansInLoopConditions`: BooleanInWhileConditionRule and BooleanInDoWhileConditionRule.
-    pub booleans_in_loop_conditions: bool,
-    /// `uselessCast`: UselessCastRule.
-    pub useless_cast: bool,
-    /// `switchConditionsMatchingType`: MatchingTypeInSwitchCaseConditionRule.
-    pub switch_conditions_matching_type: bool,
+bitflags::bitflags! {
+    /// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
+    #[derive(Clone, Copy, Default)]
+    pub struct StrictRules: u16 {
+        /// `closureUsesThis`: ClosureUsesThisRule.
+        const CLOSURE_USES_THIS = 1;
+        /// `requireParentConstructorCall`: RequireParentConstructCallRule.
+        const REQUIRE_PARENT_CONSTRUCTOR_CALL = 1 << 1;
+        /// `matchingInheritedMethodNames`: WrongCaseOfInheritedMethodRule.
+        const MATCHING_INHERITED_METHOD_NAMES = 1 << 2;
+        /// `dynamicCallOnStaticMethod`: DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
+        const DYNAMIC_CALL_ON_STATIC_METHOD = 1 << 3;
+        /// `booleansInConditions`: BooleanInBooleanAndRule, BooleanInBooleanOrRule and BooleanInBooleanNotRule.
+        const BOOLEANS_IN_CONDITIONS = 1 << 4;
+        /// `numericOperandsInArithmeticOperators`: OperandsInArithmetic*Rule and OperandInArithmetic*Rule.
+        const NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS = 1 << 5;
+        /// `booleansInLoopConditions`: BooleanInWhileConditionRule and BooleanInDoWhileConditionRule.
+        const BOOLEANS_IN_LOOP_CONDITIONS = 1 << 6;
+        /// `uselessCast`: UselessCastRule.
+        const USELESS_CAST = 1 << 7;
+        /// `switchConditionsMatchingType`: MatchingTypeInSwitchCaseConditionRule.
+        const SWITCH_CONDITIONS_MATCHING_TYPE = 1 << 8;
+    }
 }
 
 impl StrictRules {
@@ -216,59 +218,63 @@ impl StrictRules {
             Some(Value::Array(a)) => a.values().all(|v| *v == Value::Bool(true)),
             _ => false,
         };
-        StrictRules {
-            closure_uses_this: on("closureUsesThis"),
-            require_parent_constructor_call: on("requireParentConstructorCall"),
-            matching_inherited_method_names: on("matchingInheritedMethodNames"),
-            dynamic_call_on_static_method: on("dynamicCallOnStaticMethod"),
-            booleans_in_conditions: on("booleansInConditions"),
-            numeric_operands_in_arithmetic_operators: on("numericOperandsInArithmeticOperators"),
-            booleans_in_loop_conditions: on("booleansInLoopConditions"),
-            useless_cast: on("uselessCast"),
-            switch_conditions_matching_type: on("switchConditionsMatchingType"),
-        }
+        let mut rules = StrictRules::empty();
+        rules.set(StrictRules::CLOSURE_USES_THIS, on("closureUsesThis"));
+        rules.set(StrictRules::REQUIRE_PARENT_CONSTRUCTOR_CALL, on("requireParentConstructorCall"));
+        rules.set(StrictRules::MATCHING_INHERITED_METHOD_NAMES, on("matchingInheritedMethodNames"));
+        rules.set(StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD, on("dynamicCallOnStaticMethod"));
+        rules.set(StrictRules::BOOLEANS_IN_CONDITIONS, on("booleansInConditions"));
+        rules.set(StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS, on("numericOperandsInArithmeticOperators"));
+        rules.set(StrictRules::BOOLEANS_IN_LOOP_CONDITIONS, on("booleansInLoopConditions"));
+        rules.set(StrictRules::USELESS_CAST, on("uselessCast"));
+        rules.set(StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE, on("switchConditionsMatchingType"));
+        rules
+    }
+}
+
+bitflags::bitflags! {
+    /// The `exceptions.*` switches and `checkTooWideThrowTypesInProtectedAndPublicMethods`.
+    #[derive(Clone, Copy, Debug, PartialEq)]
+    pub struct ExceptionChecks: u8 {
+        /// `implicitThrows`: a call without `@throws` may throw anything.
+        const IMPLICIT_THROWS = 1;
+        /// `reportUncheckedExceptionDeadCatch`.
+        const REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH = 1 << 1;
+        /// `check.missingCheckedExceptionInThrows`: the MissingCheckedExceptionIn*ThrowsRule rules.
+        const MISSING_CHECKED_EXCEPTION_IN_THROWS = 1 << 2;
+        /// `check.tooWideThrowType`: the TooWide*ThrowTypeRule rules (level 4).
+        const TOO_WIDE_THROW_TYPE = 1 << 3;
+        /// `check.tooWideImplicitThrowType`: TooWideMethodThrowTypeRule also for an inherited `@throws`.
+        const TOO_WIDE_IMPLICIT_THROW_TYPE = 1 << 4;
+        /// `check.throwTypeCovariance`: MethodThrowTypeCovarianceRule.
+        const THROW_TYPE_COVARIANCE = 1 << 5;
+        /// `checkTooWideThrowTypesInProtectedAndPublicMethods`.
+        const CHECK_TOO_WIDE_THROW_TYPES_IN_PROTECTED_AND_PUBLIC_METHODS = 1 << 6;
     }
 }
 
 /// The `exceptions.*` parameters and `checkTooWideThrowTypesInProtectedAndPublicMethods` (config.neon's defaults).
 #[derive(Clone, Debug, PartialEq)]
 pub struct Exceptions {
-    /// `implicitThrows`: a call without `@throws` may throw anything.
-    pub implicit_throws: bool,
-    /// `reportUncheckedExceptionDeadCatch`.
-    pub report_unchecked_exception_dead_catch: bool,
+    pub checks: ExceptionChecks,
     /// DefaultExceptionTypeResolver's `uncheckedExceptionRegexes`, `uncheckedExceptionClasses`,
     /// `checkedExceptionRegexes` and `checkedExceptionClasses`.
     pub unchecked_exception_regexes: Vec<String>,
     pub unchecked_exception_classes: Vec<String>,
     pub checked_exception_regexes: Vec<String>,
     pub checked_exception_classes: Vec<String>,
-    /// `check.missingCheckedExceptionInThrows`: the MissingCheckedExceptionIn*ThrowsRule rules.
-    pub missing_checked_exception_in_throws: bool,
-    /// `check.tooWideThrowType`: the TooWide*ThrowTypeRule rules (level 4).
-    pub too_wide_throw_type: bool,
-    /// `check.tooWideImplicitThrowType`: TooWideMethodThrowTypeRule also for an inherited `@throws`.
-    pub too_wide_implicit_throw_type: bool,
-    /// `check.throwTypeCovariance`: MethodThrowTypeCovarianceRule.
-    pub throw_type_covariance: bool,
-    /// `checkTooWideThrowTypesInProtectedAndPublicMethods`.
-    pub check_too_wide_throw_types_in_protected_and_public_methods: bool,
 }
 
 impl Default for Exceptions {
     fn default() -> Self {
         Exceptions {
-            implicit_throws: true,
-            report_unchecked_exception_dead_catch: true,
+            checks: ExceptionChecks::IMPLICIT_THROWS
+                | ExceptionChecks::REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH
+                | ExceptionChecks::TOO_WIDE_THROW_TYPE,
             unchecked_exception_regexes: Vec::new(),
             unchecked_exception_classes: vec!["Error".into()],
             checked_exception_regexes: Vec::new(),
             checked_exception_classes: Vec::new(),
-            missing_checked_exception_in_throws: false,
-            too_wide_throw_type: true,
-            too_wide_implicit_throw_type: false,
-            throw_type_covariance: false,
-            check_too_wide_throw_types_in_protected_and_public_methods: false,
         }
     }
 }
@@ -278,50 +284,47 @@ impl Exceptions {
         let d = Exceptions::default();
         let exceptions = params.get_str("exceptions").and_then(Value::as_array);
         let check = exceptions.and_then(|e| e.get_str("check")).and_then(Value::as_array);
-        let flag = |a: Option<&Array>, k: &str, default: bool| match a.and_then(|a| a.get_str(k)) {
-            Some(Value::Bool(b)) => *b,
-            _ => default,
+        let mut checks = d.checks;
+        let mut flag = |a: Option<&Array>, k: &str, which: ExceptionChecks| {
+            if let Some(Value::Bool(b)) = a.and_then(|a| a.get_str(k)) {
+                checks.set(which, *b);
+            }
         };
+        flag(exceptions, "implicitThrows", ExceptionChecks::IMPLICIT_THROWS);
+        flag(exceptions, "reportUncheckedExceptionDeadCatch", ExceptionChecks::REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH);
+        flag(check, "missingCheckedExceptionInThrows", ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS);
+        flag(check, "tooWideThrowType", ExceptionChecks::TOO_WIDE_THROW_TYPE);
+        flag(check, "tooWideImplicitThrowType", ExceptionChecks::TOO_WIDE_IMPLICIT_THROW_TYPE);
+        flag(check, "throwTypeCovariance", ExceptionChecks::THROW_TYPE_COVARIANCE);
+        flag(
+            Some(params),
+            "checkTooWideThrowTypesInProtectedAndPublicMethods",
+            ExceptionChecks::CHECK_TOO_WIDE_THROW_TYPES_IN_PROTECTED_AND_PUBLIC_METHODS,
+        );
         let list = |k: &str, default: Vec<String>| match exceptions.and_then(|e| e.get_str(k)).and_then(Value::as_array) {
             Some(a) => a.values().filter_map(Value::as_str).map(str::to_string).collect(),
             None => default,
         };
         Exceptions {
-            implicit_throws: flag(exceptions, "implicitThrows", d.implicit_throws),
-            report_unchecked_exception_dead_catch: flag(
-                exceptions,
-                "reportUncheckedExceptionDeadCatch",
-                d.report_unchecked_exception_dead_catch,
-            ),
+            checks,
             unchecked_exception_regexes: list("uncheckedExceptionRegexes", d.unchecked_exception_regexes),
             unchecked_exception_classes: list("uncheckedExceptionClasses", d.unchecked_exception_classes),
             checked_exception_regexes: list("checkedExceptionRegexes", d.checked_exception_regexes),
             checked_exception_classes: list("checkedExceptionClasses", d.checked_exception_classes),
-            missing_checked_exception_in_throws: flag(
-                check,
-                "missingCheckedExceptionInThrows",
-                d.missing_checked_exception_in_throws,
-            ),
-            too_wide_throw_type: flag(check, "tooWideThrowType", d.too_wide_throw_type),
-            too_wide_implicit_throw_type: flag(check, "tooWideImplicitThrowType", d.too_wide_implicit_throw_type),
-            throw_type_covariance: flag(check, "throwTypeCovariance", d.throw_type_covariance),
-            check_too_wide_throw_types_in_protected_and_public_methods: flag(
-                Some(params),
-                "checkTooWideThrowTypesInProtectedAndPublicMethods",
-                d.check_too_wide_throw_types_in_protected_and_public_methods,
-            ),
         }
     }
 }
 
-/// TooWideTypeCheck's `featureToggles.reportTooWideBool` (on with bleedingEdge) and
-/// `featureToggles.reportNestedTooWideType`, and TooWideMethodParameterOutTypeRule's
-/// `checkTooWideParameterOutInProtectedAndPublicMethods`.
-#[derive(Clone, Copy, Default)]
-pub struct TooWide {
-    pub report_bool: bool,
-    pub report_nested: bool,
-    pub param_out_in_protected_and_public_methods: bool,
+bitflags::bitflags! {
+    /// TooWideTypeCheck's `featureToggles.reportTooWideBool` (on with bleedingEdge) and
+    /// `featureToggles.reportNestedTooWideType`, and TooWideMethodParameterOutTypeRule's
+    /// `checkTooWideParameterOutInProtectedAndPublicMethods`.
+    #[derive(Clone, Copy, Default)]
+    pub struct TooWide: u8 {
+        const REPORT_BOOL = 1;
+        const REPORT_NESTED = 1 << 1;
+        const PARAM_OUT_IN_PROTECTED_AND_PUBLIC_METHODS = 1 << 2;
+    }
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -488,10 +491,15 @@ impl Project {
                 .unwrap_or_default(),
             strict_rules: StrictRules::from_params(params),
             exceptions: Exceptions::from_params(params),
-            too_wide: TooWide {
-                report_bool: toggle("reportTooWideBool"),
-                report_nested: toggle("reportNestedTooWideType"),
-                param_out_in_protected_and_public_methods: flag("checkTooWideParameterOutInProtectedAndPublicMethods"),
+            too_wide: {
+                let mut too_wide = TooWide::empty();
+                too_wide.set(TooWide::REPORT_BOOL, toggle("reportTooWideBool"));
+                too_wide.set(TooWide::REPORT_NESTED, toggle("reportNestedTooWideType"));
+                too_wide.set(
+                    TooWide::PARAM_OUT_IN_PROTECTED_AND_PUBLIC_METHODS,
+                    flag("checkTooWideParameterOutInProtectedAndPublicMethods"),
+                );
+                too_wide
             },
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),

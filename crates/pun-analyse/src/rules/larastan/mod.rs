@@ -95,6 +95,42 @@ pub const IDENTIFIERS: &[&str] = &[
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
 const REQUEST: &[u8] = b"illuminate\\http\\request";
 
+bitflags::bitflags! {
+    /// Larastan's switches (extension.neon's parameters).
+    #[derive(Clone, Copy, Debug)]
+    pub struct LarastanSwitches: u16 {
+        /// `noEnvCallsOutsideOfConfig` (default true).
+        const NO_ENV_CALLS_OUTSIDE_OF_CONFIG = 1;
+        /// `noModelMake` (default true).
+        const NO_MODEL_MAKE = 1 << 1;
+        /// `checkOctaneCompatibility` (default false).
+        const CHECK_OCTANE_COMPATIBILITY = 1 << 2;
+        /// `checkModelMethodVisibility` (default false).
+        const CHECK_MODEL_METHOD_VISIBILITY = 1 << 3;
+        /// `checkAuthCallsWhenInRequestScope` (default false).
+        const CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE = 1 << 4;
+        /// `checkModelAppends` (default true).
+        const CHECK_MODEL_APPENDS = 1 << 5;
+        /// `parseModelCastsMethod` (default false).
+        const PARSE_MODEL_CASTS_METHOD = 1 << 6;
+        /// `checkModelProperties` (default false): a dynamic where's columns must be the model's properties.
+        const CHECK_MODEL_PROPERTIES = 1 << 7;
+        /// `noUnnecessaryCollectionCall` (default true), with the methods of
+        /// [`Larastan::no_unnecessary_collection_call_methods`].
+        const NO_UNNECESSARY_COLLECTION_CALL = 1 << 8;
+        /// `noUnnecessaryEnumerableToArrayCalls` (default false).
+        const NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS = 1 << 9;
+        /// `checkUnusedViews` (default false), over [`Larastan::view_directories`].
+        const CHECK_UNUSED_VIEWS = 1 << 10;
+        /// `checkMissingTranslations` (default false), over [`Larastan::translation_directories`].
+        const CHECK_MISSING_TRANSLATIONS = 1 << 11;
+        /// `checkConfigTypes` (default false).
+        const CHECK_CONFIG_TYPES = 1 << 12;
+        /// `generalizeEnvReturnType` (default false).
+        const GENERALIZE_ENV_RETURN_TYPE = 1 << 13;
+    }
+}
+
 /// Larastan's switches (extension.neon's parameters), with the Laravel app's config directory.
 #[derive(Clone, Debug)]
 pub struct Larastan {
@@ -102,42 +138,18 @@ pub struct Larastan {
     pub root: PathBuf,
     /// `configDirectories` as absolute globs, or the app's `config_path()`.
     pub config_directories: Vec<String>,
-    /// `noEnvCallsOutsideOfConfig` (default true).
-    pub no_env_calls_outside_of_config: bool,
-    /// `noModelMake` (default true).
-    pub no_model_make: bool,
-    /// `checkOctaneCompatibility` (default false).
-    pub check_octane_compatibility: bool,
-    /// `checkModelMethodVisibility` (default false).
-    pub check_model_method_visibility: bool,
-    /// `checkAuthCallsWhenInRequestScope` (default false).
-    pub check_auth_calls_when_in_request_scope: bool,
-    /// `checkModelAppends` (default true).
-    pub check_model_appends: bool,
-    /// `parseModelCastsMethod` (default false).
-    pub parse_model_casts_method: bool,
-    /// `checkModelProperties` (default false): a dynamic where's columns must be the model's properties.
-    pub check_model_properties: bool,
+    pub switches: LarastanSwitches,
     /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) database_properties: HashMap<String, HashSet<String>>,
     /// The migrations' tables' columns, by table name.
     pub(crate) table_columns: HashMap<String, HashSet<String>>,
-    /// `noUnnecessaryCollectionCall` (default true), with `noUnnecessaryCollectionCallOnly` and
-    /// `noUnnecessaryCollectionCallExcept`: the lowercase method names it checks.
-    pub no_unnecessary_collection_call: bool,
+    /// `noUnnecessaryCollectionCallOnly` and `noUnnecessaryCollectionCallExcept`: the lowercase method names
+    /// [`LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL`] checks.
     pub no_unnecessary_collection_call_methods: Vec<String>,
-    /// `noUnnecessaryEnumerableToArrayCalls` (default false).
-    pub no_unnecessary_enumerable_to_array_calls: bool,
-    /// `checkUnusedViews` (default false) and `viewDirectories` (absolute).
-    pub check_unused_views: bool,
+    /// `viewDirectories` (absolute).
     pub view_directories: Vec<PathBuf>,
-    /// `checkMissingTranslations` (default false) and `translationDirectories` (absolute).
-    pub check_missing_translations: bool,
+    /// `translationDirectories` (absolute).
     pub translation_directories: Vec<PathBuf>,
-    /// `checkConfigTypes` (default false).
-    pub check_config_types: bool,
-    /// `generalizeEnvReturnType` (default false).
-    pub generalize_env_return_type: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
     pub(crate) configs: std::sync::Arc<crate::larastan::config::Configs>,
     /// The models' database properties and their types, by lowercase class name (filled by [`Larastan::load`]).
@@ -158,25 +170,15 @@ impl Larastan {
         Larastan {
             root: root.to_path_buf(),
             config_directories: vec![root.join("config").to_string_lossy().into_owned()],
-            no_env_calls_outside_of_config: true,
-            no_model_make: true,
-            check_octane_compatibility: false,
-            check_model_method_visibility: false,
-            check_auth_calls_when_in_request_scope: false,
-            check_model_appends: true,
-            parse_model_casts_method: false,
-            check_model_properties: false,
+            switches: LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG
+                | LarastanSwitches::NO_MODEL_MAKE
+                | LarastanSwitches::CHECK_MODEL_APPENDS
+                | LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL,
             database_properties: HashMap::new(),
             table_columns: HashMap::new(),
             commands: Default::default(),
-            check_config_types: false,
-            generalize_env_return_type: false,
-            check_unused_views: false,
             view_directories: Vec::new(),
-            check_missing_translations: false,
             translation_directories: Vec::new(),
-            no_unnecessary_enumerable_to_array_calls: false,
-            no_unnecessary_collection_call: true,
             no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
             configs: Default::default(),
             bootstrap_files: Vec::new(),
@@ -194,7 +196,7 @@ impl Larastan {
     ) {
         let app = crate::Laravel {
             root: &self.root,
-            parse_casts_method: self.parse_model_casts_method,
+            parse_casts_method: self.switches.contains(LarastanSwitches::PARSE_MODEL_CASTS_METHOD),
         };
         (self.database_properties, self.table_columns) = crate::laravel::database_properties(app, project, codebase);
         self.models = std::sync::Arc::new(crate::laravel::models(app, project, codebase));
@@ -206,12 +208,12 @@ impl Larastan {
             codebase,
             &self.app,
         ));
-        if self.check_config_types {
+        if self.switches.contains(LarastanSwitches::CHECK_CONFIG_TYPES) {
             self.configs = std::sync::Arc::new(crate::larastan::config::Configs::load(
                 &self.config_directories,
                 &self.root,
                 codebase,
-                self.generalize_env_return_type,
+                self.switches.contains(LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE),
             ));
         }
     }
@@ -238,22 +240,26 @@ impl Larastan {
         if !directories.is_empty() {
             larastan.config_directories = directories;
         }
-        larastan.no_env_calls_outside_of_config = flag("noEnvCallsOutsideOfConfig", true);
-        larastan.no_model_make = flag("noModelMake", true);
-        larastan.check_octane_compatibility = flag("checkOctaneCompatibility", false);
-        larastan.check_model_method_visibility = flag("checkModelMethodVisibility", false);
-        larastan.check_auth_calls_when_in_request_scope =
-            flag("checkAuthCallsWhenInRequestScope", false);
-        larastan.check_model_appends = flag("checkModelAppends", true);
-        larastan.parse_model_casts_method = flag("parseModelCastsMethod", false);
-        larastan.check_model_properties = flag("checkModelProperties", false);
-        larastan.check_config_types = flag("checkConfigTypes", false);
-        larastan.generalize_env_return_type = flag("generalizeEnvReturnType", false);
-        larastan.no_unnecessary_enumerable_to_array_calls =
-            flag("noUnnecessaryEnumerableToArrayCalls", false);
-        larastan.no_unnecessary_collection_call = flag("noUnnecessaryCollectionCall", true);
-        larastan.check_unused_views = flag("checkUnusedViews", false);
-        larastan.check_missing_translations = flag("checkMissingTranslations", false);
+        larastan.switches.set(LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG, flag("noEnvCallsOutsideOfConfig", true));
+        larastan.switches.set(LarastanSwitches::NO_MODEL_MAKE, flag("noModelMake", true));
+        larastan.switches.set(LarastanSwitches::CHECK_OCTANE_COMPATIBILITY, flag("checkOctaneCompatibility", false));
+        larastan.switches.set(LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY, flag("checkModelMethodVisibility", false));
+        larastan.switches.set(
+            LarastanSwitches::CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE,
+            flag("checkAuthCallsWhenInRequestScope", false),
+        );
+        larastan.switches.set(LarastanSwitches::CHECK_MODEL_APPENDS, flag("checkModelAppends", true));
+        larastan.switches.set(LarastanSwitches::PARSE_MODEL_CASTS_METHOD, flag("parseModelCastsMethod", false));
+        larastan.switches.set(LarastanSwitches::CHECK_MODEL_PROPERTIES, flag("checkModelProperties", false));
+        larastan.switches.set(LarastanSwitches::CHECK_CONFIG_TYPES, flag("checkConfigTypes", false));
+        larastan.switches.set(LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE, flag("generalizeEnvReturnType", false));
+        larastan.switches.set(
+            LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS,
+            flag("noUnnecessaryEnumerableToArrayCalls", false),
+        );
+        larastan.switches.set(LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL, flag("noUnnecessaryCollectionCall", true));
+        larastan.switches.set(LarastanSwitches::CHECK_UNUSED_VIEWS, flag("checkUnusedViews", false));
+        larastan.switches.set(LarastanSwitches::CHECK_MISSING_TRANSLATIONS, flag("checkMissingTranslations", false));
         let names = |k: &str| -> Vec<String> {
             params
                 .get_str(k)
@@ -499,7 +505,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         self.spans.extend(wanted.map(|a| a.value().span()));
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if self.larastan.check_config_types {
+        if self.larastan.switches.contains(LarastanSwitches::CHECK_CONFIG_TYPES) {
             self.spans.extend(config::typed(self.names, call));
         }
         if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
@@ -514,7 +520,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         {
             self.spans.push(first.value().span());
         }
-        if self.larastan.no_model_make
+        if self.larastan.switches.contains(LarastanSwitches::NO_MODEL_MAKE)
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value == b"make")
             && !matches!(
                 call.class,
@@ -528,7 +534,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        if self.larastan.no_unnecessary_enumerable_to_array_calls
+        if self.larastan.switches.contains(LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS)
             && collections::to_array(call).is_some()
         {
             self.spans.push(call.object.span());
@@ -536,7 +542,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
             self.spans.extend([arg.span(), call.object.span()]);
         }
-        if self.larastan.no_unnecessary_collection_call {
+        if self.larastan.switches.contains(LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL) {
             self.spans.extend(collections::unnecessary_typed(call));
         }
         if collectors::typed_method_call(self.larastan, call).is_some() {
@@ -545,7 +551,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if let Some((_, arg)) = console::input_call(call) {
             self.spans.extend([call.object.span(), arg.span()]);
         }
-        if self.larastan.check_octane_compatibility && octane::is_binding(call) {
+        if self.larastan.switches.contains(LarastanSwitches::CHECK_OCTANE_COMPATIBILITY) && octane::is_binding(call) {
             self.spans.push(call.object.span());
         }
     }
@@ -593,7 +599,7 @@ pub(crate) fn type_node(
             Some(Type::Object(builder.clone(), vec![model.clone()], false))
         }
         ("view-string", []) => Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ViewString)])),
-        ("model-property", _) if !larastan.check_model_properties => Some(Type::String),
+        ("model-property", _) if !larastan.switches.contains(LarastanSwitches::CHECK_MODEL_PROPERTIES) => Some(Type::String),
         ("model-property", [t]) if !is_super_type_of(&model(), t).no() && !matches!(t, Type::Never(_)) => {
             Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ModelProperty(Box::new(t.clone())))]))
         }

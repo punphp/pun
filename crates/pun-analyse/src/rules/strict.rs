@@ -22,14 +22,14 @@ use super::{Checker, declared, members};
 /// (UselessCastRule), and a switch's condition and case conditions.
 pub fn typed_expressions(project: &super::Checks, codebase: &CodebaseMetadata, program: &Program) -> Vec<Span> {
     let strict = project.strict;
-    if !strict.closure_uses_this
-        && !(strict.dynamic_call_on_static_method && project.level >= 2)
-        && !strict.useless_cast
-        && !strict.switch_conditions_matching_type
+    if !strict.contains(crate::StrictRules::CLOSURE_USES_THIS)
+        && !(strict.contains(crate::StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD) && project.level >= 2)
+        && !strict.contains(crate::StrictRules::USELESS_CAST)
+        && !strict.contains(crate::StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE)
     {
         return Vec::new();
     }
-    let statics: HashSet<Vec<u8>> = if strict.dynamic_call_on_static_method && project.level >= 2 {
+    let statics: HashSet<Vec<u8>> = if strict.contains(crate::StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD) && project.level >= 2 {
         codebase
             .function_likes
             .iter()
@@ -40,10 +40,10 @@ pub fn typed_expressions(project: &super::Checks, codebase: &CodebaseMetadata, p
         HashSet::new()
     };
     let mut typed = Typed {
-        closures: strict.closure_uses_this,
+        closures: strict.contains(crate::StrictRules::CLOSURE_USES_THIS),
         statics,
-        casts: strict.useless_cast,
-        switches: strict.switch_conditions_matching_type,
+        casts: strict.contains(crate::StrictRules::USELESS_CAST),
+        switches: strict.contains(crate::StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE),
         spans: Vec::new(),
     };
     typed.walk_program(program, &mut ());
@@ -103,7 +103,7 @@ const TIP: &str = "Because the type is coming from a PHPDoc, you can turn off th
 
 /// UselessCastRule: a cast whose (generalized) type already holds its operand's type.
 pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
-    if !c.strict.useless_cast
+    if !c.strict.contains(crate::StrictRules::USELESS_CAST)
         || !u.operator.is_cast()
         || matches!(u.operator, UnaryPrefixOperator::VoidCast(..) | UnaryPrefixOperator::UnsetCast(..))
     {
@@ -143,7 +143,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
 
 /// MatchingTypeInSwitchCaseConditionRule: a case whose type the switch condition's type can never be.
 pub fn switch(c: &mut Checker, s: &Switch) {
-    if !c.strict.switch_conditions_matching_type {
+    if !c.strict.contains(crate::StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE) {
         return;
     }
     let Some(condition) = c.phpstan_type(s.expression) else {
@@ -174,7 +174,7 @@ pub fn switch(c: &mut Checker, s: &Switch) {
 /// ClosureUsesThisRule: a variable holding `$this` imported into a non-static closure. A closure inside the
 /// arguments of `Closure::bind()` is skipped (`isInClosureBind()`).
 pub fn closure(c: &mut Checker, f: &Closure) {
-    if !c.strict.closure_uses_this || f.r#static.is_some() || c.closure_bind > 0 {
+    if !c.strict.contains(crate::StrictRules::CLOSURE_USES_THIS) || f.r#static.is_some() || c.closure_bind > 0 {
         return;
     }
     let Some(uses) = &f.use_clause else {
@@ -196,7 +196,7 @@ pub fn closure(c: &mut Checker, f: &Closure) {
 
 /// RequireParentConstructCallRule on method `m` of the class being walked.
 pub fn constructor(c: &mut Checker, m: &Method<'_>) {
-    if !c.strict.require_parent_constructor_call || c.in_trait().is_some() || m.name.value != b"__construct" {
+    if !c.strict.contains(crate::StrictRules::REQUIRE_PARENT_CONSTRUCTOR_CALL) || c.in_trait().is_some() || m.name.value != b"__construct" {
         return;
     }
     let MethodBody::Concrete(body) = &m.body else {
@@ -298,7 +298,7 @@ fn calls_in_expression(mut e: &Expression) -> bool {
 /// (`$expr->name(...)`). RuleLevelHelper::findTypeToCheck() checks only `$this` below level 2; from there the
 /// object's type drops `null` (below level 8) and the union members without the method (below level 7).
 pub fn dynamic_call(c: &mut Checker, span: Span, object: &Expression, method: &ClassLikeMemberSelector) {
-    if !c.strict.dynamic_call_on_static_method {
+    if !c.strict.contains(crate::StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD) {
         return;
     }
     let ClassLikeMemberSelector::Identifier(id) = method else {

@@ -58,7 +58,14 @@ impl Checker<'_, '_> {
 
 fn collecting(c: &Checker) -> Option<(bool, bool)> {
     c.larastan
-        .map(|l| (l.check_unused_views, l.check_missing_translations))
+        .map(|l| {
+            (
+                l.switches
+                    .contains(crate::LarastanSwitches::CHECK_UNUSED_VIEWS),
+                l.switches
+                    .contains(crate::LarastanSwitches::CHECK_MISSING_TRANSLATIONS),
+            )
+        })
         .filter(|(v, t)| *v || *t)
 }
 
@@ -130,8 +137,12 @@ pub(super) fn typed_method_call<'a>(larastan: &Larastan, call: &'a MethodCall) -
     };
     let read = !call.argument_list.arguments.is_empty()
         && match m.value {
-            b"make" | b"markdown" | b"view" => larastan.check_unused_views,
-            b"get" | b"choice" => larastan.check_missing_translations,
+            b"make" | b"markdown" | b"view" => larastan
+                .switches
+                .contains(crate::LarastanSwitches::CHECK_UNUSED_VIEWS),
+            b"get" | b"choice" => larastan
+                .switches
+                .contains(crate::LarastanSwitches::CHECK_MISSING_TRANSLATIONS),
             _ => false,
         };
     read.then_some(m.value)
@@ -175,7 +186,10 @@ pub(crate) fn finish(larastan: Option<&Larastan>, errors: Vec<Error>) -> Vec<Err
         return errors;
     };
     let finder = views::Finder::new(&larastan.root);
-    if larastan.check_unused_views {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::CHECK_UNUSED_VIEWS)
+    {
         let directories = if larastan.view_directories.is_empty() {
             finder.paths.clone()
         } else {
@@ -204,7 +218,10 @@ pub(crate) fn finish(larastan: Option<&Larastan>, errors: Vec<Error>) -> Vec<Err
             }
         }
     }
-    if larastan.check_missing_translations {
+    if larastan
+        .switches
+        .contains(crate::LarastanSwitches::CHECK_MISSING_TRANSLATIONS)
+    {
         let directories = if larastan.translation_directories.is_empty() {
             // lang_path(): resources/lang when the app has one, else lang
             let resources = larastan.root.join("resources/lang");

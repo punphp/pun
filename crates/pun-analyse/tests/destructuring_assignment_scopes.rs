@@ -44,7 +44,10 @@ fn destructuring_assignment_scopes_match_complete_phpstan_records() {
         let mut project = Project::new(files.clone(), Vec::new());
         project.php_version = 80500;
         project.level = level;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, maybe);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            maybe,
+        );
         let result = analyse_project(&project).unwrap();
         let mut actual: Vec<_> = result
             .errors

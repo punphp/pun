@@ -104,7 +104,10 @@ fn parser_errors_survive_rule_filters_and_configured_ignores() {
     let valid = root.write("valid", "function duplicate($x, $x) {} missing_control();");
     let mut project = Project::new(vec![invalid, valid], Vec::new());
     project.reported = Some(std::sync::Arc::new(|_| false));
-    project.options.set(pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS,
+        true,
+    );
     let mut entry = Array::new();
     entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
     project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(
@@ -849,7 +852,10 @@ fn entry_brace_errors_survive_configured_ignores_and_rule_filters() {
     );
     let mut project = Project::new(vec![file], Vec::new());
     project.reported = Some(std::sync::Arc::new(|_| false));
-    project.options.set(pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS,
+        true,
+    );
     let mut entry = Array::new();
     entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
     project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(

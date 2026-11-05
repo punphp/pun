@@ -17,7 +17,10 @@ fn failed_named_function_results_match_phpstan() {
         );
         project.php_version = 80500;
         project.level = level;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            level >= 1,
+        );
         let mut actual: Vec<_> = analyse_project(&project)
             .unwrap()
             .errors

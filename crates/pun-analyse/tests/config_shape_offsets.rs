@@ -53,7 +53,9 @@ fn compare(case: &str) {
         vec![stubs, root.join("ConfigFacade.php")],
     );
     let mut larastan = Larastan::new(&root);
-    larastan.check_config_types = true;
+    larastan
+        .switches
+        .set(pun_analyse::LarastanSwitches::CHECK_CONFIG_TYPES, true);
     project.larastan = Some(larastan);
     project.php_version = 80500;
     let result = analyse_project(&project).unwrap();

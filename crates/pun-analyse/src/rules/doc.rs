@@ -673,7 +673,7 @@ pub struct FileScopes {
     /// The empty scope of an offset outside every namespace.
     outside: Arc<NamespaceScope>,
     /// each `use Trait, ...;` in a class body: its offset and the trait names as written
-    trait_uses: Vec<(u32, Vec<String>)>,
+    pub(super) trait_uses: Vec<(u32, Vec<String>)>,
 }
 
 impl FileScopes {
@@ -702,25 +702,10 @@ impl FileScopes {
         if !any {
             namespaces.push((0, u32::MAX, Arc::new(global)));
         }
-        let mut trait_uses = Vec::new();
-        fn walk(node: mago_syntax::cst::Node<'_, '_>, out: &mut Vec<(u32, Vec<String>)>) {
-            if let mago_syntax::cst::Node::TraitUse(t) = node {
-                let names = t
-                    .trait_names
-                    .iter()
-                    .map(|n| String::from_utf8_lossy(n.value()).into_owned())
-                    .collect();
-                out.push((t.span().start.offset, names));
-            }
-            for child in node.children() {
-                walk(child, out);
-            }
-        }
-        walk(mago_syntax::cst::Node::Program(program), &mut trait_uses);
         FileScopes {
             namespaces,
             outside: Arc::default(),
-            trait_uses,
+            trait_uses: Vec::new(),
         }
     }
 

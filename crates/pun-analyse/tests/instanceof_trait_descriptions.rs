@@ -29,7 +29,10 @@ fn receiver_descriptions_match_complete_phpstan_records() {
         let mut direct = Project::new(vec![file], Vec::new());
         direct.level = level as u8;
         direct.php_version = 80500;
-        direct.options.set(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, level >= 2);
+        direct.options.set(
+            pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+            level >= 2,
+        );
         let mut want: Vec<_> = oracle[level.to_string()]
             .as_array()
             .unwrap()

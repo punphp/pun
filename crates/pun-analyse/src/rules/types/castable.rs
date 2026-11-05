@@ -178,7 +178,7 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             }
         }
         // ParameterCastableToNumberRule: only a call with exactly one argument
-        "array_sum" | "array_product" if c.toggled.castable_to_number && args.len() == 1 => {
+        "array_sum" | "array_product" if c.toggled.on.contains(crate::rules::driver::Toggles::CASTABLE_TO_NUMBER) && args.len() == 1 => {
             let (n, v, unpack) = args[0];
             // PhpVersion::supportsObjectsInArraySumProduct(): before PHP 8.3 any possible object fails
             let objects = c.php_version >= 80300;

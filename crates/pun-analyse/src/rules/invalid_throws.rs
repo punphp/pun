@@ -36,7 +36,9 @@ pub fn statement(c: &mut Checker, statement: &Statement) {
 
 /// `InFunctionNode`: not an inherited reflection throw type, and not the surrounding function's templates.
 pub fn function(c: &mut Checker, function: &Function) {
-    check(c, function.span(), |c, entry| declared::function_scope(c, function, &entry.doc));
+    check(c, function.span(), |c, entry| {
+        declared::function_scope(c, function, &entry.doc)
+    });
 }
 
 /// `InClassMethodNode`: the method's own tags, resolved in the declaring trait's/using class's context.

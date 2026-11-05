@@ -22,7 +22,10 @@ fn offset_read_declaration_effects_match_complete_phpstan_records() {
             let mut project = Project::new(vec![root.join(format!("{file}.php"))], Vec::new());
             project.php_version = 80500;
             project.level = level;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level > 0,
+            );
             let analysis = analyse_project(&project).unwrap();
             assert!(analysis.general.is_empty(), "{:?}", analysis.general);
             let mut actual: Vec<_> = analysis

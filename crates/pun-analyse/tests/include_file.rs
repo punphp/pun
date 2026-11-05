@@ -112,7 +112,10 @@ fn local_archive_members() {
     let mut project = Project::new(vec![root.join("archives.php")], Vec::new());
     project.current_working_directory = root.clone();
     project.include_paths.push(root.join("archives"));
-    project.options.set(pun_analyse::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING,
+        true,
+    );
     assert_errors(project, "phpstan-archives");
 }
 
@@ -150,7 +153,10 @@ fn cwd_include_path_and_script_directory() {
         let mut project = Project::new(vec![root.join("paths.php")], Vec::new());
         project.current_working_directory = cwd;
         project.include_paths = include_paths;
-        project.options.set(pun_analyse::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING,
+            true,
+        );
         assert_errors(project, &format!("environment-{mode}"));
     }
 }

@@ -15,7 +15,10 @@ fn written_arrays_accept_input_reference_mutation_and_preserve_other_certainties
             .unwrap();
     let mut project = Project::new(vec![root.join("transfers.php")], Vec::new());
     project.level = 2;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+        true,
+    );
     let got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()

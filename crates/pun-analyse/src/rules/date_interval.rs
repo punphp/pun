@@ -9,7 +9,7 @@ use super::Checker;
 pub const IDENTIFIERS: &[&str] = &["new.dateInterval"];
 
 pub(super) fn instantiation(c: &mut Checker, new: &Instantiation) {
-    if !c.toggled.date_interval {
+    if !c.toggled.on.contains(crate::rules::driver::Toggles::DATE_INTERVAL) {
         return;
     }
     let Expression::Identifier(id) = new.class else {

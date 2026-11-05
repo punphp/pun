@@ -118,8 +118,13 @@ fn compare(source: &str, captured: &str, unnecessary: bool) {
         for (constructor, mut project) in projects {
             project.level = level;
             project.php_version = 80500;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
-            project.options.set(pun_analyse::ProjectOptions::BLEEDING_EDGE, unnecessary);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                true,
+            );
+            project
+                .options
+                .set(pun_analyse::ProjectOptions::BLEEDING_EDGE, unnecessary);
             let got = records(&project, &root);
             if got != want {
                 failures.push(json!({

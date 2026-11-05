@@ -24,7 +24,10 @@ fn check(prefix: &str, mode: &str, filter_join_identifier: bool) {
     let mut project = Project::new(files, Vec::new());
     project.level = 5;
     project.php_version = 80500;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, prefix == "boundaries-");
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS,
+        prefix == "boundaries-",
+    );
     project.method_rules = MethodRules {
         call_methods: mode != "no-calls",
         overriding_method: mode != "no-overrides",

@@ -31,7 +31,7 @@ fn visibility(modifiers: &[Modifier]) -> Visibility {
 pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant<'arena>) {
     class_as_class_constant(c, k);
     // ConstantsInTraitsRule (`$scope->isInTrait()`), PhpVersion::supportsConstantsInTraits()
-    if !c.surely_at_least(80200) && c.in_target {
+    if !c.surely_at_least(80200) && c.walk.contains(super::Walk::IN_TARGET) {
         c.report_non_ignorable(
             k,
             "classConstant.inTrait",

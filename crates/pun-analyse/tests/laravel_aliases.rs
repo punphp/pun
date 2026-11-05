@@ -67,7 +67,10 @@ impl App {
         .unwrap();
         let mut project = Project::from_config(&self.0, &config.parameters);
         project.larastan = Some(Larastan::new(&self.0));
-        project.options.set(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+            true,
+        );
         project
     }
 

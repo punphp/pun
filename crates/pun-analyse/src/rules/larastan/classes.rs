@@ -48,7 +48,10 @@ pub(crate) fn class<'arena>(c: &mut Checker<'_, 'arena>, class: &Class<'arena>) 
 pub(crate) fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
     let Some(k) = c
         .larastan
-        .filter(|l| l.check_model_method_visibility)
+        .filter(|l| {
+            l.switches
+                .contains(crate::LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY)
+        })
         .and(c.class_scope())
     else {
         return;

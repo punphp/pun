@@ -81,7 +81,10 @@ fn exported_terminating_isset_edge_makes_the_foreach_value_absent() {
         Vec::new(),
     );
     project.level = 4;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+        true,
+    );
     let got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()
@@ -100,7 +103,10 @@ fn exported_counterfactual_coalesce_rhs_makes_the_value_absent() {
         Vec::new(),
     );
     project.level = 4;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+        true,
+    );
     let got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()
@@ -138,8 +144,14 @@ fn exported_addition_reads_are_certain_at_levels_five_and_nine() {
         };
         let mut project = Project::new(paths("files"), paths("scan"));
         project.level = level;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, true);
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+            true,
+        );
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let got: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
@@ -166,7 +178,10 @@ fn incoming_isset_certainty_matches_phpstan() {
         let mut project = Project::new(vec![root.join("flow.php")], Vec::new());
         project.level = level;
         project.php_version = 80400;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let mut got: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
@@ -255,7 +270,10 @@ fn independent_advanced_isset_matches_phpstan_through_public_project() {
             project.analysed = vec![root.join("advanced-settings.php")];
             project.level = level;
             project.php_version = 80400;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level >= 1,
+            );
             let mut got: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()
@@ -303,7 +321,10 @@ fn isset_invocation_contract_matches_phpstan() {
         );
         project.level = level;
         project.php_version = 80400;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let mut got: Vec<_> = run(&project)
             .unwrap()
             .into_iter()

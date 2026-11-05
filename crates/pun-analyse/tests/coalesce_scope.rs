@@ -13,7 +13,10 @@ fn coalesce_assignment_scopes_match_phpstan() {
             .unwrap();
     let mut project = Project::new(vec![root.join("scope.php")], Vec::new());
     project.level = 1;
-    project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+    project.options.set(
+        pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+        true,
+    );
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()

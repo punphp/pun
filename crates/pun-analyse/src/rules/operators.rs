@@ -50,9 +50,9 @@ pub const IDENTIFIERS: &[&str] = &[
 /// The expressions whose types the rules read: the operands of the operators the switches check.
 pub(super) fn typed_expressions(strict: crate::StrictRules, program: &Program) -> Vec<Span> {
     let mut t = Typed {
-        booleans: strict.booleans_in_conditions,
-        loops: strict.booleans_in_loop_conditions,
-        numbers: strict.numeric_operands_in_arithmetic_operators,
+        booleans: strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS),
+        loops: strict.contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS),
+        numbers: strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS),
         spans: Vec::new(),
     };
     if t.booleans || t.loops || t.numbers {
@@ -285,12 +285,12 @@ fn operands(c: &mut Checker, at: Span, name: &str, sigil: &str, left: &Expressio
 }
 
 pub(super) fn binary(c: &mut Checker, b: &Binary) {
-    if c.strict.numeric_operands_in_arithmetic_operators
+    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
         && let Some((name, sigil)) = arithmetic(&b.operator)
     {
         operands(c, b.span(), name, sigil, b.lhs, b.rhs, name == "plus");
     }
-    let Some((name, sigil)) = logical(&b.operator).filter(|_| c.strict.booleans_in_conditions) else {
+    let Some((name, sigil)) = logical(&b.operator).filter(|_| c.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)) else {
         return;
     };
     for (side, e) in [("left", b.lhs), ("right", b.rhs)] {
@@ -307,7 +307,7 @@ pub(super) fn binary(c: &mut Checker, b: &Binary) {
 }
 
 pub(super) fn assignment(c: &mut Checker, a: &Assignment) {
-    if c.strict.numeric_operands_in_arithmetic_operators
+    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
         && let Some((name, sigil)) = assign_arithmetic(&a.operator)
     {
         operands(c, a.span(), name, sigil, a.lhs, a.rhs, name == "plus");
@@ -326,7 +326,7 @@ fn unary(c: &mut Checker, at: Span, operand: &Expression, identifier: &'static s
 
 pub(super) fn unary_prefix(c: &mut Checker, u: &UnaryPrefix) {
     if let UnaryPrefixOperator::Not(_) = u.operator {
-        if c.strict.booleans_in_conditions
+        if c.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
             && let Some(t) = c.phpstan_type(u.operand)
             && !passes_as_boolean(c, u.operand, &t)
         {
@@ -338,13 +338,13 @@ pub(super) fn unary_prefix(c: &mut Checker, u: &UnaryPrefix) {
     let Some((identifier, operation, op)) = prefix(&u.operator) else {
         return;
     };
-    if c.strict.numeric_operands_in_arithmetic_operators && (op != Unary::Number || c.on(crate::rules::Switches::BLEEDING_EDGE)) {
+    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS) && (op != Unary::Number || c.on(crate::rules::Switches::BLEEDING_EDGE)) {
         unary(c, u.span(), u.operand, identifier, operation, op);
     }
 }
 
 pub(super) fn unary_postfix(c: &mut Checker, u: &UnaryPostfix) {
-    if !c.strict.numeric_operands_in_arithmetic_operators {
+    if !c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS) {
         return;
     }
     let (identifier, operation, op) = match u.operator {

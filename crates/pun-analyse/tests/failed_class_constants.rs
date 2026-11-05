@@ -373,7 +373,10 @@ fn complete_public_diagnostics_match_the_pinned_oracle() {
             let mut project = Project::new(vec![root.join(name)], Vec::new());
             project.php_version = 80500;
             project.level = level;
-            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level >= 1,
+            );
             let result = analyse_project(&project).unwrap();
             assert!(
                 result.general.is_empty(),
