@@ -145,6 +145,28 @@ one serialized Node worker took 3.473 s and 188.8 MiB, against four workers at 2
 Setting `--max-semi-space-size=4` reduced one-worker memory to 166.3 MiB but increased time to 3.812 s.
 At four workers it used 467.2 MiB and 2.305 s. Keep parallel, thread-local workers and Node's default heap settings.
 
+### Format rerun (Linux, 2026-11-06)
+
+8-core / 15 GB orb, PHP 8.5, profiling build of [`518fd5d2`](https://github.com/punphp/pun/commit/518fd5d2b3c9e454487be338c6f3b6cc7d388f28), `scripts/bench.py`, median of 3 runs after 1
+warm-up. Pun has no cache any more, so every run is cold. `pun` is `pun check --test`: format, lint and analyse in one
+pass, in a scratch copy without `vendor/`. `pun-format` is `pun format --test`.
+
+| project | files | pint --parallel | pint | pun check | pun format | mago fmt |
+|---|---:|---:|---:|---:|---:|---:|
+| pinkary | 484 | 7.45 s, 1556 MB | 20.50 s, 284 MB | 3.58 s, 1378 MB | 2.29 s, 1117 MB | 0.07 s, 213 MB |
+| laravel-framework | 3158 | 43.78 s, 847 MB | 289.76 s, 138 MB | 45.73 s, 1367 MB | 1.80 s, 90 MB | 0.85 s, 558 MB |
+| laravel-laravel | 27 | 1.44 s, 313 MB | 1.01 s, 80 MB | 0.83 s, 241 MB | 0.09 s, 30 MB | 0.03 s, 88 MB |
+| laravel-pint | 336 | 3.05 s, 642 MB | 6.56 s, 84 MB | 1.15 s, 243 MB | 0.16 s, 43 MB | 0.06 s, 160 MB |
+| pest | 633 | 6.86 s, 669 MB | 30.50 s, 90 MB | 3.39 s, 433 MB | 0.31 s, 46 MB | 0.06 s, 230 MB |
+| larastan | 579 | 5.84 s, 663 MB | 25.45 s, 88 MB | 2.68 s, 428 MB | 0.32 s, 48 MB | 0.07 s, 210 MB |
+
+- `pun format` is 18-160x faster than single-process Pint and 9-24x faster than `pint --parallel`. Pinkary's 2.29 s is
+  mostly Prettier formatting its 137 Blade files.
+- `pun check` on laravel-framework takes as long as `pint --parallel`: the analyser runs without `vendor/` there. Before
+  [`518fd5d2`](https://github.com/punphp/pun/commit/518fd5d2b3c9e454487be338c6f3b6cc7d388f28) it did not finish: `Router::toResponse()`'s instanceof chain on unknown classes multiplied unions of
+  intersections.
+- Mago's formatter is a speed reference only; its style is not Pint's.
+
 ## Analyse benchmark
 
 2026-10-17, `BENCH=analyse scripts/bench.py <project>`, one project per call with nothing else running
@@ -271,6 +293,25 @@ after the load average fell below 3; bench.py: `RUNS=5`, same call, other non-he
   metadata for every scanned vendor file (about 20 KB each live) plus about 30% allocator overhead; neither
   mimalloc nor dropping file signatures moved it.
 
+### Analyse rerun (Linux, 2026-11-06)
+
+Same orb and method, profiling build of [`db4b8f32`](https://github.com/punphp/pun/commit/db4b8f320f2046af7e6b9cd0bf26e69d2020fc91). `pun-bench-analyse.toml` is now what `pun migrate` writes from the
+benchmark's neon, so Pun runs the rules PHPStan runs there (the hand-written `preset = "basic"` config turned on rules
+such as `classes/uninitialized-property` that this neon leaves off). Pest was skipped: its `composer install` does not
+resolve.
+
+| project | files | phpstan-cold | phpstan-warm | pun | mago | count (cold / warm / pun / mago) | pun vs cold | pun vs warm | pun vs mago |
+|---|---:|---:|---:|---:|---:|---|---:|---:|---:|
+| pinkary | 162 | 15.02 s, 1444 MB | 1.53 s, 152 MB | 4.10 s, 1210 MB | 3.46 s, 1023 MB | 8 / 8 / 8 / 421 | 3.7x, 1.2x mem | 0.37x, 0.13x mem | 0.84x, 0.85x mem |
+| larastan (v3.10.0) | 151 | 10.75 s, 1343 MB | 1.85 s, 199 MB | 2.74 s, 834 MB | 1.16 s, 692 MB | 23 / 23 / 24 / 3804 | 3.9x, 1.6x mem | 0.68x, 0.24x mem | 0.42x, 0.83x mem |
+| laravel-framework | 1664 | 23.31 s, 3795 MB | 1.65 s, 151 MB | 9.35 s, 1326 MB | 3.00 s, 1026 MB | 380 / 380 / 380 / 20616 | 2.5x, 2.9x mem | 0.18x, 0.11x mem | 0.32x, 0.77x mem |
+| laravel-pint | 58 | 9.06 s, 639 MB | 2.16 s, 154 MB | 2.67 s, 645 MB | 0.55 s, 466 MB | 0 / 0 / 0 / 232 | 3.4x, 0.99x mem | 0.81x, 0.24x mem | 0.21x, 0.72x mem |
+
+- Pun's counts equal PHPStan's except larastan, where PHPStan's API rules (backward-compatibility promise and
+  `instanceof` of PHPStan types, which apply only to PHPStan extensions) are not ported.
+- Pun is 2.5-3.9x faster than a cold PHPStan but slower than a warm result cache and than Mago's analyser. Against the
+  2026-10-17 table it runs the full level 0 rule set instead of 54 identifiers, and takes 4-15x longer.
+
 ## Lint benchmark
 
 2026-10-17, `BENCH=lint scripts/bench.py <project>`, same machine and method as the analyse benchmark. Every tool
@@ -295,6 +336,20 @@ is check-only, in a scratch copy with the project's `vendor/`.
   files on laravel-framework. These rules are cheap, so the ratio shrinks as heavier rules are ported.
 - laravel-framework's rector-full is 3 single-run calls (90.2, 83.8 and 85.4 s): one call of 4 runs would not fit
   in a 10-minute slot.
+
+### Lint rerun (Linux, 2026-11-06)
+
+Same orb, profiling build of [`db4b8f32`](https://github.com/punphp/pun/commit/db4b8f320f2046af7e6b9cd0bf26e69d2020fc91). `pun-bench-lint.toml` now turns on every lint rule that has a Rector
+class, so `rector-ported` runs the same, much larger, set of Rector rules.
+
+| project | files | rector-ported | rector-full | pun | mago | pun count / mago count |
+|---|---:|---:|---:|---:|---:|---|
+| pinkary | 342 | 34.98 s, 2536 MB | 29.98 s, 2559 MB (1 run) | 3.18 s, 746 MB | 0.06 s, 170 MB | 67 / 446 |
+| laravel-framework | 3027 | did not finish | 186.92 s, 4996 MB (1 run, machine busy) | 80.91 s, 1739 MB | 0.60 s, 377 MB | 2922 / 24431 |
+
+- laravel-framework's `rector-ported` took more than 30 minutes per run and was stopped.
+- `pun lint` with every Rector-mapped rule is 11x faster than Rector on Pinkary but takes 81 s on laravel-framework,
+  where it took 0.06 s with two rules: some ported rule is far slower than the others there.
 
 ### Lint perf rounds
 
