@@ -1262,7 +1262,8 @@ pub(crate) fn assigned_native_ty(
 }
 
 /// PHPStan's `MethodExistsTypeSpecifyingExtension` for a variable `method_exists()` narrowed, which Mago types as a
-/// bare `has-method<...>` whatever it was before: the declared type intersected with `class-string|(object&hasMethod)`.
+/// bare `has-method<...>` (or `has-method<...>|class-string` from mixed) whatever it was before: the declared type
+/// intersected with `class-string|(object&hasMethod)`.
 /// For a parameter of the enclosing method that its body never assigns, no type gives `class-string|object` and
 /// `object` gives `object`; for anything else Pun does not know the type before, and it is `mixed`.
 fn method_exists_narrowed(
@@ -1275,6 +1276,7 @@ fn method_exists_narrowed(
     if !matches!(
         native.types.as_ref(),
         [TAtomic::Object(TObject::HasMethod(_))]
+            | [TAtomic::Object(TObject::HasMethod(_)), TAtomic::Scalar(TScalar::ClassLikeString(_))]
     ) {
         return None;
     }
@@ -1517,8 +1519,8 @@ pub(crate) struct VarTag<'s> {
 
 impl<'s> VarTag<'s> {
     /// The property's annotation context, even without a doc comment. An unreadable `@var` stays `Err` in `tag`.
-    pub(crate) fn of(source: &'s str, property: &Property<'_>, ancestors: &[Node<'_, '_>]) -> Self {
-        let annotated = Annotated::property(source, property, ancestors);
+    pub(crate) fn of(ctx: &crate::Context<'s>, property: &Property<'_>, ancestors: &[Node<'_, '_>]) -> Self {
+        let annotated = Annotated::property(ctx, property, ancestors);
         let tag = match &annotated.doc {
             Some(doc) => typed_tag(doc, "@var", None),
             None => Ok(None),
