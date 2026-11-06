@@ -73,7 +73,7 @@ impl Rule for NoUselessCondition {
                 help: None,
                 fix: Some(Fix {
                     safety: Safety::Safe,
-                    edits: remove(source, &list, &[key - 1]),
+                    edits: remove(ctx, &list, &[key - 1]),
                 }),
             });
             return;

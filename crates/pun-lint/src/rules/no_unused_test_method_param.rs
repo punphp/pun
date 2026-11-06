@@ -66,7 +66,6 @@ impl Rule for NoUnusedTestMethodParam {
         if !is_in_test_class(ctx, &path, None) {
             return;
         }
-        let source = ctx.source;
         for (index, member) in members.iter().enumerate() {
             let ClassLikeMember::Method(method) = member else {
                 continue;
@@ -83,7 +82,7 @@ impl Rule for NoUnusedTestMethodParam {
             };
             let from = member_from(members, left_brace, index);
             let mut edits = callers.clone();
-            edits.extend(remove_params(source, method, from, &removed));
+            edits.extend(remove_params(ctx, method, from, &removed));
             let mut edits = merge(edits);
             // a caller inside the method, which is printed anew without its parameters: the callers' arguments go
             // first, and the parameters in the next fix round, where no caller passes them

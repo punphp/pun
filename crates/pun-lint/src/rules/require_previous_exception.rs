@@ -20,7 +20,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::{Argument, Expression, Instantiation, Node, NodeKind, Variable};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::php_parser::{previous_token_end, tokens};
+use super::php_parser::previous_token_end;
 use super::rector_batch5::resolve_class_name;
 use super::rector_conditions::{indentation, print_comments, reprint};
 use super::types::facts::facts;
@@ -218,7 +218,7 @@ fn new_arg(name: Option<String>, value: String) -> Arg {
 /// `pExpr_New` with the arguments `args`, at the indent of the line `throw_start` is on.
 fn print_new(source: &str, throw_start: usize, new: &Instantiation<'_>, args: &[Arg]) -> String {
     let level = indentation(source, throw_start);
-    let tokens = tokens(source);
+    let tokens = crate::rules::php_parser::lex(source);
     let mut items: Vec<(Vec<Span>, &Arg)> = Vec::new();
     for arg in args {
         let comments = match arg.written {

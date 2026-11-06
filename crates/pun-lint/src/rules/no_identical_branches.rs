@@ -45,15 +45,15 @@ impl Rule for NoIdenticalBranches {
         if !view
             .elseifs
             .iter()
-            .all(|(_, list, _)| same_with_comments(source, &view.stmts, list))
-            || !same_with_comments(source, &view.stmts, else_stmts)
+            .all(|(_, list, _)| same_with_comments(ctx, &view.stmts, list))
+            || !same_with_comments(ctx, &view.stmts, else_stmts)
         {
             return;
         }
         let (list, index) = enclosing(source, s, ancestors);
         let span = node_span(list.stmts[index]);
         let edits = if view.stmts.is_empty() {
-            remove(source, &list, &[index])
+            remove(ctx, &list, &[index])
         } else {
             let indent = line_indent(source, span.start);
             let text = if list.frame == Frame::Bare {
@@ -61,10 +61,10 @@ impl Rule for NoIdenticalBranches {
                 let inner = format!("{indent}    ");
                 format!(
                     "{{\n{inner}{}\n{indent}}}",
-                    moved_statements(source, &view.stmts, &inner)
+                    moved_statements(ctx, &view.stmts, &inner)
                 )
             } else {
-                inserted_statements(source, &view.stmts, indent)
+                inserted_statements(ctx, &view.stmts, indent)
             };
             vec![Edit::new(span, text)]
         };

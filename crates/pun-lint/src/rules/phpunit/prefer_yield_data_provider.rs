@@ -102,7 +102,7 @@ impl Rule for PreferYieldDataProvider {
             })
             .collect();
         // `DataProviderClassMethodFinder::find`
-        let Some(mut names) = provider_names(ctx, ctx.source, &scope, &scope, &methods) else {
+        let Some(mut names) = provider_names(ctx, ctx, &scope, &scope, &methods) else {
             return;
         };
         // the parents up to `TestCase`, each with a source (as the test class extends it, each is a user class)
@@ -134,7 +134,7 @@ impl Rule for PreferYieldDataProvider {
                 providers.push(provider);
             }
         }
-        let tokens = tokens(ctx.source);
+        let tokens = tokens(ctx);
         let mut edits = Vec::new();
         let mut first = None;
         for provider in providers {
@@ -165,11 +165,11 @@ impl Rule for PreferYieldDataProvider {
     }
 }
 
-/// `resolverDataProviderClassMethodNames` over `methods`, declared in `source` at `scope`; a doc's tags are read as at
+/// `resolverDataProviderClassMethodNames` over `methods`, declared in `file` at `scope`; a doc's tags are read as at
 /// `tag_scope`. `None` where Pun does not read a doc as phpdoc-parser does.
 fn provider_names(
     ctx: &Context<'_>,
-    source: &str,
+    file: &Context<'_>,
     scope: &[Node<'_, '_>],
     tag_scope: &[Node<'_, '_>],
     methods: &[&Method<'_>],
@@ -199,7 +199,7 @@ fn provider_names(
             }
             continue;
         }
-        let Some(doc) = Doc::of(source, scope, node_span(*method).start) else {
+        let Some(doc) = Doc::of(file, scope, node_span(*method).start) else {
             continue;
         };
         for (_, value) in named_tags(ctx, tag_scope, &doc, "dataProvider")? {
@@ -227,6 +227,7 @@ fn parent_provider_names(
         std::borrow::Cow::Owned(source.as_bytes().to_vec()),
     );
     let program = mago_syntax::parser::parse_file(&arena, &file);
+    let parent = Context::new(source, ctx.path, ctx.php_version);
     let mut names = Some(Vec::new());
     walk(Node::Program(program), &mut |node, path| {
         let Node::Class(class) = node else {
@@ -256,7 +257,7 @@ fn parent_provider_names(
                     .filter(|n| !matches!(n, Node::Program(_))),
             )
             .collect();
-        names = provider_names(ctx, source, &scope, &tag_scope, &methods);
+        names = provider_names(ctx, &parent, &scope, &tag_scope, &methods);
         false
     });
     names
@@ -329,7 +330,7 @@ fn transform(
     let mut edits = Vec::new();
     // the doc comment's `@return` tag
     let node = Node::Method(method);
-    let annotated = Annotated::of(source, node, scope).unwrap();
+    let annotated = Annotated::of(ctx, node, scope).unwrap();
     if let Some(doc) = annotated.doc.as_ref()
         && let Some(new_doc) = new_doc(scope, class, doc)?
     {
@@ -361,7 +362,7 @@ fn transform(
     let last_removed = removed.iter().rposition(|r| *r).unwrap();
     let removed_comments = comments_between(
         tokens,
-        list.before(source, last_removed),
+        list.before(ctx, last_removed),
         node_span(list.stmts[last_removed]).start,
     );
     let mut yields = Vec::new();
@@ -370,7 +371,7 @@ fn transform(
         let span = node_span(element);
         let mut comments = comments_between(
             tokens,
-            previous_token_end(source, from, span.start),
+            previous_token_end(ctx, from, span.start),
             span.start,
         );
         if i == 0 {
@@ -426,7 +427,7 @@ fn transform(
     match kept_end {
         Some(at) => {
             let added: String = yields.iter().map(|y| format!("{nl}{y}")).collect();
-            let mut body = remove_statements(source, list, &removed);
+            let mut body = remove_statements(ctx, list, &removed);
             match body.iter_mut().find(|e| e.span.start == at) {
                 Some(edit) => edit.text.push_str(&added),
                 None if added.is_empty() => {}
@@ -434,11 +435,11 @@ fn transform(
             }
             edits.extend(body);
         }
-        None if yields.is_empty() => edits.extend(remove_statements(source, list, &removed)),
+        None if yields.is_empty() => edits.extend(remove_statements(ctx, list, &removed)),
         None => {
             let first = node_span(list.stmts[0]);
             let start =
-                first_comment(source, list.before(source, 0), first.start).unwrap_or(first.start);
+                first_comment(source, list.before(ctx, 0), first.start).unwrap_or(first.start);
             let end = node_span(*list.stmts.last().unwrap()).end;
             edits.push(Edit::new(Span::new(start, end), yields.join(&nl)));
         }

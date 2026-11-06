@@ -166,7 +166,7 @@ pub(crate) fn inject<'ast, 'arena>(
     if failed || injector.failed || rewrites.is_empty() {
         return;
     }
-    let all = tokens(ctx.source);
+    let all = tokens(ctx);
     let mut edits = rewritten(ctx.source, &all, &rewrites);
     edits.extend(injector.finish(&all));
     out.push(Report {
@@ -1596,7 +1596,7 @@ fn parent_ctor(source: Arc<str>, at: usize) -> Option<ParentCtor> {
         true
     });
     let method = found?;
-    let all = tokens(&source);
+    let all = crate::rules::php_parser::lex(&source);
     let printer = Printer {
         source: &source,
         names: &names,

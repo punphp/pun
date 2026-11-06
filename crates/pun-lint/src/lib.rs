@@ -9,6 +9,8 @@
 //! wrote, and the format pass that runs after lint (`pun check --fix`) tidies the layout.
 
 use std::borrow::Cow;
+use std::cell::OnceCell;
+use std::rc::Rc;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
@@ -24,12 +26,34 @@ pub mod rules;
 pub mod syntax;
 mod walk;
 
-/// What a rule sees besides the node: the file's source, its path and the PHP version the project targets.
+/// What a rule sees besides the node: the file's source, its path and the PHP version the project targets, and the
+/// file's tables that rules share, each built the first time a rule reads it and dropped with the file.
 pub struct Context<'a> {
     pub source: &'a str,
     pub path: &'a Path,
     /// `PHP_VERSION_ID` style: 80400 for PHP 8.4.
     pub php_version: u32,
+    tokens: OnceCell<Vec<rules::php_parser::Token>>,
+    facts: OnceCell<Rc<rules::types::facts::Facts>>,
+    dead_code_facts: OnceCell<Rc<rules::types::facts::Facts>>,
+}
+
+impl<'a> Context<'a> {
+    pub fn new(source: &'a str, path: &'a Path, php_version: u32) -> Self {
+        Context {
+            source,
+            path,
+            php_version,
+            tokens: OnceCell::new(),
+            facts: OnceCell::new(),
+            dead_code_facts: OnceCell::new(),
+        }
+    }
+
+    /// Every token of the file, read from its start (inline HTML first, as PHP does).
+    pub(crate) fn tokens(&self) -> &[rules::php_parser::Token] {
+        self.tokens.get_or_init(|| rules::php_parser::lex(self.source))
+    }
 }
 
 /// One finding of a rule, before the engine adds the rule ID, the path and the level.
@@ -219,20 +243,13 @@ impl Linter {
                 message: error.to_string(),
             });
         }
-        let ctx = Context {
-            source,
-            path,
-            php_version: self.php_version,
-        };
+        let ctx = Context::new(source, path, self.php_version);
         let mut state = walk::State {
+            ctx: &ctx,
             ancestors: Vec::new(),
             found: Found::default(),
         };
-        walk::Walk {
-            linter: self,
-            ctx: &ctx,
-        }
-        .walk_program(program, &mut state);
+        walk::Walk { linter: self }.walk_program(program, &mut state);
         let found = state.found;
         let mut found: Vec<(&'static str, Report)> =
             found.rules.into_iter().zip(found.reports).collect();

@@ -32,7 +32,7 @@ impl Rule for PreferAssertInstancesOf {
         out: &mut Vec<Report>,
     ) {
         let Node::Foreach(foreach) = node else { return };
-        let tokens = tokens(ctx.source);
+        let tokens = tokens(ctx);
         let list = match &foreach.body {
             ForeachBody::Statement(statement) => body_list(&tokens, statement),
             ForeachBody::ColonDelimited(body) => open_list(

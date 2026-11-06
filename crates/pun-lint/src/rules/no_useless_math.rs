@@ -101,7 +101,7 @@ impl Rule for NoUselessMath {
                         }
                         let times = matches!(binary.operator, BinaryOperator::Multiplication(_));
                         if times && is_literal(left, 1) {
-                            if is_parenthesized_operation(source, node_span(binary), binary.rhs) {
+                            if is_parenthesized_operation(ctx, node_span(binary), binary.rhs) {
                                 format!("({})", text_of(source, right))
                             } else {
                                 operand_text(source, binary.rhs, parent)
@@ -178,13 +178,14 @@ fn negated(source: &str, operand: &Expression<'_>) -> String {
 
 /// `isMulParenthesized`: the right operand is an operation, the multiplication's last token is `)`, and the token
 /// before the operation is `(`.
-fn is_parenthesized_operation(source: &str, mul: Span, right: &Expression<'_>) -> bool {
+fn is_parenthesized_operation(ctx: &crate::Context<'_>, mul: Span, right: &Expression<'_>) -> bool {
+    let source = ctx.source;
     let inner = unparenthesize(right);
     if !matches!(inner, Expression::Binary(_)) || !source[..mul.end].ends_with(')') {
         return false;
     }
     let start = node_span(inner).start;
-    tokens(source)
+    tokens(ctx)
         .iter()
         .rev()
         .find(|t| t.end <= start && !source[t.start..t.end].trim().is_empty())

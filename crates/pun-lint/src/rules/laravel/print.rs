@@ -8,7 +8,6 @@ use pun_problem::{Edit, Span};
 use super::parent;
 use crate::Context;
 use crate::rules::lint_b_helpers::dereferenceable;
-use crate::rules::php_parser::tokens;
 use crate::rules::rector_code_quality::moved;
 use crate::rules::rector_conditions::{indentation, reprint};
 use crate::syntax::{node_span, unparenthesize};
@@ -33,7 +32,7 @@ pub(crate) fn set_param_type(param: &FunctionLikeParameter<'_>, hint: &str) -> E
 /// php-parser keeps a node's tokens and moves its lines by the difference between the indentation of `at`'s line and
 /// its own (`TokenStream::getTokenCode`).
 pub(crate) fn moved_with_edit(source: &str, span: Span, edit: &Edit, at: usize) -> String {
-    let tokens = tokens(source);
+    let tokens = crate::rules::php_parser::lex(source);
     let adjust = indentation(source, at) as isize - indentation(source, span.start) as isize;
     format!(
         "{}{}{}",
@@ -118,7 +117,7 @@ pub(crate) fn kept_nodes(
     spans: impl Iterator<Item = Span>,
     at: usize,
 ) -> Vec<String> {
-    let tokens = tokens(source);
+    let tokens = crate::rules::php_parser::lex(source);
     let level = indentation(source, at) as isize;
     spans
         .map(|span| {

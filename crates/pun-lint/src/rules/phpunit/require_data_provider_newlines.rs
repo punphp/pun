@@ -86,7 +86,7 @@ impl Rule for RequireDataProviderNewlines {
             let mut text = String::from("[");
             let mut from = open;
             for (element, span) in elements.iter().zip(&spans) {
-                let before = previous_token_end(source, from, span.start);
+                let before = previous_token_end(ctx, from, span.start);
                 for comment in tokens(source, before, span.start)
                     .into_iter()
                     .filter(|t| t.kind.is_comment())

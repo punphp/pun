@@ -169,7 +169,7 @@ pub(super) fn set_var_type(
     property: &Property<'_>,
     ty: impl FnOnce(Option<&TagType<'_>>) -> Option<String>,
 ) -> Option<Vec<Edit>> {
-    let annotated = Annotated::of(ctx.source, Node::Property(property), scope)?;
+    let annotated = Annotated::of(ctx, Node::Property(property), scope)?;
     let tag = match annotated.doc.as_ref() {
         Some(doc) => typed_tag(doc, "@var", None).ok()?,
         None => None,

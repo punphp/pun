@@ -71,7 +71,7 @@ impl Rule for AddParamTypeArrayDimFetch {
         {
             return;
         }
-        let doc = crate::rules::lint_b_doc::Doc::of(ctx.source, ancestors, node_span(&node).start);
+        let doc = crate::rules::lint_b_doc::Doc::of(ctx, ancestors, node_span(&node).start);
         // PHPStan gives a closure passed to a call its parameters' types from the callable the call takes.
         let passed = matches!(node, Node::Closure(_))
             && ancestors

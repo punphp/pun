@@ -178,7 +178,7 @@ fn assignment_pattern(
             text(ctx, unparenthesize(prev_assign.lhs)),
             call(ctx, kind, &l, kind == Kind::All)
         );
-        let edit = replace_run(ctx.source, list, key - 1, key, &new);
+        let edit = replace_run(ctx, list, key - 1, key, &new);
         return Some((
             vec![edit],
             Span::new(node_span(list.stmts[key - 1]).start, node_span(*stmt).end),
@@ -256,7 +256,7 @@ fn early_return_pattern(
             continue;
         }
         let new = format!("return {};", call(ctx, kind, &l, kind == Kind::All));
-        let edit = replace_run(ctx.source, list, key, key + 1, &new);
+        let edit = replace_run(ctx, list, key, key + 1, &new);
         return Some((
             vec![edit],
             Span::new(node_span(*stmt).start, node_span(next).end),

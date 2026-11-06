@@ -230,7 +230,7 @@ impl<'s> Session<'s> {
     /// Every doc comment of the file, read with the imports it was parsed with.
     fn read_docs(&mut self) {
         let uses = self.view.uses_root().uses.clone();
-        let tokens = crate::rules::php_parser::tokens(self.source);
+        let tokens = crate::rules::php_parser::tokens(self.ctx);
         for token in tokens.iter().filter(|t| t.kind.is_comment()) {
             let text = &self.source[token.start..token.end];
             if !(text.starts_with("/**")
@@ -1199,14 +1199,14 @@ impl<'s> Session<'s> {
             }
             match d.view {
                 Some(v) => {
-                    let edit = DocTarget::of(source, self.view.docs[v].node_start)
+                    let edit = DocTarget::in_tokens(source, &crate::rules::php_parser::lex(source), self.view.docs[v].node_start)
                         .edit(source, &doc.print());
                     edits.push((edit.span, edit.text));
                 }
                 // a `Nop` printed anew: its comments, then the empty statement on the next line (its indentation
                 // stripped, `EXTRA_SPACE_BEFORE_NOP_REGEX`); a later round finds it printed already
                 None if doc.print() != source[d.span.start..d.span.end] => {
-                    let end = nop_run(&crate::rules::php_parser::tokens(source), d.span.end).1;
+                    let end = nop_run(&crate::rules::php_parser::lex(source), d.span.end).1;
                     let text = format!("{}{}\n", doc.print(), &source[d.span.end..end]);
                     edits.push((Span::new(d.span.start, end), text));
                 }
@@ -1408,7 +1408,7 @@ impl<'s> Session<'s> {
             StmtKind::Nop => stmt.span.end + 1,
             _ => stmt.span.start,
         };
-        crate::rules::php_parser::tokens(self.source)
+        crate::rules::php_parser::tokens(self.ctx)
             .iter()
             .filter(|t| t.kind.is_comment() && t.start >= stmt.comment_start && t.end <= end)
             .map(|t| {

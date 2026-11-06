@@ -992,10 +992,11 @@ pub(crate) fn inner_without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -
 /// order, the parameters joined with `, ` (a line each, without a trailing comma, when one has comments), and the
 /// statements of its body `block` a line each (blank lines between them go).
 pub(crate) fn method_anew(
-    source: &str,
+    ctx: &crate::Context<'_>,
     method: &Method<'_>,
     block: &mago_syntax::cst::Block<'_>,
 ) -> String {
+    let source = ctx.source;
     use crate::rules::rector_stmts::{block_list, line_indent};
     let indent = line_indent(source, node_span(method).start);
     let mut out = crate::rules::rector_batch5::modifiers_text(&method.modifiers);
@@ -1008,7 +1009,7 @@ pub(crate) fn method_anew(
     let params: Vec<Span> = list.parameters.iter().map(node_span).collect();
     out.push('(');
     out.push_str(&maybe_multiline(
-        source,
+        ctx,
         list.left_parenthesis.end.offset as usize,
         &params,
         indent,
@@ -1021,7 +1022,7 @@ pub(crate) fn method_anew(
     }
     out.push('\n');
     out.push_str(indent);
-    out.push_str(&block_anew(source, &block_list(source, block), indent));
+    out.push_str(&block_anew(ctx, &block_list(source, block), indent));
     out
 }
 
@@ -1029,10 +1030,11 @@ pub(crate) fn method_anew(
 /// after its comments (a line each; the blank lines between go), the comments after the last statement (the `Nop`),
 /// and `}` on a line of its own.
 pub(crate) fn block_anew(
-    source: &str,
+    ctx: &crate::Context<'_>,
     list: &crate::rules::rector_stmts::List<'_>,
     indent: &str,
 ) -> String {
+    let source = ctx.source;
     use crate::rules::rector_stmts::{line_indent, reindent, tokens};
     let inner = format!("{indent}    ");
     let mut lines = Vec::new();
@@ -1047,7 +1049,7 @@ pub(crate) fn block_anew(
     };
     for (i, statement) in list.stmts.iter().enumerate() {
         let span = node_span(*statement);
-        comments(list.before(source, i), span.start, &mut lines);
+        comments(list.before(ctx, i), span.start, &mut lines);
         lines.push(reindent(
             source,
             span,
@@ -1070,14 +1072,15 @@ pub(crate) fn block_anew(
 /// php-parser's `pMaybeMultiline` over items whose source spans are `items` (the first starts after `from`), printed
 /// at the indent `indent`: the items joined with `, `, or, when one has comments before it, each item on a line of its
 /// own one level deeper after its comments, without a trailing comma, and a line break before the closing token.
-pub(crate) fn maybe_multiline(source: &str, from: usize, items: &[Span], indent: &str) -> String {
+pub(crate) fn maybe_multiline(ctx: &crate::Context<'_>, from: usize, items: &[Span], indent: &str) -> String {
+    let source = ctx.source;
     use crate::rules::rector_stmts::{previous_token_end, tokens};
     let mut from = from;
     let mut printed = Vec::new();
     for span in items {
         let before: Vec<&str> = tokens(
             source,
-            previous_token_end(source, from, span.start),
+            previous_token_end(ctx, from, span.start),
             span.start,
         )
         .into_iter()

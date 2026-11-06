@@ -65,7 +65,7 @@ impl Rule for NoUnreachableCode {
                 end
             };
             out.push(Report {
-                span: Span::new(list.with_comments(ctx.source, key).start, end),
+                span: Span::new(list.with_comments(ctx, key).start, end),
                 message: "This code can never run.".to_string(),
                 help: None,
                 fix: Some(Fix {

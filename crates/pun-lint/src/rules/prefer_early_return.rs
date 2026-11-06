@@ -125,7 +125,7 @@ fn refactor(
     // the last statement.
     let moved: String = (0..else_stmts.stmts.len() - 1)
         .map(|i| {
-            let span = else_stmts.with_comments(source, i);
+            let span = else_stmts.with_comments(ctx, i);
             format!(
                 "\n{indent}{}",
                 reindent(source, span, line_indent(source, span.start), indent)
@@ -147,8 +147,8 @@ fn refactor(
         }
     }
     // The `return` returns the `else`'s value, with the comments of the `else`'s last statement instead of its own.
-    let return_span = list.with_comments(source, key);
-    let else_last_span = else_stmts.with_comments(source, else_stmts.stmts.len() - 1);
+    let return_span = list.with_comments(ctx, key);
+    let else_last_span = else_stmts.with_comments(ctx, else_stmts.stmts.len() - 1);
     let comments = &source[else_last_span.start..node_span(else_last).start];
     let comments = comments.trim_end();
     let head = if comments.is_empty() {

@@ -31,7 +31,7 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
         let Some(f) = FunctionLike::of(node).filter(|f| f.method.is_some()) else {
             return;
         };
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         let mut scope = ancestors.to_vec();
         scope.push(node);

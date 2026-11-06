@@ -13,16 +13,17 @@ use mago_syntax::walker::Walker;
 
 use crate::{Context, Found, Linter};
 
-/// What the walk carries from node to node: the ancestors of the current node, outermost first, and the reports.
-pub(crate) struct State<'ast, 'arena> {
+/// What the walk carries from node to node: the file, the ancestors of the current node, outermost first, and the
+/// reports. The file is here rather than on [`Walk`] because the walker must be `Sync` and the file's tables are not.
+pub(crate) struct State<'ast, 'arena, 'c> {
+    pub ctx: &'c Context<'c>,
     pub ancestors: Vec<Node<'ast, 'arena>>,
     pub found: Found,
 }
 
-/// The rules and the file, for the length of one walk.
+/// The rules, for the length of one walk.
 pub(crate) struct Walk<'a> {
     pub linter: &'a Linter,
-    pub ctx: &'a Context<'a>,
 }
 
 impl Walk<'_> {
@@ -32,10 +33,10 @@ impl Walk<'_> {
         &self,
         node: Node<'ast, 'arena>,
         kind: NodeKind,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, '_>,
     ) {
         for &(id, i) in &self.linter.by_kind[kind as usize] {
-            self.linter.rules[i].visit(node, &state.ancestors, self.ctx, &mut state.found.reports);
+            self.linter.rules[i].visit(node, &state.ancestors, state.ctx, &mut state.found.reports);
             state.found.rules.resize(state.found.reports.len(), id);
         }
         state.ancestors.push(node);
@@ -48,19 +49,19 @@ macro_rules! hooks {
     ($($variant:ident($ty:ty) $walk_in:ident $walk_out:ident;)*) => {
         $(
             #[inline(always)]
-            fn $walk_in(&self, node: &'ast $ty, state: &mut State<'ast, 'arena>) {
+            fn $walk_in(&self, node: &'ast $ty, state: &mut State<'ast, 'arena, 'c>) {
                 self.enter(Node::$variant(node), NodeKind::$variant, state);
             }
 
             #[inline(always)]
-            fn $walk_out(&self, _: &'ast $ty, state: &mut State<'ast, 'arena>) {
+            fn $walk_out(&self, _: &'ast $ty, state: &mut State<'ast, 'arena, 'c>) {
                 state.ancestors.pop();
             }
         )*
     };
 }
 
-impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
+impl<'ast, 'arena, 'c> Walker<'ast, 'arena, State<'ast, 'arena, 'c>> for Walk<'_> {
     hooks! {
         Program(Program<'arena>) walk_in_program walk_out_program;
         Statement(Statement<'arena>) walk_in_statement walk_out_statement;
@@ -297,7 +298,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     fn walk_anonymous_class(
         &self,
         class: &'ast AnonymousClass<'arena>,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
     ) {
         self.walk_in_anonymous_class(class, state);
         self.walk_keyword(&class.new, state);
@@ -324,7 +325,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     }
 
     /// No `static` keyword.
-    fn walk_closure(&self, closure: &'ast Closure<'arena>, state: &mut State<'ast, 'arena>) {
+    fn walk_closure(&self, closure: &'ast Closure<'arena>, state: &mut State<'ast, 'arena, 'c>) {
         self.walk_in_closure(closure, state);
         for attribute_list in &closure.attribute_lists {
             self.walk_attribute_list(attribute_list, state);
@@ -345,7 +346,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     fn walk_closure_use_clause(
         &self,
         clause: &'ast ClosureUseClause<'arena>,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
     ) {
         self.walk_in_closure_use_clause(clause, state);
         self.walk_keyword(&clause.r#use, state);
@@ -359,7 +360,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     fn walk_declare_colon_delimited_body(
         &self,
         body: &'ast DeclareColonDelimitedBody<'arena>,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
     ) {
         self.walk_in_declare_colon_delimited_body(body, state);
         for statement in &body.statements {
@@ -371,7 +372,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     }
 
     /// No terminator.
-    fn walk_global(&self, global: &'ast Global<'arena>, state: &mut State<'ast, 'arena>) {
+    fn walk_global(&self, global: &'ast Global<'arena>, state: &mut State<'ast, 'arena, 'c>) {
         self.walk_in_global(global, state);
         self.walk_keyword(&global.global, state);
         for variable in &global.variables {
@@ -381,7 +382,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     }
 
     /// No terminator.
-    fn walk_goto(&self, goto: &'ast Goto<'arena>, state: &mut State<'ast, 'arena>) {
+    fn walk_goto(&self, goto: &'ast Goto<'arena>, state: &mut State<'ast, 'arena, 'c>) {
         self.walk_in_goto(goto, state);
         self.walk_keyword(&goto.goto, state);
         self.walk_local_identifier(&goto.label, state);
@@ -392,7 +393,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     fn walk_plain_property(
         &self,
         property: &'ast PlainProperty<'arena>,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
     ) {
         self.walk_in_plain_property(property, state);
         for attribute_list in &property.attribute_lists {
@@ -417,7 +418,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     fn walk_hooked_property(
         &self,
         property: &'ast HookedProperty<'arena>,
-        state: &mut State<'ast, 'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
     ) {
         self.walk_in_hooked_property(property, state);
         for attribute_list in &property.attribute_lists {
@@ -438,7 +439,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     }
 
     /// No `array` keyword.
-    fn walk_legacy_array(&self, array: &'ast LegacyArray<'arena>, state: &mut State<'ast, 'arena>) {
+    fn walk_legacy_array(&self, array: &'ast LegacyArray<'arena>, state: &mut State<'ast, 'arena, 'c>) {
         self.walk_in_legacy_array(array, state);
         for element in &array.elements {
             self.walk_array_element(element, state);
@@ -447,7 +448,7 @@ impl<'ast, 'arena> Walker<'ast, 'arena, State<'ast, 'arena>> for Walk<'_> {
     }
 
     /// No `list` keyword.
-    fn walk_list(&self, list: &'ast List<'arena>, state: &mut State<'ast, 'arena>) {
+    fn walk_list(&self, list: &'ast List<'arena>, state: &mut State<'ast, 'arena, 'c>) {
         self.walk_in_list(list, state);
         for element in &list.elements {
             self.walk_array_element(element, state);

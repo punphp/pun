@@ -59,7 +59,7 @@ impl Rule for NoRedundantNullableCheck {
             return;
         }
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let mut chain = ancestors.to_vec();
         chain.push(node);
         let (list, key) = enclosing(source, &tokens, &chain);
@@ -136,7 +136,7 @@ impl Rule for NoRedundantNullableCheck {
         let rhs = node_span(unparenthesize(assign.rhs));
         let code = format!("return {};", &source[rhs.start..rhs.end]);
         // the assignment's `@var`, unless it is a comment worth keeping
-        let doc = Doc::last_of(source, &chain[..n], assign_start);
+        let doc = Doc::last_of(ctx, &chain[..n], assign_start);
         let scope = TypeScope::new(&chain, facts.documented());
         let removal = doc.as_ref().and_then(|doc| {
             with_classes(facts.documented(), || {

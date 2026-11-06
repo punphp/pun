@@ -105,7 +105,7 @@ impl Rule for NoUnusedPromotedProperty {
         }
         if removed.contains(&true) {
             let from = member_from(members, left_brace, index);
-            edits.extend(remove_params(ctx.source, constructor, from, &removed));
+            edits.extend(remove_params(ctx, constructor, from, &removed));
         }
         if edits.is_empty() {
             return;

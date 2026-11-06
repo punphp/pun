@@ -54,7 +54,7 @@ impl Rule for PreferInArrayOverForeach {
             let Some(code) = refactor(ctx, &path, foreach, r#return) else {
                 return;
             };
-            let Some(edits) = replace_run(source, &list, key - 1, key, &code) else {
+            let Some(edits) = replace_run(ctx, &list, key - 1, key, &code) else {
                 return;
             };
             out.push(Report {

@@ -65,7 +65,7 @@ impl Rule for NoBareMockBuilder {
         let text = format!(
             "$this->createMock({})",
             maybe_multiline(
-                ctx.source,
+                ctx,
                 from,
                 &args,
                 line_indent(ctx.source, call.span.start)

@@ -39,7 +39,7 @@ impl Rule for AddReturnPhpdocCommonObject {
         if f.has_non_array_return_type() {
             return;
         }
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
             return;

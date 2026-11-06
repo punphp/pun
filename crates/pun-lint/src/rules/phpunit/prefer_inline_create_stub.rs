@@ -216,13 +216,13 @@ impl Rule for PreferInlineCreateStub {
             for (i, text) in inserted[m].iter().enumerate() {
                 if !text.is_empty() {
                     let start = node_span(list.stmts[i]).start;
-                    let at = first_comment(ctx.source, list.before(ctx.source, i), start)
+                    let at = first_comment(ctx.source, list.before(ctx, i), start)
                         .unwrap_or(start);
                     edits.push(Edit::new(Span::new(at, at), text.clone()));
                 }
             }
             if removed_stmts[m].contains(&true) {
-                edits.extend(remove_statements(ctx.source, list, &removed_stmts[m]));
+                edits.extend(remove_statements(ctx, list, &removed_stmts[m]));
             }
         }
         out.push(Report::fixed(

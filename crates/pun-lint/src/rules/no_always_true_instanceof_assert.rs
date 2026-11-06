@@ -42,7 +42,7 @@ impl Rule for NoAlwaysTrueInstanceofAssert {
             return;
         }
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let facts = facts(ctx);
         let edits = run_edits(source, &tokens, ancestors, &|chain| {
             change(source, &tokens, &facts, chain)

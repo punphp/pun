@@ -127,7 +127,7 @@ impl Rule for NoUnusedPrivateProperty {
             let flags: Vec<bool> = (0..list.stmts.len())
                 .map(|i| indices.contains(&i))
                 .collect();
-            edits.extend(remove_statements(source, list, &flags));
+            edits.extend(remove_statements(ctx, list, &flags));
         }
         let edits = merge(edits);
         if edits.windows(2).any(|w| w[0].span.end > w[1].span.start) {

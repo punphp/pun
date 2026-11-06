@@ -394,7 +394,7 @@ impl<'a> Scope<'_, '_, 'a> {
             .and_then(|i| self.members.get(i))
             .map_or(self.comments_from, |previous| node_span(previous).end);
         // From the class's start, the last non-comment token before its first member is its `{`.
-        let from = previous_token_end(self.ctx.source, from, node_span(m).start);
+        let from = previous_token_end(self.ctx, from, node_span(m).start);
         let doc = doc_comment(self.ctx.source, from, node_span(m).start);
         let tagged = doc.is_some_and(|d| {
             self.ctx.source[d.start..d.end].lines().any(|line| {
@@ -577,11 +577,7 @@ impl<'a> Scope<'_, '_, 'a> {
         else {
             return false;
         };
-        let ctx = Context {
-            source: &source,
-            path: std::path::Path::new(path.as_ref()),
-            php_version: self.ctx.php_version,
-        };
+        let ctx = Context::new(&source, std::path::Path::new(path.as_ref()), self.ctx.php_version);
         let body_facts = facts::facts(&ctx);
         let arena = mago_allocator::LocalArena::new();
         let file = mago_database::file::File::new(

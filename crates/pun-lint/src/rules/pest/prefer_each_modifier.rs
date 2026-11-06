@@ -36,7 +36,7 @@ impl Rule for PreferEachModifier {
         let Node::Foreach(foreach) = node else {
             return;
         };
-        let tokens = tokens(ctx.source);
+        let tokens = tokens(ctx);
         let list = match &foreach.body {
             ForeachBody::Statement(Statement::Block(block)) => block_list(&tokens, block),
             ForeachBody::Statement(statement) => {

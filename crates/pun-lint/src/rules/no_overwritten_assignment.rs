@@ -109,7 +109,7 @@ impl Rule for NoOverwrittenAssignment {
             fix: Some(Fix {
                 safety: Safety::Safe,
                 edits: remove_statements(
-                    source,
+                    ctx,
                     &list,
                     &(0..list.stmts.len())
                         .map(|i| removed.contains(&i))

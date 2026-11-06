@@ -46,7 +46,7 @@ impl Rule for RequireStrictTypesInTests {
         {
             return;
         }
-        let Some((at, edit)) = declare_strict_types(ctx.source, &program.statements) else {
+        let Some((at, edit)) = declare_strict_types(ctx, &program.statements) else {
             return;
         };
         out.push(Report::fixed(
@@ -68,15 +68,16 @@ pub(crate) fn has_strict_types(statements: &Sequence<'_, Statement<'_>>) -> bool
 /// The edit of `$node->stmts = array_merge([$declaresStrictType, new Nop()], $node->stmts)` on a file whose top-level
 /// statements are `statements`, as php-parser's printer writes it, and where it is reported.
 pub(crate) fn declare_strict_types(
-    source: &str,
+    ctx: &crate::Context<'_>,
     statements: &Sequence<'_, Statement<'_>>,
 ) -> Option<(Span, Edit)> {
+    let source = ctx.source;
     let list = open_list(source, statements, 0, source.len());
     // a file without statements (only the opening tag) has no first statement to put the declaration before
     if list.stmts.is_empty() {
         return None;
     }
-    let first = list.with_comments(source, 0);
+    let first = list.with_comments(ctx, 0);
     let last_end = list.stmts.last().map_or(0, |s| node_span(*s).end);
     // php-parser moves the statements after a namespace without braces into it, a trailing `Nop` too
     let in_namespace = matches!(
@@ -90,7 +91,7 @@ pub(crate) fn declare_strict_types(
     let edit = if list.stmts.len() + usize::from(nop && !in_namespace) == 1 {
         let mut text = format!("<?php\n\n{DECLARE}\n");
         let start = node_span(list.stmts[0]).start;
-        for comment in tokens(source, list.before(source, 0), start)
+        for comment in tokens(source, list.before(ctx, 0), start)
             .into_iter()
             .filter(|t| t.kind.is_comment())
         {
@@ -105,7 +106,7 @@ pub(crate) fn declare_strict_types(
             }) => {
                 let terminator = node_span(&body.terminator).end;
                 let inner = open_list(source, &body.statements, terminator, source.len());
-                let end = printed(source, &inner).end.max(terminator);
+                let end = printed(ctx, &inner).end.max(terminator);
                 closing_nop(source, &body.statements, end).unwrap_or(end)
             }
             statement => node_span(statement).end,

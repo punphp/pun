@@ -44,7 +44,7 @@ impl Rule for NoInvalidReturnTag {
             return;
         };
         let start = node_span(&node).start;
-        let Some(doc) = Doc::last_of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::last_of(ctx, ancestors, start) else {
             return;
         };
         let Some((_, tag)) = first_named(&doc, "@return") else {
@@ -56,7 +56,7 @@ impl Rule for NoInvalidReturnTag {
             return;
         }
         if let DocNode::Ident(name) = &tag.ty
-            && (class_type_aliases(ctx.source, ancestors).contains(name)
+            && (class_type_aliases(ctx, ancestors).contains(name)
                 || template_names(doc.text_all()).contains(name))
         {
             return;
@@ -102,7 +102,7 @@ pub(crate) fn template_names(doc: &str) -> Vec<String> {
 
 /// The type aliases the doc comment of the class-like around the node defines or imports
 /// (`ResolvedPhpDocBlock::getTypeAliasTags()` and `getTypeAliasImportTags()`).
-fn class_type_aliases(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String> {
+fn class_type_aliases(ctx: &crate::Context<'_>, ancestors: &[Node<'_, '_>]) -> Vec<String> {
     let Some(i) = ancestors.iter().rposition(|n| {
         matches!(
             n,
@@ -115,7 +115,7 @@ fn class_type_aliases(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String> {
     }) else {
         return Vec::new();
     };
-    let Some(doc) = Doc::last_of(source, &ancestors[..i], node_span(&ancestors[i]).start) else {
+    let Some(doc) = Doc::last_of(ctx, &ancestors[..i], node_span(&ancestors[i]).start) else {
         return Vec::new();
     };
     (tags(doc.text_all()).unwrap_or_default().into_iter())

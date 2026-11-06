@@ -45,7 +45,7 @@ impl Rule for NoMirrorAssignment {
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
-                edits: remove(ctx.source, &list, &[index]),
+                edits: remove(ctx, &list, &[index]),
             }),
         });
     }

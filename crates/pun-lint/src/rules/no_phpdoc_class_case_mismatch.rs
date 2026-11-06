@@ -53,7 +53,7 @@ impl Rule for NoPhpdocClassCaseMismatch {
         // php-parser's `getDocComment`: the last doc comment before the node
         let Some(doc) = tokens(
             source,
-            previous_token_end(source, from, span.start),
+            previous_token_end(ctx, from, span.start),
             span.start,
         )
         .into_iter()

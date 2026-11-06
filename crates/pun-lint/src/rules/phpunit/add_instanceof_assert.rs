@@ -133,7 +133,7 @@ fn run(
             continue;
         }
         let asserts: Vec<&Collected> = found.iter().map(|&index| &collection[index]).collect();
-        edits.push(insert_before(ctx.source, &list, i, &asserts));
+        edits.push(insert_before(ctx, &list, i, &asserts));
         // from now on, the variable is not nullable, remove to avoid double asserts
         found.sort_unstable();
         for index in found.into_iter().rev() {
@@ -382,7 +382,8 @@ fn is_object_type(t: &TUnion) -> bool {
 /// The edit that puts the asserts before the statement at `i` of `list`, as php-parser's format-preserving printer
 /// inserts statements: each on a line of its own after the statement before, at that statement's indent, or before
 /// the first statement and its comments, each followed by a line break to its indent.
-fn insert_before(source: &str, list: &List<'_>, i: usize, asserts: &[&Collected]) -> Edit {
+fn insert_before(ctx: &crate::Context<'_>, list: &List<'_>, i: usize, asserts: &[&Collected]) -> Edit {
+    let source = ctx.source;
     let indent_of = |pos: usize| {
         let width: usize = line_indent(source, pos)
             .bytes()
@@ -398,7 +399,7 @@ fn insert_before(source: &str, list: &List<'_>, i: usize, asserts: &[&Collected]
     });
     if i == 0 {
         let span = node_span(list.stmts[0]);
-        let at = first_comment(source, list.before(source, 0), span.start).unwrap_or(span.start);
+        let at = first_comment(source, list.before(ctx, 0), span.start).unwrap_or(span.start);
         let nl = indent_of(span.start);
         let text: String = printed.map(|a| format!("{a}{nl}")).collect();
         return Edit::new(Span::new(at, at), text);

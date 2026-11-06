@@ -88,14 +88,14 @@ impl Rule for NoRedundantCondition {
                 let inner = format!("{indent}    ");
                 match view.stmts.frame {
                     Frame::Braces { open, close } if view.stmts.is_empty() => {
-                        let moved = moved_statements(source, &next.stmts, &inner);
+                        let moved = moved_statements(ctx, &next.stmts, &inner);
                         edits.push(Edit::new(
                             Span::new(open, close),
                             format!("\n{inner}{moved}\n{indent}"),
                         ));
                     }
                     Frame::Braces { .. } => {
-                        let moved = inserted_statements(source, &next.stmts, &inner);
+                        let moved = inserted_statements(ctx, &next.stmts, &inner);
                         let at = view
                             .stmts
                             .nop_span(source)
@@ -106,7 +106,7 @@ impl Rule for NoRedundantCondition {
                     }
                     // `Frame::Bare`: a colon-delimited `if` (`Frame::Open`) was skipped above.
                     _ => {
-                        let moved = moved_statements(source, &next.stmts, &inner);
+                        let moved = moved_statements(ctx, &next.stmts, &inner);
                         let only = node_span(view.stmts.stmts[0]);
                         let text = format!(
                             "{{\n{inner}{}\n{inner}{moved}\n{indent}}}",
@@ -116,7 +116,7 @@ impl Rule for NoRedundantCondition {
                     }
                 }
             }
-            edits.extend(remove(source, &list, &[key + 1]));
+            edits.extend(remove(ctx, &list, &[key + 1]));
             out.push(Report {
                 span: node_span(next_if),
                 message: "This `if` checks the same condition as the `if` before it; merge them."

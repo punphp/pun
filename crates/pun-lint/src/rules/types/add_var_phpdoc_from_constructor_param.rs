@@ -45,7 +45,7 @@ impl Rule for AddVarPhpdocFromConstructorParam {
             if !property.hint.is_some_and(is_array_hint) {
                 continue;
             }
-            let target = DocTarget::of(ctx.source, property.start);
+            let target = DocTarget::of(ctx, property.start);
             let mut info = target.info(ctx.source);
             // @var tag already given
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {

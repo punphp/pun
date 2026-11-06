@@ -50,7 +50,7 @@ impl Rule for AddReturnPhpdocDirectArray {
         {
             return;
         }
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
             return;

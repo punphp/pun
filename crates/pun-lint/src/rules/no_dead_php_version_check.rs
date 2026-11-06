@@ -47,7 +47,7 @@ impl Rule for NoDeadPhpVersionCheck {
             return;
         }
         let version = i64::from(ctx.php_version);
-        let edits = replace_with(source, s, ancestors, runs.then_some(&view.stmts), |other| {
+        let edits = replace_with(ctx, s, ancestors, runs.then_some(&view.stmts), |other| {
             let Statement::If(i) = other else {
                 return false;
             };

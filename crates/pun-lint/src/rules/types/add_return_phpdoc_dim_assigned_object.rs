@@ -37,7 +37,7 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
         if f.has_non_array_return_type() {
             return;
         }
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         if let Some(tag) = info.return_tag()
             && let Type::Array(_, item) = DocTarget::doc_type(tag, ancestors, class_name(ancestors).as_deref())

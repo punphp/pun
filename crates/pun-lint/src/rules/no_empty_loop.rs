@@ -68,9 +68,9 @@ impl Rule for NoEmptyLoop {
                 .iter()
                 .position(|s| std::ptr::eq(*s, *stmt))
                 .unwrap();
-            remove(source, &list, &[key])
+            remove(ctx, &list, &[key])
         } else {
-            remove(source, &body_list(source, stmt), &[0])
+            remove(ctx, &body_list(source, stmt), &[0])
         };
         out.push(Report {
             span: node_span(*stmt),

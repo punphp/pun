@@ -28,7 +28,7 @@ use pun_problem::{Edit, Safety, Span};
 use super::class_string;
 use super::no_bare_mock_assign::variable_name;
 use crate::rules::class_method::walk;
-use crate::rules::php_parser::{previous_token_end, tokens};
+use crate::rules::php_parser::previous_token_end;
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::{assign, block_list, expression};
 use crate::rules::types::facts::{Facts, facts};
@@ -320,7 +320,7 @@ impl Rule for NoEntityMock {
                 edits.push(Edit::new(*span, new.clone()));
             }
         }
-        edits.extend(remove_statements(ctx.source, &list, &removed));
+        edits.extend(remove_statements(ctx, &list, &removed));
         out.push(Report::fixed(
             node_span(&method.name),
             "Use the entity class directly instead of a mock of it.",
@@ -437,7 +437,7 @@ fn is_entity_class(facts: &Facts, class: &str) -> bool {
         return false;
     };
     let start = metadata.span.start.offset as usize;
-    let all = tokens(&source);
+    let all = crate::rules::php_parser::lex(&source);
     let from = previous_token_end(&source, &all, start);
     all.iter()
         .filter(|t| t.start >= from && t.end <= start && t.kind == TokenKind::DocBlockComment)

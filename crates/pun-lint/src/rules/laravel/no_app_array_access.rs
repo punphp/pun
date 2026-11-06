@@ -70,7 +70,7 @@ impl Rule for NoAppArrayAccess {
         let outer = (ancestors.iter().rev().map(|a| node_span(a).start))
             .find(|&s| s < start)
             .unwrap_or(0);
-        let at = previous_token_end(source, outer, start);
+        let at = previous_token_end(ctx, outer, start);
         let indent = " ".repeat(indentation(source, start));
         let fetch = kept_nodes(source, std::iter::once(node_span(access)), start).concat();
         let inserted = format!(

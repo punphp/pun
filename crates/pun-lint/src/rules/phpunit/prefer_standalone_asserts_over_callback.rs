@@ -61,8 +61,8 @@ impl Rule for PreferStandaloneAssertsOverCallback {
                 continue;
             };
             let edit = match function {
-                FunctionLike::Closure(closure) => closure_edit(ctx.source, closure, &asserts),
-                FunctionLike::Arrow(arrow) => arrow_edit(ctx.source, arrow, &asserts),
+                FunctionLike::Closure(closure) => closure_edit(ctx, closure, &asserts),
+                FunctionLike::Arrow(arrow) => arrow_edit(ctx, arrow, &asserts),
             };
             edits.push(edit);
         }
@@ -309,13 +309,13 @@ fn body_anew(lines: &[String], indent: &str) -> String {
 }
 
 fn params(
-    source: &str,
+    ctx: &crate::Context<'_>,
     list: &mago_syntax::cst::FunctionLikeParameterList<'_>,
     indent: &str,
 ) -> String {
     let spans: Vec<Span> = list.parameters.iter().map(node_span).collect();
     maybe_multiline(
-        source,
+        ctx,
         list.left_parenthesis.end.offset as usize,
         &spans,
         indent,
@@ -323,7 +323,8 @@ fn params(
 }
 
 /// The edit of a closure: kept and changed when it has statements besides its `return`s, else printed anew.
-fn closure_edit(source: &str, closure: &Closure<'_>, asserts: &[Assert<'_>]) -> Edit {
+fn closure_edit(ctx: &crate::Context<'_>, closure: &Closure<'_>, asserts: &[Assert<'_>]) -> Edit {
+    let source = ctx.source;
     let span = node_span(closure);
     let is_static = closure.r#static.is_some();
     let list = block_list(source, &closure.body);
@@ -341,7 +342,7 @@ fn closure_edit(source: &str, closure: &Closure<'_>, asserts: &[Assert<'_>]) -> 
             text.push('&');
         }
         text.push('(');
-        text.push_str(&params(source, &closure.parameter_list, indent));
+        text.push_str(&params(ctx, &closure.parameter_list, indent));
         text.push(')');
         if let Some(clause) = &closure.use_clause {
             let uses: Vec<String> = clause
@@ -364,19 +365,20 @@ fn closure_edit(source: &str, closure: &Closure<'_>, asserts: &[Assert<'_>]) -> 
         ));
         return Edit::new(span, text);
     }
-    kept_closure_edit(source, closure, &list, &kept, asserts)
+    kept_closure_edit(ctx, closure, &list, &kept, asserts)
 }
 
 /// php-parser's format-preserving print of a closure whose statements lose their `return`s and gain the assertions:
 /// the head with a `void` return type, each kept statement with what stood before it, the assertions after the last
 /// kept one at its indentation, then what followed the last statement.
 fn kept_closure_edit(
-    source: &str,
+    ctx: &crate::Context<'_>,
     closure: &Closure<'_>,
     list: &List<'_>,
     kept: &[usize],
     asserts: &[Assert<'_>],
 ) -> Edit {
+    let source = ctx.source;
     let span = node_span(closure);
     let open = list.inner.start;
     let mut text = match &closure.return_type_hint {
@@ -403,7 +405,7 @@ fn kept_closure_edit(
     let mut indent = "";
     for &i in kept {
         let stmt = node_span(list.stmts[i]);
-        text.push_str(&source[list.before(source, i)..stmt.end]);
+        text.push_str(&source[list.before(ctx, i)..stmt.end]);
         indent = line_indent(source, stmt.start);
     }
     let mut tail_from = list.stmts.last().map_or(open, |s| node_span(*s).end);
@@ -424,11 +426,12 @@ fn kept_closure_edit(
 }
 
 /// An arrow function becomes a closure, printed anew.
-fn arrow_edit(source: &str, arrow: &ArrowFunction<'_>, asserts: &[Assert<'_>]) -> Edit {
+fn arrow_edit(ctx: &crate::Context<'_>, arrow: &ArrowFunction<'_>, asserts: &[Assert<'_>]) -> Edit {
+    let source = ctx.source;
     let span = node_span(arrow);
     let indent = line_indent(source, span.start);
     let mut text = String::from("function (");
-    text.push_str(&params(source, &arrow.parameter_list, indent));
+    text.push_str(&params(ctx, &arrow.parameter_list, indent));
     text.push(')');
     let uses = resolve_from_arrow_function(arrow);
     if !uses.is_empty() {

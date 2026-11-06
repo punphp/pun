@@ -68,7 +68,7 @@ impl Rule for AddParamTypeArrayReduce {
         let mut edits: Vec<Edit> = Vec::new();
         if let (Some(param), Some(t)) = (params.get(1), value_type) {
             // PHPStan keeps a docblock union in the order written, where Mago sorts it
-            let order = doc_order(ctx.source, ancestors);
+            let order = doc_order(ctx, ancestors);
             let position = |a: &TAtomic| {
                 let name = param_declaration_unsorted(std::slice::from_ref(a), &facts.codebase, ctx.php_version)
                     .unwrap_or_default();

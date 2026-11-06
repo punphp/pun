@@ -44,7 +44,6 @@ impl Rule for NoUnusedPublicMethodParam {
         {
             return;
         }
-        let source = ctx.source;
         for (index, member) in class.members.iter().enumerate() {
             let ClassLikeMember::Method(method) = member else {
                 continue;
@@ -69,7 +68,7 @@ impl Rule for NoUnusedPublicMethodParam {
                 help: None,
                 fix: Some(Fix {
                     safety: Safety::Safe,
-                    edits: remove_params(source, method, from, &removed),
+                    edits: remove_params(ctx, method, from, &removed),
                 }),
             });
         }

@@ -153,7 +153,7 @@ impl Rule for NoUnusedMockProperty {
                 }
             }
             if removed.contains(&true) {
-                edits.extend(remove_statements(ctx.source, &list, &removed));
+                edits.extend(remove_statements(ctx, &list, &removed));
             }
         }
         out.push(Report::fixed(

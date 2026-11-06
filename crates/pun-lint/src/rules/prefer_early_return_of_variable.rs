@@ -72,7 +72,7 @@ impl Rule for PreferEarlyReturnOfVariable {
             };
             if has_var_tag(
                 source,
-                view.stmts.with_comments(source, 0).start,
+                view.stmts.with_comments(ctx, 0).start,
                 node_span(only).start,
             ) {
                 continue;

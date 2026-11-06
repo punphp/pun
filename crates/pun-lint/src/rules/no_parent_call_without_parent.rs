@@ -88,7 +88,7 @@ impl Rule for NoParentCallWithoutParent {
                 };
                 let (call, edits) = match unparenthesize(e.expression) {
                     Expression::Call(Call::StaticMethod(call)) => {
-                        (call, remove(ctx.source, &list, &[index]))
+                        (call, remove(ctx, &list, &[index]))
                     }
                     Expression::Assignment(a)
                         if matches!(a.operator, AssignmentOperator::Assign(_)) =>

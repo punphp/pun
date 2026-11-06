@@ -73,7 +73,7 @@ impl Rule for NoUselessContinue {
         if !candidate {
             return;
         }
-        let tokens = tokens(ctx.source);
+        let tokens = tokens(ctx);
         let list = match body {
             Body::One(s) => body_list(&tokens, s),
             Body::Open(s, from, to) => open_list(&tokens, s, from, to),

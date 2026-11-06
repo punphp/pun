@@ -108,7 +108,7 @@ impl Rule for PreferPropertyAssertions {
         } else if index > 0 && lines.len() > 1 && list.stmts.len() > index {
             // php-parser's differ sees one removal and several additions: the removed statement goes with the
             // whitespace before it
-            let from = list.before(ctx.source, index);
+            let from = list.before(ctx, index);
             Edit::new(
                 Span::new(from, span.end),
                 format!("\n{indent}{}", lines.join(&format!("\n{indent}"))),

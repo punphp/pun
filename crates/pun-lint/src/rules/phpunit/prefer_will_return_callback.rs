@@ -92,7 +92,7 @@ impl Rule for PreferWillReturnCallback {
         {
             return;
         }
-        let Some(printed) = print_closure(ctx.source, call, arg, closure) else {
+        let Some(printed) = print_closure(ctx, call, arg, closure) else {
             return;
         };
         let name = node_span(&call.method);
@@ -449,11 +449,12 @@ enum Change<'a> {
 /// format-preserving printer writes it; `None` where the closure stays (`removeValueReturns()` is false) or Pun does
 /// not print it as php-parser does.
 fn print_closure(
-    source: &str,
+    ctx: &crate::Context<'_>,
     call: &MethodCall<'_>,
     arg: &Argument<'_>,
     closure: &Closure<'_>,
 ) -> Option<Edit> {
+    let source = ctx.source;
     let span = node_span(closure);
     let body = &closure.body;
     // nested function-likes have their own return scope, skip to stay safe; returns in other class-likes' methods count
@@ -552,7 +553,7 @@ fn print_closure(
         let mut edits: Vec<Edit> = Vec::new();
         if let Some(i) = popped {
             let last = node_span(list.stmts[i]);
-            edits.push(Edit::new(Span::new(list.before(source, i), last.end), ""));
+            edits.push(Edit::new(Span::new(list.before(ctx, i), last.end), ""));
         }
         for (r, value, change) in &changes {
             let r_span = node_span(*r);
@@ -578,7 +579,7 @@ fn print_closure(
                 }
                 Change::Throw(throw) => {
                     let before = previous_token_end(
-                        source,
+                        ctx,
                         body.left_brace.end.offset as usize,
                         r_span.start,
                     );

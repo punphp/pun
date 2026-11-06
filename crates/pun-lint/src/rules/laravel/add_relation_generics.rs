@@ -112,7 +112,7 @@ impl Rule for AddRelationGenerics {
         if !is_a(ctx, &native, &[RELATION]) {
             return;
         }
-        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
+        let annotated = Annotated::of(ctx, node, ancestors).unwrap();
         let Ok(tag) = return_tag(annotated.doc.as_ref()) else {
             return;
         };

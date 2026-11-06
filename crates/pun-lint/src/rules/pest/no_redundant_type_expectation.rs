@@ -239,7 +239,7 @@ fn is_numeric(s: &[u8]) -> bool {
 
 /// `nodeOrDescendantsHaveComments`: a comment inside the call.
 fn hash_comment_within(ctx: &Context<'_>, start: usize, end: usize) -> bool {
-    super::super::php_parser::tokens(ctx.source)
+    super::super::php_parser::tokens(ctx)
         .iter()
         .any(|t| t.start >= start && t.end <= end && t.kind.is_comment())
 }

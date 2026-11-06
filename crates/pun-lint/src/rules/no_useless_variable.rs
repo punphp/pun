@@ -117,7 +117,7 @@ impl Rule for NoUselessVariable {
             || is_static_or_global(node, ancestors, previous, variable)
             || is_used_by_reference(node, ancestors, variable)
             || is_new_instance(ctx, ancestors, node, assign, variable)
-            || has_comment(ctx.source, list.inner.start, previous)
+            || has_comment(ctx, list.inner.start, previous)
             || has_var_type(ctx.source, previous, r#return)
         {
             return;
@@ -126,7 +126,7 @@ impl Rule for NoUselessVariable {
             None => text(ctx, unparenthesize(assign.rhs)).to_string(),
             Some((op, limits)) => infix(ctx, assign.lhs, op, assign.rhs, limits),
         };
-        let mut edits = remove(ctx.source, &list, &[key - 1]);
+        let mut edits = remove(ctx, &list, &[key - 1]);
         edits.push(Edit::new(node_span(variable), value));
         out.push(Report {
             span: node_span(assign),
@@ -372,9 +372,10 @@ pub(crate) fn find_last(
 }
 
 /// `hasSomeComment`: comments before the statement, which php-parser gives it.
-fn has_comment(source: &str, from: usize, statement: &Statement<'_>) -> bool {
+fn has_comment(ctx: &crate::Context<'_>, from: usize, statement: &Statement<'_>) -> bool {
+    let source = ctx.source;
     let start = node_span(statement).start;
-    tokens(source, previous_token_end(source, from, start), start)
+    tokens(source, previous_token_end(ctx, from, start), start)
         .iter()
         .any(|t| t.kind.is_comment())
 }

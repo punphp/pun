@@ -72,7 +72,7 @@ impl Rule for NoDuplicateCaseBody {
                     without_stmts.push(inner);
                     continue;
                 };
-                if are_equal_and_with_break(source, &lists[outer_body], &lists[inner_body]) {
+                if are_equal_and_with_break(ctx, &lists[outer_body], &lists[inner_body]) {
                     for &w in &without_stmts {
                         equal_cases.push(w);
                         processed.push(w);
@@ -101,7 +101,7 @@ impl Rule for NoDuplicateCaseBody {
         let mut previous = open;
         for case in cases {
             let span = node_span(case);
-            let before = previous_token_end(source, previous, span.start);
+            let before = previous_token_end(ctx, previous, span.start);
             starts.push(first_comment(source, before, span.start).unwrap_or(span.start));
             previous = span.end;
         }
@@ -121,7 +121,7 @@ impl Rule for NoDuplicateCaseBody {
                     text.replace_range(text.len() - 1.., ":");
                 }
                 if let Some(from) = body[i] {
-                    let stmts = printed(source, &lists[from]);
+                    let stmts = printed(ctx, &lists[from]);
                     let indent = line_indent(
                         source,
                         lists[from]
@@ -192,12 +192,13 @@ fn case_node<'a>(case: &'a SwitchCase<'a>) -> Node<'a, 'a> {
 }
 
 /// `areSwitchStmtsEqualsAndWithBreak`.
-fn are_equal_and_with_break(source: &str, current: &List<'_>, next: &List<'_>) -> bool {
+fn are_equal_and_with_break(ctx: &crate::Context<'_>, current: &List<'_>, next: &List<'_>) -> bool {
+    let source = ctx.source;
     let is_break = |l: &List<'_>| matches!(l.stmts.first(), Some(Statement::Break(_)));
     if is_break(current) && is_break(next) {
-        return same_with_comments(source, current, next);
+        return same_with_comments(ctx, current, next);
     }
-    if !same_code(source, printed(source, current), printed(source, next)) {
+    if !same_code(source, printed(ctx, current), printed(ctx, next)) {
         return false;
     }
     current

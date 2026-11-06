@@ -48,7 +48,7 @@ impl Rule for AddParamPhpdocFromCallableCall {
         if f.parameters.parameters.is_empty() {
             return;
         }
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         // `collectVariableNamesWithArrayType()`: the `array` parameters without a `@param` tag
         let names: Vec<String> = f

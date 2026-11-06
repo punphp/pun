@@ -58,7 +58,7 @@ impl Rule for PreferDependsAttribute {
         let mut edits = Vec::new();
         let mut span = None;
         for method in &methods {
-            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
+            let annotated = Annotated::of(ctx, Node::Method(method), &scope).unwrap();
             let Some(doc) = annotated.doc.as_ref() else {
                 continue;
             };

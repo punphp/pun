@@ -2,9 +2,6 @@
 //! (`stmts`, with the `Nop` it adds for trailing comments), what Rector's format-preserving printer does when it
 //! removes, replaces or empties a statement, and the expression checks several Rector rules share.
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use mago_database::file::FileId;
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
@@ -24,26 +21,13 @@ pub(crate) struct Token {
     pub end: usize,
 }
 
-thread_local! {
-    /// The tokens of the source lexed last on this thread: the rules ask for a file's tokens at many of its nodes.
-    static LEXED: RefCell<Option<(String, Rc<Vec<Token>>)>> = const { RefCell::new(None) };
+/// Every token of the file `ctx` is about, lexed once per file.
+pub(crate) fn tokens<'c>(ctx: &'c crate::Context<'_>) -> &'c [Token] {
+    ctx.tokens()
 }
 
 /// Every token of `source`, read from the start of the file (inline HTML first, as PHP does).
-pub(crate) fn tokens(source: &str) -> Rc<Vec<Token>> {
-    let cached = LEXED.with_borrow(|l| {
-        (l.as_ref())
-            .filter(|(lexed, _)| lexed == source)
-            .map(|(_, tokens)| Rc::clone(tokens))
-    });
-    cached.unwrap_or_else(|| {
-        let tokens = Rc::new(lex(source));
-        LEXED.set(Some((source.to_string(), Rc::clone(&tokens))));
-        tokens
-    })
-}
-
-fn lex(source: &str) -> Vec<Token> {
+pub(crate) fn lex(source: &str) -> Vec<Token> {
     let mut lexer = Lexer::new(
         Input::new(FileId::zero(), source.as_bytes()),
         LexerSettings::default(),
@@ -64,10 +48,11 @@ fn lex(source: &str) -> Vec<Token> {
 /// newline after `<?php`, so that newline counts as part of the tag.
 pub(crate) fn previous_token_end(source: &str, tokens: &[Token], pos: usize) -> usize {
     // A statement always has the open tag before it.
-    let token = tokens
+    let before = tokens.partition_point(|t| t.end <= pos);
+    let token = tokens[..before]
         .iter()
         .rev()
-        .find(|t| t.end <= pos && !t.kind.is_trivia())
+        .find(|t| !t.kind.is_trivia())
         .expect("the open tag");
     let mut end = token.end;
     if token.kind == TokenKind::OpenTag && source.as_bytes().get(end) == Some(&b'\n') && end < pos {

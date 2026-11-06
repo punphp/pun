@@ -44,7 +44,7 @@ impl Rule for AddGetterReturnPhpdoc {
             if !m.return_type_hint.as_ref().is_some_and(|r| is_array_hint(&r.hint)) {
                 continue;
             }
-            let target = DocTarget::of(ctx.source, node_span(m).start);
+            let target = DocTarget::of(ctx, node_span(m).start);
             let mut info = target.info(ctx.source);
             if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
                 continue;
@@ -66,7 +66,7 @@ impl Rule for AddGetterReturnPhpdoc {
                     node_span(param).start
                 }
             };
-            let property_info = DocTarget::of(ctx.source, start).info(ctx.source);
+            let property_info = DocTarget::of(ctx, start).info(ctx.source);
             let Some(var) = property_info.var_tag() else {
                 continue;
             };

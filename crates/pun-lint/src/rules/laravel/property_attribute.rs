@@ -18,7 +18,6 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Safety, Span};
 
-use crate::rules::php_parser::tokens;
 use crate::rules::rector_batch5::{has_attribute, member_from, remove_items};
 use crate::rules::rector_conditions::{indentation, reprint};
 use crate::rules::rector_stmts::{first_comment, line_indent};
@@ -433,7 +432,7 @@ pub(crate) fn moved_value(
     let span = node_span(unparenthesize(expr));
     let adjust =
         indentation(source, class_start(class)) as isize - indentation(source, span.start) as isize;
-    reprint(source, &tokens(source), span, adjust)
+    reprint(source, &crate::rules::php_parser::lex(source), span, adjust)
 }
 
 /// Where php-parser's class node starts: its first attribute list or modifier, or `class` (`new` for an anonymous

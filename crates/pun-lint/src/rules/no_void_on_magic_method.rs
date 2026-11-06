@@ -39,7 +39,7 @@ impl Rule for NoVoidOnMagicMethod {
             return;
         }
         let start = node_span(method).start;
-        let Some(doc) = Doc::of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::of(ctx, ancestors, start) else {
             return;
         };
         let words: Vec<Vec<&str>> = (0..doc.len()).map(|i| doc.words(i)).collect();

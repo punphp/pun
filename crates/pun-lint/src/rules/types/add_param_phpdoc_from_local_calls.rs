@@ -51,7 +51,7 @@ impl Rule for AddParamPhpdocFromLocalCalls {
             if params.is_empty() {
                 continue;
             }
-            let target = DocTarget::of(ctx.source, node_span(method).start);
+            let target = DocTarget::of(ctx, node_span(method).start);
             let mut info = target.info(ctx.source);
             let name = String::from_utf8_lossy(method.name.value);
             let calls = local_method_calls(ctx, &scope, class, &class_name, &name);

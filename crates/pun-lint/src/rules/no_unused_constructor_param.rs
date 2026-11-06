@@ -105,7 +105,7 @@ impl Rule for NoUnusedConstructorParam {
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
-                edits: remove_params(ctx.source, method, from, &removed),
+                edits: remove_params(ctx, method, from, &removed),
             }),
         });
     }

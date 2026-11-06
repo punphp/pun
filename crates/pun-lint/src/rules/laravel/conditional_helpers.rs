@@ -55,7 +55,7 @@ pub(super) fn visit(node: Node<'_, '_>, ctx: &Context<'_>, helper: &str, out: &m
     let mut args_text = vec![operand(ctx, condition, 200, None)];
     args_text.extend(args.into_iter().map(str::to_string));
     let span = node_span(if_);
-    let tokens = tokens(ctx.source);
+    let tokens = tokens(ctx);
     let comments = comments_between(&tokens, view.stmts.inner.start, node_span(statement).start);
     let nl = format!("\n{}", line_indent(ctx.source, span.start));
     let comments = print_comments(ctx.source, &comments, &nl);

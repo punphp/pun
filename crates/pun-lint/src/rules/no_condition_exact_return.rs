@@ -82,7 +82,7 @@ impl Rule for NoConditionExactReturn {
                 continue;
             }
             // The `return` takes the `if`'s place with the comments before it, which php-parser keeps with it.
-            let moved = list.with_comments(source, key + 1);
+            let moved = list.with_comments(ctx, key + 1);
             let mut edits = vec![Edit::new(
                 node_span(r#if),
                 reindent(
@@ -92,7 +92,7 @@ impl Rule for NoConditionExactReturn {
                     line_indent(source, node_span(r#if).start),
                 ),
             )];
-            edits.extend(remove(source, &list, &[key + 1]));
+            edits.extend(remove(ctx, &list, &[key + 1]));
             out.push(Report {
                 span: node_span(r#if),
                 message: "The `return` after this `if` returns the same value; remove the `if`."

@@ -654,16 +654,17 @@ pub fn is_native_array(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: us
 /// and comments before the removed statements are lost and those after them are kept. From the list's start, the
 /// blanks before the removed statements are kept and the new statement runs straight into the next kept one (or the
 /// comments of the trailing `Nop`); with nothing kept after them, php-parser reprints the whole list.
-pub fn replace_run(source: &str, list: &List<'_>, first: usize, last: usize, new: &str) -> Edit {
+pub fn replace_run(ctx: &crate::Context<'_>, list: &List<'_>, first: usize, last: usize, new: &str) -> Edit {
+    let source = ctx.source;
     let end = node_span(list.stmts[last]).end;
     if first > 0 {
         let prev = node_span(list.stmts[first - 1]);
         let indent = line_indent(source, prev.start);
         return Edit::new(Span::new(prev.end, end), format!("\n{indent}{new}"));
     }
-    let start = list.with_comments(source, first).start;
+    let start = list.with_comments(ctx, first).start;
     let next = match list.stmts.get(last + 1) {
-        Some(_) => Some(list.with_comments(source, last + 1).start),
+        Some(_) => Some(list.with_comments(ctx, last + 1).start),
         None => list.nop_span(source).map(|s| s.start),
     };
     match next {

@@ -65,7 +65,7 @@ impl Rule for PreferInlineArrayReturn {
             return;
         }
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let mut chain = ancestors.to_vec();
         chain.push(node);
         let (list, index) = enclosing(source, &tokens, &chain);

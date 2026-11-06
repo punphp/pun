@@ -47,7 +47,7 @@ impl Rule for NoUselessParamTag {
             return;
         };
         let start = node_span(&node).start;
-        let Some(doc) = Doc::last_of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::last_of(ctx, ancestors, start) else {
             return;
         };
         let facts = facts(ctx);

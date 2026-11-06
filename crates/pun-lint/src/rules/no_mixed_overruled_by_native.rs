@@ -40,7 +40,7 @@ impl Rule for NoMixedOverruledByNative {
         });
         let Some(list) = list else { return };
         let start = node_span(&node).start;
-        let Some(doc) = Doc::of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::of(ctx, ancestors, start) else {
             return;
         };
         // `resolveDeclaredParamNames()`: the parameters with a native type.

@@ -51,7 +51,7 @@ impl Rule for AddVarPhpdocFromDefault {
             else {
                 continue;
             };
-            let target = DocTarget::of(ctx.source, property.start);
+            let target = DocTarget::of(ctx, property.start);
             let mut info = target.info(ctx.source);
             // type is already known
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
@@ -105,7 +105,7 @@ fn has_useful_parent_property_var_tag(facts: &Facts, class: &str, name: &str, de
         let useful = p.name_span.and_then(|span| {
             let source = facts.source_of(span.file_id)?;
             let start = property_start(&source, span.start.offset as usize)?;
-            let info = DocTarget::of(&source, start).info(&source);
+            let info = DocTarget::in_tokens(&source, &crate::rules::php_parser::lex(&source), start).info(&source);
             Some(is_useful_array_tag(info.var_tag().map(|t| &t.ty)))
         });
         if useful != Some(true) {

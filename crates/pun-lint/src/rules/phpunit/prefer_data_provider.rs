@@ -53,7 +53,7 @@ impl Rule for PreferDataProvider {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
-            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
+            let annotated = Annotated::of(ctx, Node::Method(method), &scope).unwrap();
             let Some(doc) = annotated.doc.as_ref() else {
                 continue;
             };
@@ -122,7 +122,7 @@ impl Rule for PreferDataProvider {
                     let from = if index == 0 {
                         left_brace.end.offset as usize
                     } else {
-                        previous_token_end(ctx.source, node_span(&node).start, start)
+                        previous_token_end(ctx, node_span(&node).start, start)
                     };
                     at = Some((from, line_indent(ctx.source, start)));
                     break;

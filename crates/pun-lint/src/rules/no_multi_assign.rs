@@ -45,7 +45,7 @@ impl Rule for NoMultiAssign {
                 lines.join(&format!("\n{indent}"))
             })
         } else {
-            let span = list.with_comments(ctx.source, index);
+            let span = list.with_comments(ctx, index);
             let comments = ctx.source[span.start..node_span(stmt).start].trim_end();
             let indent = line_indent(ctx.source, node_span(stmt).start);
             let mut new = String::new();
@@ -55,7 +55,7 @@ impl Rule for NoMultiAssign {
                 new.push_str(indent);
             }
             new.push_str(&lines.join(&format!("\n{indent}")));
-            replace_run(ctx.source, &list, index, index, &new)
+            replace_run(ctx, &list, index, index, &new)
         };
         out.push(Report {
             span: node_span(stmt),

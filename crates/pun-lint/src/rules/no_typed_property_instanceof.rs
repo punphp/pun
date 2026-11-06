@@ -70,7 +70,7 @@ impl Rule for NoTypedPropertyInstanceof {
             return;
         };
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let facts = facts(ctx);
         let visited = visited_ifs(ctx, &tokens, &facts, &class);
         if !visited.contains(&node_span(r#if).start) {

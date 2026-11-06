@@ -18,12 +18,13 @@ use crate::syntax::{node_span, unparenthesize};
 /// `ancestors` ends with): the statement removed when `stmts` is empty (`NodeVisitor::REMOVE_NODE`), else replaced
 /// by them, moved to its indent.
 pub(crate) fn replace_with<'a>(
-    source: &str,
+    ctx: &crate::Context<'_>,
     statement: &'a Statement<'a>,
     ancestors: &[Node<'a, 'a>],
     stmts: Option<&List<'a>>,
     changes: impl Fn(&Statement<'_>) -> bool,
 ) -> Vec<Edit> {
+    let source = ctx.source;
     let (list, index) = enclosing(source, statement, ancestors);
     // Other statements of the list the rule changes in the same pass make php-parser's diff of the list differ.
     let alone = list
@@ -32,7 +33,7 @@ pub(crate) fn replace_with<'a>(
         .enumerate()
         .all(|(i, s)| i == index || !changes(s));
     let Some(stmts) = stmts.filter(|s| !s.is_empty()) else {
-        return remove(source, &list, &[index]);
+        return remove(ctx, &list, &[index]);
     };
     let span = node_span(list.stmts[index]);
     let indent = line_indent(source, span.start);
@@ -44,25 +45,25 @@ pub(crate) fn replace_with<'a>(
         let inner = format!("{outer}    ");
         let text = format!(
             " {{\n{inner}{}\n{outer}}}",
-            moved_statements(source, stmts, &inner)
+            moved_statements(ctx, stmts, &inner)
         );
         return vec![Edit::new(Span::new(from, span.end), text)];
     }
-    let text = inserted_statements(source, stmts, indent);
+    let text = inserted_statements(ctx, stmts, indent);
     if alone && stmts.len() > 1 {
         // php-parser's differ sees one removal and several additions (not a replacement), and pArray drops the
         // removed statement with its comments and the whitespace on one side: after it when it is first (the
         // additions wait for the next kept statement), before it otherwise.
         if index > 0 {
-            let from = list.before(source, index);
+            let from = list.before(ctx, index);
             return vec![Edit::new(
                 Span::new(from, span.end),
                 format!("\n{indent}{text}"),
             )];
         }
         if index + 1 < list.stmts.len() {
-            let from = list.with_comments(source, index).start;
-            let to = list.with_comments(source, index + 1).start;
+            let from = list.with_comments(ctx, index).start;
+            let to = list.with_comments(ctx, index + 1).start;
             return vec![Edit::new(Span::new(from, to), format!("{text}\n{indent}"))];
         }
     }
@@ -339,7 +340,8 @@ pub(crate) fn modifiers_text(modifiers: &Sequence<'_, Modifier<'_>>) -> String {
 
 /// `pStmt_ClassMethod` for a method whose parameters all go: php-parser prints the method anew (its attributes,
 /// return type and statements keep their code; blank lines between the statements go).
-pub(crate) fn method_without_params(source: &str, method: &Method<'_>) -> String {
+pub(crate) fn method_without_params(ctx: &crate::Context<'_>, method: &Method<'_>) -> String {
+    let source = ctx.source;
     let span = node_span(method);
     let indent = line_indent(source, span.start);
     let mut out = String::new();
@@ -365,7 +367,7 @@ pub(crate) fn method_without_params(source: &str, method: &Method<'_>) -> String
         MethodBody::Concrete(block) => {
             out.push('\n');
             out.push_str(indent);
-            out.push_str(&braced(source, &block_list(source, block), indent));
+            out.push_str(&braced(ctx, &block_list(source, block), indent));
         }
         MethodBody::Abstract(_) => out.push(';'),
     }
@@ -624,11 +626,12 @@ fn uses_param(node: Node<'_, '_>, name: &[u8]) -> bool {
 /// The edits that remove the parameters `removed` flags from `method`, whose comments may start at `from`, with
 /// their `@param` tags: a list removal, or the method printed anew when every parameter goes.
 pub(crate) fn remove_params(
-    source: &str,
+    ctx: &crate::Context<'_>,
     method: &Method<'_>,
     from: usize,
     removed: &[bool],
 ) -> Vec<Edit> {
+    let source = ctx.source;
     let params: Vec<&FunctionLikeParameter> = method.parameter_list.parameters.iter().collect();
     let span = node_span(method);
     let mut edits = Vec::new();
@@ -650,7 +653,7 @@ pub(crate) fn remove_params(
     let items: Vec<Span> = params.iter().map(|p| node_span(*p)).collect();
     match list_removal(&items, removed) {
         Some(list) => edits.extend(list),
-        None => edits.push(Edit::new(span, method_without_params(source, method))),
+        None => edits.push(Edit::new(span, method_without_params(ctx, method))),
     }
     merge(edits)
 }
@@ -685,10 +688,11 @@ pub(crate) fn remove_items(
 
 /// [`remove_items`] for the statements of a list, with the empty list printed as [`remove`] prints it, and a
 /// trailing `Nop` kept as the last item.
-pub(crate) fn remove_statements(source: &str, list: &List<'_>, removed: &[bool]) -> Vec<Edit> {
+pub(crate) fn remove_statements(ctx: &crate::Context<'_>, list: &List<'_>, removed: &[bool]) -> Vec<Edit> {
+    let source = ctx.source;
     let mut spans: Vec<Span> = list.stmts.iter().map(|s| node_span(*s)).collect();
     let mut froms: Vec<usize> = (0..list.stmts.len())
-        .map(|i| list.before(source, i))
+        .map(|i| list.before(ctx, i))
         .collect();
     let mut flags = removed.to_vec();
     if let Some(nop) = list.nop_span(source) {
@@ -700,7 +704,7 @@ pub(crate) fn remove_statements(source: &str, list: &List<'_>, removed: &[bool])
         Some(edits) => edits,
         None => {
             let all: Vec<usize> = (0..list.stmts.len()).collect();
-            remove(source, list, &all)
+            remove(ctx, list, &all)
         }
     }
 }
@@ -738,21 +742,22 @@ pub(crate) fn remove_members(
 /// does not know php-parser's output (a list without braces left empty, or statements removed from its start ahead of
 /// kept ones).
 pub(crate) fn replace_run(
-    source: &str,
+    ctx: &crate::Context<'_>,
     list: &List<'_>,
     start: usize,
     end: usize,
     code: &str,
 ) -> Option<Vec<Edit>> {
+    let source = ctx.source;
     let first = node_span(list.stmts[start]);
     let indent = line_indent(source, first.start);
     let last = node_span(list.stmts[end]);
     if start == end {
-        let from = list.with_comments(source, start).start;
+        let from = list.with_comments(ctx, start).start;
         return Some(vec![Edit::new(Span::new(from, last.end), code.to_string())]);
     }
     if start > 0 {
-        let from = list.before(source, start);
+        let from = list.before(ctx, start);
         return Some(vec![Edit::new(
             Span::new(from, last.end),
             format!("\n{indent}{code}"),

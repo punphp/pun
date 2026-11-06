@@ -106,7 +106,7 @@ impl Rule for AddMockIntersectionParam {
         }
         let mut edits = Vec::new();
         for (at, method) in targets.iter().enumerate() {
-            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
+            let annotated = Annotated::of(ctx, Node::Method(method), &scope).unwrap();
             let mut added: Vec<String> = Vec::new();
             for (position, param) in method.parameter_list.parameters.iter().enumerate() {
                 if !is_bare_mock_object_param(&scope, param) {

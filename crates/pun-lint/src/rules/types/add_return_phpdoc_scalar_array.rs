@@ -39,7 +39,7 @@ impl Rule for AddReturnPhpdocScalarArray {
         let Some(body) = f.body else {
             return;
         };
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         // `getReturnType()` must be the implicit `mixed` of no `@return` tag
         if info.return_tag().is_some() {

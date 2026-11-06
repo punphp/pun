@@ -63,7 +63,7 @@ impl Rule for AddDataProviderIteratorReturnType {
         let mut providers: Vec<&Method<'_>> = Vec::new();
         for method in &methods {
             let mut names = Vec::new();
-            if let Some(doc) = Doc::of(ctx.source, &scope, node_span(*method).start) {
+            if let Some(doc) = Doc::of(ctx, &scope, node_span(*method).start) {
                 let Some(tags) = named_tags(ctx, &scope, &doc, "dataProvider") else {
                     return;
                 };

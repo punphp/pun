@@ -104,7 +104,7 @@ impl Rule for NoTestConstructor {
                 let mut only = vec![false; members.len()];
                 only[at] = true;
                 let mut edits = remove_class_members(source, node, &only);
-                if let Some(edit) = appended(source, set_up, set_up_block, &kept) {
+                if let Some(edit) = appended(ctx, set_up, set_up_block, &kept) {
                     edits.push(edit);
                 }
                 merge(edits)
@@ -230,7 +230,7 @@ fn renamed_to_set_up(
         }
         text.push('\n');
         text.push_str(indent);
-        text.push_str(&super::block_anew(source, kept, indent));
+        text.push_str(&super::block_anew(ctx, kept, indent));
         return vec![Edit::new(span, text)];
     }
     let mut edits = Vec::new();
@@ -247,7 +247,7 @@ fn renamed_to_set_up(
         edits.push(Edit::new(Span::new(end, end), format!(": {type}")));
     }
     if removed.contains(&true) {
-        edits.extend(remove_statements(source, list, removed));
+        edits.extend(remove_statements(ctx, list, removed));
     }
     merge(edits)
 }
@@ -255,7 +255,8 @@ fn renamed_to_set_up(
 /// The edit for adding the statements of `kept` to the end of `set_up`'s body, as php-parser inserts them: on lines
 /// of their own after the last statement, or, in an empty body (`block`), with the method printed anew; `None` with
 /// nothing to add.
-fn appended(source: &str, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_>) -> Option<Edit> {
+fn appended(ctx: &crate::Context<'_>, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_>) -> Option<Edit> {
+    let source = ctx.source;
     if kept.is_empty() {
         return None;
     }
@@ -271,7 +272,7 @@ fn appended(source: &str, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_
             Span::new(end, end),
             format!(
                 "\n{inner}{}",
-                inserted_statements(source, kept, &inner).trim_end_matches('\n')
+                inserted_statements(ctx, kept, &inner).trim_end_matches('\n')
             ),
         )),
         None => {
@@ -280,7 +281,7 @@ fn appended(source: &str, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_
             let mut lines = Vec::new();
             for (i, statement) in kept.stmts.iter().enumerate() {
                 let span = node_span(*statement);
-                for t in tokens(source, kept.before(source, i), span.start)
+                for t in tokens(source, kept.before(ctx, i), span.start)
                     .into_iter()
                     .filter(|t| t.kind.is_comment())
                 {

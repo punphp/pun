@@ -43,7 +43,7 @@ impl Rule for NoDuplicateArrayKey {
         if duplicated.is_empty() || is_destructuring(node, ancestors) {
             return;
         }
-        let tokens = tokens(ctx.source);
+        let tokens = tokens(ctx);
         let items = elements.as_slice();
         let edits = duplicated
             .iter()

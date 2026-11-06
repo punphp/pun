@@ -683,7 +683,7 @@ fn uses_this(node: Node<'_, '_>) -> bool {
 /// php-parser's `getComments()` of a node that starts at `start`, when no node around it starts there too (php-parser
 /// gives a comment to the outermost node only): a comment right before it, with only whitespace between.
 pub(crate) fn has_comments(ctx: &Context<'_>, start: usize) -> bool {
-    super::php_parser::tokens(ctx.source)
+    super::php_parser::tokens(ctx)
         .iter()
         .rev()
         .find(|t| t.end <= start && t.kind != mago_syntax::token::TokenKind::Whitespace)
@@ -722,7 +722,7 @@ pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
     };
     let mut out = String::with_capacity(text.len());
     let mut at = span.start;
-    for &t in super::php_parser::tokens(ctx.source).iter() {
+    for &t in super::php_parser::tokens(ctx).iter() {
         if t.end <= span.start || t.start >= span.end {
             continue;
         }
@@ -760,7 +760,7 @@ pub(crate) fn kept_text(ctx: &Context<'_>, span: Span, indent: usize) -> String 
 /// The comments php-parser gives a node that starts at `start` (when it is the outermost node there): every comment
 /// after the token before it.
 pub(crate) fn comment_spans(ctx: &Context<'_>, start: usize) -> Vec<Span> {
-    let tokens = super::php_parser::tokens(ctx.source);
+    let tokens = super::php_parser::tokens(ctx);
     let before = tokens
         .iter()
         .rev()
@@ -932,7 +932,7 @@ pub(crate) fn print_links(ctx: &Context<'_>, links: &[Link<'_>], indent: usize) 
 
 /// php-parser's comments of a statement starting at `start`: from the first comment after the token before it.
 pub(crate) fn comments_start(ctx: &Context<'_>, start: usize) -> usize {
-    let tokens = super::php_parser::tokens(ctx.source);
+    let tokens = super::php_parser::tokens(ctx);
     let before = tokens
         .iter()
         .rev()
@@ -1095,7 +1095,7 @@ pub(crate) fn old_statements(
         .collect();
     if list.nop {
         let after = olds.last().map_or(list.inner.start, |s| s.end);
-        let tokens = super::php_parser::tokens(ctx.source);
+        let tokens = super::php_parser::tokens(ctx);
         let comments: Vec<_> = tokens
             .iter()
             .filter(|t| t.start >= after && t.end <= list.inner.end && t.kind.is_comment())
@@ -1114,7 +1114,7 @@ pub(crate) fn old_statements(
 /// The comments of an old statement (all of a `Nop`).
 fn old_comments(ctx: &Context<'_>, old: &OldStmt) -> Vec<Span> {
     let end = if old.nop { old.end } else { old.start };
-    super::php_parser::tokens(ctx.source)
+    super::php_parser::tokens(ctx)
         .iter()
         .filter(|t| t.start >= old.comments && t.end <= end && t.kind.is_comment())
         .map(|t| Span::new(t.start, t.end))
@@ -1131,7 +1131,7 @@ pub(crate) fn print_list(
     mut pos: usize,
     items: &[Item<'_>],
 ) -> Option<(String, usize)> {
-    let tokens = super::php_parser::tokens(ctx.source);
+    let tokens = super::php_parser::tokens(ctx);
     let tag_in = |from: usize, to: usize| {
         use mago_syntax::token::TokenKind as K;
         tokens.iter().any(|t| {
@@ -1432,7 +1432,7 @@ pub(crate) fn rewrite_list(
         }
         (Node::Program(_), _) => {
             // The whole file, from `<?php` on; a file with HTML or a closing tag before its end is left alone.
-            let tokens = super::php_parser::tokens(ctx.source);
+            let tokens = super::php_parser::tokens(ctx);
             use mago_syntax::token::TokenKind as K;
             tokens
                 .first()
@@ -1515,7 +1515,7 @@ pub(crate) fn statement_list<'ast, 'arena>(
     if !STATEMENT_LISTS.contains(&node.kind()) {
         return None;
     }
-    let tokens = super::php_parser::tokens(ctx.source);
+    let tokens = super::php_parser::tokens(ctx);
     let mut list = super::php_parser::holder_list(ctx.source, &tokens, node);
     list.stmts.retain(|s| match s {
         Statement::Inline(inline) => {

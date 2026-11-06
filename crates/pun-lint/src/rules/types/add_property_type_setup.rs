@@ -76,7 +76,7 @@ impl Rule for AddPropertyTypeSetup {
             if let Ty::Object(name) = &t
                 && name.eq_ignore_ascii_case(MOCK_OBJECT)
             {
-                let var = VarTag::of(ctx.source, prop.property, &view.path);
+                let var = VarTag::of(ctx, prop.property, &view.path);
                 if let Ok(Some(tag)) = &var.tag
                     && let Some(written) = object_name(&tag.ty)
                 {

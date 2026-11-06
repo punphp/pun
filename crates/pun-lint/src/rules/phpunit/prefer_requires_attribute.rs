@@ -31,7 +31,7 @@ impl Rule for PreferRequiresAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
+        let annotated = Annotated::of(ctx, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };

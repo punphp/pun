@@ -8,6 +8,7 @@ use pun_problem::{Edit, Span};
 
 use super::rector_batch5::doc_comment;
 use super::rector_stmts::{previous_token_end, tokens};
+use crate::Context;
 use crate::syntax::node_span;
 
 /// phpdoc-parser's token types, as far as the printer tells them apart.
@@ -38,7 +39,8 @@ pub struct Doc<'s> {
 
 impl<'s> Doc<'s> {
     /// The doc comment of the node at `start`, whose ancestors are `ancestors`.
-    pub fn of(source: &'s str, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+    pub fn of(ctx: &Context<'s>, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+        let source = ctx.source;
         // The comments come after the last token before the node, which lies inside the nearest ancestor that starts
         // before it.
         let outer = ancestors
@@ -49,20 +51,21 @@ impl<'s> Doc<'s> {
             .unwrap_or(0);
         Self::at(
             source,
-            doc_comment(source, previous_token_end(source, outer, start), start)?,
+            doc_comment(source, previous_token_end(ctx, outer, start), start)?,
         )
     }
 
     /// [`Doc::of`] as php-parser's `getDocComment()` reads it: the last doc comment among the node's comments, which
     /// other comments may follow.
-    pub fn last_of(source: &'s str, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+    pub fn last_of(ctx: &Context<'s>, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+        let source = ctx.source;
         let outer = ancestors
             .iter()
             .rev()
             .map(|a| node_span(a).start)
             .find(|&s| s < start)
             .unwrap_or(0);
-        let doc = tokens(source, previous_token_end(source, outer, start), start)
+        let doc = tokens(source, previous_token_end(ctx, outer, start), start)
             .into_iter()
             .rfind(|t| t.kind == TokenKind::DocBlockComment)?;
         Self::at(source, Span::new(doc.start, doc.end))

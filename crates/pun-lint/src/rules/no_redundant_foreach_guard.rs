@@ -68,7 +68,7 @@ impl Rule for NoRedundantForeachGuard {
         out: &mut Vec<Report>,
     ) {
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let facts = facts(ctx);
         let edits = match node {
             Node::Foreach(foreach) => {

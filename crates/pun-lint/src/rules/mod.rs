@@ -178,7 +178,7 @@ mod no_useless_variable;
 mod no_variable_variable;
 mod no_void_on_magic_method;
 mod no_void_reference_return;
-mod php_parser;
+pub(crate) mod php_parser;
 mod phpstan_describe;
 mod phpdoc_tag;
 pub(crate) mod phpdoc_writer;
@@ -257,7 +257,7 @@ mod require_strict_function_call;
 mod side_effect;
 mod stmt_splice;
 mod syntax_types;
-mod types;
+pub(crate) mod types;
 mod used_variable;
 
 pub use add_csv_escape_argument::AddCsvEscapeArgument;

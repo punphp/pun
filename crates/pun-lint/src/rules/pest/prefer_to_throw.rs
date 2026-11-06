@@ -109,7 +109,7 @@ fn convert(ctx: &Context<'_>, t: &Try<'_>) -> Option<Edit> {
     if matches!(catch.hint, Hint::Union(_)) {
         return None;
     }
-    let tokens = tokens(ctx.source);
+    let tokens = tokens(ctx);
     let body = block_list(&tokens, &t.block);
     if body.is_empty() {
         return None;
@@ -157,7 +157,7 @@ fn message_assertion<'a>(
     block: &'a Block<'a>,
     var: Option<&[u8]>,
 ) -> Option<&'a Expression<'a>> {
-    let tokens = tokens(ctx.source);
+    let tokens = tokens(ctx);
     let list = block_list(&tokens, block);
     let ([statement], false) = (list.stmts.as_slice(), list.nop) else {
         return None;

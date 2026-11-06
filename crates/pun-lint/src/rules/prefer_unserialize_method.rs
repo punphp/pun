@@ -54,7 +54,7 @@ impl Rule for PreferUnserializeMethod {
             let old = list
                 .nop_span(source)
                 .filter(|_| list.stmts.is_empty())
-                .unwrap_or_else(|| list.with_comments(source, 0));
+                .unwrap_or_else(|| list.with_comments(ctx, 0));
             vec![
                 rename(method, "__unserialize"),
                 append_parameter(source, method, "array $data"),

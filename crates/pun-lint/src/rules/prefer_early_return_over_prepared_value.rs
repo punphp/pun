@@ -115,7 +115,7 @@ fn refactor(ctx: &Context<'_>, list: &List<'_>) -> Option<(Vec<Edit>, Span)> {
     let (position, initial) = initial?;
     let bare: Vec<BareSingleAssignIf<'_>> = ifs
         .iter()
-        .map(|&(k, r#if)| match_bare_single_assign_if(source, list, k, r#if))
+        .map(|&(k, r#if)| match_bare_single_assign_if(ctx, list, k, r#if))
         .collect::<Option<_>>()?;
     if bare.is_empty() {
         return None;
@@ -123,7 +123,7 @@ fn refactor(ctx: &Context<'_>, list: &List<'_>) -> Option<(Vec<Edit>, Span)> {
     if !is_variable_shared(ctx, &bare, returned, initial) {
         return None;
     }
-    let mut edits = remove(source, list, &[position]);
+    let mut edits = remove(ctx, list, &[position]);
     for b in &bare {
         let value = node_span(unparenthesize(b.assign.rhs));
         // A new `Return_` in place of the statement: its comments go.
@@ -158,11 +158,12 @@ fn reassigns(ctx: &Context<'_>, node: Node<'_, '_>, var: &Expression<'_>) -> boo
 }
 
 fn match_bare_single_assign_if<'a>(
-    source: &str,
+    ctx: &crate::Context<'_>,
     list: &List<'a>,
     key: usize,
     r#if: &'a If<'a>,
 ) -> Option<BareSingleAssignIf<'a>> {
+    let source = ctx.source;
     let view = if_view(source, r#if);
     // Exactly one statement, an assignment, and no `else` or `elseif`.
     if view.stmts.len() != 1 {
@@ -183,7 +184,7 @@ fn match_bare_single_assign_if<'a>(
     Some(BareSingleAssignIf {
         condition: view.condition,
         statement,
-        comments_start: view.stmts.with_comments(source, 0).start,
+        comments_start: view.stmts.with_comments(ctx, 0).start,
         assign,
     })
 }

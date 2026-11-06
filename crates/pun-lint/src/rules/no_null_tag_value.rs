@@ -56,7 +56,7 @@ impl Rule for NoNullTagValue {
         // php-parser's `getDocComment`: the last doc comment before the node, comments after it or not.
         let Some(doc) = tokens(
             ctx.source,
-            previous_token_end(ctx.source, from, span.start),
+            previous_token_end(ctx, from, span.start),
             span.start,
         )
         .into_iter()

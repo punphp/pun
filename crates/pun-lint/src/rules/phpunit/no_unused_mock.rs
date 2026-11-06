@@ -65,7 +65,7 @@ impl Rule for NoUnusedMock {
                     node_span(*statement),
                     "Remove the mock: nothing uses it.",
                     Safety::Safe,
-                    remove_statements(ctx.source, &list, &only),
+                    remove_statements(ctx, &list, &only),
                 ));
             }
         }

@@ -68,7 +68,7 @@ impl Rule for NoInvalidVarTag {
         out: &mut Vec<Report>,
     ) {
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let mut chain = ancestors.to_vec();
         chain.push(node);
         let (list, at, holder) = match node {
@@ -155,7 +155,7 @@ impl Rule for NoInvalidVarTag {
             At::Statement(_) => ancestors,
             At::Nop => &chain[..],
         };
-        let Some(doc) = Doc::of(source, doc_ancestors, start) else {
+        let Some(doc) = Doc::of(ctx, doc_ancestors, start) else {
             return;
         };
         let holder_comments = holder_span(&chain[..holder + 1]).map_or(0, |span| {

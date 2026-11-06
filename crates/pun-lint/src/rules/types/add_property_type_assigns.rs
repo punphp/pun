@@ -92,7 +92,7 @@ impl Rule for AddPropertyTypeAssigns {
             if !prop.is_private() && !self.inline_public {
                 continue;
             }
-            if is_doctrine_mapped(ctx.source, plain, &view.path) {
+            if is_doctrine_mapped(ctx, plain, &view.path) {
                 continue;
             }
             if !is_legal(&facts, &view, prop, self.inline_public) {
@@ -116,7 +116,7 @@ impl Rule for AddPropertyTypeAssigns {
             else {
                 continue;
             };
-            let var = VarTag::of(ctx.source, prop.property, &view.path);
+            let var = VarTag::of(ctx, prop.property, &view.path);
             let at = variable_span(prop);
             edits.push(Edit::new(
                 Span::new(at.start, at.start),
@@ -149,14 +149,14 @@ impl Rule for AddPropertyTypeAssigns {
 
 /// `isDoctrineMappedProperty` (`AttrinationFinder::hasByMany`): a Doctrine mapping attribute, or a doc annotation
 /// naming one.
-fn is_doctrine_mapped(source: &str, prop: &PlainProperty<'_>, path: &[Node<'_, '_>]) -> bool {
+fn is_doctrine_mapped(ctx: &crate::Context<'_>, prop: &PlainProperty<'_>, path: &[Node<'_, '_>]) -> bool {
     if DOCTRINE_MAPPING
         .iter()
         .any(|c| has_attribute(path, &prop.attribute_lists, c))
     {
         return true;
     }
-    let Some(doc) = Doc::of(source, path, node_span(prop).start) else {
+    let Some(doc) = Doc::of(ctx, path, node_span(prop).start) else {
         return false;
     };
     doc.text_all().split('@').skip(1).any(|tag| {

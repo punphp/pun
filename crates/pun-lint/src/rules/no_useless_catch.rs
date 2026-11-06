@@ -54,7 +54,7 @@ impl Rule for NoUselessCatch {
         if !rethrows && has_statement {
             return;
         }
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         // isEmpty: no statement, or one Nop.
         let empty = |b| block_list(&tokens, b).stmts.is_empty();
         // not empty stmts on finally always executed

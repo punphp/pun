@@ -60,7 +60,7 @@ impl Rule for PreferReturnedCondition {
     ) {
         let Node::If(_) = node else { return };
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let (list, index) = enclosing(source, &tokens, ancestors);
         let facts = facts(ctx);
         // `refactor()` changes the first pair of the list it takes

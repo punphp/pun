@@ -82,7 +82,7 @@ fn comment_spans(source: &str, old: &OldItem) -> Vec<Span> {
 /// `TokenStream::haveTagInRange()`: an opening or closing tag in `[from, to)`. The file is read from its start, since
 /// `from` may follow inline HTML, where the lexer is not inside PHP code.
 fn have_tag_in_range(source: &str, from: usize, to: usize) -> bool {
-    crate::rules::php_parser::tokens(source).iter().any(|t| {
+    crate::rules::php_parser::lex(source).iter().any(|t| {
         (from..to).contains(&t.start)
             && matches!(
                 t.kind,

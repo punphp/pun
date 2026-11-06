@@ -50,7 +50,7 @@ impl Rule for NoUselessReturnTag {
             return;
         };
         let start = node_span(&node).start;
-        let Some(doc) = Doc::last_of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::last_of(ctx, ancestors, start) else {
             return;
         };
         let Some((_, tag)) = first_named(&doc, "@return") else {

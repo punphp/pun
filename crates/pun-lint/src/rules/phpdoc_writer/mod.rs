@@ -39,7 +39,7 @@ use pun_problem::{Edit, Span};
 pub use doc_info::{PhpDocInfo, TypedValue};
 pub use type_node::TypeNode;
 
-use super::php_parser::{previous_token_end, tokens};
+use super::php_parser::previous_token_end;
 use super::require_named_argument_order::{Target, callee};
 use super::phpunit::annotations::reformatted;
 use super::rector_conditions::indentation;
@@ -62,13 +62,17 @@ pub struct DocTarget {
 }
 
 impl DocTarget {
-    /// The comments of the node that starts at `start`.
-    pub fn of(source: &str, start: usize) -> DocTarget {
-        let tokens = tokens(source);
-        let before = previous_token_end(source, &tokens, start);
-        let comments: Vec<Span> = tokens
+    /// The comments of the node that starts at `start` in the file `ctx` is about.
+    pub fn of(ctx: &crate::Context<'_>, start: usize) -> DocTarget {
+        Self::in_tokens(ctx.source, ctx.tokens(), start)
+    }
+
+    /// [`DocTarget::of`] in `source`, whose tokens are `tokens`.
+    pub fn in_tokens(source: &str, tokens: &[crate::rules::php_parser::Token], start: usize) -> DocTarget {
+        let before = previous_token_end(source, tokens, start);
+        let comments: Vec<Span> = tokens[tokens.partition_point(|t| t.start < before)..tokens.partition_point(|t| t.end <= start)]
             .iter()
-            .filter(|t| t.start >= before && t.end <= start && t.kind.is_comment())
+            .filter(|t| t.kind.is_comment())
             .map(|t| Span::new(t.start, t.end))
             .collect();
         let doc = comments.iter().rposition(|c| {
@@ -397,7 +401,7 @@ fn this_method_return_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], call: 
     };
     let (members, _, _) = ancestors.iter().rev().find_map(|a| class_members(*a))?;
     let m = method(members, &String::from_utf8_lossy(name.value))?;
-    let info = DocTarget::of(ctx.source, node_span(m).start).info(ctx.source);
+    let info = DocTarget::of(ctx, node_span(m).start).info(ctx.source);
     let tag = info.return_tag()?;
     let doc = doc_type(tag.parsed.as_ref()?, ancestors, class_name(ancestors).as_deref());
     let array = || Type::array(Type::Mixed { explicit: false }, Type::Mixed { explicit: false });

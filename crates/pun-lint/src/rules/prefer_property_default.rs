@@ -77,7 +77,7 @@ impl Rule for PreferPropertyDefault {
             let Some((property, item)) = find_property(members, name) else {
                 continue;
             };
-            let from = list.before(source, index);
+            let from = list.before(ctx, index);
             let comments: Vec<Span> = tokens(source, from, node_span(*statement).start)
                 .into_iter()
                 .filter(|t| t.kind.is_comment())
@@ -101,7 +101,7 @@ impl Rule for PreferPropertyDefault {
         if moved.is_empty() {
             return;
         }
-        let mut edits = remove_statements(source, &list, &removed);
+        let mut edits = remove_statements(ctx, &list, &removed);
         // The comments, per property declaration.
         let mut comments: Vec<(&Property, Vec<Span>)> = Vec::new();
         for (item, property, code, item_comments) in &moved {

@@ -49,7 +49,7 @@ impl Rule for PreferVariadicParam {
             };
             let (name, mut edits) = match assign.lhs {
                 Expression::Variable(Variable::Direct(v)) => {
-                    (v.name, remove(ctx.source, &list, &[index]))
+                    (v.name, remove(ctx, &list, &[index]))
                 }
                 // php-parser's `${'args'}`: Rector 2.6.1 fails on its null name.
                 Expression::Variable(_) => return,

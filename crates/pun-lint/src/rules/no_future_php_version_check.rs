@@ -54,7 +54,7 @@ impl Rule for NoFuturePhpVersionCheck {
             view.else_.as_ref().map(|(list, _)| list)
         };
         let edits = replace_with(
-            source,
+            ctx,
             s,
             ancestors,
             stmts,

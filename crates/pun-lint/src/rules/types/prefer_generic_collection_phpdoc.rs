@@ -29,7 +29,7 @@ impl Rule for PreferGenericCollectionPhpdoc {
         let Some(f) = FunctionLike::of(node) else {
             return;
         };
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         // `createFromNode()`: no doc comment, no return tag
         if target.doc.is_none() {
             return;

@@ -57,7 +57,7 @@ impl Rule for AddDataProviderAllowMockObjects {
                         &method.attribute_lists,
                         "PHPUnit\\Framework\\Attributes\\Test",
                     )
-                    || Doc::of(ctx.source, &scope, node_span(method).start).is_some_and(|doc| {
+                    || Doc::of(ctx, &scope, node_span(method).start).is_some_and(|doc| {
                         named_tags(ctx, &scope, &doc, "test").is_some_and(|t| !t.is_empty())
                     }));
             if !is_test

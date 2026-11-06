@@ -55,7 +55,7 @@ impl Rule for RequireStatementPadding {
             }
             // The next statement, from its first comment (`CommentResolver`), or php-parser's trailing `Nop`.
             let next = match list.stmts.get(key + 1) {
-                Some(_) => list.with_comments(ctx.source, key + 1).start,
+                Some(_) => list.with_comments(ctx, key + 1).start,
                 None => match list.nop_span(ctx.source) {
                     Some(nop) => nop.start,
                     None => continue,

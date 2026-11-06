@@ -71,7 +71,7 @@ impl Rule for AddFactoryExtendsPhpdoc {
         let tag = format!("@extends \\{FACTORY}<\\{}>", model.trim_start_matches('\\'));
         let start = node_span(class).start;
         let source = ctx.source;
-        let edit = match Doc::of(source, ancestors, start) {
+        let edit = match Doc::of(ctx, ancestors, start) {
             Some(doc) => {
                 if (0..doc.len()).any(|i| {
                     doc.words(i)

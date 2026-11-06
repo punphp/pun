@@ -126,7 +126,7 @@ fn type_from_var<'ast, 'arena>(
         {
             continue;
         }
-        let var = VarTag::of(ctx.source, prop.property, &view.path);
+        let var = VarTag::of(ctx, prop.property, &view.path);
         if var.annotated.doc.is_none() {
             continue;
         }
@@ -316,7 +316,7 @@ impl Rule for AddDoctrineRepositoryReturnType {
         if !is_repository {
             return;
         }
-        let Some(entity) = entity_from_doc(ctx.source, node, ancestors) else {
+        let Some(entity) = entity_from_doc(ctx, node, ancestors) else {
             return;
         };
         let mut edits: Vec<Edit> = Vec::new();
@@ -337,7 +337,7 @@ impl Rule for AddDoctrineRepositoryReturnType {
                 continue;
             }
             let return_type = if calls(method, b"findBy") {
-                let annotated = Annotated::of(ctx.source, Node::Method(method), &view.path);
+                let annotated = Annotated::of(ctx, Node::Method(method), &view.path);
                 let tag = format!("@return {entity}[]");
                 let new_doc = match annotated.as_ref().and_then(|a| a.doc.as_ref()) {
                     Some(doc) => doc.print_appending(&vec![false; doc.len()], &[&tag]),
@@ -370,8 +370,8 @@ impl Rule for AddDoctrineRepositoryReturnType {
 
 /// `resolveEntityClassnameFromPhpDoc`: the entity of the class doc's first `@extends EntityRepository<Entity, ...>`,
 /// when it is one name that no `@template` of the doc declares.
-fn entity_from_doc(source: &str, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<String> {
-    let doc = Annotated::of(source, node, ancestors)?.doc?;
+fn entity_from_doc(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<String> {
+    let doc = Annotated::of(ctx, node, ancestors)?.doc?;
     let mut extends: Option<&str> = None;
     let mut templates: Vec<&str> = Vec::new();
     for index in 0..doc.len() {

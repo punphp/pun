@@ -44,7 +44,7 @@ impl Rule for AddVarPhpdocFromGetter {
             if !property.hint.is_some_and(is_array_hint) || property.names.len() > 1 {
                 continue;
             }
-            let target = DocTarget::of(ctx.source, property.start);
+            let target = DocTarget::of(ctx, property.start);
             let mut info = target.info(ctx.source);
             // type is already known, skip it
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
@@ -60,7 +60,7 @@ impl Rule for AddVarPhpdocFromGetter {
             let Some(getter) = getter else {
                 continue;
             };
-            let getter_info = DocTarget::of(ctx.source, node_span(getter).start).info(ctx.source);
+            let getter_info = DocTarget::of(ctx, node_span(getter).start).info(ctx.source);
             let Some(tag) = getter_info.return_tag() else {
                 continue;
             };

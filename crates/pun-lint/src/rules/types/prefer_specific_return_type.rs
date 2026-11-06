@@ -80,7 +80,7 @@ impl Rule for PreferSpecificReturnType {
                 return;
             }
         }
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let info = target.doc.map(|_| target.info(ctx.source));
         let class = class_name(ancestors);
         // isNarrowingValid

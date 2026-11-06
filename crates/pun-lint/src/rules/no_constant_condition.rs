@@ -63,7 +63,7 @@ impl Rule for NoConstantCondition {
         let span = node_span(s);
         let indent = line_indent(source, span.start);
         // `$node->getComments() !== []`: comments before the `if`, which php-parser keeps with it
-        let commented = list.with_comments(source, index).start != span.start;
+        let commented = list.with_comments(ctx, index).start != span.start;
         let dead = view.stmts.is_empty()
             && !commented
             && !has_side_effect(ancestors, view.condition);
@@ -76,15 +76,15 @@ impl Rule for NoConstantCondition {
                 let condition = &source[range(unparenthesize(view.condition))];
                 let mut text = format!(
                     "if ({condition}) {}",
-                    braced(source, &view.stmts, indent)
+                    braced(ctx, &view.stmts, indent)
                 );
                 if let Some((else_list, else_span)) = else_ {
                     text.push(' ');
-                    text.push_str(&else_text(source, &view, else_list, *else_span, indent));
+                    text.push_str(&else_text(ctx, &view, else_list, *else_span, indent));
                 }
                 vec![Edit::new(span, text)]
             } else {
-                kept_edits(source, span.start, &view, &kept, empty_else)
+                kept_edits(ctx, span.start, &view, &kept, empty_else)
             }
         } else if let Some((&first, rest)) = kept.split_first() {
             let (condition, first_list, _) = &view.elseifs[first];
@@ -93,24 +93,24 @@ impl Rule for NoConstantCondition {
                 inverted_condition(source, view.condition),
                 and_operand(source, condition)
             );
-            let mut text = format!("if ({condition}) {}", braced(source, first_list, indent));
+            let mut text = format!("if ({condition}) {}", braced(ctx, first_list, indent));
             for &i in rest {
                 text.push(' ');
-                text.push_str(&elseif_text(source, &view, i, indent));
+                text.push_str(&elseif_text(ctx, &view, i, indent));
             }
             if let Some((else_list, else_span)) = else_ {
                 text.push(' ');
-                text.push_str(&else_text(source, &view, else_list, *else_span, indent));
+                text.push_str(&else_text(ctx, &view, else_list, *else_span, indent));
             }
             vec![Edit::new(span, text)]
         } else if let Some((else_list, _)) = else_ {
             let condition = inverted_condition(source, view.condition);
             vec![Edit::new(
                 span,
-                format!("if ({condition}) {}", braced(source, else_list, indent)),
+                format!("if ({condition}) {}", braced(ctx, else_list, indent)),
             )]
         } else {
-            remove(source, &list, &[index])
+            remove(ctx, &list, &[index])
         };
         out.push(Report {
             span,
@@ -142,19 +142,21 @@ fn and_operand(source: &str, expr: &Expression<'_>) -> String {
 }
 
 /// A kept `elseif` after a body printed anew: as written, or in braces when the `if` uses the alternative syntax.
-fn elseif_text(source: &str, view: &IfView<'_>, i: usize, indent: &str) -> String {
+fn elseif_text(ctx: &crate::Context<'_>, view: &IfView<'_>, i: usize, indent: &str) -> String {
+    let source = ctx.source;
     let (condition, list, span) = &view.elseifs[i];
     if view.colon {
         let condition = &source[range(unparenthesize(condition))];
-        return format!("elseif ({condition}) {}", braced(source, list, indent));
+        return format!("elseif ({condition}) {}", braced(ctx, list, indent));
     }
     source[span.start..span.end].to_string()
 }
 
 /// [`elseif_text`] for the `else`.
-fn else_text(source: &str, view: &IfView<'_>, list: &List<'_>, span: Span, indent: &str) -> String {
+fn else_text(ctx: &crate::Context<'_>, view: &IfView<'_>, list: &List<'_>, span: Span, indent: &str) -> String {
+    let source = ctx.source;
     if view.colon {
-        return format!("else {}", braced(source, list, indent));
+        return format!("else {}", braced(ctx, list, indent));
     }
     source[span.start..span.end].to_string()
 }
@@ -162,15 +164,16 @@ fn else_text(source: &str, view: &IfView<'_>, list: &List<'_>, span: Span, inden
 /// php-parser's format-preserving removal of the `elseif`s not in `kept` (at least one is) and, with `empty_else`, of
 /// the `else`. A branch's comments are part of it.
 fn kept_edits(
-    source: &str,
+    ctx: &crate::Context<'_>,
     from: usize,
     view: &IfView<'_>,
     kept: &[usize],
     empty_else: bool,
 ) -> Vec<Edit> {
+    let source = ctx.source;
     let starts: Vec<usize> = (view.elseifs.iter())
         .map(|(_, _, span)| {
-            let before = previous_token_end(source, from, span.start);
+            let before = previous_token_end(ctx, from, span.start);
             first_comment(source, before, span.start).unwrap_or(span.start)
         })
         .collect();
@@ -187,7 +190,7 @@ fn kept_edits(
         }
     }
     if empty_else && let Some((_, span)) = &view.else_ {
-        let before = previous_token_end(source, from, span.start);
+        let before = previous_token_end(ctx, from, span.start);
         edits.push(Edit::new(Span::new(before, span.end), ""));
     }
     edits

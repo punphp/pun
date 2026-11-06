@@ -167,7 +167,7 @@ fn order_classes(names: &mut [String], order: &[String]) {
 
 /// The words of the docblock of the innermost function, method or closure of `ancestors`, lowercased, in the order
 /// written: the order of the classes of a union PHPStan read from it.
-pub(crate) fn doc_order(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String> {
+pub(crate) fn doc_order(ctx: &crate::Context<'_>, ancestors: &[Node<'_, '_>]) -> Vec<String> {
     let Some(at) = ancestors
         .iter()
         .rposition(|a| matches!(a, Node::Method(_) | Node::Function(_)))
@@ -175,7 +175,7 @@ pub(crate) fn doc_order(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String>
         return Vec::new();
     };
     let start = crate::syntax::node_span(&ancestors[at]).start;
-    let Some(doc) = crate::rules::lint_b_doc::Doc::of(source, &ancestors[..at], start) else {
+    let Some(doc) = crate::rules::lint_b_doc::Doc::of(ctx, &ancestors[..at], start) else {
         return Vec::new();
     };
     doc.text_all()

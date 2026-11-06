@@ -412,7 +412,7 @@ impl ReplaceArrayAccess {
                     )]
                 } else {
                     vec![replace_run(
-                        ctx.source,
+                        ctx,
                         &list,
                         index,
                         index,

@@ -110,7 +110,7 @@ impl Rule for PreferAttributeOverAnnotation {
         let mut edits = Vec::new();
         let mut span = None;
         // handle class level
-        let class = Annotated::of(ctx.source, node, ancestors);
+        let class = Annotated::of(ctx, node, ancestors);
         let mut class_doc = None;
         if let Some(class) = &class {
             let Some(found) = self.refactor(ctx, &scope, class, true, &mut class_groups) else {
@@ -123,7 +123,7 @@ impl Rule for PreferAttributeOverAnnotation {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
-            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
+            let annotated = Annotated::of(ctx, Node::Method(method), &scope).unwrap();
             let mut groups = Vec::new();
             let Some(doc) = self.refactor(ctx, &scope, &annotated, false, &mut class_groups) else {
                 return;

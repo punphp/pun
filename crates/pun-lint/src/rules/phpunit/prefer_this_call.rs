@@ -121,7 +121,7 @@ impl Rule for PreferThisCall {
                 "$this->{}({})",
                 String::from_utf8_lossy(name.value),
                 maybe_multiline(
-                    ctx.source,
+                    ctx,
                     list.left_parenthesis.end.offset as usize,
                     &args,
                     line_indent(ctx.source, span.start),

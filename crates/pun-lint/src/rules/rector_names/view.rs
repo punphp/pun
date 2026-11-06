@@ -266,7 +266,7 @@ impl FileView {
         walk.node(Node::Program(program));
         walk.view.names.sort_by_key(|n| n.span.start);
         let mut view = walk.view;
-        let all = crate::rules::php_parser::tokens(source);
+        let all = crate::rules::php_parser::lex(source);
         view.roots[0].stmts =
             stmt_list(source, &all, program.statements.iter(), view.roots[0].inner);
         let mut root = 0;

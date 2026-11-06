@@ -17,6 +17,7 @@ use mago_syntax_core::input::Input;
 use pun_problem::{Edit, Span};
 
 pub(crate) use super::php_parser::{Frame, line_indent};
+use crate::Context;
 use crate::syntax::{node_span, unparenthesize};
 
 /// One token of a region of the file: its kind and byte range in the file.
@@ -50,16 +51,19 @@ pub fn tokens(source: &str, from: usize, to: usize) -> Vec<Token> {
 
 /// The end of the last token in `[from, pos)` that is not whitespace or a comment, or `from` when there is none.
 /// php-parser's `T_OPEN_TAG` takes one newline after `<?php`, so that newline counts as part of the tag.
-pub fn previous_token_end(source: &str, from: usize, pos: usize) -> usize {
-    let Some(token) = tokens(source, from, pos)
-        .into_iter()
+pub fn previous_token_end(ctx: &Context<'_>, from: usize, pos: usize) -> usize {
+    // `from` is a token boundary (a node's start), so the file's tokens in `[from, pos)` are the ones lexed there
+    let tokens = ctx.tokens();
+    let Some(token) = tokens[..tokens.partition_point(|t| t.end <= pos)]
+        .iter()
         .rev()
+        .take_while(|t| t.start >= from)
         .find(|t| !t.kind.is_trivia())
     else {
         return from;
     };
     let mut end = token.end;
-    if token.kind == TokenKind::OpenTag && source.as_bytes().get(end) == Some(&b'\n') && end < pos {
+    if token.kind == TokenKind::OpenTag && ctx.source.as_bytes().get(end) == Some(&b'\n') && end < pos {
         end += 1;
     }
     end
@@ -118,9 +122,10 @@ impl<'a> List<'a> {
     }
 
     /// The span of the statement at `i` with the comments before it, which php-parser keeps with it.
-    pub fn with_comments(&self, source: &str, i: usize) -> Span {
+    pub fn with_comments(&self, ctx: &crate::Context<'_>, i: usize) -> Span {
+        let source = ctx.source;
         let span = node_span(self.stmts[i]);
-        let before = self.before(source, i);
+        let before = self.before(ctx, i);
         Span::new(
             first_comment(source, before, span.start).unwrap_or(span.start),
             span.end,
@@ -128,13 +133,13 @@ impl<'a> List<'a> {
     }
 
     /// The end of the token before the statement at `i` (its comments are after it).
-    pub fn before(&self, source: &str, i: usize) -> usize {
+    pub fn before(&self, ctx: &crate::Context<'_>, i: usize) -> usize {
         let from = if i == 0 {
             self.inner.start
         } else {
             node_span(self.stmts[i - 1]).end
         };
-        previous_token_end(source, from, node_span(self.stmts[i]).start)
+        previous_token_end(ctx, from, node_span(self.stmts[i]).start)
     }
 
     /// The span of the comments after the last statement (php-parser's trailing `Nop`).
@@ -351,7 +356,8 @@ fn case_list<'a>(
 /// after them) and the blanks before it, back to the end of the token before it; the list's first statement goes
 /// with the blanks after it instead. A list left empty prints as `{`, a newline and `}` at the indent of the line
 /// the list opens on, or as `{}` around nothing where a control structure had one statement without braces.
-pub fn remove(source: &str, list: &List<'_>, indices: &[usize]) -> Vec<Edit> {
+pub fn remove(ctx: &crate::Context<'_>, list: &List<'_>, indices: &[usize]) -> Vec<Edit> {
+    let source = ctx.source;
     if indices.len() == list.stmts.len() && !list.nop {
         match list.frame {
             Frame::Braces { open, close } => {
@@ -370,7 +376,7 @@ pub fn remove(source: &str, list: &List<'_>, indices: &[usize]) -> Vec<Edit> {
         .iter()
         .map(|&i| {
             let span = node_span(list.stmts[i]);
-            let before = list.before(source, i);
+            let before = list.before(ctx, i);
             if i > 0 {
                 return Edit::new(Span::new(before, span.end), "");
             }
@@ -428,10 +434,11 @@ pub fn reindent(source: &str, span: Span, from: &str, to: &str) -> String {
 
 /// The statements of `list` (comments included, the trailing `Nop` too) as one text at the indent `to`, a line each:
 /// what Rector's printer writes when the statements move to a list at another depth.
-pub fn moved_statements(source: &str, list: &List<'_>, to: &str) -> String {
+pub fn moved_statements(ctx: &crate::Context<'_>, list: &List<'_>, to: &str) -> String {
+    let source = ctx.source;
     let mut parts: Vec<String> = (0..list.stmts.len())
         .map(|i| {
-            let span = list.with_comments(source, i);
+            let span = list.with_comments(ctx, i);
             reindent(source, span, line_indent(source, span.start), to)
         })
         .collect();
@@ -443,8 +450,8 @@ pub fn moved_statements(source: &str, list: &List<'_>, to: &str) -> String {
 
 /// [`moved_statements`] inserted into an existing list by the format-preserving printer: it writes a moved `Nop`'s
 /// comments and then a new line for the empty `Nop`, whose indent `BetterStandardPrinter::pArray` strips.
-pub fn inserted_statements(source: &str, list: &List<'_>, to: &str) -> String {
-    let mut text = moved_statements(source, list, to);
+pub fn inserted_statements(ctx: &crate::Context<'_>, list: &List<'_>, to: &str) -> String {
+    let mut text = moved_statements(ctx, list, to);
     if list.nop {
         text.push('\n');
     }
@@ -575,17 +582,19 @@ fn tokens_with_comments(source: &str, span: Span) -> Vec<(TokenKind, String)> {
 }
 
 /// Whether two lists print the same with their comments (Rector's `BetterStandardPrinter::print` on two `stmts`).
-pub fn same_with_comments(source: &str, a: &List<'_>, b: &List<'_>) -> bool {
-    tokens_with_comments(source, printed(source, a))
-        == tokens_with_comments(source, printed(source, b))
+pub fn same_with_comments(ctx: &crate::Context<'_>, a: &List<'_>, b: &List<'_>) -> bool {
+    let source = ctx.source;
+    tokens_with_comments(source, printed(ctx, a))
+        == tokens_with_comments(source, printed(ctx, b))
 }
 
 /// The span php-parser prints for a list: the statements with the comments before the first and the trailing `Nop`.
-pub fn printed(source: &str, list: &List<'_>) -> Span {
+pub fn printed(ctx: &crate::Context<'_>, list: &List<'_>) -> Span {
+    let source = ctx.source;
     let start = if list.stmts.is_empty() {
         list.nop_span(source).map_or(list.inner.start, |s| s.start)
     } else {
-        list.with_comments(source, 0).start
+        list.with_comments(ctx, 0).start
     };
     let end = list
         .nop_span(source)
@@ -649,14 +658,14 @@ pub fn comments(source: &str, from: usize, to: usize) -> Option<Span> {
 
 /// A block as php-parser's pretty printer writes it around `list` at the indent `indent`: `{`, the statements a line
 /// each one level deeper, and `}` on a line of its own.
-pub fn braced(source: &str, list: &List<'_>, indent: &str) -> String {
+pub fn braced(ctx: &crate::Context<'_>, list: &List<'_>, indent: &str) -> String {
     if list.is_empty() {
         return format!("{{\n{indent}}}");
     }
     let inner = format!("{indent}    ");
     format!(
         "{{\n{inner}{}\n{indent}}}",
-        moved_statements(source, list, &inner)
+        moved_statements(ctx, list, &inner)
     )
 }
 

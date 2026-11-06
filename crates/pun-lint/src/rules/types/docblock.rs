@@ -84,8 +84,8 @@ impl<'ast, 'arena> FunctionLike<'ast, 'arena> {
     }
 
     /// The doc comment target of the node.
-    pub fn target(&self, source: &str) -> DocTarget {
-        DocTarget::of(source, self.start)
+    pub fn target(&self, ctx: &crate::Context<'_>) -> DocTarget {
+        DocTarget::of(ctx, self.start)
     }
 }
 

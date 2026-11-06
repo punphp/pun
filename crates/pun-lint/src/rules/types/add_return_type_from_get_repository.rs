@@ -54,10 +54,10 @@ impl Rule for AddReturnTypeFromGetRepository {
         if untyped(node, ancestors, ctx).is_none() {
             return;
         }
-        let Some(doc) = Doc::last_of(ctx.source, ancestors, node_span(&node).start) else {
+        let Some(doc) = Doc::last_of(ctx, ancestors, node_span(&node).start) else {
             return;
         };
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let info = target.info(ctx.source);
         let Some(parsed) = info.return_tag().and_then(|tag| tag.parsed.as_ref()) else {
             return;

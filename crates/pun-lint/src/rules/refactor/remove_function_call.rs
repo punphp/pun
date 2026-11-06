@@ -70,7 +70,7 @@ impl Rule for RemoveFunctionCall {
             node_span(statement),
             format!("Remove the call to `{function}()`."),
             Safety::Unsafe,
-            remove(ctx.source, &list, &[index]),
+            remove(ctx, &list, &[index]),
         ));
     }
 }

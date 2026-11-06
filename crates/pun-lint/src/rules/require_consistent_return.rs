@@ -93,7 +93,7 @@ impl Rule for RequireConsistentReturn {
             })
             .collect();
         if has_silent_void_documented(&place, body.statements.iter()) {
-            let tokens = tokens(source);
+            let tokens = tokens(ctx);
             let list = block_list(&tokens, body);
             let last = node_span(*list.stmts.last().expect("a body that returns"));
             // after the comments php-parser keeps in a `Nop` at the end, at their indent
@@ -109,7 +109,7 @@ impl Rule for RequireConsistentReturn {
         } else if bare.is_empty() {
             return;
         }
-        match doc_edit(source, node, ancestors) {
+        match doc_edit(ctx, node, ancestors) {
             Some(Some(edit)) => edits.push(edit),
             Some(None) => {}
             None => return,
@@ -130,8 +130,9 @@ impl Rule for RequireConsistentReturn {
 
 /// `transformDocUnionVoidToUnionNull`: the edit of the `@return` type, `Some(None)` when it stays, `None` when Pun
 /// cannot print it as Rector does.
-fn doc_edit(source: &str, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<Option<Edit>> {
-    let Some(doc) = Doc::of(source, ancestors, node_span(&node).start) else {
+fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<Option<Edit>> {
+    let source = ctx.source;
+    let Some(doc) = Doc::of(ctx, ancestors, node_span(&node).start) else {
         return Some(None);
     };
     let text = &source[doc.span.start..doc.span.end];

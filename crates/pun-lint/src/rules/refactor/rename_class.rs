@@ -338,11 +338,7 @@ fn post_again(
         std::borrow::Cow::Owned(source.as_bytes().to_vec()),
     );
     let program = mago_syntax::parser::parse_file(&arena, &file);
-    let next = Context {
-        source,
-        path: ctx.path,
-        php_version: ctx.php_version,
-    };
+    let next = Context::new(source, ctx.path, ctx.php_version);
     program.errors.is_empty().then_some(())?;
     let mut session = Session::new(&next, program);
     session.resume(std::mem::replace(carry, session.carry()));

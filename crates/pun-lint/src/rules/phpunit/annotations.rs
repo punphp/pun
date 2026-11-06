@@ -32,7 +32,7 @@ impl<'s> Annotated<'s> {
     /// The class, method or property `node` (or interface, function or parameter), whose ancestors are `ancestors`;
     /// `None` for any other node.
     pub(crate) fn of(
-        source: &'s str,
+        ctx: &Context<'s>,
         node: Node<'_, '_>,
         ancestors: &[Node<'_, '_>],
     ) -> Option<Self> {
@@ -40,13 +40,13 @@ impl<'s> Annotated<'s> {
             Node::Class(class) => &class.attribute_lists,
             Node::Method(method) => &method.attribute_lists,
             Node::Function(function) => &function.attribute_lists,
-            Node::Property(property) => return Some(Self::property(source, property, ancestors)),
+            Node::Property(property) => return Some(Self::property(ctx, property, ancestors)),
             Node::Interface(interface) => &interface.attribute_lists,
             Node::FunctionLikeParameter(parameter) => &parameter.attribute_lists,
             _ => return None,
         };
         Some(Self::from_attributes(
-            source,
+            ctx,
             node_span(&node).start,
             lists,
             ancestors,
@@ -55,7 +55,7 @@ impl<'s> Annotated<'s> {
 
     /// An actual property, plain or hooked, always has annotation context even without readable PHPDoc.
     pub(crate) fn property(
-        source: &'s str,
+        ctx: &Context<'s>,
         property: &Property<'_>,
         ancestors: &[Node<'_, '_>],
     ) -> Self {
@@ -64,7 +64,7 @@ impl<'s> Annotated<'s> {
             Property::Hooked(property) => &property.attribute_lists,
         };
         Self::from_attributes(
-            source,
+            ctx,
             node_span(&Node::Property(property)).start,
             lists,
             ancestors,
@@ -72,19 +72,20 @@ impl<'s> Annotated<'s> {
     }
 
     fn from_attributes(
-        source: &'s str,
+        ctx: &Context<'s>,
         start: usize,
         lists: &Sequence<'_, AttributeList<'_>>,
         ancestors: &[Node<'_, '_>],
     ) -> Self {
-        let doc = Doc::of(source, ancestors, start);
+        let source = ctx.source;
+        let doc = Doc::of(ctx, ancestors, start);
         let outer = ancestors
             .iter()
             .rev()
             .map(|a| node_span(a).start)
             .find(|&s| s < start)
             .unwrap_or(0);
-        let comments_from = previous_token_end(source, outer, start);
+        let comments_from = previous_token_end(ctx, outer, start);
         let other_comments = doc
             .as_ref()
             .is_some_and(|d| !source[comments_from..d.span.start].trim().is_empty());
@@ -100,13 +101,13 @@ impl<'s> Annotated<'s> {
     /// [`Self::of`] with the doc comment php-parser's `getDocComment()` reads: the last among the node's comments,
     /// which other comments may follow.
     pub(crate) fn of_last(
-        source: &'s str,
+        ctx: &Context<'s>,
         node: Node<'_, '_>,
         ancestors: &[Node<'_, '_>],
     ) -> Option<Self> {
-        let mut annotated = Self::of(source, node, ancestors)?;
+        let mut annotated = Self::of(ctx, node, ancestors)?;
         if annotated.doc.is_none() {
-            annotated.doc = Doc::last_of(source, ancestors, annotated.start);
+            annotated.doc = Doc::last_of(ctx, ancestors, annotated.start);
             // (a comment follows it)
             annotated.other_comments = annotated.doc.is_some();
         }

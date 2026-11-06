@@ -51,7 +51,7 @@ impl Rule for AddParamTypeArrayMap {
             return;
         };
         let facts = facts(ctx);
-        let order = doc_order(ctx.source, ancestors);
+        let order = doc_order(ctx, ancestors);
         let params: Vec<_> = closure.parameter_list.parameters.iter().collect();
         let mut edits = Vec::new();
         for (position, arg) in args[1..].iter().enumerate() {

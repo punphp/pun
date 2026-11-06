@@ -53,7 +53,7 @@ impl Rule for NoUselessReadonly {
             return;
         }
         let start = node_span(&node).start;
-        let Some(doc) = Doc::of(ctx.source, ancestors, start) else {
+        let Some(doc) = Doc::of(ctx, ancestors, start) else {
             return;
         };
         // `getByName('readonly')`: the first `@readonly` tag, which must have no value; `removeByName()` takes all.

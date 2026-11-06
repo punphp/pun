@@ -12,7 +12,7 @@
 use mago_syntax::cst::{MethodBody, Node, NodeKind, Statement};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::php_parser::{Frame, holder_list, is_dynamic_expr, line_indent, tokens};
+use super::php_parser::{Frame, holder_list, is_dynamic_expr, line_indent};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -99,7 +99,7 @@ fn walk(source: &str, node: Node<'_, '_>, parent: Node<'_, '_>, top: bool, out: 
 /// statement (a trailing comment aside) the printer writes the list again, a
 /// statement per line, and as the one statement of a control structure without braces the two get braces.
 fn expanded(source: &str, span: Span, value: &str, parent: Node<'_, '_>) -> Edit {
-    let tokens = tokens(source);
+    let tokens = crate::rules::php_parser::lex(source);
     let list = holder_list(source, &tokens, parent);
     let indent = line_indent(source, span.start);
     if list.frame == Frame::Bare {

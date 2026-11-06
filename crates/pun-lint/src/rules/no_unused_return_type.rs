@@ -91,7 +91,7 @@ impl Rule for NoUnusedReturnType {
         if should_skip_hint(&f.hint.hint) {
             return;
         }
-        let target = DocTarget::of(ctx.source, f.start);
+        let target = DocTarget::of(ctx, f.start);
         let info = target.doc.map(|_| target.info(ctx.source));
         let facts = facts(ctx);
         let mut chain = ancestors.to_vec();

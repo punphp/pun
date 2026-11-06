@@ -75,8 +75,8 @@ impl Rule for NoElseAfterReturn {
         } else {
             // The printer puts the nodes before the kept `if` (the modified one) on lines of their own, the first
             // with the comments of the old `if`, and leaves the kept `if` its old whitespace.
-            let before = list.before(source, index);
-            let start = list.with_comments(source, index).start;
+            let before = list.before(ctx, index);
+            let start = list.with_comments(ctx, index).start;
             let indent = line_indent(source, node_span(r#if).start);
             let mut text = String::new();
             for item in &items {
@@ -226,7 +226,7 @@ fn print(
                 return format!(
                     "if ({}) {}",
                     condition(clause),
-                    braced(source, clause.stmts, indent)
+                    braced(ctx, clause.stmts, indent)
                 );
             };
             let span = node_span(r#if);
@@ -238,7 +238,7 @@ fn print(
                 "{}if ({}) {}",
                 head(clause),
                 condition(clause),
-                braced(source, clause.stmts, indent)
+                braced(ctx, clause.stmts, indent)
             );
             if let Item::ModifiedIf(_, kept) = item {
                 // php-parser's `pStmt_If` writes ` elseif` after the `}`; the comments before an `elseif` it keeps come
@@ -258,8 +258,8 @@ fn print(
             };
             print_clause(ctx, clause, indent)
         }
-        Item::Stmts(list) if inserted => inserted_statements(source, list, indent),
-        Item::Stmts(list) => moved_statements(source, list, indent),
+        Item::Stmts(list) if inserted => inserted_statements(ctx, list, indent),
+        Item::Stmts(list) => moved_statements(ctx, list, indent),
     }
 }
 
@@ -276,10 +276,10 @@ fn print_clause(ctx: &Context<'_>, clause: &Clause<'_, '_>, indent: &str) -> Str
             format!(
                 "{head}elseif ({}) {}",
                 &source[s.start..s.end],
-                braced(source, clause.stmts, indent)
+                braced(ctx, clause.stmts, indent)
             )
         }
-        None => format!("{head}else {}", braced(source, clause.stmts, indent)),
+        None => format!("{head}else {}", braced(ctx, clause.stmts, indent)),
     }
 }
 

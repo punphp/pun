@@ -200,7 +200,7 @@ impl AnnotationToAttribute {
                     continue;
                 }
                 let Some(doc_comment) =
-                    crate::rules::lint_b_doc::Doc::of(ctx.source, &ancestors, start)
+                    crate::rules::lint_b_doc::Doc::of(ctx, &ancestors, start)
                 else {
                     continue;
                 };
@@ -222,7 +222,7 @@ impl AnnotationToAttribute {
                 });
                 continue;
             }
-            let Some(annotated) = Annotated::of_last(ctx.source, node, &ancestors) else {
+            let Some(annotated) = Annotated::of_last(ctx, node, &ancestors) else {
                 continue;
             };
             let Some(doc_comment) = &annotated.doc else {

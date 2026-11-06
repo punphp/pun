@@ -82,7 +82,7 @@ pub(super) fn add_attribute(
     node: Node<'_, '_>,
     out: &mut Vec<Report>,
 ) {
-    let Some(edits) = Annotated::of(ctx.source, node, ancestors)
+    let Some(edits) = Annotated::of(ctx, node, ancestors)
         .and_then(|a| a.edits(ctx.source, None, &[format!("#[\\{ALLOW_MOCK_OBJECTS}]")]))
     else {
         return;

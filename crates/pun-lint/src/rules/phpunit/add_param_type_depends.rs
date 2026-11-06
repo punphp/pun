@@ -106,7 +106,7 @@ fn depends_method(
             return Some(string_value(value)?.trim_matches(['(', ')']).to_string());
         }
     }
-    let doc = Doc::of(ctx.source, scope, node_span(method).start)?;
+    let doc = Doc::of(ctx, scope, node_span(method).start)?;
     match named_tags(ctx, scope, &doc, "depends")?
         .into_iter()
         .next()?

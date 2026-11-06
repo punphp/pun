@@ -109,7 +109,7 @@ impl Rule for NoBareMockAssign {
         if !removed.contains(&true) {
             return;
         }
-        edits.extend(remove_statements(ctx.source, &list, &removed));
+        edits.extend(remove_statements(ctx, &list, &removed));
         let first = removed.iter().position(|r| *r).unwrap();
         out.push(Report::fixed(
             node_span(list.stmts[first]),

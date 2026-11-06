@@ -54,7 +54,7 @@ impl Rule for NoUnusedForeachKey {
             return;
         }
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let (list, index) = enclosing(source, &tokens, ancestors);
         if used_in_next(&list, index + 1, try_of(ancestors), name) {
             return;

@@ -84,7 +84,7 @@ impl Rule for PreferCoalesceOverForeach {
                     }
                     let var = text(ctx, unparenthesize(assign.lhs));
                     replace_run(
-                        source,
+                        ctx,
                         &list,
                         key,
                         key,
@@ -104,7 +104,7 @@ impl Rule for PreferCoalesceOverForeach {
                     };
                     skip_next = true;
                     replace_run(
-                        source,
+                        ctx,
                         &list,
                         key,
                         key + 1,

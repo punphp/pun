@@ -80,7 +80,7 @@ impl Rule for NoSetupOverrideAttribute {
             }
             None => vec![Edit::new(
                 node_span(method),
-                method_anew(ctx.source, method, block),
+                method_anew(ctx, method, block),
             )],
         };
         out.push(Report::fixed(

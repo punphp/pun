@@ -83,17 +83,17 @@ impl Rule for NoUnusedExpression {
             (body_list(source, stmt), 0)
         };
         let edits = if living.is_empty() {
-            let before = list.before(source, key);
+            let before = list.before(ctx, key);
             match doc_comment(source, before, node_span(*stmt).start) {
                 // php-parser's Nop keeps the doc comment, and prints an empty line for itself.
                 Some(doc) if list.frame != Frame::Bare => {
-                    let span = list.with_comments(source, key);
+                    let span = list.with_comments(ctx, key);
                     vec![Edit::new(
                         pun_problem::Span::new(span.start, node_span(*stmt).end),
                         format!("{}\n", &source[doc.start..doc.end]),
                     )]
                 }
-                _ => remove(source, &list, &[key]),
+                _ => remove(ctx, &list, &[key]),
             }
         } else {
             let indent = line_indent(source, node_span(*stmt).start);

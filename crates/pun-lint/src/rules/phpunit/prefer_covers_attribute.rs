@@ -77,7 +77,7 @@ impl Rule for PreferCoversAttribute {
         {
             return;
         }
-        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
+        let annotated = Annotated::of(ctx, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };
@@ -115,7 +115,7 @@ fn class_attributes(
     scope: &[Node<'_, '_>],
 ) -> Result<Option<Report>, ()> {
     let (members, _, _) = class_body(node).unwrap();
-    let annotated = Annotated::of(ctx.source, node, &scope[..scope.len() - 1]);
+    let annotated = Annotated::of(ctx, node, &scope[..scope.len() - 1]);
     let doc = annotated.as_ref().and_then(|a| a.doc.as_ref());
     let mut default_groups: Vec<String> = Vec::new();
     // The groups keyed by their tag's value: a later one with the same key takes the first one's place.
@@ -215,7 +215,7 @@ fn method_attributes(
     method: &Method<'_>,
     default_class: Option<&str>,
 ) -> Result<Vec<(String, String)>, ()> {
-    let annotated = Annotated::of(ctx.source, Node::Method(method), scope).unwrap();
+    let annotated = Annotated::of(ctx, Node::Method(method), scope).unwrap();
     let Some(doc) = annotated.doc.as_ref() else {
         return Ok(Vec::new());
     };

@@ -173,7 +173,7 @@ fn resolve(
     let at = node_span(f.parameters).end;
     let mut edits = Vec::new();
     if should_add_return_array_doc_type(&return_type) {
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         // skip already filled type, on purpose
         let current = info.return_tag().map_or(mixed(), |tag| {

@@ -43,7 +43,7 @@ impl Rule for NoSingleCaseSwitch {
         };
         let [case] = cases.as_slice() else { return };
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let (case_node, condition) = match case {
             SwitchCase::Expression(c) => (Node::SwitchExpressionCase(c), Some(c.expression)),
             SwitchCase::Default(c) => (Node::SwitchDefaultCase(c), None),

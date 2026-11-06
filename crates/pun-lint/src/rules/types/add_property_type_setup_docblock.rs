@@ -65,7 +65,7 @@ impl Rule for AddPropertyTypeSetupDocblock {
             // getVarType(): phpdoc-parser's reading of the first `@var` (which takes `$this`, unlike `VarTag`), and
             // the type PHPStan reads there
             let Some(((_, tag), doc)) =
-                Doc::last_of(ctx.source, &view.path, node_span(prop.property).start)
+                Doc::last_of(ctx, &view.path, node_span(prop.property).start)
                     .and_then(|doc| first_named(&doc, "@var"))
                     .zip(doc_type(&facts, &view, prop.name()))
             else {
@@ -92,7 +92,7 @@ impl Rule for AddPropertyTypeSetupDocblock {
             edits.push(Edit::new(Span::new(at, at), format!("{declaration} ")));
             if is_dead_after(&facts, &view, &tag, &declaration)
                 && let Some(e) =
-                    VarTag::of(ctx.source, prop.property, &view.path).remove(ctx.source)
+                    VarTag::of(ctx, prop.property, &view.path).remove(ctx.source)
             {
                 edits.extend(e);
             }

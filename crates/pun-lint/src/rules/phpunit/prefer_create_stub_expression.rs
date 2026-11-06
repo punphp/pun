@@ -107,7 +107,7 @@ pub(super) fn is_test_class_method(
                 &method.attribute_lists,
                 "PHPUnit\\Framework\\Attributes\\Test",
             )
-            || Doc::of(ctx.source, ancestors, node_span(method).start).is_some_and(|doc| {
+            || Doc::of(ctx, ancestors, node_span(method).start).is_some_and(|doc| {
                 named_tags(ctx, ancestors, &doc, "test").is_some_and(|t| !t.is_empty())
             }))
 }

@@ -88,7 +88,7 @@ impl Rule for NoRedundantPromotedAssign {
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
-                edits: remove(ctx.source, &list, &indices),
+                edits: remove(ctx, &list, &indices),
             }),
         });
     }

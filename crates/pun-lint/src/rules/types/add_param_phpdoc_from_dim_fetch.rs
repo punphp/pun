@@ -34,7 +34,7 @@ impl Rule for AddParamPhpdocFromDimFetch {
         let Some(f) = FunctionLike::of(node) else {
             return;
         };
-        let target = f.target(ctx.source);
+        let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         let mut scope = ancestors.to_vec();
         scope.push(node);

@@ -32,7 +32,7 @@ fn printed_args(ctx: &Context<'_>, call: &FunctionCall<'_>) -> String {
     let spans: Vec<Span> = list.arguments.iter().map(|a| node_span(a)).collect();
     let indent = line_indent(ctx.source, node_span(call).start);
     maybe_multiline(
-        ctx.source,
+        ctx,
         list.left_parenthesis.end.offset as usize,
         &spans,
         indent,

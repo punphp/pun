@@ -51,7 +51,7 @@ impl Rule for NoRedundantNullCheck {
             return;
         }
         let source = ctx.source;
-        let tokens = tokens(source);
+        let tokens = tokens(ctx);
         let parts = if_parts(&tokens, r#if);
         if parts.has_else || parts.has_elseifs {
             return;

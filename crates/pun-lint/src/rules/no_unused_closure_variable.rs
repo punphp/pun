@@ -54,7 +54,7 @@ impl Rule for NoUnusedClosureVariable {
         let edits = if unused.iter().all(|&u| u) {
             // Without its `use` clause the closure is a new node to php-parser's printer, which prints its body a
             // statement per line.
-            let tokens = tokens(ctx.source);
+            let tokens = tokens(ctx);
             let indent = line_indent(ctx.source, node_span(closure).start);
             let body = block_list(&tokens, &closure.body);
             let text = if body.is_empty() {

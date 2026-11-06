@@ -98,7 +98,7 @@ impl Rule for PreferCoalesceChain {
             );
         }
         let last = list.stmts.len() - 1;
-        let Some(edits) = replace_run(source, &list, first, last, &format!("return {code};"))
+        let Some(edits) = replace_run(ctx, &list, first, last, &format!("return {code};"))
         else {
             return;
         };

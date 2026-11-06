@@ -75,7 +75,7 @@ impl Rule for NoUnusedPrivateMethodParam {
                 continue;
             };
             let from = member_from(members, left_brace, index);
-            edits.extend(remove_params(ctx.source, method, from, &removed));
+            edits.extend(remove_params(ctx, method, from, &removed));
             let edits = merge(edits);
             // A caller inside the method itself, which is printed anew: leave both.
             if edits.windows(2).any(|w| w[0].span.end > w[1].span.start) {

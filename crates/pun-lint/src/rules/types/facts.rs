@@ -364,21 +364,13 @@ fn remember_source(file: FileId, code: &str) {
 thread_local! {
     /// Other files' sources whose symbols a file analysed on its own sees (tests: Rector's fixture `Source/` classes).
     static SOURCES: RefCell<Vec<(String, String)>> = const { RefCell::new(Vec::new()) };
-    /// Facts belong to a path, source, PHP version and project snapshot, not just source bytes.
-    static LAST: RefCell<Option<Rc<Facts>>> = const { RefCell::new(None) };
-    /// [`LAST`] for the facts that analyse dead code.
-    static LAST_DEAD: RefCell<Option<Rc<Facts>>> = const { RefCell::new(None) };
 }
 
 /// Run `f` with the symbols of `sources` (path, code) visible to the files analysed on their own on this thread.
 pub fn with_sources<R>(sources: Vec<(String, String)>, f: impl FnOnce() -> R) -> R {
     SOURCES.with(|s| *s.borrow_mut() = sources);
-    LAST.with(|l| *l.borrow_mut() = None);
-    LAST_DEAD.with(|l| *l.borrow_mut() = None);
     let result = f();
     SOURCES.with(|s| s.borrow_mut().clear());
-    LAST.with(|l| *l.borrow_mut() = None);
-    LAST_DEAD.with(|l| *l.borrow_mut() = None);
     result
 }
 
@@ -395,8 +387,6 @@ pub(crate) struct Facts {
     pub codebase: Arc<CodebaseMetadata>,
     /// The codebase as written, docblocks read (see [`ProjectCodebase`]).
     documented: Arc<CodebaseMetadata>,
-    /// Retain the cache identity, so allocator address reuse cannot alias a later project.
-    project: Option<Arc<ProjectCodebase>>,
     path: String,
     /// The file's source with its docblocks blanked out.
     native_source: String,
@@ -1186,21 +1176,17 @@ pub(crate) fn without_docblocks(code: &str) -> String {
     String::from_utf8(bytes).unwrap_or_else(|_| code.to_string())
 }
 
-/// The facts of the file `ctx` is about.
+/// The facts of the file `ctx` is about, built once per file.
 pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
-    cached(ctx, &LAST, false)
+    Rc::clone(ctx.facts.get_or_init(|| build(ctx, false)))
 }
 
 /// [`facts`] whose analysis reaches the code after a `return` and the `catch` blocks no throw point reaches.
 pub(crate) fn facts_with_dead_code(ctx: &Context<'_>) -> Rc<Facts> {
-    cached(ctx, &LAST_DEAD, true)
+    Rc::clone(ctx.dead_code_facts.get_or_init(|| build(ctx, true)))
 }
 
-fn cached(
-    ctx: &Context<'_>,
-    last: &'static std::thread::LocalKey<RefCell<Option<Rc<Facts>>>>,
-    dead_code: bool,
-) -> Rc<Facts> {
+fn build(ctx: &Context<'_>, dead_code: bool) -> Rc<Facts> {
     let mut pending = PENDING.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(build) = pending.take() {
         set_project_codebase(Some(build()));
@@ -1211,27 +1197,7 @@ fn cached(
         .unwrap_or_else(|e| e.into_inner())
         .as_ref()
         .map(Arc::clone);
-    let cached = last.with(|l| {
-        l.borrow()
-            .as_ref()
-            .filter(|facts| {
-                facts.version == php_version_of(ctx.php_version)
-                    && facts.path == ctx.path.to_string_lossy()
-                    && facts.source == ctx.source
-                    && match (&facts.project, &project) {
-                        (Some(old), Some(current)) => Arc::ptr_eq(old, current),
-                        (None, None) => true,
-                        _ => false,
-                    }
-            })
-            .map(Rc::clone)
-    });
-    if let Some(facts) = cached {
-        return facts;
-    }
-    let facts = Rc::new(scan(ctx, project, dead_code));
-    last.with(|l| *l.borrow_mut() = Some(Rc::clone(&facts)));
-    facts
+    Rc::new(scan(ctx, project, dead_code))
 }
 
 fn php_version_of(id: u32) -> PHPVersion {
@@ -1327,7 +1293,6 @@ fn refresh_closures(
 /// The facts of a file: shared project declarations with current anonymous signatures.
 fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>, dead_code: bool) -> Facts {
     let path = ctx.path.to_string_lossy().into_owned();
-    let identity = project.clone();
     let project = project.unwrap_or_else(|| {
         let mut files: Vec<(String, String)> = SOURCES.with(|s| s.borrow().clone());
         files.push((path.clone(), ctx.source.to_string()));
@@ -1338,7 +1303,6 @@ fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>, dead_code: boo
     Facts {
         codebase: refresh_closures(&project.native, &path, &native_source, version),
         documented: refresh_closures(&project.documented, &path, ctx.source, version),
-        project: identity,
         path,
         native_source,
         source: ctx.source.to_string(),

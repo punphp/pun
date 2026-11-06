@@ -48,7 +48,7 @@ impl Rule for AddParamTypeSplFixedArray {
                 &m.parameter_list
             }
         };
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
+        let Some(annotated) = Annotated::of(ctx, node, ancestors) else {
             return;
         };
         let mut appended: Vec<String> = Vec::new();

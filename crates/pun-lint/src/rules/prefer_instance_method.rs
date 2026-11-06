@@ -50,7 +50,6 @@ impl Rule for PreferInstanceMethod {
         if !methods.iter().any(|m| is_candidate(m)) {
             return;
         }
-        let source = ctx.source;
         let class_name = if class.is_anonymous {
             String::new()
         } else {
@@ -100,7 +99,7 @@ impl Rule for PreferInstanceMethod {
             }
             converted.push(node_span(*method));
             for (span, arguments) in calls {
-                edits.push(this_call(source, span, arguments, name));
+                edits.push(this_call(ctx, span, arguments, name));
             }
             let modifiers = (method.modifiers.first())
                 .map(|m| node_span(m).start)
@@ -270,9 +269,10 @@ fn is_never_called(class: Node<'_, '_>, name: &[u8]) -> bool {
 
 /// `new MethodCall(new Variable('this'), $classMethodName, $node->args)`, printed in place of the call at `span`
 /// whose arguments start at `from` and are at `items`.
-fn this_call(source: &str, span: Span, (from, items): (usize, Vec<Span>), name: &[u8]) -> Edit {
+fn this_call(ctx: &crate::Context<'_>, span: Span, (from, items): (usize, Vec<Span>), name: &[u8]) -> Edit {
+    let source = ctx.source;
     let indent = line_indent(source, span.start);
-    let args = maybe_multiline(source, from, &items, indent);
+    let args = maybe_multiline(ctx, from, &items, indent);
     let name = String::from_utf8_lossy(name);
     Edit::new(span, format!("$this->{name}({args})"))
 }
