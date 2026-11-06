@@ -37,7 +37,7 @@ pub fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let Some(context) = c.class_scope() else { return };
-    let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = missing_types::declaring(c, m.span()) else { return };
     let this = (!m.modifiers.contains_static())
         .then(|| Type::Object(declared::original_name(context), vec![], false));
     let own = c.doc_before(c.file.id, m.span().start.offset).map(|(_, entry)| entry).filter(|entry| !asserts(&entry.phpdoc).is_empty());

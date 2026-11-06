@@ -194,8 +194,9 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
     let context = c
         .class_scope()
         .expect("method is walked in a class context");
-    let declaring =
-        missing_types::declaring(c, m.span()).expect("method belongs to its class or trait");
+    let Some(declaring) = missing_types::declaring(c, m.span()) else {
+        return;
+    };
     let (purity, unless_callable, unless_passed) =
         declared::method_purity(c, context, m.name.value);
     if purity.is_none() && !unless_callable && !unless_passed {
@@ -507,8 +508,9 @@ fn void_pure_method(c: &mut Checker, m: &Method, body: &Block) {
     let context = c
         .class_scope()
         .expect("method is walked in a class context");
-    let declaring =
-        missing_types::declaring(c, m.span()).expect("method belongs to its class or trait");
+    let Some(declaring) = missing_types::declaring(c, m.span()) else {
+        return;
+    };
     // Inherited conditional-parameter maps and trait adaptations need complete reflection metadata.
     if declaring.kind == SymbolKind::Trait
         || !context.used_traits.is_empty()

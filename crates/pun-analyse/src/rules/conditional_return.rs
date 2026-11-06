@@ -32,7 +32,7 @@ pub fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let Some(context) = c.class_scope() else { return };
-    let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
     let errors = declared::with_classes(c, || check(&declared::method(c, m, declaring, context)));
     for (identifier, message) in errors {
         c.report(m.span(), identifier, message, None);

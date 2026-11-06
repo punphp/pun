@@ -33,6 +33,9 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     // Calling a `callable(A|B, int): B` parameter infers its own A and B again from the arguments, so the result is A
     // where PHPStan keeps the function's B: the return reads `TReduceInitial`, not `TReduceInitial|TReduceReturnType`
     ("max", "template-self-reference.php", 32, "return.type"),
+    // PHPStan reflects each declaration of a duplicated class name; the codebase keeps one class-like per name, so
+    // the methods of the other declaration have no metadata to check
+    ("duplicate-classes", "a.php", 3, "missingType.return"),
 ];
 
 /// Errors Pun reports where PHPStan does not, by an inference difference (case directory, file, line, identifier).

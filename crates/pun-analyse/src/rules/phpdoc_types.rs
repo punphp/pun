@@ -251,7 +251,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     };
     let doc = &entry.doc;
     let Some(context) = c.class_scope() else { return };
-    let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
     let display = c.member_scope().1;
     let errors = declared::with_classes(c, || {
         let scope = declared::method_scope(c, m, doc, declaring, context);
@@ -349,7 +349,7 @@ pub fn promoted(c: &mut Checker, m: &Method) {
         return;
     }
     let Some((context, display)) = c.class_scope().map(|_| c.member_scope()) else { return };
-    let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
     for p in m.parameter_list.parameters.iter().filter(|p| p.is_promoted_property()) {
         let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
         let errors = declared::with_classes(c, || {

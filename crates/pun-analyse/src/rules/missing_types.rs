@@ -363,8 +363,9 @@ pub fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let (context, display) = c.member_scope();
-    let declaring =
-        declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = declaring(c, m.span()) else {
+        return;
+    };
     let name = c
         .renamed
         .as_ref()
@@ -385,7 +386,8 @@ pub fn method(c: &mut Checker, m: &Method) {
     report(c, m.span(), found);
 }
 
-/// The class-like the method at `span` is declared in: the class being walked or one of its traits.
+/// The class-like the method at `span` is declared in: the class being walked or one of its traits. None for a
+/// second declaration of a class name, whose metadata the codebase does not keep.
 pub(super) fn declaring<'a>(
     c: &Checker<'a, '_>,
     span: mago_span::Span,

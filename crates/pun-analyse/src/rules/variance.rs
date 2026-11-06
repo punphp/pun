@@ -212,7 +212,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
         return;
     }
     let (k, display) = c.member_scope();
-    let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
     let skip = m.modifiers.contains_private() || method.eq_ignore_ascii_case("__construct");
     let subject = format!("method {display}::{method}()");
     parameters_acceptor(c, m.span(), "method", &subject, |c| declared::method(c, m, declaring, k), skip);
@@ -269,7 +269,7 @@ pub fn promoted(c: &mut Checker, m: &Method) {
             super::declarations::has_tag(&entry.names, super::declarations::READONLY_TAGS)
         });
     let (k, _) = c.member_scope();
-    let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
     for (i, p) in m.parameter_list.parameters.iter().enumerate() {
         let hooks = p.hooks.as_ref().map_or(&[][..], |h| h.hooks.as_slice());
         if (p.modifiers.is_empty() && hooks.is_empty()) || p.modifiers.contains_private() {

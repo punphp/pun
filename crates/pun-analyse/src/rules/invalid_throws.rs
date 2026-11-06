@@ -43,12 +43,10 @@ pub fn function(c: &mut Checker, function: &Function) {
 
 /// `InClassMethodNode`: the method's own tags, resolved in the declaring trait's/using class's context.
 pub fn method(c: &mut Checker, method: &Method) {
-    check(c, method.span(), |c, entry| {
-        let context = c.class_scope().expect("a method has a class scope");
-        let declaring =
-            super::missing_types::declaring(c, method.span()).expect("a method has a declaration");
-        declared::method_scope(c, method, &entry.doc, declaring, context)
-    });
+    let (Some(context), Some(declaring)) = (c.class_scope(), super::missing_types::declaring(c, method.span())) else {
+        return;
+    };
+    check(c, method.span(), |c, entry| declared::method_scope(c, method, &entry.doc, declaring, context));
 }
 
 /// The anonymous `InClassNode` starts at its attributes/modifiers/`class`, not its enclosing `new` expression.

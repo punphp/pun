@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "a.php",
+   "line": 3,
+   "identifier": "missingType.return",
+   "message": "Method Dup::f() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "b.php",
+   "line": 4,
+   "identifier": "missingType.return",
+   "message": "Method Dup::g() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "b.php",
+   "line": 4,
+   "identifier": "missingType.parameter",
+   "message": "Method Dup::g() has parameter $x with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "b.php",
+   "line": 6,
+   "identifier": "impure.echo",
+   "message": "Impure echo in pure method Dup::h().",
+   "tip": null
+  },
+  {
+   "file": "b.php",
+   "line": 6,
+   "identifier": "pureMethod.void",
+   "message": "Method Dup::h() is marked as pure but returns void.",
+   "tip": null
+  }
+ ]
+}
