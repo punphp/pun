@@ -268,10 +268,7 @@ impl Comments {
             }
             let i = self.closing(end)?;
             match self.doc[i] {
-                NONE => match self.plain[i] {
-                    NONE => return None,
-                    start => end = start as usize,
-                },
+                NONE => end = Some(self.plain[i]).filter(|&s| s != NONE)? as usize,
                 d => {
                     let (start, end, entry) = &self.docs[d as usize];
                     return Some((&contents[*start as usize..*end as usize], entry));
@@ -303,10 +300,7 @@ impl Comments {
             if !contents[..end].ends_with(b"*/") {
                 return None;
             }
-            let start = match self.plain[self.closing(end)?] {
-                NONE => return None,
-                start => start as usize,
-            };
+            let start = Some(self.plain[self.closing(end)?]).filter(|&s| s != NONE)? as usize;
             let comment = &contents[start..end];
             // PHP's T_DOC_COMMENT: `/**` and whitespace
             if comment.starts_with(b"/**") && comment.get(3).is_some_and(u8::is_ascii_whitespace) {

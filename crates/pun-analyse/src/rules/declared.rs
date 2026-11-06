@@ -166,13 +166,11 @@ fn trait_templates(
     }
     let trait_name = original_name(t);
     let mut args: Option<Vec<Type>> = None;
-    // (the class's file is an analysed one)
-    let Some(facts) = c.file_facts(context.span.file_id) else {
-        return Vec::new();
-    };
+    let (start, end) = (context.span.start.offset, context.span.end.offset);
+    let scopes = c.file_facts(context.span.file_id).map(|f| &f.scopes);
     let scope = scope_at(c, context.span, Some(context));
-    for (offset, names) in facts.scopes.trait_uses(context.span.start.offset, context.span.end.offset) {
-        let names_here = facts.scopes.at(*offset);
+    for (scopes, (offset, names)) in scopes.iter().flat_map(|s| s.trait_uses(start, end).map(move |u| (*s, u))) {
+        let names_here = scopes.at(*offset);
         let uses_it = names.iter().any(|n| {
             let (resolved, _) =
                 names_here.resolve(mago_names::kind::NameKind::Default, n.as_bytes());
