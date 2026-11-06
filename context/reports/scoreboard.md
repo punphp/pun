@@ -350,6 +350,11 @@ class, so `rector-ported` runs the same, much larger, set of Rector rules.
 - laravel-framework's `rector-ported` took more than 30 minutes per run and was stopped.
 - `pun lint` with every Rector-mapped rule is 11x faster than Rector on Pinkary but takes 81 s on laravel-framework,
   where it took 0.06 s with two rules: some ported rule is far slower than the others there.
+- Fixed the same day: rules re-lexed the whole file for every node they inspected (the doc comment lookups, the
+  PHPUnit annotations, the previous token before a statement), and every class name lookup rebuilt the scope's
+  `use` imports as strings. Each file is now lexed once into its `Context`, and names match the `use` items in
+  place. laravel-framework lint with the same 451 rules: 72 s to 27 s on one profiling build, output byte-identical.
+  What is left is Mago's per-file type analysis and parsing; no single rule stands out.
 
 ### Lint perf rounds
 
