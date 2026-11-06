@@ -172,7 +172,7 @@ ANALYSE = {
     "pest": (["phpstan-pest-extension.neon", "vendor/pestphp/pest-plugin-phpstan/extension.neon"], ["src"], []),
     "laravel-pint": (["vendor/larastan/larastan/extension.neon"], ["app", "bootstrap", "config", "resources"], []),
 }
-# project -> its PHPStan excludePaths, for pun-bench-analyse.toml
+# project -> its PHPStan excludePaths, created in `pun migrate`'s scratch directory so the excludes it writes resolve
 ANALYSE_EXCLUDE = {"laravel-framework": ["src/Illuminate/Testing/ParallelRunner.php", "src/*/views/*"]}
 # project -> the paths of its rector.php
 LINT = {
@@ -241,7 +241,7 @@ def setup(name: str) -> Path:
     return work
 
 
-def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> None:
+def write_configs(mode: str, name: str, work: Path, rector_rules: list[str], pun: str, env: dict) -> None:
     if mode == "analyse":
         includes, paths, extra = ANALYSE[name]
         for kind in ["cold", "warm"]:
@@ -251,10 +251,22 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
             (work / f"pun-bench-{kind}.neon").write_text("\n".join(lines) + "\n")
         (work / "pun-bench-mago.toml").write_text(
             "[source]\npaths = [" + ", ".join(f'"{p}"' for p in paths) + ']\nincludes = ["vendor"]\n')
-        # Pun reads only pun.toml: the same paths and excludes, PHPStan level 0's preset.
-        exclude = ", ".join(f'"{e}"' for e in ANALYSE_EXCLUDE.get(name, []))
-        (work / "pun-bench-analyse.toml").write_text(
-            '[analyse]\npreset = "basic"\npaths = [' + ", ".join(f'"{p}"' for p in paths) + f"]\nexclude = [{exclude}]\n")
+        # Pun reads only pun.toml: what `pun migrate` writes from the same neon, so it runs the rules PHPStan runs there
+        with tempfile.TemporaryDirectory() as tmp:
+            mig = Path(tmp)
+            (mig / "phpstan.neon").write_text("\n".join(l for l in lines if not l.lstrip().startswith("tmpDir:")) + "\n")
+            for f in ["composer.json", "composer.lock", *(i for i in includes if not i.startswith("vendor/"))]:
+                if (work / f).exists():
+                    shutil.copy(work / f, mig / f)
+            for p in paths:
+                (mig / p).mkdir(parents=True, exist_ok=True)
+            (mig / "vendor").symlink_to(work / "vendor")
+            for e in ANALYSE_EXCLUDE.get(name, []):
+                if "*" not in e and (work / e).is_file():
+                    (mig / e).parent.mkdir(parents=True, exist_ok=True)
+                    (mig / e).touch()
+            subprocess.run([os.path.abspath(pun), "migrate", "--yes"], cwd=mig, env=env, check=True, capture_output=True)
+            shutil.copy(mig / "pun.toml", work / "pun-bench-analyse.toml")
     else:
         # Only the lint rules that have a Rector class, at `error`: the rules Rector runs here too, for a like-for-like
         # comparison (Pun's other rules, from PHP-CS-Fixer, Mago and PHPStan, have no Rector counterpart).
@@ -425,7 +437,7 @@ def bench_mode(mode: str) -> None:
         except (RuntimeError, subprocess.CalledProcessError) as e:
             skipped.append(f"{name}: {e}")
             continue
-        write_configs(mode, name, work, rector_rules)
+        write_configs(mode, name, work, rector_rules, pun, env)
         if os.environ.get("SETUP_ONLY") == "1":
             print(f"set up {work}", file=sys.stderr)
             continue
