@@ -30,6 +30,7 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Access;
+use mago_syntax::cst::Call;
 use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::Unset;
@@ -541,8 +542,9 @@ fn write_back<'ctx, 'arena, A: Arena>(
     if matches!(receiver, Expression::Access(Access::Property(_) | Access::StaticProperty(_))) {
         artifacts.property_offset_writes.insert(receiver.span(), value.clone());
     }
-    // A missing stored link cannot be re-evaluated as part of a virtual assignment.
-    if !matches!(receiver, Expression::ArrayAccess(_))
+    // A missing stored link cannot be re-evaluated as part of a virtual assignment, and AssignHandler writes nothing
+    // to a function call, whose remembered value an unset leaves alone.
+    if !matches!(receiver, Expression::ArrayAccess(_) | Expression::Call(Call::Function(_)))
         && let Some(root) = get_block_expression_id(receiver, context, block_context)
     {
         // AssignHandler's virtual assignment updates intertwined variables too. Copies are not

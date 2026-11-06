@@ -813,8 +813,10 @@ function exercise(ProviderTarget|OtherTarget $target): void {
         let artifacts = outcome.unwrap();
         for (call, expected) in [
             ("$target->provided(++$i)", "73"),
-            ("$target->magic(++$i)", "73|bool"),
-            ("$target->withoutProvider(++$i)", "bool|string"),
+            // UnionType::getMethod() keeps the members that have the method, and a call no member has a method
+            // for is an ErrorType: `__call()` alone gives PHPStan no method reflection.
+            ("$target->magic(++$i)", "73"),
+            ("$target->withoutProvider(++$i)", "*ERROR*"),
         ] {
             let start = SOURCE
                 .windows(call.len())

@@ -1,12 +1,12 @@
-//! PHPStan 2.3.1's DumpTypeRule and DumpPhpDocTypeRule at level 0. The oracle fixture includes the deferred debug
-//! rules' diagnostics so their calls also check that this slice does not accidentally implement them.
+//! PHPStan 2.3.1's DumpTypeRule, DumpPhpDocTypeRule and FileAssertRule at level 0. The oracle fixture includes the
+//! deferred debug rules' diagnostics (dumpNativeType, debugScope) so their calls also check that they stay unreported.
 
 use std::path::Path;
 
 use pun_analyse::{Project, run};
 use serde_json::Value;
 
-const DUMPS: &[&str] = &["phpstan.dumpType", "phpstan.dumpPhpDocType"];
+const DUMPS: &[&str] = &["phpstan.dumpType", "phpstan.dumpPhpDocType", "phpstan.type"];
 
 fn check(file: &str) {
     type Diagnostic = (i64, String, String, Option<String>, bool);
@@ -16,7 +16,7 @@ fn check(file: &str) {
         errors.iter().all(
             |e| !e.identifier.starts_with("phpstan.") || DUMPS.contains(&e.identifier.as_str())
         ),
-        "deferred assertion/native/scope rules must not report: {errors:?}"
+        "deferred native/scope rules must not report: {errors:?}"
     );
     let selected = |id: &str| {
         DUMPS.contains(&id) || matches!(id, "arguments.count" | "ignore.unmatchedIdentifier")

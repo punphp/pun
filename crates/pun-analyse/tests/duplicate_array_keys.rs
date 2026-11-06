@@ -365,7 +365,7 @@ function objectShape(object $shape): void {}
         .keys()
         .map(|key| key.get_string().unwrap())
         .collect();
-    assert_eq!(keys, [b"+1.5".as_slice(), b"-1.5", b"1.5", b"name"]);
+    assert_eq!(keys, [b"1.5".as_slice(), b"+1.5", b"-1.5", b"name"]);
 
     let object = codebase.get_function(b"objectshape").unwrap();
     let object = &object.parameters[0]

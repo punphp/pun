@@ -25,6 +25,7 @@ Run these checks in this order, cheapest first:
 ```sh
 cargo test -p punphp-<x>
 cargo test -p punphp-fixers <substring>
+scripts/analyse-tests.sh
 cargo build -p punphp -p punphp-harness
 target/debug/pun-harness format --corpus pinkary --diffs 5
 scripts/cli-parity.sh "ARGS"...
@@ -33,6 +34,7 @@ scripts/coverage.sh punphp-tokens
 ```
 
 - Package `punphp-<x>` lives in `crates/pun-<x>` and is imported as `pun_<x>`.
+- `scripts/analyse-tests.sh` builds every `punphp-analyse` test target once and runs the binaries in parallel. Every target must pass. `SKIP="levels rules"` leaves out the two slowest while you iterate.
 - `PUN_FIXERS_ONLY=a,b` makes `build.rs` compile only fixers `a` and `b`.
 - `pun-harness` compares Pint with `pun migrate` followed by `pun check --fix`. Add `--fixer <name>` to test one rule.
 - `scripts/cli-parity.sh` compares the exit codes, machine formats, and resulting files of Pint and `pun` byte for byte.

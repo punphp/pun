@@ -718,28 +718,29 @@ where
                     );
                 }
 
-                if signature_handled {
-                    fetch_declared_invocation_return_type(
-                        context,
-                        &invocation,
-                        &invocation_template_result,
-                        &parameter_types,
-                    )
-                } else {
+                if !signature_handled {
                     // MethodCallHandler::resolveReturnType(): PHPStan reflects no method that `__call()` or
-                    // `__callStatic()` alone would handle, so the call is an ErrorType
-                    get_error()
+                    // `__callStatic()` alone would handle. UnionType::getMethod() keeps only the members that
+                    // have the method, so this member adds nothing unless no member has it (an ErrorType).
+                    continue;
                 }
+                fetch_declared_invocation_return_type(
+                    context,
+                    &invocation,
+                    &invocation_template_result,
+                    &parameter_types,
+                )
             }
         };
 
         resulting_type = Some(add_optional_union_type(return_type, resulting_type.as_ref(), context.codebase));
     }
 
-    let mut resulting_type = resulting_type.unwrap_or_else(get_mixed);
-    if let Some(existing_type) = artifacts.get_raw_expression_type(&span) {
-        resulting_type = add_optional_union_type(resulting_type, Some(existing_type), context.codebase);
-    }
+    let existing_type = artifacts.get_raw_expression_type(&span);
+    let resulting_type = match resulting_type {
+        Some(resulting_type) => add_optional_union_type(resulting_type, existing_type, context.codebase),
+        None => existing_type.cloned().unwrap_or_else(get_error),
+    };
 
     artifacts.set_resolved_expression_type(&span, resulting_type);
 

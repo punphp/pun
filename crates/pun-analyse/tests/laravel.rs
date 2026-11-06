@@ -70,29 +70,16 @@ fn dumped(parse_casts_method: bool) -> BTreeMap<u64, String> {
         .collect()
 }
 
-/// Larastan's dumps, except where the fixture says Pun differs on purpose: accessors (`get…Attribute()` and
-/// `Attribute` methods) are Larastan's ModelAccessorExtension, not ported, so the plugin leaves those attributes to
-/// Mago's `Model::__get()`, which is `mixed`.
+/// Larastan's dumps.
 fn expected(key: &str) -> BTreeMap<u64, String> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/laravel");
-    let probe = std::fs::read_to_string(root.join("app/Probe.php")).unwrap();
     let expected: Value =
         serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
     expected[key]
         .as_array()
         .unwrap()
         .iter()
-        .map(|e| {
-            let line = e[0].as_u64().unwrap();
-            let source = probe.lines().nth(line as usize - 1).unwrap();
-            let accessor = source.contains("legacy_attr") || source.contains("upper_accessor");
-            let ty = if accessor {
-                "mixed"
-            } else {
-                e[1].as_str().unwrap()
-            };
-            (line, ty.to_string())
-        })
+        .map(|e| (e[0].as_u64().unwrap(), e[1].as_str().unwrap().to_string()))
         .collect()
 }
 

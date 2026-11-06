@@ -181,7 +181,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn restore_inferred(&self, at: Span, actual: Type, source: Option<&Type>) -> Type {
         // MutatingScope::enterFunction/enterClassMethod converts parameter/return values to arguments.
         // An inline @var annotation does not: its source restores that distinct template strategy.
-        let ty = inferred_argument(&actual);
+        // A built-in function's templates (`sort(...)`'s TArray) belong to no scope that is entered.
+        let builtin = |t: &Template| {
+            t.scope.strip_prefix("function ").and_then(|name| name.strip_suffix("()"))
+                .is_some_and(|name| self.builtins.functions.contains_key(&name.to_ascii_lowercase()))
+        };
+        let ty = inferred_argument_in(&actual, &[], &builtin);
         source.map_or(ty.clone(), |source| {
             // a closure parameter without a type is the callable's parameter
             if matches!(ty, Type::Mixed { explicit: false }) && self.callback_parameter(at) {
@@ -1577,23 +1582,25 @@ fn explicit_mixed(t: Type) -> Type {
 
 /// Value-level templates, recursively through class strings, shapes, bounds and other inferred containers.
 fn inferred_argument(t: &Type) -> Type {
-    inferred_argument_in(t, &[])
+    inferred_argument_in(t, &[], &|_| false)
 }
 
-/// TemplateTypeHelper::toArgument(): templates owned by a callable remain parameters of that callable.
-fn inferred_argument_in(t: &Type, owned: &[Template]) -> Type {
+/// TemplateTypeHelper::toArgument(): templates owned by a callable, and the `kept` ones, remain parameters.
+fn inferred_argument_in(t: &Type, owned: &[Template], kept: &dyn Fn(&Template) -> bool) -> Type {
     match t {
         Type::Template(t) => Type::Template(Box::new(Template {
-            bound: inferred_argument_in(&t.bound, owned),
-            default: t.default.as_ref().map(|t| inferred_argument_in(t, owned)),
-            argument: t.scope != "anonymous function" && !owned.iter().any(|o| o.name == t.name && o.scope == t.scope),
+            bound: inferred_argument_in(&t.bound, owned, kept),
+            default: t.default.as_ref().map(|t| inferred_argument_in(t, owned, kept)),
+            argument: t.scope != "anonymous function"
+                && !owned.iter().any(|o| o.name == t.name && o.scope == t.scope)
+                && !kept(t),
             ..(**t).clone()
         })),
         Type::Callable(Some(s)) | Type::Closure(s) => {
             let owned: Vec<_> = owned.iter().chain(&s.templates).cloned().collect();
-            t.traverse(&|t| inferred_argument_in(t, &owned))
+            t.traverse(&|t| inferred_argument_in(t, &owned, kept))
         }
-        t => t.traverse(&|t| inferred_argument_in(t, owned)),
+        t => t.traverse(&|t| inferred_argument_in(t, owned, kept)),
     }
 }
 

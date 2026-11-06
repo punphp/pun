@@ -286,17 +286,18 @@ fn frontend_addition_preserves_complete_phpstan_diagnostics_including_level_ten(
 }
 
 #[test]
-fn addition_branch_does_not_change_mixed_subtraction_or_multiplication() {
+fn mixed_subtraction_and_multiplication_are_benevolent_numbers() {
+    // PHPStan 2.3.1 dumps `(float|int)` for `mixed - mixed` and `mixed * mixed` (resolveCommonMath()).
+    let mut number = TUnion::from_vec(vec![get_int().types[0].clone(), get_float().types[0].clone()]);
+    number.set_ignore_nullable_issues(true);
+    number.set_ignore_falsable_issues(true);
     for operator in ["-", "*"] {
         let source = format!(
             "<?php function example(mixed $left, mixed $right): mixed {{ return $left {operator} $right; }}"
         );
         let (artifacts, result) = analyze(&source, get_mixed(), get_mixed(), false, false);
         let binary = span(&source, &format!("$left {operator} $right"));
-        assert_eq!(
-            artifacts.get_expression_type(&binary).unwrap(),
-            &get_mixed()
-        );
+        assert_eq!(artifacts.get_expression_type(&binary).unwrap(), &number);
         // This pre-existing native diagnostic remains outside the bounded plus port.
         assert_eq!(
             result

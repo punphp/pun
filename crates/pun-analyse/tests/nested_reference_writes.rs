@@ -371,8 +371,10 @@ fn nested_reference_contract_preserves_values_results_and_observations() {
                     .iter()
                     .position(|byte| *byte == b'\n')
                     .map_or(source.len(), |offset| end + offset);
+                // The marker may sit inside the expression (`identity($copy /* probe-native */)`) or after it.
                 let native_available = native
-                    && String::from_utf8_lossy(&source[end..line_end]).contains("probe-native");
+                    && String::from_utf8_lossy(&source[span.start.offset as usize..line_end])
+                        .contains("probe-native");
                 let expected_native =
                     native_available.then(|| canonical(expected["native"].as_str().unwrap()));
                 if native_type != expected_native {

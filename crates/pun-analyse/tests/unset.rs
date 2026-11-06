@@ -1,4 +1,4 @@
-//! UnsetRule's public contract from PHPStan 2.3.1's rule fixtures and actual oracle output.
+//! UnsetRule against actual PHPStan 2.3.1 oracle output. tests/rules.rs runs the upstream UnsetRuleTest fixtures.
 
 use std::path::Path;
 
@@ -34,29 +34,6 @@ fn check(project: Project, expected: &Value) -> Result<(), String> {
             project.analysed, project.php_version
         ))
     }
-}
-
-#[test]
-fn upstream_unset_rule() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
-    let expected: Value =
-        serde_json::from_slice(&std::fs::read(root.join("Variables/UnsetRuleTest.json")).unwrap())
-            .unwrap();
-    let mut failures = Vec::new();
-    for case in expected["cases"].as_array().unwrap() {
-        let paths = |key: &str| {
-            case[key]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|p| root.join("data").join(p.as_str().unwrap()))
-                .collect()
-        };
-        if let Err(error) = check(Project::new(paths("files"), paths("scan")), &case["errors"]) {
-            failures.push(format!("{}: {error}", case["method"]));
-        }
-    }
-    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
 #[test]

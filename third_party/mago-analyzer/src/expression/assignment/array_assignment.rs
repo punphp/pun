@@ -101,8 +101,6 @@ where
         &mut current_type,
     )?;
 
-    let root_is_string = root_array_type.has_string();
-
     let mut key_values = Vec::new();
 
     let index_type = current_index.map(|current_index| {
@@ -113,7 +111,22 @@ where
         key_values = get_index_literal_types(index_type);
     }
 
-    let root_array_type = Rc::unwrap_or_clone(root_array_type);
+    let mut root_array_type = Rc::unwrap_or_clone(root_array_type);
+    // AssignHandler::produceArrayDimFetchAssignValueToWrite(): a container that is neither mixed nor an array is
+    // intersected with `array|ArrayAccess|null`, and `string` too for an integer offset, before the write.
+    let integer_offset = index_type.as_ref().is_some_and(|index| index.is_int());
+    let inaccessible = |atomic: &TAtomic| match atomic {
+        TAtomic::Scalar(TScalar::Bool(_) | TScalar::Integer(_) | TScalar::Float(_)) => true,
+        TAtomic::Scalar(TScalar::String(_)) => !integer_offset,
+        _ => false,
+    };
+    if !root_array_type.is_mixed()
+        && root_array_type.types.iter().any(|atomic| atomic.is_array() || atomic.is_null())
+        && root_array_type.types.iter().any(inaccessible)
+    {
+        root_array_type.types = root_array_type.types.iter().filter(|atomic| !inaccessible(atomic)).cloned().collect();
+    }
+    let root_is_string = root_array_type.has_string();
     let mut root_array_type = if !key_values.is_empty() {
         update_type_with_key_values(context, root_array_type, &current_type, &key_values, index_type.as_ref())
     } else if !root_is_string {

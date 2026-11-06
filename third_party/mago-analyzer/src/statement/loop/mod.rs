@@ -426,6 +426,12 @@ where
 
     let (mut assignment_map, first_variable_id) = get_assignment_map(pre_conditions, &post_expressions, statements);
     let repeated_variables = get_repeated_variables(pre_conditions, &post_expressions, statements);
+    let body_assigned = get_assignment_map(pre_conditions, &[], statements).0;
+    let update_only: BTreeSet<Word> = get_assignment_map(&[], &post_expressions, &[])
+        .0
+        .into_keys()
+        .filter(|variable_id| !body_assigned.contains_key(variable_id))
+        .collect();
     let assignment_depth_limit = context.settings.loop_assignment_depth_threshold as usize;
     let assignment_depth = if let Some(first_variable_id) = first_variable_id {
         get_assignment_map_depth(first_variable_id, &mut assignment_map, assignment_depth_limit)
@@ -860,9 +866,12 @@ where
             }
 
             // PHPStan's next pass starts from the entry scope joined with the back edge: a variable only the body
-            // defines is maybe defined there, with the body's type
+            // defines is maybe defined there, with the body's type. The back edge is the body's end, so a variable
+            // only a for loop's update expressions assign is not defined there (ForHandler).
             for variable_id in variables_to_remove {
-                if let Some(back_edge) = continue_context.locals.get(&variable_id) {
+                if update_only.contains(&variable_id) {
+                    continue_context.locals.remove(&variable_id);
+                } else if let Some(back_edge) = continue_context.locals.get(&variable_id) {
                     let mut maybe = (**back_edge).clone();
                     maybe.set_possibly_undefined(true, None);
                     continue_context.locals.insert(variable_id, Rc::new(maybe));

@@ -6,6 +6,7 @@ use mago_allocator::Arena;
 
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::metadata::function_like::ReflectedSideEffects;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::object::TObject;
@@ -369,9 +370,10 @@ fn get_extended_expression_id<'ast, 'arena>(
 }
 
 /// FuncCallHandler::isFuncCallNarrowable() with rememberPossiblyImpureFunctionValues: a call of a known function that
-/// may be pure (no `@phpstan-impure`, no `void` return; a built-in one only when it is pure) keeps its narrowed type
-/// while its expression is unchanged. Only calls whose arguments are all literal strings or integers are tracked, so
-/// no variable write can change them. The arguments are hashed, so that the id holds none of `[`, `-` and `:`.
+/// may be pure (no `@phpstan-impure`, no `void` return, and for a built-in one no side effects in PHPStan's reflection)
+/// keeps its narrowed type while its expression is unchanged. Only calls whose arguments are all literal strings or
+/// integers are tracked, so no variable write can change them. The arguments are hashed, so that the id holds none of
+/// `[`, `-` and `:`.
 pub fn get_remembered_function_call_id<'arena>(
     call: &FunctionCall<'arena>,
     resolved_names: &ResolvedNames<'arena>,
@@ -385,7 +387,10 @@ pub fn get_remembered_function_call_id<'arena>(
     let void = function.return_type_metadata.as_ref().is_some_and(|t| t.type_union.is_void());
     if void
         || function.declared_purity() == Some(false)
-        || (function.flags.is_built_in() && !function.flags.is_pure())
+        || function.reflected_side_effects.map_or_else(
+            || function.flags.is_built_in() && !function.flags.is_pure(),
+            |effects| effects == ReflectedSideEffects::Yes,
+        )
         || function.parameters.iter().any(|p| p.flags.is_by_reference())
     {
         return None;

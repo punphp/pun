@@ -179,7 +179,10 @@ def oracle():
             f.write(f"includes:\n    - vendor/larastan/larastan/extension.neon\nparameters:\n    level: 0\n"
                     f"    tmpDir: {tmp}\n    paths: [app/Probe.php]\n    parseModelCastsMethod: {parse}\n"
                     f"    databaseMigrationsPath: [{os.path.join(FIXTURE, 'database/migrations')}]\n")
-        env = {k: v for k, v in os.environ.items() if k not in ('CLAUDECODE', 'CLAUDE_CODE', 'AI_AGENT')}
+        # PHPStan's AgentDetector prints agent instructions before the JSON under these (as export-analyse-expected.py).
+        agents = {'AUGMENT_AGENT', 'AMP_CURRENT_THREAD_ID', 'AI_AGENT', 'CURSOR_TRACE_ID', 'CURSOR_AGENT', 'GEMINI_CLI',
+                  'CODEX_SANDBOX', 'CODEX_THREAD_ID', 'OPENCODE_CLIENT', 'OPENCODE', 'CLAUDECODE', 'CLAUDE_CODE', 'REPL_ID'}
+        env = {k: v for k, v in os.environ.items() if k not in agents}
         r = subprocess.run(['php', 'vendor/phpstan/phpstan/phpstan.phar', 'analyse', '-c', neon, '--error-format=json',
                             '--no-progress'], cwd=copy, env=env, capture_output=True, text=True)
         data = json.loads(r.stdout)

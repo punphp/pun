@@ -373,22 +373,29 @@ std::thread_local! {
 const PHPSTAN_SUPERGLOBALS: [&str; 9] =
     ["$GLOBALS", "$_SERVER", "$_GET", "$_POST", "$_FILES", "$_COOKIE", "$_SESSION", "$_REQUEST", "$_ENV"];
 
-fn phpstan_superglobal() -> Rc<TUnion> {
+/// `$_SESSION` stays possibly undefined (it only exists after session_start()), so `$_SESSION ?? 0` is
+/// `0|array<mixed>` as in PHPStan.
+fn phpstan_superglobal(name: &[u8]) -> Rc<TUnion> {
     // `array-key`, which Pun reads as PHPStan's benevolent `(int|string)`
-    Rc::new(mago_codex::ttype::get_keyed_array(mago_codex::ttype::get_arraykey(), mago_codex::ttype::get_explicit_mixed()))
+    let mut type_union =
+        mago_codex::ttype::get_keyed_array(mago_codex::ttype::get_arraykey(), mago_codex::ttype::get_explicit_mixed());
+    if name == b"$_SESSION" {
+        type_union.set_possibly_undefined(true, None);
+    }
+    Rc::new(type_union)
 }
 
 pub fn get_super_globals() -> WordMap<Rc<TUnion>> {
     let mut map = SUPERGLOBALS_MAP.with(|map| WordMap::clone(map));
     for name in PHPSTAN_SUPERGLOBALS {
-        map.insert(word(name), phpstan_superglobal());
+        map.insert(word(name), phpstan_superglobal(name.as_bytes()));
     }
     map
 }
 
 pub fn get_global_variable_type(variable_name: Word) -> Option<Rc<TUnion>> {
     if PHPSTAN_SUPERGLOBALS.iter().any(|name| name.as_bytes() == variable_name.as_bytes()) {
-        return Some(phpstan_superglobal());
+        return Some(phpstan_superglobal(variable_name.as_bytes()));
     }
     SUPERGLOBALS_MAP.with(|map| map.get(&variable_name).cloned())
 }

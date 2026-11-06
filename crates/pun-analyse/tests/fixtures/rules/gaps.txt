@@ -35,5 +35,4 @@ Methods/CallMethodsRuleTest::testBug6904
 Methods/CallMethodsRuleTest::testBug6917
 Properties/AccessPropertiesRuleTest::testTraitMixin
 Variables/UnsetRuleTest::testBug3391
-Variables/UnsetRuleTest::testBug7417
 Variables/UnsetRuleTest::testBug8113

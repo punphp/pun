@@ -171,6 +171,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         if extracts_variables {
             extract(context, block_context, artifacts, self);
         }
+        // MutatingScope::afterClearstatcacheCall(): `clearstatcache()` and `unlink()` forget the remembered results
+        // of the functions whose results PHP's stat cache holds.
+        if let Expression::Identifier(identifier) = self.function
+            && let name = identifier.value().rsplit(|b| *b == b'\\').next().unwrap_or_default()
+            && [b"clearstatcache".as_slice(), b"unlink"].iter().any(|f| name.eq_ignore_ascii_case(f))
+        {
+            const STAT: [&[u8]; 19] = [
+                b"stat", b"lstat", b"file_exists", b"is_writable", b"is_writeable", b"is_readable", b"is_executable",
+                b"is_file", b"is_dir", b"is_link", b"filectime", b"fileatime", b"filemtime", b"fileinode",
+                b"filegroup", b"fileowner", b"filesize", b"filetype", b"fileperms",
+            ];
+            // a remembered call's id is its function's lowercase name (namespaced as resolved), `#` and a hash
+            let stat = |key: mago_word::Word| {
+                let name = key.as_bytes().split(|b| *b == b'#').next().unwrap_or_default();
+                let name = name.rsplit(|b| *b == b'\\').next().unwrap_or_default();
+                key.as_bytes().contains(&b'#') && STAT.contains(&name)
+            };
+            block_context.stable_method_calls.retain(|key| !stat(*key));
+            block_context.stable_method_call_assertions.retain(|key, _| !stat(*key));
+            block_context.clauses.retain(|clause| !clause.possibilities.keys().copied().any(stat));
+        }
         if context.plugin_registry.has_function_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             context.plugin_registry.after_function_call(self, &mut hook_context)?;

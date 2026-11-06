@@ -3885,3 +3885,27 @@ The analyzer side of mago-codex's "Keyed array key order" patch: every keyed arr
   list shape kept its optional keys. Another sealed shape whose size can never be N goes too (CountNarrowingHelper
   skips an array whose getArraySize() N is no for), so `count($a) === 2` on `array{short: string}|array{long: string,
   details: string}` keeps the two-key shape.
+
+## Parity fixes for the pun-analyse tests outside the gate
+
+- `common/global.rs` `phpstan_superglobal()`: `$_SESSION` is possibly undefined, as it exists only after
+  session_start(). PHPStan types `$_SESSION ?? 0` as `0|array<mixed>`.
+- `utils/expression/mod.rs` `get_remembered_function_call_id()`: a built-in function is remembered unless PHPStan's
+  reflection says it has side effects (FuncCallHandler::isFuncCallNarrowable()). Pun's prelude now projects
+  NativeFunctionReflection's `hasSideEffects()` into `reflected_side_effects` for functions too. `defined()` has side
+  effects in functionMetadata.php, so `defined('X') || defined('X')` no longer reports its right side as always false.
+- `expression/call/method_call.rs` `analyze_undocumented_method_return_type()`: a union member that only `__call()` or
+  `__callStatic()` handles adds nothing to the call's type, as UnionType::getMethod() keeps only the members that have
+  the method. The call is an ErrorType only when no member has it. `(P|O)->magic()` is `int` when only `P` declares
+  `magic(): int`.
+- `statement/loop/mod.rs`: a variable that only a for loop's update expressions assign is removed before the next
+  pass, not kept as maybe defined. ForHandler's post-loop scope is the body's back edge, before the update
+  expressions, so PHPStan reports `Undefined variable` for it after the loop.
+- `expression/assignment/array_assignment.rs` `analyze()`: before an offset write, a container that is neither mixed
+  nor only an array loses its bool, int and float members, as produceArrayDimFetchAssignValueToWrite() intersects it
+  with `array|ArrayAccess|null`. `$data['foo'] = 'a'` on `array|bool|int` is `non-empty-array&hasOffsetValue(...)`.
+- `statement/unset.rs` `write_back()`: unsetting an offset of a function call writes nothing back. AssignHandler's
+  virtual assignment has no function-call target, so a remembered `listResult()` keeps its type for the next unset.
+- `expression/call/function_call.rs`: `clearstatcache()` and `unlink()` forget the remembered results of the stat-cache
+  functions (`filesize()`, `file_exists()`, `stat()` and the others in MutatingScope::afterClearstatcacheCall()), so a
+  second `filesize('f') > 50` after them is not always true.

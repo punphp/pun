@@ -209,14 +209,21 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
                 .functions
                 .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
     });
-    // NativeMethodReflection's effect is a reflection fact, not a stub PHPDoc annotation.
+    // NativeMethodReflection's and NativeFunctionReflection's effect is a reflection fact, not a stub PHPDoc
+    // annotation.
     for ((class, name), method) in &mut metadata.function_likes {
-        if let Some(reflected) = builtins
-            .classes
-            .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
-            .and_then(|class| class.methods.get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase()))
-        {
-            method.reflected_side_effects = Some(match reflected.side_effects.as_str() {
+        let name = String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase();
+        let effects = if class.is_empty() {
+            builtins.functions.get(&name).map(|function| &function.side_effects)
+        } else {
+            builtins
+                .classes
+                .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
+                .and_then(|class| class.methods.get(&name))
+                .map(|method| &method.side_effects)
+        };
+        if let Some(effects) = effects {
+            method.reflected_side_effects = Some(match effects.as_str() {
                 "Yes" => ReflectedSideEffects::Yes,
                 "No" => ReflectedSideEffects::No,
                 _ => ReflectedSideEffects::Maybe,

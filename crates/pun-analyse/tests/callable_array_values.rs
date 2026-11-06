@@ -196,23 +196,6 @@ function is_array(mixed $value): bool { return false; }
 /** @assert-if-true int $value */
 function is_int(mixed $value): bool { return false; }
 }
-namespace Psl\Async {
-/** @template T */
-class Awaitable {}
-function all(array $awaitables): array { return []; }
-function concurrently(array $tasks): array { return []; }
-}
-namespace Psl\Type {
-/** @template T */
-interface TypeInterface {}
-function shape(array $elements): mixed { return null; }
-}
-namespace Psl\Regex {
-function capture_groups(array $groups): mixed { return null; }
-}
-namespace Flow\Types\DSL {
-function type_structure(array $elements): mixed { return null; }
-}
 namespace Probe {
 function malformed(): void {
     \array_map();
@@ -220,24 +203,10 @@ function malformed(): void {
     \array_map(null, 1);
 }
 /**
- * @param \Psl\Async\Awaitable<int> $awaitable
- * @param array<string, \Psl\Async\Awaitable<int>> $awaitables
- * @param array<string, \Closure(): int> $tasks
- * @param \Psl\Type\TypeInterface<int> $descriptor
  * @param list<int> $numbers
  * @param array<int, int> $open
  */
-function probe($awaitable, array $awaitables, array $tasks, $descriptor, array $numbers, array $open, int $index, callable $callback, mixed $mixed): void {
-    $a = \Psl\Async\all([$awaitable]);
-    $b = \Psl\Async\all(['key' => $awaitable]);
-    $c = \Psl\Async\all($awaitables);
-    $d = \Psl\Async\concurrently([fn (): int => 1]);
-    $e = \Psl\Async\concurrently(['key' => fn (): int => 1]);
-    $f = \Psl\Async\concurrently($tasks);
-    $g = \Psl\Type\shape([$descriptor]);
-    $h = \Psl\Type\shape(['key' => $descriptor]);
-    $i = \Psl\Regex\capture_groups(['name']);
-    $j = \Flow\Types\DSL\type_structure(['key' => $descriptor]);
+function probe(array $numbers, array $open, int $index, callable $callback, mixed $mixed): void {
     $k = \array_map(null, $numbers, $numbers);
     $l = \array_pad($numbers, 3, 4);
     $m = \array_is_list(['key' => 1]);
@@ -303,44 +272,12 @@ function probe($awaitable, array $awaitables, array $tasks, $descriptor, array $
     let call = r"\array_map(null, 1)";
     let start = source.find(call).unwrap() as u32;
     assert_eq!(artifacts.expression_types[&(start, start + call.len() as u32)].get_single_literal_int_value(), Some(1));
-    for (call, wrapped, minimum, strings) in [
-        (r"\Psl\Async\all([$awaitable])", false, 1, false),
-        (r"\Psl\Async\all(['key' => $awaitable])", false, 1, false),
-        (r"\Psl\Async\all($awaitables)", false, 0, false),
-        (r"\Psl\Async\concurrently([fn (): int => 1])", false, 1, false),
-        (r"\Psl\Async\concurrently(['key' => fn (): int => 1])", false, 1, false),
-        (r"\Psl\Async\concurrently($tasks)", false, 0, false),
-        (r"\Psl\Type\shape([$descriptor])", true, 1, false),
-        (r"\Psl\Type\shape(['key' => $descriptor])", true, 1, false),
-        (r"\Psl\Regex\capture_groups(['name'])", true, 2, true),
-        (r"\array_pad($numbers, 3, 4)", false, 3, false),
-        (
-            r"\Flow\Types\DSL\type_structure(['key' => $descriptor])",
-            true,
-            1,
-            false,
-        ),
-    ] {
-        let start = source.find(call).unwrap() as u32;
-        let ty = artifacts
-            .expression_types
-            .get(&(start, start + call.len() as u32))
-            .unwrap();
-        let ty = if wrapped {
-            &ty.get_single_named_object().unwrap().type_parameters.as_ref().unwrap()[0]
-        } else {
-            ty
-        };
-        let array = ty.get_single_array().unwrap();
-        assert!(array.callable().is_none(), "{call} must create an ordinary array");
-        assert_eq!(array.get_minimum_size(), minimum, "{call}");
-        let (_, values) = get_array_parameters(array, &codebase);
-        if strings {
-            assert!(values.is_string(), "{call}");
-        } else {
-            assert!(values.is_int(), "{call}");
-        }
-    }
+    let call = r"\array_pad($numbers, 3, 4)";
+    let start = source.find(call).unwrap() as u32;
+    let array = artifacts.expression_types[&(start, start + call.len() as u32)].get_single_array().unwrap();
+    assert!(array.callable().is_none(), "{call} must create an ordinary array");
+    assert_eq!(array.get_minimum_size(), 3, "{call}");
+    assert!(get_array_parameters(array, &codebase).1.is_int(), "{call}");
     let zipped_call = r"\array_map(null, $numbers, $numbers)";
     let start = source.find(zipped_call).unwrap() as u32;
     let zipped = &artifacts.expression_types[&(start, start + zipped_call.len() as u32)];
