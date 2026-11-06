@@ -1190,3 +1190,11 @@ PHPStan's ConstantArrayType keeps its keys in insertion order, and every shape i
 the type, whatever it was. PregMatchTypeSpecifyingExtension overwrites `$matches` with `array{}` in the falsey
 context; an `IsType` assertion only narrows, so `preg_match_all()`'s out type (no `array{}` member) kept its
 shape there. It has no negation (`Any`), and `is_negation_of()` is false.
+
+## Absorbed object intersections
+
+`ttype/mod.rs` `intersect_union_types()`: before combining the pairwise intersections, `drop_absorbed_intersections()`
+removes an object intersection that another named-object member contains, and the later of two equal ones (`A&B`
+and `B&A`). TypeCombinator::union() drops a member another one is a supertype of. Without it, narrowing a `mixed`
+through a chain of instanceof checks on unknown classes (Laravel's `Router::toResponse()` without `vendor/`)
+multiplied the union out to hundreds of `A&B&C` members per branch and did not finish.

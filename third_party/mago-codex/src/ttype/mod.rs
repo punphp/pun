@@ -1272,6 +1272,8 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         }
     }
 
+    drop_absorbed_intersections(&mut intersected_atomic_types, codebase);
+
     let mut combined_type: Option<TUnion> = None;
     if !intersected_atomic_types.is_empty() {
         let combined_vec = combiner::combine(intersected_atomic_types, codebase, combiner::CombinerOptions::default());
@@ -2342,6 +2344,66 @@ mod tests {
                     }
                 }
             }
+        }
+    }
+}
+
+/// Drops each object intersection that another member of the union already contains, as PHPStan's
+/// `TypeCombinator::union` removes a member when another one is a supertype of it. Without this, an
+/// intersection of two unions of interfaces multiplies out, and the next narrowing multiplies it again.
+/// Only plain names take part: `X1&X2…` is inside `Y1&Y2…` when every `Yj` is a parent of some `Xi`.
+fn drop_absorbed_intersections(atomics: &mut Vec<TAtomic>, codebase: &CodebaseMetadata) {
+    fn names(atomic: &TAtomic) -> Option<Vec<Word>> {
+        fn plain(named: &TNamedObject) -> bool {
+            named.type_parameters.is_none()
+                && named.subtracted_type.is_none()
+                && !named.is_static
+                && !named.is_this
+                && !named.is_exact
+        }
+        let TAtomic::Object(TObject::Named(root)) = atomic else {
+            return None;
+        };
+        if !plain(root) {
+            return None;
+        }
+        let mut names = vec![root.name.clone()];
+        for part in root.intersection_types.iter().flat_map(|parts| parts.iter()) {
+            match part {
+                TAtomic::Object(TObject::Named(part)) if plain(part) && part.intersection_types.is_none() => {
+                    names.push(part.name.clone());
+                }
+                _ => return None,
+            }
+        }
+        Some(names)
+    }
+
+    if atomics.len() < 2
+        || !atomics.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::Named(named)) if named.has_intersection_types()))
+    {
+        return;
+    }
+
+    let mut parts: Vec<_> = atomics.iter().map(names).collect();
+    let inside = |input: &[Word], container: &[Word]| {
+        container.iter().all(|parent| input.iter().any(|child| codebase.is_instance_of(child.as_bytes(), parent.as_bytes())))
+    };
+    let mut index = 0;
+    while index < parts.len() {
+        let absorbed = parts[index].as_deref().filter(|names| names.len() > 1).is_some_and(|input| {
+            parts.iter().enumerate().any(|(other, container)| {
+                other != index
+                    && container.as_deref().is_some_and(|container| {
+                        inside(input, container) && (other < index || !inside(container, input))
+                    })
+            })
+        });
+        if absorbed {
+            parts.remove(index);
+            atomics.remove(index);
+        } else {
+            index += 1;
         }
     }
 }

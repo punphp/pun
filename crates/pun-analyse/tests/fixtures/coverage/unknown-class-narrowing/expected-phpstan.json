@@ -1,0 +1,47 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "narrowing.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\PsrResponse not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "narrowing.php",
+   "line": 12,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\Model not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "narrowing.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\Stringable not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "narrowing.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\Arrayable not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "narrowing.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\Jsonable not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "narrowing.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Class InterfaceNarrowing\\SymfonyResponse not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

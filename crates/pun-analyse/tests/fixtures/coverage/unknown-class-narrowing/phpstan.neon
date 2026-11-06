@@ -1,0 +1,4 @@
+parameters:
+	level: max
+	phpVersion: 80500
+	paths: [.]
