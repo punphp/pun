@@ -3909,3 +3909,11 @@ The analyzer side of mago-codex's "Keyed array key order" patch: every keyed arr
 - `expression/call/function_call.rs`: `clearstatcache()` and `unlink()` forget the remembered results of the stat-cache
   functions (`filesize()`, `file_exists()`, `stat()` and the others in MutatingScope::afterClearstatcacheCall()), so a
   second `filesize('f') > 50` after them is not always true.
+
+## Closure::call()
+
+`expression/call/method_call.rs`: `(function () {...})->call($newThis, ...)` and the arrow-function form analyse the
+inline closure with `$this` as the first argument's type, as MethodCallHandler does with enterClosureCall(). The
+argument is analysed first on a scratch scope and artifacts inside `gather_callback()`, so it reports nothing and
+keeps no state (PHPStan's NoopNodeCallback pass), then again as call()'s argument. `call()` on any closure type
+returns the closure's return type (ClosureCallMethodReflection).

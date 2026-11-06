@@ -188,7 +188,16 @@ impl<'arena> Checker<'_, 'arena> {
 
     /// The class of `->call($newThis)`'s `$this`.
     pub(super) fn call_class(&self, args: &ArgumentList<'arena>) -> Option<String> {
-        self.bound_class_of(args.arguments.first()?.value(), false)
+        let new_this = args.arguments.first()?.value();
+        self.bound_class_of(new_this, false).or_else(|| {
+            // enterClosureCall() scopes the closure to `$thisType->getObjectClassNames()`
+            match self.type_of(new_this)?.types.as_ref() {
+                [mago_codex::ttype::atomic::TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(named))] => {
+                    Some(String::from_utf8_lossy(named.name.as_bytes()).into_owned())
+                }
+                _ => None,
+            }
+        })
     }
 
     /// The class an object expression is an instance of, or (`class_string`) the class a class string names.

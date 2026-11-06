@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use mago_allocator::Arena;
 use mago_word::Word;
 use mago_word::WordMap;
@@ -339,6 +341,11 @@ where
         block_context.called_methods.insert(method_name);
     }
 
+    // MethodCallHandler: `(fn () => ...)->call($newThis)` analyses the closure in enterClosureCall(), with `$this`
+    // as the first argument's type, read without reporting (the argument is analysed again as call()'s argument)
+    let closure_call = closure_call_scope(context, block_context, artifacts, object, selector, argument_list);
+    let outer_bind_scope =
+        closure_call.is_some().then(|| std::mem::replace(&mut artifacts.closure_bind_scope, closure_call));
     let mut method_resolution = if let Some(receiver) = receiver {
         let mut resolution = resolve_method_targets_after_receiver(
             context,
@@ -357,6 +364,9 @@ where
     } else {
         resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?
     };
+    if let Some(outer) = outer_bind_scope {
+        artifacts.closure_bind_scope = outer;
+    }
 
     // MethodCallHandler: capture the already-evaluated receiver before arguments
     // can overwrite an alias. Only a same-declaring-class constructor call qualifies.
@@ -528,6 +538,11 @@ where
     // Dynamic selectors remain mixed; resolved, magic and provider results have already been stored.
     if artifacts.get_expression_type(&span).is_none() {
         let return_type = if method_resolution.has_dynamic_selector { get_mixed() } else { get_error() };
+        artifacts.set_resolved_expression_type(&span, return_type);
+    }
+
+    // ClosureCallMethodReflection: call() returns the closure's own return type
+    if let Some(return_type) = closure_call_return(artifacts, object, selector) {
         artifacts.set_resolved_expression_type(&span, return_type);
     }
 
@@ -1512,3 +1527,67 @@ mod tests {
         ]
     }
 }
+
+/// The `$this` of MutatingScope::enterClosureCall() for `(function () {})->call($newThis, ...)` on an inline
+/// non-static closure: the first argument's type, evaluated without diagnostics or kept analysis state.
+fn closure_call_scope<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    object: &Expression<'arena>,
+    selector: &ClassLikeMemberSelector<'arena>,
+    argument_list: &ArgumentList<'arena>,
+) -> Option<crate::artifacts::ClosureBindScope>
+where
+    A: Arena,
+{
+    let ClassLikeMemberSelector::Identifier(method) = selector else {
+        return None;
+    };
+    if !method.value.eq_ignore_ascii_case(b"call")
+        || !matches!(
+            crate::utils::misc::unwrap_expression(object),
+            Expression::Closure(_) | Expression::ArrowFunction(_)
+        )
+    {
+        return None;
+    }
+    let new_this = argument_list.arguments.first()?.value();
+    let mut scratch_block = block_context.clone();
+    let mut scratch = artifacts.clone();
+    let analysed = context.gather_callback(|context| new_this.analyze(context, &mut scratch_block, &mut scratch));
+    analysed.ok()?;
+    let this_type = Rc::clone(scratch.get_rc_expression_type(new_this)?);
+    let class_name = this_type.types.iter().find_map(|atomic| match atomic {
+        TAtomic::Object(TObject::Named(named)) => Some(named.name),
+        TAtomic::Object(TObject::Enum(enumeration)) => Some(enumeration.name),
+        _ => None,
+    });
+    Some(crate::artifacts::ClosureBindScope {
+        class_name,
+        has_this: true,
+        native_this_type: scratch.get_rc_native_expression_type(&new_this.span()).cloned(),
+        this_type: Some(this_type),
+    })
+}
+
+/// ClosureCallMethodReflection: `call()` on a closure returns the closure's own return type.
+fn closure_call_return(
+    artifacts: &AnalysisArtifacts,
+    object: &Expression<'_>,
+    selector: &ClassLikeMemberSelector<'_>,
+) -> Option<TUnion> {
+    let ClassLikeMemberSelector::Identifier(method) = selector else {
+        return None;
+    };
+    if !method.value.eq_ignore_ascii_case(b"call") {
+        return None;
+    }
+    let [TAtomic::Callable(mago_codex::ttype::atomic::callable::TCallable::Signature(signature))] =
+        artifacts.get_expression_type(object)?.types.as_ref()
+    else {
+        return None;
+    };
+    signature.is_closure.then(|| signature.get_return_type().cloned().unwrap_or_else(get_mixed))
+}
+
