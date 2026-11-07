@@ -442,6 +442,58 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug15458",
+            "files": [
+                "Classes/data/bug-15458.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 7,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\E::A value mixed does not match the \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 12,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\IntBacked::A value mixed does not match the \"int\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 17,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\Mutual::A value mixed does not match the \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 18,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\Mutual::B value mixed does not match the \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 23,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\CrossA::A value mixed does not match the \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-15458.php",
+                    "line": 28,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug15458\\CrossB::B value mixed does not match the \"string\" type.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

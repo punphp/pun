@@ -435,6 +435,30 @@
             "general": []
         },
         {
+            "method": "testBug15442",
+            "files": [
+                "Functions/data/bug-15442.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15442.php",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function dummy not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-15442.php",
+                    "line": 19,
+                    "identifier": "function.notFound",
+                    "message": "Function dummy not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug11935WithCheckExplicitMixed",
             "files": [
                 "Functions/data/bug-11935.php"

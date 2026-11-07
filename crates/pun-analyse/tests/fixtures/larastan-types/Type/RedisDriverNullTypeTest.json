@@ -1,0 +1,19 @@
+{
+    "test": "Type/RedisDriverNullTypeTest",
+    "configs": [
+        "tests/Type/data/redis-driver-null.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/redis-driver-null.php",
+            "declares": [
+                "redisdrivernull\\test"
+            ],
+            "asserts": [
+                12,
+                15
+            ],
+            "errors": []
+        }
+    ]
+}

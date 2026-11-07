@@ -1626,6 +1626,32 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug14002",
+            "files": [
+                "Classes/data/bug-14002.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-14002.php",
+                    "line": 43,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new Bug14002\\Entity() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14002Part2",
+            "files": [
+                "Classes/data/bug-14002-2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

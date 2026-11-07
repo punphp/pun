@@ -851,7 +851,7 @@
             "general": []
         },
         {
-            "method": "testPossiblyImpureTip",
+            "method": "testRememberedPossiblyImpureValues",
             "files": [
                 "Classes/data/possibly-impure-instanceof-tip.php"
             ],
@@ -862,7 +862,7 @@
                     "line": 41,
                     "identifier": "instanceof.alwaysTrue",
                     "message": "Instanceof between PossiblyImpureInstanceofTip\\Cat and PossiblyImpureInstanceofTip\\Cat will always evaluate to true.",
-                    "tip": "If PossiblyImpureInstanceofTip\\Holder::maybeImpureMethod() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Classes/data/possibly-impure-instanceof-tip.php",

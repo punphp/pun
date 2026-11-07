@@ -1,0 +1,77 @@
+{
+    "test": "Rules/ModelRelationDefaultsRuleTest",
+    "cases": [
+        {
+            "method": "testDefaults",
+            "files": [
+                "Rules/data/model-relation-defaults.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 19,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 19,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in ModelRelationDefaults\\InvalidDefaults model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 20,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts  as  total' is not found in ModelRelationDefaults\\InvalidDefaults model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 20,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts.transactions' is not found in ModelRelationDefaults\\InvalidDefaults model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 20,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in ModelRelationDefaults\\InvalidDefaults model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 38,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'children' is not found in ModelRelationDefaults\\InvalidChild model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 38,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'children' is not found in ModelRelationDefaults\\InvalidChild model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 53,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/model-relation-defaults.php",
+                    "line": 61,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in ModelRelationDefaults\\ConstantDefaults model.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

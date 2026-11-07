@@ -808,6 +808,15 @@ class Grammar extends BaseGrammar
     {}
 
     /**
+     * Compile an "exists" subquery as a selectable column.
+     *
+     * @param  string  $sql
+     * @return string
+     */
+    public function compileExistsColumn($sql)
+    {}
+
+    /**
      * Compile an insert statement into SQL.
      *
      * @param  \Illuminate\Database\Query\Builder  $query

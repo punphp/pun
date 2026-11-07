@@ -268,6 +268,15 @@ class SqlServerGrammar extends Grammar
     {}
 
     /**
+     * Compile an "exists" subquery as a selectable column.
+     *
+     * @param  string  $sql
+     * @return string
+     */
+    public function compileExistsColumn($sql)
+    {}
+
+    /**
      * Compile an update statement without joins into SQL.
      *
      * @param  \Illuminate\Database\Query\Builder  $query
@@ -277,6 +286,17 @@ class SqlServerGrammar extends Grammar
      * @return string
      */
     protected function compileUpdateWithoutJoins(Builder $query, $table, $columns, $where)
+    {}
+
+    /**
+     * Compile an ordered "top" subquery used to limit an update or delete statement.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  string  $table
+     * @param  string  $where
+     * @return string
+     */
+    protected function compileTopSubquery(Builder $query, $table, $where)
     {}
 
     /**

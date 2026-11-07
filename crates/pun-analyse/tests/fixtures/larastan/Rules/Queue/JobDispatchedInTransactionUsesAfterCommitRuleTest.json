@@ -1,0 +1,21 @@
+{
+    "test": "Rules/Queue/JobDispatchedInTransactionUsesAfterCommitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/transaction-dispatch.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/Queue/data/transaction-dispatch.php",
+                    "line": 102,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Queue\\Data\\NotifyOwnerUsingAfterCommitContract does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

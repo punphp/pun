@@ -27,23 +27,30 @@
             "errors": [
                 {
                     "file": "Api/data/class-const-fetch-out-of-phpstan.php",
-                    "line": 16,
+                    "line": 19,
                     "identifier": "phpstanApi.classConstant",
                     "message": "Accessing PHPStan\\Command\\AnalyseCommand::class is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
                     "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
                 },
                 {
                     "file": "Api/data/class-const-fetch-out-of-phpstan.php",
-                    "line": 20,
+                    "line": 23,
                     "identifier": "classConstant.notFound",
                     "message": "Access to undefined constant PHPStan\\Analyser\\NodeScopeResolver::FOO.",
                     "tip": null
                 },
                 {
                     "file": "Api/data/class-const-fetch-out-of-phpstan.php",
-                    "line": 20,
+                    "line": 23,
                     "identifier": "phpstanApi.classConstant",
                     "message": "Accessing PHPStan\\Analyser\\NodeScopeResolver::FOO is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-const-fetch-out-of-phpstan.php",
+                    "line": 28,
+                    "identifier": "phpstanApi.classConstant",
+                    "message": "Accessing PHPStan\\Turbo\\TurboExtensionSelector::MINIMUM_PHP_VERSION_ID is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
                     "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
                 }
             ],

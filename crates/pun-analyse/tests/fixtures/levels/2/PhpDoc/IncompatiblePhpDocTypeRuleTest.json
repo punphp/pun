@@ -1249,6 +1249,30 @@
             "general": []
         },
         {
+            "method": "testObjectShapeTemplateKey",
+            "files": [
+                "PhpDoc/data/object-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/object-shape-template-key.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method ObjectShapeTemplateKeyPhpDoc\\Foo::stringKey() should return object but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/object-shape-template-key.php",
+                    "line": 43,
+                    "identifier": "return.missing",
+                    "message": "Method ObjectShapeTemplateKeyPhpDoc\\Foo::mixedKey() should return object but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testArrayShapeTemplateKey",
             "files": [
                 "PhpDoc/data/array-shape-template-key.php"
@@ -1350,6 +1374,44 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericObjectTypeInTemplateDefault",
+            "files": [
+                "PhpDoc/data/generic-object-type-template-default.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-object-type-template-default.php",
+                    "line": 16,
+                    "identifier": "generics.moreTypes",
+                    "message": "PHPDoc tag @template T default has type GenericObjectTypeTemplateDefault\\Box<int, string, bool> which specifies 3 template types, but class class supports only 0: 2",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-object-type-template-default.php",
+                    "line": 23,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type GenericObjectTypeTemplateDefault\\Box<int, string, bool> in PHPDoc tag @param for parameter $value specifies 3 template types, but class GenericObjectTypeTemplateDefault\\Box supports only 2: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-object-type-template-default.php",
+                    "line": 23,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type GenericObjectTypeTemplateDefault\\Box<int, string, bool> in PHPDoc tag @return specifies 3 template types, but class GenericObjectTypeTemplateDefault\\Box supports only 2: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-object-type-template-default.php",
+                    "line": 31,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type GenericObjectTypeTemplateDefault\\Box<int, string, bool> in PHPDoc tag @param for parameter $value specifies 3 template types, but class GenericObjectTypeTemplateDefault\\Box supports only 2: TKey, TValue",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

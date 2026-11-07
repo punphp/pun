@@ -1,0 +1,13 @@
+{
+    "test": "Rules/Queue/NoBatchedUniqueJobRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/batched-unique-jobs.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

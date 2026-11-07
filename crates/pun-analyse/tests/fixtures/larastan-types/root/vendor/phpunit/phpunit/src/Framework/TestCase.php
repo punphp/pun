@@ -877,7 +877,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      *
      * @param HookMethodsByType $hookMethods
      */
-    private function tearDownTest(array $hookMethods, ?Throwable $e): ?Throwable
+    private function tearDownTest(array $hookMethods, ?Throwable $e, bool $testSucceeded): ?Throwable
     {}
 
     private function registerAsPassed(): void

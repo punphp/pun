@@ -1,0 +1,13 @@
+{
+    "test": "Rules/Queue/UniqueJobDeclaresUniqueIdRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/unique-jobs.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

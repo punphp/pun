@@ -1862,6 +1862,23 @@
             "general": []
         },
         {
+            "method": "testObjectShapeTemplateKey",
+            "files": [
+                "Methods/data/object-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/object-shape-template-key.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method ObjectShapeTemplateKeyMethods\\Foo::stringKey() should return object but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testArrayShapeTemplateKey",
             "files": [
                 "Methods/data/array-shape-template-key.php"
@@ -3542,12 +3559,38 @@
             "general": []
         },
         {
+            "method": "testBug12820",
+            "files": [
+                "Methods/data/bug-12820.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testClassConstantWildcardArguments",
             "files": [
                 "Methods/data/class-constant-wildcard-arguments.php"
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDeadCatch",
+            "files": [
+                "Methods/data/dead-catch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 15,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallMethodsDeadCatch\\Foo::nonExistentMethod().",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

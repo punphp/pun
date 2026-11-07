@@ -285,6 +285,12 @@ class Table
     {}
 
     /**
+     * Gets the position in the given row of the cell that starts at the given column.
+     */
+    private function getCellPosition(array $row, int $column): int
+    {}
+
+    /**
      * Gets list of columns for the given row.
      */
     private function getRowColumns(array $row): array

@@ -118,12 +118,164 @@
             ]
         },
         {
+            "file": "tests/Type/data/arr-get-pull.php",
+            "declares": [
+                "arrgetpull\\arrgetpullaccess",
+                "arrgetpull\\arrgetpulloverridingarr",
+                "arrgetpull\\get",
+                "arrgetpull\\getliteraldotkeysandarrayaccess",
+                "arrgetpull\\overriddenget",
+                "arrgetpull\\pull",
+                "arrgetpull\\pullliteraldotkey",
+                "arrgetpull\\pullnumericstringkeys"
+            ],
+            "asserts": [
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                62,
+                63,
+                64,
+                65,
+                66,
+                69,
+                70,
+                71,
+                74,
+                75,
+                77,
+                78,
+                79,
+                82,
+                93,
+                94,
+                96,
+                97,
+                98,
+                110,
+                111,
+                114,
+                115,
+                118,
+                119,
+                123,
+                127,
+                128,
+                130,
+                131,
+                133,
+                134,
+                145,
+                149,
+                153,
+                159,
+                160,
+                175
+            ],
+            "errors": [
+                {
+                    "line": 55,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{foo: string, bar?: int, nullable: string|null, nested: array{deep: bool, maybe?: int}, word: string}.",
+                    "tip": null
+                },
+                {
+                    "line": 56,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{foo: string, bar?: int, nullable: string|null, nested: array{deep: bool, maybe?: int}, word: string}.",
+                    "tip": null
+                },
+                {
+                    "line": 64,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{deep: bool, maybe?: int}.",
+                    "tip": null
+                },
+                {
+                    "line": 65,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset '0' does not exist on string.",
+                    "tip": null
+                },
+                {
+                    "line": 74,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{foo: string, bar?: int, nullable: string|null, nested: array{deep: bool, maybe?: int}, word: string}.",
+                    "tip": null
+                },
+                {
+                    "line": 75,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{foo: string, bar?: int, nullable: string|null, nested: array{deep: bool, maybe?: int}, word: string}.",
+                    "tip": null
+                },
+                {
+                    "line": 79,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of static method Illuminate\\Support\\Arr::get() expects array|ArrayAccess, array<string, int>|null given.",
+                    "tip": null
+                },
+                {
+                    "line": 118,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{foo: string, bar?: int, nested: array{deep: bool, keep: int}, optional?: array{deep: bool}, nullable: array{deep: bool}|null, 'dot.key': int}.",
+                    "tip": null
+                },
+                {
+                    "line": 166,
+                    "identifier": "missingType.generics",
+                    "message": "Method ArrGetPull\\ArrGetPullOverridingArr::get() has parameter $array with generic interface ArrayAccess but does not specify its types: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "line": 166,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method ArrGetPull\\ArrGetPullOverridingArr::get() has parameter $array with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/arr-map.php",
+            "declares": [
+                "arrmapstub\\test"
+            ],
+            "asserts": [
+                14,
+                18,
+                19,
+                20,
+                25,
+                26
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/arrayable.php",
+            "declares": [
+                "arrayable\\counts",
+                "arrayable\\test",
+                "arrayable\\totals"
+            ],
+            "asserts": [
+                36,
+                37,
+                38,
+                39
+            ],
+            "errors": []
+        },
+        {
             "file": "tests/Type/data/auth.php",
             "declares": [
                 "auth\\test"
             ],
             "asserts": [
-                14,
                 15,
                 16,
                 17,
@@ -131,17 +283,22 @@
                 19,
                 20,
                 21,
-                22
+                22,
+                23,
+                24,
+                25,
+                26,
+                27
             ],
             "errors": [
                 {
-                    "line": 17,
+                    "line": 18,
                     "identifier": "method.void",
                     "message": "Result of method Illuminate\\Auth\\SessionGuard::logout() (void) is used.",
                     "tip": null
                 },
                 {
-                    "line": 22,
+                    "line": 27,
                     "identifier": "method.void",
                     "message": "Result of method Illuminate\\Auth\\SessionGuard::login() (void) is used.",
                     "tip": null
@@ -160,6 +317,114 @@
                 14
             ],
             "errors": []
+        },
+        {
+            "file": "tests/Type/data/builder-of-type.php",
+            "declares": [
+                "builderoftype\\abstractsubject",
+                "builderoftype\\childmodelwithstaticbuilder",
+                "builderoftype\\finalpostwithbuildermethod",
+                "builderoftype\\genericmethod",
+                "builderoftype\\genericmodel",
+                "builderoftype\\genericrelationshipbuilder",
+                "builderoftype\\modelwithabstractrelation",
+                "builderoftype\\modelwithneverquery",
+                "builderoftype\\modelwithrelationships",
+                "builderoftype\\modelwithstaticbuilder",
+                "builderoftype\\postwithbuildermethod",
+                "builderoftype\\test",
+                "builderoftype\\testabstractrelatedmodels",
+                "builderoftype\\testbarerelationshipbuilders",
+                "builderoftype\\testinheritedandgenericbuilders",
+                "builderoftype\\testmodeltypes",
+                "builderoftype\\testneverquery",
+                "builderoftype\\testrelatedmodeltypes",
+                "builderoftype\\testrelationshipbuilders",
+                "builderoftype\\testrelationshipfallbacks",
+                "builderoftype\\testrelationshiptemplates",
+                "builderoftype\\testrelationshipunions",
+                "builderoftype\\teststaticbuilderoutsideclass",
+                "builderoftype\\testunresolvedrelationshiptemplate"
+            ],
+            "asserts": [
+                19,
+                20,
+                21,
+                22,
+                24,
+                25,
+                26,
+                57,
+                58,
+                66,
+                67,
+                81,
+                82,
+                83,
+                84,
+                97,
+                106,
+                107,
+                108,
+                121,
+                133,
+                134,
+                135,
+                136,
+                137,
+                150,
+                151,
+                152,
+                153,
+                154,
+                155,
+                192,
+                193,
+                194,
+                195,
+                196,
+                197,
+                212,
+                213,
+                214,
+                215,
+                216,
+                217,
+                218,
+                219,
+                234,
+                235,
+                236,
+                237,
+                238,
+                239,
+                240,
+                241,
+                276,
+                293,
+                294,
+                295,
+                296,
+                297,
+                298,
+                299,
+                300,
+                301,
+                322,
+                328,
+                329,
+                330,
+                331,
+                332
+            ],
+            "errors": [
+                {
+                    "line": 259,
+                    "identifier": "return.type",
+                    "message": "Method BuilderOfType\\ModelWithRelationships::subject() should return Illuminate\\Database\\Eloquent\\Relations\\MorphTo<App\\Post|App\\Team, $this(BuilderOfType\\ModelWithRelationships<TValue>)> but returns Illuminate\\Database\\Eloquent\\Relations\\MorphTo<Illuminate\\Database\\Eloquent\\Model, $this(BuilderOfType\\ModelWithRelationships<TValue>)>.",
+                    "tip": null
+                }
+            ]
         },
         {
             "file": "tests/Type/data/bug-1346.php",
@@ -278,6 +543,31 @@
             ]
         },
         {
+            "file": "tests/Type/data/bug-2057.php",
+            "declares": [
+                "bug2057\\category",
+                "bug2057\\flatcollection",
+                "bug2057\\labelled",
+                "bug2057\\labelledcollection",
+                "bug2057\\node",
+                "bug2057\\tag",
+                "bug2057\\test",
+                "bug2057\\treecollection",
+                "bug2057\\treelikecollection"
+            ],
+            "asserts": [
+                100,
+                101,
+                102,
+                103,
+                105,
+                106,
+                108,
+                109
+            ],
+            "errors": []
+        },
+        {
             "file": "tests/Type/data/bug-2073.php",
             "declares": [
                 "bug2073\\modelcollection",
@@ -338,6 +628,23 @@
                 13,
                 14,
                 15
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/bug-2283.php",
+            "declares": [
+                "bug2283\\comment",
+                "bug2283\\test"
+            ],
+            "asserts": [
+                19,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34
             ],
             "errors": []
         },
@@ -450,15 +757,18 @@
                 "customeloquentbuilder\\childnongenericbuilder",
                 "customeloquentbuilder\\custombuilder2",
                 "customeloquentbuilder\\customeloquentbuilder",
+                "customeloquentbuilder\\customquerybuilder",
+                "customeloquentbuilder\\eloquentbuilderwithcustomquerybuilder",
                 "customeloquentbuilder\\foomodel",
                 "customeloquentbuilder\\modelwithcustombuilder",
                 "customeloquentbuilder\\modelwithcustombuilderanddocblocks",
+                "customeloquentbuilder\\modelwithcustomquerybuilder",
                 "customeloquentbuilder\\modelwithnongenericbuilder",
                 "customeloquentbuilder\\nongenericbuilder",
-                "customeloquentbuilder\\test"
+                "customeloquentbuilder\\test",
+                "customeloquentbuilder\\testnongenericbuilderdocblock"
             ],
             "asserts": [
-                14,
                 15,
                 16,
                 17,
@@ -496,38 +806,59 @@
                 49,
                 50,
                 51,
-                53,
+                52,
                 54,
                 55,
-                108,
-                116,
-                128
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                64,
+                65,
+                66,
+                67,
+                68,
+                74,
+                81,
+                88,
+                94,
+                152,
+                157,
+                164,
+                172,
+                180,
+                192,
+                260
             ],
             "errors": [
                 {
-                    "line": 67,
+                    "line": 106,
                     "identifier": "generics.lessTypes",
                     "message": "Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany: TRelatedModel, TDeclaringModel",
                     "tip": null
                 },
                 {
-                    "line": 69,
+                    "line": 108,
                     "identifier": "return.type",
                     "message": "Method CustomEloquentBuilder\\ModelWithCustomBuilder::users() should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User, $this(CustomEloquentBuilder\\ModelWithCustomBuilder)>.",
                     "tip": null
                 },
                 {
-                    "line": 130,
-                    "identifier": "return.type",
-                    "message": "Method CustomEloquentBuilder\\CustomEloquentBuilder::categories() should return CustomEloquentBuilder\\CustomEloquentBuilder<CustomEloquentBuilder\\ModelWithCustomBuilder> but returns CustomEloquentBuilder\\CustomEloquentBuilder<TModel of CustomEloquentBuilder\\ModelWithCustomBuilder>.",
-                    "tip": "Template type TModel on class CustomEloquentBuilder\\CustomEloquentBuilder is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                    "line": 122,
+                    "identifier": "missingType.generics",
+                    "message": "Method CustomEloquentBuilder\\ModelWithCustomBuilder::scopeLockForUpdate() return type with generic class CustomEloquentBuilder\\CustomEloquentBuilder does not specify its types: TModel",
+                    "tip": null
                 }
             ]
         },
         {
             "file": "tests/Type/data/custom-eloquent-collection.php",
             "declares": [
-                "customeloquentcollection\\test"
+                "customeloquentcollection\\test",
+                "customeloquentcollection\\testtoquery"
             ],
             "asserts": [
                 15,
@@ -576,24 +907,24 @@
                 68,
                 70,
                 71,
-                72,
                 73,
+                74,
                 75,
                 76,
-                77,
                 78,
+                79,
                 80,
                 81,
-                82,
                 83,
+                84,
                 85,
                 86,
-                87,
                 88,
+                89,
                 90,
                 91,
-                92,
                 93,
+                94,
                 95,
                 96,
                 98,
@@ -604,18 +935,16 @@
                 104,
                 106,
                 107,
+                108,
                 109,
-                110,
+                111,
                 112,
-                113,
+                114,
                 115,
-                116,
                 117,
                 118,
-                119,
                 120,
                 121,
-                122,
                 123,
                 124,
                 125,
@@ -626,7 +955,19 @@
                 130,
                 131,
                 132,
-                133
+                133,
+                134,
+                135,
+                136,
+                137,
+                138,
+                139,
+                140,
+                141,
+                152,
+                153,
+                154,
+                155
             ],
             "errors": []
         },
@@ -653,6 +994,64 @@
             ]
         },
         {
+            "file": "tests/Type/data/eager-loading-callbacks.php",
+            "declares": [
+                "eagerloadingcallbacks\\builderwith",
+                "eagerloadingcallbacks\\builderwithonly",
+                "eagerloadingcallbacks\\childuser",
+                "eagerloadingcallbacks\\collectionload",
+                "eagerloadingcallbacks\\modelload",
+                "eagerloadingcallbacks\\relationwith"
+            ],
+            "asserts": [
+                18,
+                19,
+                20,
+                23,
+                24,
+                25,
+                28,
+                31,
+                34,
+                39,
+                42,
+                47,
+                51,
+                55,
+                59,
+                66,
+                67,
+                70,
+                71,
+                74,
+                79,
+                80,
+                83,
+                84,
+                85,
+                88,
+                92,
+                95,
+                96,
+                99,
+                108,
+                109,
+                112,
+                113,
+                116,
+                119,
+                120,
+                123,
+                126,
+                130,
+                136,
+                137,
+                146,
+                149
+            ],
+            "errors": []
+        },
+        {
             "file": "tests/Type/data/collection-of-type.php",
             "declares": [
                 "collectionoftype\\genericmethod",
@@ -665,14 +1064,7 @@
                 20,
                 21
             ],
-            "errors": [
-                {
-                    "line": 33,
-                    "identifier": "return.type",
-                    "message": "Function CollectionOfType\\genericMethod() should return Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model> but returns Illuminate\\Database\\Eloquent\\Collection<(int|string), T of Illuminate\\Database\\Eloquent\\Model>.",
-                    "tip": "Template type TModel on class Illuminate\\Database\\Eloquent\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
-                }
-            ]
+            "errors": []
         },
         {
             "file": "tests/Type/data/date-extension-l12.php",
@@ -710,6 +1102,55 @@
             ]
         },
         {
+            "file": "tests/Type/data/eloquent-getter-types.php",
+            "declares": [
+                "eloquentgettertypes\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/eloquent-where.php",
+            "declares": [
+                "eloquentwhere\\callbacks"
+            ],
+            "asserts": [
+                14,
+                15,
+                19,
+                22,
+                23,
+                27,
+                31,
+                34,
+                35,
+                38,
+                39,
+                43,
+                47,
+                51,
+                55,
+                59,
+                63,
+                67,
+                71,
+                75,
+                79,
+                83,
+                87,
+                91,
+                95,
+                99,
+                103
+            ],
+            "errors": []
+        },
+        {
             "file": "tests/Type/data/environment-helper.php",
             "declares": [
                 "environmenthelper\\test"
@@ -722,6 +1163,84 @@
             "errors": []
         },
         {
+            "file": "tests/Type/data/event-dispatcher.php",
+            "declares": [
+                "eventdispatchertypes\\dispatch",
+                "eventdispatchertypes\\fake"
+            ],
+            "asserts": [
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                24,
+                25,
+                26,
+                27,
+                28
+            ],
+            "errors": [
+                {
+                    "line": 28,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Testing\\Fakes\\EventFake::assertDispatched() (void) is used.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/facade-fakes.php",
+            "declares": [
+                "facadefaketypes\\others",
+                "facadefaketypes\\queue"
+            ],
+            "asserts": [
+                13,
+                14,
+                15,
+                16,
+                21,
+                22,
+                23
+            ],
+            "errors": [
+                {
+                    "line": 13,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Testing\\Fakes\\QueueFake::assertPushed() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 14,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Testing\\Fakes\\QueueFake::assertNothingPushed() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 21,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Facades\\Bus::assertDispatched() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 22,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Facades\\Mail::assertSent() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 23,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Support\\Facades\\Notification::assertSentTo() (void) is used.",
+                    "tip": null
+                }
+            ]
+        },
+        {
             "file": "tests/Type/data/form-request.php",
             "declares": [
                 "formrequest\\test"
@@ -729,7 +1248,8 @@
             "asserts": [
                 13,
                 14,
-                15
+                15,
+                16
             ],
             "errors": []
         },
@@ -758,7 +1278,9 @@
         {
             "file": "tests/Type/data/helpers.php",
             "declares": [
+                "helpers\\invokablevalue",
                 "helpers\\test",
+                "helpers\\testcallable",
                 "helpers\\testunion"
             ],
             "asserts": [
@@ -817,39 +1339,47 @@
                 146,
                 147,
                 148,
+                149,
                 150,
                 151,
-                154,
+                152,
+                153,
+                155,
                 156,
                 159,
-                160,
                 161,
                 164,
                 165,
                 166,
                 169,
+                170,
                 171,
-                175,
-                177,
+                174,
+                176,
                 180,
-                181,
                 182,
-                183,
-                184,
+                185,
                 186,
                 187,
                 188,
                 189,
                 190,
                 191,
-                192,
                 193,
                 194,
                 195,
                 196,
                 197,
                 198,
-                205
+                199,
+                200,
+                201,
+                202,
+                203,
+                204,
+                205,
+                212,
+                222
             ],
             "errors": [
                 {
@@ -883,31 +1413,73 @@
                     "tip": null
                 },
                 {
-                    "line": 180,
+                    "line": 149,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 150,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 151,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 152,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 153,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 185,
                     "identifier": "larastan.noEnvCallsOutsideOfConfig",
                     "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
                     "tip": null
                 },
                 {
-                    "line": 181,
+                    "line": 186,
                     "identifier": "larastan.noEnvCallsOutsideOfConfig",
                     "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
                     "tip": null
                 },
                 {
-                    "line": 182,
+                    "line": 187,
                     "identifier": "larastan.noEnvCallsOutsideOfConfig",
                     "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
                     "tip": null
                 },
                 {
-                    "line": 183,
+                    "line": 188,
                     "identifier": "larastan.noEnvCallsOutsideOfConfig",
                     "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
                     "tip": null
                 },
                 {
-                    "line": 184,
+                    "line": 189,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 190,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 191,
                     "identifier": "larastan.noEnvCallsOutsideOfConfig",
                     "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
                     "tip": null
@@ -932,7 +1504,7 @@
                 42,
                 43,
                 44,
-                46,
+                45,
                 47,
                 48,
                 49,
@@ -945,7 +1517,7 @@
                 56,
                 57,
                 58,
-                60,
+                59,
                 61,
                 62,
                 63,
@@ -969,13 +1541,28 @@
                 81,
                 82,
                 83,
+                84,
                 85,
+                86,
                 88,
-                89,
-                90,
                 91,
                 92,
-                93
+                93,
+                94,
+                95,
+                96
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-date-column-casts.php",
+            "declares": [
+                "modeldatecolumncasts\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13
             ],
             "errors": []
         },
@@ -984,112 +1571,137 @@
             "declares": [
                 "modelfactories\\comment",
                 "modelfactories\\commentfactory",
-                "modelfactories\\test"
+                "modelfactories\\image",
+                "modelfactories\\imagefactory",
+                "modelfactories\\specialtag",
+                "modelfactories\\tag",
+                "modelfactories\\tagfactory",
+                "modelfactories\\test",
+                "modelfactories\\video",
+                "modelfactories\\videofactory"
             ],
             "asserts": [
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                22,
-                23,
-                24,
                 26,
                 27,
                 28,
+                29,
                 30,
                 31,
-                32,
                 33,
+                34,
                 35,
-                36,
                 37,
                 38,
-                40,
+                39,
                 41,
                 42,
                 43,
-                45,
+                44,
                 46,
                 47,
                 48,
-                50,
+                49,
                 51,
                 52,
                 53,
-                55,
+                54,
                 56,
                 57,
                 58,
-                60,
+                59,
                 61,
                 62,
                 63,
                 64,
-                65,
+                66,
                 67,
                 68,
                 69,
-                70,
+                71,
                 72,
                 73,
                 74,
                 75,
                 76,
-                77,
                 78,
                 79,
+                80,
                 81,
-                82,
                 83,
+                84,
                 85,
                 86,
                 87,
+                88,
                 89,
                 90,
-                105
+                92,
+                93,
+                94,
+                96,
+                97,
+                98,
+                100,
+                101,
+                103,
+                104,
+                105,
+                106,
+                107,
+                108,
+                109,
+                111,
+                112,
+                113,
+                114,
+                115,
+                116,
+                117,
+                118,
+                119,
+                120,
+                121,
+                136
             ],
             "errors": [
                 {
-                    "line": 55,
+                    "line": 66,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
                     "tip": null
                 },
                 {
-                    "line": 56,
+                    "line": 67,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
                     "tip": null
                 },
                 {
-                    "line": 57,
+                    "line": 68,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
                     "tip": null
                 },
                 {
-                    "line": 58,
+                    "line": 69,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
                     "tip": null
                 },
                 {
-                    "line": 90,
+                    "line": 101,
                     "identifier": "method.notFound",
                     "message": "Call to an undefined method Database\\Factories\\Post\\PostFactory::trashed().",
                     "tip": null
                 },
                 {
-                    "line": 95,
+                    "line": 126,
                     "identifier": "missingType.generics",
                     "message": "Class ModelFactories\\Comment uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types: TFactory",
                     "tip": null
                 },
                 {
-                    "line": 103,
+                    "line": 134,
                     "identifier": "method.unused",
                     "message": "Method ModelFactories\\Comment::test() is unused.",
                     "tip": null
@@ -1116,6 +1728,205 @@
                     "line": 14,
                     "identifier": "variable.undefined",
                     "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-serialization.php",
+            "declares": [
+                "modelserialization\\accessorserializationmodel",
+                "modelserialization\\additionalboundaries",
+                "modelserialization\\appendedserializationmodel",
+                "modelserialization\\arrayableserializationmodel",
+                "modelserialization\\boundaries",
+                "modelserialization\\castserializationmodel",
+                "modelserialization\\customcastaccessor",
+                "modelserialization\\customcastaccessorserializationmodel",
+                "modelserialization\\customcastserializationmodel",
+                "modelserialization\\customenumserialization",
+                "modelserialization\\customenumserializationmodel",
+                "modelserialization\\genericserialization",
+                "modelserialization\\hiddenserializationmodel",
+                "modelserialization\\moderncolumnserializationmodel",
+                "modelserialization\\overriddendatemodel",
+                "modelserialization\\overriddenserializationmodel",
+                "modelserialization\\overriddentoarraymodel",
+                "modelserialization\\serialization",
+                "modelserialization\\serializationenumcast",
+                "modelserialization\\serializationmarker",
+                "modelserialization\\serializationmodel",
+                "modelserialization\\serializationvalue",
+                "modelserialization\\serializationvaluecast",
+                "modelserialization\\serializednumber",
+                "modelserialization\\serializedstatus",
+                "modelserialization\\serializedunit"
+            ],
+            "asserts": [
+                27,
+                28,
+                29,
+                146,
+                147,
+                148,
+                149,
+                150,
+                151,
+                152,
+                153,
+                154,
+                155,
+                156,
+                157,
+                158,
+                159,
+                160,
+                161,
+                164,
+                167,
+                183,
+                184,
+                248,
+                259,
+                260,
+                261,
+                262,
+                263,
+                264,
+                277,
+                301
+            ],
+            "errors": [
+                {
+                    "line": 29,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'posts_count' might not exist on array{id?: int<0, max>, name?: string, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 130,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type (array{year: int}) of method ModelSerialization\\OverriddenDateModel::serializeDate() should be compatible with return type (string) of method Illuminate\\Database\\Eloquent\\Model::serializeDate()",
+                    "tip": null
+                },
+                {
+                    "line": 147,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, email_verified_at?: string|null, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 148,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: bool, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 149,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'backed_enum' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 150,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'basic_enum' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 151,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'integer' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 152,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'date' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 153,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'datetime' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 154,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'collection' might not exist on array{basic_enum?: 'Active', backed_enum?: 'active'|'inactive', integer?: 1|2, collection?: array<mixed>, date?: string, datetime?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 160,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'email_verified_at' might not exist on array{id?: int<0, max>, name?: string, email_verified_at?: array{year: int}|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 183,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: string, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 184,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: string, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 188,
+                    "identifier": "missingType.generics",
+                    "message": "Class ModelSerialization\\SerializationValue implements generic interface Illuminate\\Contracts\\Support\\Arrayable but does not specify its types: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "line": 211,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method ModelSerialization\\SerializationValueCast::serialize() has parameter $attributes with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "line": 234,
+                    "identifier": "return.type",
+                    "message": "Method ModelSerialization\\ArrayableSerializationModel::getValuesAttribute() should return Illuminate\\Support\\Collection<string, ModelSerialization\\SerializationValue|string> but returns Illuminate\\Support\\Collection<string, 'value'|ModelSerialization\\SerializationValue>.",
+                    "tip": "Template type TValue on class Illuminate\\Support\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "line": 259,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: array{serialized: true}, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 260,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'value' might not exist on array{value?: array{value: int}, values?: array<string, array{value: int}|string>, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 261,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'values' might not exist on array{value?: array{value: int}, values?: array<string, array{value: int}|string>, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 263,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: bool|string, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 277,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: array{value: int}, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
+                    "tip": null
+                },
+                {
+                    "line": 301,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'name' might not exist on array{id?: int<0, max>, name?: ModelSerialization\\SerializedStatus, email_verified_at?: string|null, label?: string, ...<string, mixed>}.",
                     "tip": null
                 }
             ]
@@ -1172,7 +1983,7 @@
                 41,
                 42,
                 43,
-                46,
+                44,
                 47,
                 48,
                 49,
@@ -1194,10 +2005,10 @@
                 65,
                 66,
                 67,
-                70,
-                73,
+                68,
+                69,
+                72,
                 75,
-                76,
                 77,
                 78,
                 79,
@@ -1226,8 +2037,13 @@
                 102,
                 103,
                 104,
+                105,
                 106,
-                107
+                107,
+                108,
+                109,
+                111,
+                112
             ],
             "errors": [
                 {
@@ -1239,9 +2055,49 @@
             ]
         },
         {
+            "file": "tests/Type/data/model-properties-l13.php",
+            "declares": [
+                "modelpropertieslaravel13\\test"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-serialization-l13.php",
+            "declares": [
+                "modelserializationlaravel13\\attributeserializationmodel",
+                "modelserializationlaravel13\\inheritedattributeserializationmodel",
+                "modelserializationlaravel13\\replacedattributeserializationmodel",
+                "modelserializationlaravel13\\serialization"
+            ],
+            "asserts": [
+                45,
+                46,
+                47
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-properties-l13-2.php",
+            "declares": [
+                "modelpropertieslaravel132\\test"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": []
+        },
+        {
             "file": "tests/Type/data/model-relations.php",
             "declares": [
+                "modelrelations\\chunkcallbacks",
+                "modelrelations\\custombuilderbelongstomany",
+                "modelrelations\\custombuilderhasmany",
+                "modelrelations\\custombuilderhasmanythrough",
                 "modelrelations\\extendsmodelwithpropertyannotations",
+                "modelrelations\\firstwherecallbacks",
                 "modelrelations\\modelwithoutpropertyannotation",
                 "modelrelations\\modelwithpropertyannotations",
                 "modelrelations\\relationcreateexample",
@@ -1312,11 +2168,11 @@
                 115,
                 116,
                 117,
+                118,
                 119,
-                120,
                 121,
+                122,
                 123,
-                124,
                 125,
                 126,
                 127,
@@ -1329,8 +2185,8 @@
                 134,
                 135,
                 136,
+                137,
                 138,
-                139,
                 140,
                 141,
                 142,
@@ -1339,8 +2195,8 @@
                 145,
                 146,
                 147,
+                148,
                 149,
-                150,
                 151,
                 152,
                 153,
@@ -1351,8 +2207,8 @@
                 158,
                 159,
                 160,
-                163,
-                164,
+                161,
+                162,
                 165,
                 166,
                 167,
@@ -1363,8 +2219,8 @@
                 172,
                 173,
                 174,
+                175,
                 176,
-                177,
                 178,
                 179,
                 180,
@@ -1374,26 +2230,26 @@
                 184,
                 185,
                 186,
+                187,
                 188,
-                189,
                 190,
                 191,
                 192,
                 193,
                 194,
-                197,
-                198,
+                195,
+                196,
                 199,
                 200,
                 201,
                 202,
                 203,
+                204,
                 205,
-                206,
                 207,
                 208,
+                209,
                 210,
-                211,
                 212,
                 213,
                 214,
@@ -1401,27 +2257,68 @@
                 216,
                 217,
                 218,
+                219,
                 220,
-                221,
                 222,
                 223,
+                224,
                 225,
-                226,
                 227,
                 228,
+                229,
                 230,
-                231,
                 232,
                 233,
                 234,
                 235,
                 236,
+                237,
                 238,
-                239,
                 240,
-                243,
-                246,
-                251
+                241,
+                242,
+                245,
+                248,
+                253,
+                328,
+                329,
+                330,
+                339,
+                340,
+                341,
+                344,
+                354,
+                355,
+                361,
+                362,
+                366,
+                370,
+                374,
+                378,
+                384,
+                385,
+                388,
+                389,
+                392,
+                393,
+                396,
+                397,
+                400,
+                401,
+                404,
+                405,
+                408,
+                412,
+                413,
+                416,
+                417,
+                420,
+                421,
+                424,
+                425,
+                428,
+                429,
+                432
             ],
             "errors": [
                 {
@@ -1431,6 +2328,16 @@
                     "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
                 }
             ]
+        },
+        {
+            "file": "tests/Type/data/migrator.php",
+            "declares": [
+                "migratortypes\\connection"
+            ],
+            "asserts": [
+                10
+            ],
+            "errors": []
         },
         {
             "file": "tests/Type/data/model-scopes.php",
@@ -1443,16 +2350,19 @@
                 14,
                 15,
                 16,
-                34,
                 36,
                 37,
                 38,
-                39,
                 40,
+                41,
                 42,
                 43,
                 44,
-                45
+                45,
+                47,
+                48,
+                49,
+                50
             ],
             "errors": [
                 {
@@ -1466,8 +2376,64 @@
                     "identifier": "missingType.generics",
                     "message": "Method ModelScope\\Scopes::scopeWithVoidReturn() has parameter $query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types: TModel",
                     "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "missingType.generics",
+                    "message": "Method ModelScope\\Scopes::scopeCount() has parameter $query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types: TModel",
+                    "tip": null
                 }
             ]
+        },
+        {
+            "file": "tests/Type/data/model-template-class-string.php",
+            "declares": [
+                "modeltemplateclassstring\\test",
+                "modeltemplateclassstring\\testreceivers"
+            ],
+            "asserts": [
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                40,
+                41
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-with-relations.php",
+            "declares": [
+                "modelwithrelations\\childuser",
+                "modelwithrelations\\eagerload"
+            ],
+            "asserts": [
+                12,
+                13,
+                14,
+                16,
+                17,
+                18,
+                22,
+                27,
+                30,
+                34,
+                36,
+                40,
+                44,
+                49,
+                53,
+                55,
+                64,
+                67
+            ],
+            "errors": []
         },
         {
             "file": "tests/Type/data/optional-helper.php",
@@ -1507,24 +2473,65 @@
         {
             "file": "tests/Type/data/paginator-extension.php",
             "declares": [
+                "paginatorextension\\collectionvaluetypes",
+                "paginatorextension\\cursorpaginatecollections",
+                "paginatorextension\\paginatecollections",
+                "paginatorextension\\perpagecallback",
+                "paginatorextension\\simplepaginatecollections",
                 "paginatorextension\\test"
             ],
             "asserts": [
-                13,
-                14,
-                15,
-                16,
-                18,
-                19,
-                20,
                 21,
+                22,
                 23,
                 24,
-                25,
                 26,
+                27,
                 28,
+                29,
                 31,
-                34
+                32,
+                33,
+                34,
+                36,
+                39,
+                42,
+                47,
+                48,
+                49,
+                50,
+                51,
+                53,
+                57,
+                58,
+                59,
+                62,
+                67,
+                68,
+                69,
+                70,
+                71,
+                75,
+                76,
+                77,
+                80,
+                85,
+                86,
+                87,
+                88,
+                89,
+                93,
+                94,
+                95,
+                98,
+                111,
+                112,
+                113,
+                114,
+                115,
+                116,
+                121,
+                122
             ],
             "errors": []
         },
@@ -1547,9 +2554,129 @@
                 53,
                 54,
                 55,
-                56
+                56,
+                57
             ],
             "errors": []
+        },
+        {
+            "file": "tests/Type/data/relationship-query-callbacks.php",
+            "declares": [
+                "relationshipquerycallbacks\\declaredmorphtarget",
+                "relationshipquerycallbacks\\directeagercallbacks",
+                "relationshipquerycallbacks\\eagerrelationships",
+                "relationshipquerycallbacks\\morphcallforms",
+                "relationshipquerycallbacks\\morphrelationships",
+                "relationshipquerycallbacks\\morphrelationshortcuts",
+                "relationshipquerycallbacks\\ordinaryrelationships",
+                "relationshipquerycallbacks\\relationshortcuts"
+            ],
+            "asserts": [
+                21,
+                25,
+                29,
+                33,
+                36,
+                41,
+                45,
+                49,
+                53,
+                54,
+                55,
+                58,
+                62,
+                74,
+                75,
+                79,
+                83,
+                87,
+                91,
+                95,
+                99,
+                103,
+                107,
+                111,
+                115,
+                119,
+                123,
+                131,
+                135,
+                139,
+                143,
+                147,
+                151,
+                158,
+                159,
+                163,
+                167,
+                171,
+                174,
+                175,
+                176,
+                183,
+                184,
+                188,
+                192,
+                196,
+                200,
+                204,
+                207,
+                208,
+                215,
+                219,
+                223,
+                227,
+                231,
+                235,
+                242,
+                246,
+                250,
+                254,
+                261,
+                262,
+                266,
+                270,
+                274
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/relation-of-type.php",
+            "declares": [
+                "relationoftype\\fallbacks",
+                "relationoftype\\genericparent",
+                "relationoftype\\genericrelated",
+                "relationoftype\\genericrelation",
+                "relationoftype\\generics",
+                "relationoftype\\relations"
+            ],
+            "asserts": [
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                89,
+                90,
+                91
+            ],
+            "errors": [
+                {
+                    "line": 82,
+                    "identifier": "return.type",
+                    "message": "Method RelationOfType\\GenericParent::subject() should return Illuminate\\Database\\Eloquent\\Relations\\MorphTo<App\\Account|App\\User, $this(RelationOfType\\GenericParent<TValue>)> but returns Illuminate\\Database\\Eloquent\\Relations\\MorphTo<Illuminate\\Database\\Eloquent\\Model, $this(RelationOfType\\GenericParent<TValue>)>.",
+                    "tip": null
+                }
+            ]
         },
         {
             "file": "tests/Type/data/request-header.php",
@@ -1817,15 +2944,84 @@
         {
             "file": "tests/Type/data/model-collections-l11-28.php",
             "declares": [
+                "modelcollectionsl1128\\post",
+                "modelcollectionsl1128\\postcollection",
+                "modelcollectionsl1128\\team",
+                "modelcollectionsl1128\\teamcollection",
                 "modelcollectionsl1128\\test",
                 "modelcollectionsl1128\\user",
                 "modelcollectionsl1128\\usercollection"
             ],
             "asserts": [
                 12,
-                13
+                13,
+                14,
+                15,
+                16,
+                17,
+                18
             ],
-            "errors": []
+            "errors": [
+                {
+                    "line": 31,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type (ModelCollectionsL1128\\TeamCollection) of method ModelCollectionsL1128\\Team::newCollection() should be compatible with return type (Illuminate\\Database\\Eloquent\\Collection<(int|string), static(Illuminate\\Database\\Eloquent\\Model)>) of method Illuminate\\Database\\Eloquent\\Model::newCollection()",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-collections-l13-4.php",
+            "declares": [
+                "modelcollectionsl134\\admin",
+                "modelcollectionsl134\\basecollection",
+                "modelcollectionsl134\\basemodel",
+                "modelcollectionsl134\\leadingbackslashstring",
+                "modelcollectionsl134\\namedargumentchild",
+                "modelcollectionsl134\\namedargumentparent",
+                "modelcollectionsl134\\stringchild",
+                "modelcollectionsl134\\stringcollection",
+                "modelcollectionsl134\\stringparent",
+                "modelcollectionsl134\\team",
+                "modelcollectionsl134\\teamcollection",
+                "modelcollectionsl134\\test",
+                "modelcollectionsl134\\traitchild",
+                "modelcollectionsl134\\traitparent",
+                "modelcollectionsl134\\traitparentchild",
+                "modelcollectionsl134\\user"
+            ],
+            "asserts": [
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22
+            ],
+            "errors": [
+                {
+                    "line": 44,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type (ModelCollectionsL134\\TeamCollection) of method ModelCollectionsL134\\Team::newCollection() should be compatible with return type (Illuminate\\Database\\Eloquent\\Collection<(int|string), static(Illuminate\\Database\\Eloquent\\Model)>) of method Illuminate\\Database\\Eloquent\\Model::newCollection()",
+                    "tip": null
+                },
+                {
+                    "line": 82,
+                    "identifier": "missingType.generics",
+                    "message": "Class ModelCollectionsL134\\TraitParent uses generic trait Illuminate\\Database\\Eloquent\\HasCollection but does not specify its types: TCollection",
+                    "tip": null
+                },
+                {
+                    "line": 92,
+                    "identifier": "missingType.generics",
+                    "message": "Class ModelCollectionsL134\\TraitChild uses generic trait Illuminate\\Database\\Eloquent\\HasCollection but does not specify its types: TCollection",
+                    "tip": null
+                }
+            ]
         },
         {
             "file": "tests/Type/data/model-l11-42.php",
@@ -1833,154 +3029,145 @@
                 "model\\abstractmodel",
                 "model\\bar",
                 "model\\child",
+                "model\\finalmodel",
                 "model\\foo",
                 "model\\hasbar",
                 "model\\test"
             ],
             "asserts": [
-                21,
+                22,
+                28,
+                29,
+                30,
+                31,
                 32,
-                42,
-                43,
+                33,
+                44,
                 45,
-                46,
-                47,
-                48,
-                82,
-                84,
-                85,
-                86,
-                87,
-                88,
-                89,
-                90,
-                91,
-                93,
-                94,
-                95,
-                96,
-                97,
-                98,
-                100,
-                101,
-                102,
+                53,
+                63,
+                64,
+                66,
+                67,
+                68,
+                69,
                 103,
-                104,
                 105,
                 106,
+                107,
                 108,
                 109,
                 110,
                 111,
                 112,
-                113,
+                114,
+                115,
+                116,
                 117,
                 118,
-                120,
+                119,
                 121,
                 122,
                 123,
+                124,
                 125,
                 126,
                 127,
-                128,
                 129,
+                130,
                 131,
                 132,
                 133,
                 134,
-                135,
                 138,
+                139,
                 140,
                 141,
-                142,
                 143,
                 144,
                 145,
                 146,
-                147,
                 148,
                 149,
                 150,
+                151,
+                152,
                 154,
                 155,
                 156,
+                157,
                 158,
                 159,
-                160,
-                161,
-                162,
-                167,
+                165,
                 168,
-                169,
-                170,
                 171,
-                172,
+                173,
                 174,
                 175,
+                176,
+                177,
                 178,
+                179,
+                180,
+                181,
+                182,
                 183,
+                184,
+                186,
+                187,
                 188,
+                190,
+                191,
+                192,
                 193,
-                198,
+                194,
+                199,
+                200,
+                201,
                 202,
+                203,
+                204,
                 206,
+                207,
                 210,
                 214,
-                219,
-                224,
-                229,
+                218,
+                222,
+                226,
+                230,
                 234,
-                239,
-                244,
-                249,
+                238,
+                242,
+                246,
+                250,
                 254,
-                259,
-                264,
-                269,
+                258,
+                262,
+                266,
+                270,
                 274,
-                279,
-                284,
-                289,
+                278,
+                282,
+                286,
+                290,
                 294,
-                299,
-                304,
-                309,
+                298,
+                302,
+                306,
+                310,
                 314,
-                319,
-                324,
-                328
+                318,
+                322,
+                326,
+                330,
+                334
             ],
             "errors": [
                 {
-                    "line": 117,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int, actual: int|false",
-                    "tip": null
-                },
-                {
-                    "line": 118,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int, actual: int|false",
-                    "tip": null
-                },
-                {
-                    "line": 121,
+                    "line": 144,
                     "identifier": "larastan.noModelMake",
                     "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
                     "tip": null
-                },
-                {
-                    "line": 223,
-                    "identifier": "argument.type",
-                    "message": "Parameter #2 $callback of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::withWhereHas() expects (Closure(Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *>): mixed)|null, Closure(Illuminate\\Database\\Eloquent\\Builder): void given.",
-                    "tip": "Type #1 from the union: Type Illuminate\\Database\\Eloquent\\Builder of parameter #1 $query of passed callable needs to be same or wider than parameter type Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *> of accepting callable."
-                },
-                {
-                    "line": 228,
-                    "identifier": "argument.type",
-                    "message": "Parameter #2 $callback of static method App\\PostBuilder<App\\Post>::withWhereHas() expects (Closure(Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *>): mixed)|null, Closure(Illuminate\\Database\\Eloquent\\Builder): void given.",
-                    "tip": "Type #1 from the union: Type Illuminate\\Database\\Eloquent\\Builder of parameter #1 $query of passed callable needs to be same or wider than parameter type Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *> of accepting callable."
                 }
             ]
         },
@@ -1997,51 +3184,70 @@
                 "eloquentbuilder\\unionclass"
             ],
             "asserts": [
-                36,
-                41,
+                38,
+                42,
                 46,
-                51,
-                56,
-                61,
+                50,
+                54,
+                58,
+                62,
                 66,
-                71,
-                76,
-                81,
+                70,
+                74,
+                78,
+                82,
                 86,
-                91,
-                96,
-                101,
+                90,
+                94,
+                98,
+                102,
                 106,
-                111,
-                116,
-                121,
+                110,
+                114,
+                118,
+                122,
                 126,
-                131,
-                136,
-                141,
-                146,
-                151,
-                156,
+                130,
+                134,
+                138,
+                142,
+                147,
+                153,
+                154,
+                155,
                 160,
                 164,
+                168,
                 169,
+                170,
+                171,
                 175,
                 176,
                 177,
+                178,
+                180,
+                181,
                 182,
-                186,
+                183,
+                185,
+                187,
+                188,
+                189,
                 190,
                 191,
                 192,
-                193,
+                194,
+                195,
+                196,
                 197,
                 198,
                 199,
-                200,
+                201,
                 202,
                 203,
                 204,
                 205,
+                206,
                 207,
                 209,
                 210,
@@ -2049,69 +3255,72 @@
                 212,
                 213,
                 214,
-                216,
+                215,
                 217,
                 218,
                 219,
                 220,
                 221,
-                223,
-                224,
-                225,
                 226,
-                227,
-                228,
-                229,
                 231,
                 232,
-                233,
-                234,
-                235,
-                236,
                 237,
-                239,
-                240,
-                241,
                 242,
-                243,
-                248,
-                253,
-                254,
+                247,
+                252,
+                257,
+                258,
                 259,
-                264,
-                269,
-                274,
-                279,
-                280,
+                261,
+                262,
+                267,
+                272,
+                273,
+                277,
                 281,
-                283,
                 284,
-                289,
-                294,
+                287,
+                288,
                 295,
+                296,
+                298,
                 299,
-                303,
+                300,
+                301,
+                305,
                 306,
-                309,
-                310,
-                317,
-                318,
-                320,
-                321,
-                322,
-                323,
-                327,
-                328,
-                329,
-                330,
-                335,
-                336,
-                338,
-                362,
-                363,
-                364,
-                379,
-                393
+                307,
+                308,
+                313,
+                314,
+                316,
+                340,
+                341,
+                342,
+                357,
+                371
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-increment-each-l13-3.php",
+            "declares": [
+                "modelincrementeachl133\\test"
+            ],
+            "asserts": [
+                11,
+                12
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-increment-each-l13-20.php",
+            "declares": [
+                "modelincrementeachl1320\\test"
+            ],
+            "asserts": [
+                11,
+                12
             ],
             "errors": []
         },
@@ -2145,14 +3354,78 @@
                 "eloquentbuilder1215\\a",
                 "eloquentbuilder1215\\anothercustombuilder",
                 "eloquentbuilder1215\\b",
+                "eloquentbuilder1215\\c",
                 "eloquentbuilder1215\\custombuilder",
+                "eloquentbuilder1215\\d",
+                "eloquentbuilder1215\\e",
+                "eloquentbuilder1215\\f",
                 "eloquentbuilder1215\\test"
             ],
             "asserts": [
-                31,
-                32
+                43,
+                44,
+                45,
+                46,
+                47,
+                48
             ],
-            "errors": []
+            "errors": [
+                {
+                    "line": 32,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $builderClass of attribute class Illuminate\\Database\\Eloquent\\Attributes\\UseEloquentBuilder constructor expects class-string<Illuminate\\Database\\Eloquent\\Builder>, string given.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/eloquent-builder-l13-31.php",
+            "declares": [
+                "eloquentbuilderl1331\\basebuilder",
+                "eloquentbuilderl1331\\basemodel",
+                "eloquentbuilderl1331\\comment",
+                "eloquentbuilderl1331\\hasbasebuilder",
+                "eloquentbuilderl1331\\hasvideobuilder",
+                "eloquentbuilderl1331\\image",
+                "eloquentbuilderl1331\\invalidbuilderchild",
+                "eloquentbuilderl1331\\invalidbuilderparent",
+                "eloquentbuilderl1331\\nestedtraitmodel",
+                "eloquentbuilderl1331\\post",
+                "eloquentbuilderl1331\\tag",
+                "eloquentbuilderl1331\\test",
+                "eloquentbuilderl1331\\traitchild",
+                "eloquentbuilderl1331\\traitparent",
+                "eloquentbuilderl1331\\traitparentchild",
+                "eloquentbuilderl1331\\useshasbasebuilder",
+                "eloquentbuilderl1331\\video",
+                "eloquentbuilderl1331\\videobuilder"
+            ],
+            "asserts": [
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+            ],
+            "errors": [
+                {
+                    "line": 51,
+                    "identifier": "return.type",
+                    "message": "Method EloquentBuilderL1331\\Image::newEloquentBuilder() should return Illuminate\\Database\\Eloquent\\Builder<static(EloquentBuilderL1331\\Image)> but returns Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>.",
+                    "tip": null
+                },
+                {
+                    "line": 99,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $builderClass of attribute class Illuminate\\Database\\Eloquent\\Attributes\\UseEloquentBuilder constructor expects class-string<Illuminate\\Database\\Eloquent\\Builder>, string given.",
+                    "tip": null
+                }
+            ]
         },
         {
             "file": "tests/Type/data/passthru-l12-15.php",
@@ -2160,19 +3433,22 @@
                 "passthru\\test"
             ],
             "asserts": [
-                10
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19
             ],
             "errors": [
                 {
                     "line": 9,
                     "identifier": "missingType.return",
                     "message": "Function Passthru\\test() has no return type specified.",
-                    "tip": null
-                },
-                {
-                    "line": 10,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int<0, max>, actual: Illuminate\\Database\\Eloquent\\Builder<App\\User>",
                     "tip": null
                 }
             ]
@@ -2193,13 +3469,14 @@
                 19,
                 20,
                 22,
-                23,
                 24,
                 25,
                 26,
+                27,
                 28,
-                29,
-                34
+                30,
+                31,
+                36
             ],
             "errors": []
         },
@@ -2259,6 +3536,62 @@
                 43
             ],
             "errors": []
+        },
+        {
+            "file": "tests/application/app/Console/Commands/RegisteredInKernelCommand.php",
+            "declares": [
+                "app\\console\\commands\\registeredinkernelcommand"
+            ],
+            "asserts": [
+                17,
+                18,
+                19,
+                21,
+                22,
+                23
+            ],
+            "errors": [
+                {
+                    "line": 28,
+                    "identifier": "larastan.console.undefinedArgument",
+                    "message": "Command \"registered-in-kernel\" does not have argument \"undefinedArgument\".",
+                    "tip": null
+                },
+                {
+                    "line": 29,
+                    "identifier": "larastan.console.undefinedOption",
+                    "message": "Command \"registered-in-kernel\" does not have option \"undefinedOption\".",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+            "declares": [
+                "app\\console\\loadedcommands\\loadedbykernelcommand"
+            ],
+            "asserts": [
+                17,
+                18,
+                19,
+                21,
+                22,
+                23
+            ],
+            "errors": [
+                {
+                    "line": 28,
+                    "identifier": "larastan.console.undefinedArgument",
+                    "message": "Command \"loaded-by-kernel\" does not have argument \"undefinedArgument\".",
+                    "tip": null
+                },
+                {
+                    "line": 29,
+                    "identifier": "larastan.console.undefinedOption",
+                    "message": "Command \"loaded-by-kernel\" does not have option \"undefinedOption\".",
+                    "tip": null
+                }
+            ]
         }
     ]
 }

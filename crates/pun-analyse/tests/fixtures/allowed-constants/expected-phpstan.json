@@ -403,13 +403,6 @@
   {
    "file": "calls.php",
    "line": 156,
-   "identifier": "argument.invalidConstant",
-   "message": "Constant JSON_HEX_TAG is not allowed for parameter #3 $received_message_type of function msg_receive.",
-   "tip": null
-  },
-  {
-   "file": "calls.php",
-   "line": 156,
    "identifier": "argument.byRef",
    "message": "Parameter #3 $received_message_type of function msg_receive is passed by reference, so it expects variables only.",
    "tip": null

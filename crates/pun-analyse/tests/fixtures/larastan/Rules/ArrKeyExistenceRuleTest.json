@@ -1,0 +1,13 @@
+{
+    "test": "Rules/ArrKeyExistenceRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/arr-key-existence.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

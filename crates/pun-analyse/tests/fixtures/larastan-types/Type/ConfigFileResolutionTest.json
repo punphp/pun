@@ -1,0 +1,62 @@
+{
+    "test": "Type/ConfigFileResolutionTest",
+    "configs": [
+        "tests/Type/data/config-file-resolution.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/config-file-resolution.php",
+            "declares": [
+                "configfileresolution\\test"
+            ],
+            "asserts": [
+                10,
+                11,
+                12,
+                13,
+                14,
+                17,
+                18,
+                19,
+                20,
+                21,
+                24,
+                25,
+                26,
+                29,
+                30,
+                33,
+                34,
+                37
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/config-file-scope.php",
+            "declares": [
+                "configfilescope\\callerwithoutvariable",
+                "configfilescope\\callerwithsamevariable",
+                "configfilescope\\conditionalreturnhasnosinglevalue",
+                "configfilescope\\phpdocusesconfigfileimports",
+                "configfilescope\\readsotherconfigfile",
+                "configfilescope\\returninsideclosureisnottheconfig",
+                "configfilescope\\selfreference",
+                "configfilescope\\variablefromincludeisunknown"
+            ],
+            "asserts": [
+                11,
+                16,
+                21,
+                26,
+                31,
+                36,
+                41,
+                42,
+                43,
+                48,
+                49
+            ],
+            "errors": []
+        }
+    ]
+}

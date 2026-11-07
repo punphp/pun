@@ -2152,6 +2152,51 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug11421",
+            "files": [
+                "Methods/data/bug-11421.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11421.php",
+                    "line": 24,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Bug11421\\NumberEnum::tryFrom() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11421.php",
+                    "line": 26,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Bug11421\\NumberEnum::tryFrom() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11421.php",
+                    "line": 27,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Bug11421\\WordEnum::tryFrom() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11421.php",
+                    "line": 29,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Bug11421\\WordEnum::tryFrom() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11421.php",
+                    "line": 31,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method BackedEnum::tryFrom() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

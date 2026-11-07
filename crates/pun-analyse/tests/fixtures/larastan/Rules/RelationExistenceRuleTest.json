@@ -297,6 +297,13 @@
                 },
                 {
                     "file": "Rules/data/relation-existence-rule.php",
+                    "line": 49,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'foo' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-rule.php",
                     "line": 50,
                     "identifier": "larastan.relationExistence",
                     "message": "Relation 'foo' is not found in App\\User model.",
@@ -370,6 +377,509 @@
                     "line": 64,
                     "identifier": "larastan.relationExistence",
                     "message": "Relation 'foo' is not found in App\\Transaction model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testBareRelationPaths",
+            "files": [
+                "Rules/data/relation-existence-bare-relations.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/relation-existence-bare-relations.php",
+                    "line": 22,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Comment model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testLoading",
+            "files": [
+                "Rules/data/relation-existence-loading.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 14,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 15,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 16,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 17,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 18,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 19,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 20,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 21,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 22,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 23,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 24,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 25,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 26,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 27,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 28,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 29,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 30,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 31,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 32,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 33,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 34,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 35,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 36,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts.transactions' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 37,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts  as  total' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 38,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts as total' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 64,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 65,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 66,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 67,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 68,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 69,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 70,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 71,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 72,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 73,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 74,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 75,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 76,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 77,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 78,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 79,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 80,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 81,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 82,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 83,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 84,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 85,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 86,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 87,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'save' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 112,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-loading.php",
+                    "line": 119,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'missing' is not found in App\\Comment model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testColumnSelection",
+            "files": [
+                "Rules/data/relation-existence-column-selection.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 18,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 19,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 20,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'transactions:id' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 21,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 22,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'transactions:id' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 23,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 24,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 25,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 26,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 27,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 28,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 29,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 30,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'transactions:id' is not found in App\\Account model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 31,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 32,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id,user_id' is not found in App\\User model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/relation-existence-column-selection.php",
+                    "line": 33,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'accounts:id' is not found in App\\User model.",
                     "tip": null
                 }
             ]

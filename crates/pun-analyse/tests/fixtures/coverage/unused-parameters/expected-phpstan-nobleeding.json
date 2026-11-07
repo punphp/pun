@@ -122,13 +122,6 @@
   },
   {
    "file": "unused-closure-uses-skipped-catch.php",
-   "line": 24,
-   "identifier": "notIdentical.alwaysFalse",
-   "message": "Strict comparison using !== between true and true will always evaluate to false.",
-   "tip": null
-  },
-  {
-   "file": "unused-closure-uses-skipped-catch.php",
    "line": 25,
    "identifier": "throw.notThrowable",
    "message": "Invalid type null to throw.",

@@ -1427,6 +1427,53 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug15448",
+            "files": [
+                "PhpDoc/data/bug-15448.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15448ClassNotAnalysed",
+            "files": [
+                "PhpDoc/data/bug-15448-dependency-usage.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-15448-dependency-usage.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Function Bug15448Dependency\\create() has invalid return type Bug15448Dependency\\ErrorIterator.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-15448-dependency-usage.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug15448Dependency\\ErrorIterator not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/bug-15448-dependency-usage.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $errors of function Bug15448Dependency\\errors() has invalid type Bug15448Dependency\\ErrorIterator.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-15448-dependency-usage.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $error contains unknown class Bug15448Dependency\\Error.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
         }
     ]
 }

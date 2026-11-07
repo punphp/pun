@@ -1371,21 +1371,35 @@
                 },
                 {
                     "file": "Methods/data/bug-4590.php",
-                    "line": 47,
+                    "line": 44,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Methods/data/bug-4590.php",
+                    "line": 44,
+                    "identifier": "return.type",
+                    "message": "Method Bug4590\\OkResponse::testGenericStaticMismatch() should return static(Bug4590\\OkResponse<array<int, string>>) but returns static(Bug4590\\OkResponse<array{ok: string}>).",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-4590.php",
+                    "line": 55,
                     "identifier": "return.type",
                     "message": "Method Bug4590\\Controller::test1() should return Bug4590\\OkResponse<array<string, string>> but returns Bug4590\\OkResponse<array{ok: string}>.",
                     "tip": "Template type T on class Bug4590\\OkResponse is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
                 },
                 {
                     "file": "Methods/data/bug-4590.php",
-                    "line": 55,
+                    "line": 63,
                     "identifier": "return.type",
                     "message": "Method Bug4590\\Controller::test2() should return Bug4590\\OkResponse<array<int, string>> but returns Bug4590\\OkResponse<array{string}>.",
                     "tip": "Template type T on class Bug4590\\OkResponse is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
                 },
                 {
                     "file": "Methods/data/bug-4590.php",
-                    "line": 63,
+                    "line": 71,
                     "identifier": "return.type",
                     "message": "Method Bug4590\\Controller::test3() should return Bug4590\\OkResponse<array<string>> but returns Bug4590\\OkResponse<array{string}>.",
                     "tip": "Template type T on class Bug4590\\OkResponse is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"

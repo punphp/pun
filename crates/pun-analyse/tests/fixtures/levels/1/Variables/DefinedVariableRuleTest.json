@@ -525,6 +525,23 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testDeadCatch",
+            "files": [
+                "Variables/data/dead-catch-defined-variable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/dead-catch-defined-variable.php",
+                    "line": 22,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $undefined",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

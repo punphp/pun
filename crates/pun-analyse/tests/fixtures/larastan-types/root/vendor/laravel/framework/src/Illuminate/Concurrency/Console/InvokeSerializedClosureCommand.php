@@ -40,4 +40,16 @@ class InvokeSerializedClosureCommand extends Command
      */
     public function handle()
     {}
+
+    /**
+     * Get the envelope key passed by the parent process and remove it from the environment.
+     */
+    protected function pullEnvelopeKey(): string
+    {}
+
+    /**
+     * Frame the given result payload with a marker and an HMAC signature.
+     */
+    protected function frameEnvelope(string $key, string $payload): string
+    {}
 }

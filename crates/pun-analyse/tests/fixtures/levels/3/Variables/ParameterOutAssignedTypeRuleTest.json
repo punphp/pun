@@ -175,6 +175,15 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug15428",
+            "files": [
+                "Variables/data/bug-15428.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

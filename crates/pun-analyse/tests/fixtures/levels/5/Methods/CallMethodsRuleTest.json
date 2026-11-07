@@ -3790,7 +3790,7 @@
                     "line": 68,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between CallMethodsNullIssue\\Bar and null will always evaluate to false.",
-                    "tip": "If CallMethodsNullIssue\\Baz::getFoo() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Methods/data/order.php",
@@ -5296,6 +5296,23 @@
                     "line": 61,
                     "identifier": "return.missing",
                     "message": "Method GenericReturnTypeNever\\Foo::doBazBaz() should return array<GenericReturnTypeNever\\Dolor&T> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testObjectShapeTemplateKey",
+            "files": [
+                "Methods/data/object-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/object-shape-template-key.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method ObjectShapeTemplateKeyMethods\\Foo::stringKey() should return object but return statement is missing.",
                     "tip": null
                 }
             ],
@@ -8387,6 +8404,15 @@
             "general": []
         },
         {
+            "method": "testBug12820",
+            "files": [
+                "Methods/data/bug-12820.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testClassConstantWildcardArguments",
             "files": [
                 "Methods/data/class-constant-wildcard-arguments.php"
@@ -8419,6 +8445,58 @@
                     "line": 59,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $type of method ClassConstantWildcardArguments\\ContainerExtension::doFoo() expects 'hasService', 'nope' given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeadCatch",
+            "files": [
+                "Methods/data/dead-catch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 12,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 13,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method Exception::getMessage() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 14,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method InvalidArgumentException::nonExistentMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 15,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallMethodsDeadCatch\\Foo::nonExistentMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 25,
+                    "identifier": "catch.alreadyCaught",
+                    "message": "Dead catch - InvalidArgumentException is already caught above.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dead-catch.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method InvalidArgumentException::nonExistentMethod().",
                     "tip": null
                 }
             ],

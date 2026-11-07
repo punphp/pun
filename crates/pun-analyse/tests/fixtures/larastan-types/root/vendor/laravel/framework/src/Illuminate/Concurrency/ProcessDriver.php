@@ -12,7 +12,9 @@ use Illuminate\Process\Pool;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Defer\DeferredCallback;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Str;
 use Laravel\SerializableClosure\SerializableClosure;
+use RuntimeException;
 
 use function Illuminate\Support\defer;
 
@@ -30,6 +32,14 @@ class ProcessDriver implements Driver
      * @throws \Throwable
      */
     public function run(Closure|array $tasks, CarbonInterval|int|null $timeout = null): array
+    {}
+
+    /**
+     * Extract the signed result envelope from the given process output.
+     *
+     * @throws \RuntimeException
+     */
+    protected function parseEnvelope(string $output, string $key): array
     {}
 
     /**

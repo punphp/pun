@@ -221,6 +221,100 @@
                     "tip": null
                 }
             ]
+        },
+        {
+            "method": "testRuleWithCommandsRegisteredByTheConsoleKernel",
+            "files": [
+                "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                "application/app/Console/LoadedCommands/LoadedByKernelCommand.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argument: string}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 18,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 19,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string|null, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 21,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 22,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type false, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/RegisteredInKernelCommand.php",
+                    "line": 23,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argument: string}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 18,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 19,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string|null, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 21,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 22,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type false, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/LoadedCommands/LoadedByKernelCommand.php",
+                    "line": 23,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                }
+            ]
         }
     ]
 }

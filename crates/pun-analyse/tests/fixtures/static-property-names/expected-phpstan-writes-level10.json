@@ -1,684 +1,684 @@
 {
-  "general": [],
-  "errors": [
-    {
-      "file": "writes.php",
-      "line": 14,
-      "identifier": "property.onlyWritten",
-      "message": "Static property StaticPropertyWrites\\Holder::$hidden is never read, only written.",
-      "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
-    },
-    {
-      "file": "writes.php",
-      "line": 17,
-      "identifier": "property.readOnlyByPhpDocDefaultValue",
-      "message": "@readonly property cannot have a default value.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 20,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 20,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 21,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 22,
-      "identifier": "preDec.type",
-      "message": "Cannot use -- on null.",
-      "tip": "Operator -- is deprecated for null."
-    },
-    {
-      "file": "writes.php",
-      "line": 23,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on null.",
-      "tip": "Operator -- is deprecated for null."
-    },
-    {
-      "file": "writes.php",
-      "line": 24,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 24,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 25,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 26,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 26,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 27,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 28,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 28,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 29,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 30,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 30,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 31,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 34,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 36,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 38,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 40,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 42,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 42,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 42,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 42,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 44,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 44,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 44,
-      "identifier": "postInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 44,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 45,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 45,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 45,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 46,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 46,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 46,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 47,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 48,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 49,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property object::$nil.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 49,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property object::$nil.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 49,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 50,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property object::$nil.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 50,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property object::$nil.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 50,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 51,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $nil on int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 51,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $nil on int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 51,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 52,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $nil on int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 52,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $nil on int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 52,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 53,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 53,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 53,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$hidden (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 54,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 54,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 54,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$hidden (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 55,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 55,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 55,
-      "identifier": "preDec.type",
-      "message": "Cannot use -- on null.",
-      "tip": "Operator -- is deprecated for null."
-    },
-    {
-      "file": "writes.php",
-      "line": 56,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 56,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 56,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on null.",
-      "tip": "Operator -- is deprecated for null."
-    },
-    {
-      "file": "writes.php",
-      "line": 57,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 57,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 57,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 58,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on mixed.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 58,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 58,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 68,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on string.",
-      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
-    },
-    {
-      "file": "writes.php",
-      "line": 69,
-      "identifier": "postInc.type",
-      "message": "Cannot use ++ on string.",
-      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
-    },
-    {
-      "file": "writes.php",
-      "line": 70,
-      "identifier": "preDec.type",
-      "message": "Cannot use -- on string.",
-      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
-    },
-    {
-      "file": "writes.php",
-      "line": 71,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on string.",
-      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
-    },
-    {
-      "file": "writes.php",
-      "line": 78,
-      "identifier": "property.readOnlyAssignNotInConstructor",
-      "message": "Readonly property StaticPropertyWrites\\InstanceHolder::$locked is assigned outside of the constructor.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 79,
-      "identifier": "property.readOnlyAssignNotInConstructor",
-      "message": "Readonly property StaticPropertyWrites\\InstanceHolder::$locked is assigned outside of the constructor.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 82,
-      "identifier": "assign.propertyProtectedSet",
-      "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 83,
-      "identifier": "assign.propertyProtectedSet",
-      "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 86,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on string|null.",
-      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
-    },
-    {
-      "file": "writes.php",
-      "line": 86,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 88,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on string|null.",
-      "tip": "• Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().\n• Operator -- is deprecated for null."
-    },
-    {
-      "file": "writes.php",
-      "line": 90,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 92,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 96,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 102,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 114,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 125,
-      "identifier": "preInc.type",
-      "message": "Cannot use ++ on literal-string.",
-      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
-    },
-    {
-      "file": "writes.php",
-      "line": 126,
-      "identifier": "postInc.type",
-      "message": "Cannot use ++ on literal-string.",
-      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
-    },
-    {
-      "file": "writes.php",
-      "line": 127,
-      "identifier": "preDec.type",
-      "message": "Cannot use -- on literal-string.",
-      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
-    },
-    {
-      "file": "writes.php",
-      "line": 128,
-      "identifier": "postDec.type",
-      "message": "Cannot use -- on literal-string.",
-      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
-    },
-    {
-      "file": "writes.php",
-      "line": 129,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 130,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 131,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 132,
-      "identifier": "assign.propertyType",
-      "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 134,
-      "identifier": "preInc.expr",
-      "message": "Cannot use ++ on a non-variable.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 134,
-      "identifier": "callable.nonCallable",
-      "message": "Trying to invoke int but it's not a callable.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 135,
-      "identifier": "postDec.expr",
-      "message": "Cannot use -- on a non-variable.",
-      "tip": null
-    },
-    {
-      "file": "writes.php",
-      "line": 135,
-      "identifier": "callable.nonCallable",
-      "message": "Trying to invoke int but it's not a callable.",
-      "tip": null
-    }
-  ]
+ "general": [],
+ "errors": [
+  {
+   "file": "writes.php",
+   "line": 14,
+   "identifier": "property.onlyWritten",
+   "message": "Static property StaticPropertyWrites\\Holder::$hidden is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "writes.php",
+   "line": 17,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 20,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 20,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 21,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 22,
+   "identifier": "preDec.type",
+   "message": "Cannot use -- on null.",
+   "tip": "Operator -- is deprecated for null."
+  },
+  {
+   "file": "writes.php",
+   "line": 23,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on null.",
+   "tip": "Operator -- is deprecated for null."
+  },
+  {
+   "file": "writes.php",
+   "line": 24,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 24,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 25,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 26,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 26,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 27,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 0.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 28,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 28,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 29,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 10.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 30,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 30,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 31,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nine ('9') does not accept 8.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 34,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 36,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 38,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 40,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 42,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 42,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 42,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 42,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 44,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 44,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 44,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 44,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 45,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 45,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 45,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 46,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 46,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 46,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 47,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 48,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 49,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property object::$nil.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 49,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property object::$nil.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 49,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 50,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property object::$nil.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 50,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property object::$nil.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 50,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 51,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $nil on int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 51,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $nil on int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 51,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 52,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $nil on int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 52,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $nil on int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 52,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 53,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 53,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 53,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$hidden (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 54,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 54,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 54,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$hidden (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 55,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 55,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 55,
+   "identifier": "preDec.type",
+   "message": "Cannot use -- on null.",
+   "tip": "Operator -- is deprecated for null."
+  },
+  {
+   "file": "writes.php",
+   "line": 56,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 56,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 56,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on null.",
+   "tip": "Operator -- is deprecated for null."
+  },
+  {
+   "file": "writes.php",
+   "line": 57,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 57,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 57,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 58,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on mixed.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 58,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 58,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 68,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "writes.php",
+   "line": 69,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "writes.php",
+   "line": 70,
+   "identifier": "preDec.type",
+   "message": "Cannot use -- on string.",
+   "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+  },
+  {
+   "file": "writes.php",
+   "line": 71,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on string.",
+   "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+  },
+  {
+   "file": "writes.php",
+   "line": 78,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property StaticPropertyWrites\\InstanceHolder::$locked is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 79,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property StaticPropertyWrites\\InstanceHolder::$locked is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 82,
+   "identifier": "assign.propertyProtectedSet",
+   "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 83,
+   "identifier": "assign.propertyProtectedSet",
+   "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 86,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on string|null.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "writes.php",
+   "line": 86,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 88,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on string|null.",
+   "tip": "\u2022 Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().\n\u2022 Operator -- is deprecated for null."
+  },
+  {
+   "file": "writes.php",
+   "line": 90,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 92,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$one (1) does not accept 2.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 96,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 102,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 114,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\Holder::$nil (null) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 125,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on literal-string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "writes.php",
+   "line": 126,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on literal-string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "writes.php",
+   "line": 127,
+   "identifier": "preDec.type",
+   "message": "Cannot use -- on literal-string.",
+   "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+  },
+  {
+   "file": "writes.php",
+   "line": 128,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on literal-string.",
+   "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+  },
+  {
+   "file": "writes.php",
+   "line": 129,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 130,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 131,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 132,
+   "identifier": "assign.propertyType",
+   "message": "Static property StaticPropertyWrites\\StringHolder::$numeric (numeric-string) does not accept (float|int).",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 134,
+   "identifier": "preInc.expr",
+   "message": "Cannot use ++ on a non-variable.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 134,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke int but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 135,
+   "identifier": "postDec.expr",
+   "message": "Cannot use -- on a non-variable.",
+   "tip": null
+  },
+  {
+   "file": "writes.php",
+   "line": 135,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke int but it's not a callable.",
+   "tip": null
+  }
+ ]
 }

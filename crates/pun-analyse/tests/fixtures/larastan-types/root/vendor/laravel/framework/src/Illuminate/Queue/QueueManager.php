@@ -2,9 +2,12 @@
 
 namespace Illuminate\Queue;
 
+use Carbon\CarbonInterval;
 use Closure;
+use DateTimeInterface;
 use Illuminate\Contracts\Queue\Factory as FactoryContract;
 use Illuminate\Contracts\Queue\Monitor as MonitorContract;
+use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Queue\Concerns\ResolvesQueueRoutes;
 use InvalidArgumentException;
 use UnitEnum;
@@ -16,7 +19,7 @@ use function Illuminate\Support\enum_value;
  */
 class QueueManager implements FactoryContract, MonitorContract
 {
-    use ResolvesQueueRoutes;
+    use InteractsWithTime, ResolvesQueueRoutes;
 
     /**
      * The application instance.
@@ -108,6 +111,16 @@ class QueueManager implements FactoryContract, MonitorContract
      * @return void
      */
     public function stopping($callback)
+    {}
+
+    /**
+     * Register a callback to be invoked when a job runs for longer than a given amount of time.
+     *
+     * @param  \DateTimeInterface|\Carbon\CarbonInterval|float|int  $threshold
+     * @param  callable  $handler
+     * @return void
+     */
+    public function whenJobRunsLongerThan($threshold, $handler)
     {}
 
     /**

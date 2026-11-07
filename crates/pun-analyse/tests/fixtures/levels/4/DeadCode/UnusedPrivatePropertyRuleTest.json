@@ -675,6 +675,15 @@
             "general": []
         },
         {
+            "method": "testBug15520",
+            "files": [
+                "DeadCode/data/bug-15520.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug14880",
             "files": [
                 "DeadCode/data/bug-14880-property.php"

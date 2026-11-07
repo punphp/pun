@@ -1,5 +1,5 @@
 {
-    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "phar_sha256": "4b3ed7850a20b092331bd1040e4f54a1d3c0559b4cf006431073997ebcb4324b",
     "sources": {
         "types.php": "d495c99c2b9248abe401fa92094ab39e9714b48d40a1d4b02f2d1751bd195ef4",
         "channels.php": "c05ca0904bdfc4a559b4fe8fa8ad42300211cf33a8b77d6243251caf43b815e7"

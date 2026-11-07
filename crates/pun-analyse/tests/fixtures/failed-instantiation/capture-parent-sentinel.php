@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $phar = isset($argv[1]) ? realpath($argv[1]) : false;
-$expectedHash = '85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae';
+$expectedHash = '4b3ed7850a20b092331bd1040e4f54a1d3c0559b4cf006431073997ebcb4324b';
 if ($phar === false || hash_file('sha256', $phar) !== $expectedHash) {
     throw new RuntimeException('Expected the pinned PHPStan 2.3.1 PHAR (SHA-256 ' . $expectedHash . ').');
 }

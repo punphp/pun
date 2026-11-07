@@ -34,6 +34,29 @@
             ]
         },
         {
+            "method": "testModelMakeOnRelativeName",
+            "files": [
+                "Rules/data/ModelMakeRelativeName.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/ModelMakeRelativeName.php",
+                    "line": 13,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelMakeRelativeName.php",
+                    "line": 18,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                }
+            ]
+        },
+        {
             "method": "testReportsModelMakeCallsInTraitRatherThanClass",
             "files": [
                 "Rules/data/ModelMake.php",

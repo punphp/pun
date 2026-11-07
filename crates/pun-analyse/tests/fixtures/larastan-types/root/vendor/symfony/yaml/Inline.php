@@ -111,6 +111,14 @@ class Inline
     {}
 
     /**
+     * Returns the offset of the "," or "]" that ends the embedded mapping starting at $i.
+     *
+     * Tokens are split the same way as in Parser::lexInlineStructure().
+     */
+    private static function findEmbeddedMappingEnd(string $sequence, int $i): int
+    {}
+
+    /**
      * Parses a YAML mapping.
      *
      * @throws ParseException When malformed inline YAML string is parsed

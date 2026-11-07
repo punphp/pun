@@ -147,6 +147,23 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug15425",
+            "files": [
+                "Classes/data/bug-15425.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-15425.php",
+                    "line": 19,
+                    "identifier": "property.promotedNotSupported",
+                    "message": "Promoted properties are supported only on PHP 8.0 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

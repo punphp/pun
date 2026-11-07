@@ -433,7 +433,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug10884
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3761
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11609
-4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testPossiblyImpureTip
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
@@ -619,7 +618,6 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug10353
 4 Classes/ImpossibleInstanceOfRuleTest::testNewIsAlwaysFinalClass
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
-4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
 # an-types: too-wide returns where Mago's types differ (is_subclass_of() narrowing a class-string, a $_GET element)
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8954
@@ -683,7 +681,6 @@
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5743
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug3747
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testArrayDimFetchAfterArrayKeyFirstOrLast
-3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug12981
 # class.notFound (NonexistentOffsetInArrayDimFetchRule): Mago types a property by its `@psalm-var Params` where PHPStan
 # takes the `@phpstan-var array<string, mixed>` beside it, so the offset write's holder is an unknown class
@@ -729,3 +726,25 @@
 # out of levels/1/Variables/DefinedVariableRuleTest.json. In `$bool = ... && in_array(1, $var = [...])`, PHPStan's
 # TypeSpecifier specifies the assigned haystack, so `$bool` implies $var; Mago's in_array() assertion does not, and Pun
 # reports "Variable $var might not be defined." at Variables/data/bug-10228.php:18
+# return.type of a generic built from a callback's array_map()/array_combine() (new in the 2.3.5 fixtures): PHPStan keeps
+# `non-empty-array<string>` through the callable template and adds the invariance tip, Pun infers non-empty-array
+3 Functions/ReturnTypeRuleTest::testBug11507
+# new in the 2.3.5 fixtures (possibly-impure-tip.php after PHPStan 2.3.2 dropped the @phpstan-impure tip, 04247a5dd):
+# Pun does not remember a static method call's result for a later comparison
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testRememberedPossiblyImpureValues
+# new in the 2.3.5 fixtures: a closure in an array shape argument takes its parameter type from the template the
+# shape's other value infers (`callable(T): void` with T = 1); Pun leaves the parameter mixed
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug15432
+# new in the 2.3.5 fixtures: the "not covariant" accepts reason of an object inheriting its type arguments through
+# @extends: PHPStan's tip here has no <fg=cyan> markup, Pun's has; where PHPStan drops it is not identified
+5 Functions/CallToFunctionParametersRuleTest::testBug15487
+5 Functions/CallToFunctionParametersRuleTest::testBug15487ImplicitMixed
+9 Functions/CallToFunctionParametersRuleTest::testBug15487
+9 Functions/CallToFunctionParametersRuleTest::testBug15487ImplicitMixed
+# PHPStan 2.3.2 (61a0d9fc2, 014269cdb): a backed enum's from()/tryFrom() parameter type (the backing type only behind
+# bleeding edge) and tryFrom() on a separate line reported as staticMethod.resultUnused; not ported
+5 Methods/CallStaticMethodsRuleTest::testBug11421
+9 Methods/CallStaticMethodsRuleTest::testBug11421
+# PHPStan 2.3.5: template types as object shape keys (9aaeccb14, with its "cannot be used as an object shape key"
+# unresolvable-type tips); not ported
+9 Methods/CallMethodsRuleTest::testObjectShapeTemplateKey

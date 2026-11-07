@@ -303,50 +303,7 @@
                 "Generics/data/bug-9981.php"
             ],
             "scan": [],
-            "errors": [
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 28,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                },
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 29,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type Bug9981\\File, actual: T of Bug9981\\File (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                },
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 40,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                },
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 41,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type Bug9981\\Directory, actual: T of Bug9981\\Directory (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                },
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 52,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                },
-                {
-                    "file": "Generics/data/bug-9981.php",
-                    "line": 53,
-                    "identifier": "phpstan.type",
-                    "message": "Expected type Bug9981\\Directory|Bug9981\\File, actual: T of Bug9981\\Directory|Bug9981\\File (class Bug9981\\Directory, parameter)",
-                    "tip": null
-                }
-            ],
+            "errors": [],
             "general": []
         }
     ]

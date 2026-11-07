@@ -3,7 +3,7 @@
 //! Pinkary migrations its table and its foreign keys come from, plus models and a migration that reach every branch
 //! of Larastan's SchemaAggregator and ModelPropertyHelper.
 //!
-//! Expected: tests/fixtures/laravel/expected.json, PHPStan 2.3.1 + Larastan 3.10.0's own dumps on a copy of Pinkary
+//! Expected: tests/fixtures/laravel/expected.json, PHPStan 2.3.5 + Larastan 3.14.0's own dumps on a copy of Pinkary
 //! (`scripts/analyse-spike.py oracle`), for `parseModelCastsMethod` false (Larastan's default) and true. Mago's type
 //! is read back with pun-phpstan's type-string resolver and printed with PHPStan's `describe()`.
 
@@ -83,12 +83,25 @@ fn expected(key: &str) -> BTreeMap<u64, String> {
         .collect()
 }
 
+/// Probe lines whose type still differs from Larastan's, each with its reason. The comparison fails when one matches.
+/// 78: Larastan 3.14 dumps the cover migration's `remember_token` as *ERROR* where 3.10 and Pun give `string`; its
+/// SchemaAggregator rewrite (literal SQL statements, resolveName(), arrow-function blueprints, a nullable
+/// rememberToken()) is not ported, and which part gives the error type is not identified.
+const GAPS: &[u64] = &[78];
+
+fn compare(mut got: BTreeMap<u64, String>, mut want: BTreeMap<u64, String>) {
+    for line in GAPS {
+        assert_ne!(got.remove(line), want.remove(line), "line {line} matches Larastan now: remove it from GAPS");
+    }
+    assert_eq!(got, want);
+}
+
 #[test]
 fn model_attributes_from_migrations() {
-    assert_eq!(dumped(false), expected("parseModelCastsMethod=false"));
+    compare(dumped(false), expected("parseModelCastsMethod=false"));
 }
 
 #[test]
 fn casts_method_when_parse_model_casts_method() {
-    assert_eq!(dumped(true), expected("parseModelCastsMethod=true"));
+    compare(dumped(true), expected("parseModelCastsMethod=true"));
 }

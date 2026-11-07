@@ -91,3 +91,29 @@ function testInboundCast(User $user): void
 {
     $user->secret = 'secret';
 }
+
+function testWriteToDecimalCast(User $user): void
+{
+    $user->decimal = '1.5';
+    $user->decimal = 1;
+    $user->decimal = 1.5;
+    $user->decimal = 'foo'; // Should raise an error
+    $user->decimal = []; // Should raise an error
+}
+
+function testWriteToNullableDecimalCast(User $user): void
+{
+    $user->nullable_decimal = '1.5';
+    $user->nullable_decimal = 1;
+    $user->nullable_decimal = 1.5;
+    $user->nullable_decimal = null;
+    $user->nullable_decimal = 'foo'; // Should raise an error
+    $user->nullable_decimal = []; // Should raise an error
+}
+
+function testWriteToEnumCollectionCast(User $user, App\Casts\BackedEnumeration $backed, App\Casts\BasicEnumeration $basic): void
+{
+    $user->enum_collection = [$backed];
+    $user->enum_collection = null;
+    $user->enum_collection = [$basic]; // Should raise an error
+}

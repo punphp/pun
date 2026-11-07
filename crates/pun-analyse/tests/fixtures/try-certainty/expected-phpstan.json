@@ -21,6 +21,12 @@
   ],
   "transfers.php": [
     {
+      "message": "Undefined variable: $unreachable",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
       "message": "Variable $object might not be defined.",
       "line": 51,
       "ignorable": true,
@@ -39,8 +45,32 @@
       "identifier": "variable.undefined"
     },
     {
+      "message": "Undefined variable: $unreachable",
+      "line": 80,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
       "message": "Variable $object might not be defined.",
       "line": 92,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 100,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 134,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 144,
       "ignorable": true,
       "identifier": "variable.undefined"
     },
@@ -65,6 +95,24 @@
     {
       "message": "Variable $value might not be defined.",
       "line": 182,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 192,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 198,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unreachable",
+      "line": 217,
       "ignorable": true,
       "identifier": "variable.undefined"
     },

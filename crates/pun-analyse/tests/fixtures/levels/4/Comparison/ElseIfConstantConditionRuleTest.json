@@ -448,7 +448,7 @@
                     "line": 13,
                     "identifier": "elseif.alwaysFalse",
                     "message": "Elseif condition is always false.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Bug6947\\HelloWorld::getValue() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 }
             ],
             "general": []

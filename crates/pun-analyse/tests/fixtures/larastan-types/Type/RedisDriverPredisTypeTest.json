@@ -1,0 +1,20 @@
+{
+    "test": "Type/RedisDriverPredisTypeTest",
+    "configs": [
+        "tests/Type/data/redis-driver-predis.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/redis-driver-predis.php",
+            "declares": [
+                "redisdriverpredis\\test"
+            ],
+            "asserts": [
+                12,
+                13,
+                16
+            ],
+            "errors": []
+        }
+    ]
+}

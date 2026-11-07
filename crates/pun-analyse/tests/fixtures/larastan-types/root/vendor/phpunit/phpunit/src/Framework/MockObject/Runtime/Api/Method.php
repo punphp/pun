@@ -10,7 +10,6 @@
 namespace PHPUnit\Framework\MockObject;
 
 use PHPUnit\Framework\Constraint\Constraint;
-use PHPUnit\Framework\MockObject\Rule\AnyInvokedCount;
 use PHPUnit\Framework\MockObject\Runtime\PropertyHook;
 
 /**
