@@ -2139,6 +2139,7 @@ yoda_style = { pun = "format/control-flow/yoda", risky = false, pint_presets = [
 [upstream.pint]
 "Pint/laravel_blade" = { pun = "format/laravel/blade", options = "same", status = "decided" }
 "Pint/phpdoc_type_annotations_only" = { pun = "lint/laravel/require-phpdoc-types-only", options = "same", status = "decided" }
+"Pint/prettier_cache_fingerprint" = { drop = "a no-op that carries Prettier package versions into Pint's cache signature; Pun has no cache", status = "decided" }
 
 [upstream.pun]
 "Pun/final_controller" = { pun = "lint/laravel/require-final-controller", options = "same", status = "decided" }
