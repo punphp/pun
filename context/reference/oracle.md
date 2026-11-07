@@ -11,12 +11,12 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | Composer | 2.10.3 | |
 | laravel/pint | 1.29.3, `dev-feat/blade-support` (what Pinkary's composer.lock pins) | `cef1b260c611f92e66902d678092e26932c9ea00` |
 | friendsofphp/php-cs-fixer | v3.95.17 (bundled in Pint's PHAR and its composer.lock) | `0ee88422118f3cc59c8c3def222ba7f1493b6d5b` |
-| rector/rector | 2.6.1 (what Pinkary's composer.lock pins; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
-| phpstan/phpstan for Rector | 2.2.7 (both Rector oracle locks and Pinkary's lock; separate from the analyse oracle's 2.3.1) | |
-| rectorphp/rector-src | 2.6.1 (source and `rules-tests/` fixtures in `.oracle/rector`) | `16be33c1c2364d51038752a299fce01043d42576` |
-| rector/rector-phpunit | dev-main@e68085d (bundled in rector/rector 2.6.1) | |
-| driftingly/rector-laravel | 2.5.0 (`.oracle/rector-ecosystem`, locked by `scripts/oracle-rector-ecosystem/composer.lock`) | |
-| pestphp/pest-plugin-rector | 5.x-dev (no release yet; `.oracle/rector-ecosystem`, same lock, `minimum-stability: dev` with `prefer-stable`) | `1a4b6b7424f134af3849f1811997c7b46f90f91f` |
+| rector/rector | 2.8.4 (the latest release; Pinkary's composer.lock still pins 2.6.1; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
+| phpstan/phpstan for Rector | 2.3.5 (both Rector oracle locks; rector/rector 2.8.4 requires `^2.3.5`; pinned separately from the analyse oracle's PHPStan) | |
+| rectorphp/rector-src | 2.8.4 (source and `rules-tests/` fixtures in `.oracle/rector`) | `0ddd8e3c8de9c32e9c12396a7f50234bdba559d0` |
+| rector/rector-phpunit | dev-main@22c6dae (bundled in rector/rector 2.8.4) | |
+| driftingly/rector-laravel | 2.7.3 (`.oracle/rector-ecosystem`, locked by `scripts/oracle-rector-ecosystem/composer.lock`; its tests and stubs at source commit `699f25b`) | |
+| pestphp/pest-plugin-rector | 5.x-dev (no release yet; `.oracle/rector-ecosystem`, same lock, `minimum-stability: dev` with `prefer-stable`) | `8c1b780c5e551cb78150ee91ceb73d34cd029946` |
 | prettier / prettier-plugin-blade / prettier-plugin-tailwindcss | 3.9.10 / 3.3.3 / 0.8.1 (only for `Pint/laravel_blade`, installed into `corpus/pinkary/node_modules`) | |
 | Node | v22.23.3 (system) | |
 
@@ -49,8 +49,9 @@ The lint oracle (lint.md §6). A Pun lint rule ports one Rector rule; its tests 
 input when the rule must leave it alone; the rule's `config/configured_rule.php` gives the PHP version. Parity is
 `format(pun lint --fix) == format(expected)`.
 
-Both Rector oracles pin PHPStan 2.2.7. Its trait, arrow-function, `preg_match()` and guard types differ from
-PHPStan 2.3.1, so use the Rector oracle rather than the analyse oracle for lint expectations.
+Both Rector oracles pin PHPStan 2.3.5, the version Rector 2.8.4 resolves to. It is pinned apart from the analyse
+oracle's PHPStan, and the two can differ in their types, so use the Rector oracle rather than the analyse oracle for
+lint expectations.
 
 For an input the fixtures miss, run Rector on it and paste its output as the expectation
 (`crates/pun-lint/tests/oracle/`):
@@ -65,6 +66,14 @@ return RectorConfig::configure()
 ```
 
 `php .oracle/rector-bin/vendor/bin/rector process --no-progress-bar --no-diffs --clear-cache --config rector.php`
+
+A case that uses PHPUnit (every rector-phpunit rule, and the core rules whose tests load `tests/phpunit-stubs`) needs
+PHPUnit's classes loaded before Rector requires its own `stubs-rector/` (`BootstrapFilesIncluder::requireRectorStubs()`),
+as in a project with PHPUnit installed. Otherwise the stub `TestCase`, which has only `createMock()`, wins over
+`withAutoloadPaths()`. Without PHPUnit, inherited asserts, `createStub()` and `setUp()` are not found, and the output
+looks like an upstream change but is not one. Load PHPUnit first with a bootstrap file that registers an autoloader
+for `tests/phpunit-stubs`, through `->withBootstrapFiles([...])`. Rector also reads `vendor/composer/installed.json`
+next to the config for the versions of the packages a rule depends on (PHPUnit 12.5, Laravel 13).
 
 ## Harness
 

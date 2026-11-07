@@ -1,6 +1,6 @@
 {
     "require": {
-        "rector/rector": "2.6.1",
-        "phpstan/phpstan": "2.2.7"
+        "rector/rector": "2.8.4",
+        "phpstan/phpstan": "2.3.5"
     }
 }

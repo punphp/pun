@@ -5,12 +5,12 @@
 #                         Oracle binary: php .oracle/pint/builds/pint (the committed PHAR Pinkary runs).
 #   .oracle/php-cs-fixer  PHP-CS-Fixer source + tests at the exact version Pint bundles,
 #                         with dev deps (PHPUnit) for fixture export. Binary: php .oracle/php-cs-fixer/php-cs-fixer
-#   .oracle/rector        rector-src at the rector/rector version Pinkary's composer.lock pins (2.6.1), for the rules'
+#   .oracle/rector        rector-src at the rector/rector tag 2.8.4 (the latest release), for the rules'
 #                         fixtures (rules-tests/). No composer install: the runnable Rector is .oracle/rector-bin.
-#   .oracle/rector-bin    rector/rector 2.6.1 (the released, scoped build), pinned by scripts/oracle-rector/composer.lock.
+#   .oracle/rector-bin    rector/rector 2.8.4 (the released, scoped build), pinned by scripts/oracle-rector/composer.lock.
 #                         Binary: php .oracle/rector-bin/vendor/bin/rector
-#   .oracle/rector-ecosystem  rector/rector 2.6.1 + driftingly/rector-laravel 2.5.0 + pestphp/pest-plugin-rector
-#                         5.x-dev@1a4b6b7, pinned by scripts/oracle-rector-ecosystem/composer.lock (the rule mapping's
+#   .oracle/rector-ecosystem  rector/rector 2.8.4 + driftingly/rector-laravel 2.7.3 + pestphp/pest-plugin-rector
+#                         5.x-dev@8c1b780, pinned by scripts/oracle-rector-ecosystem/composer.lock (the rule mapping's
 #                         rector-laravel and Pest inventories; rector-phpunit is bundled in rector/rector).
 #   .oracle/phpstan-src   phpstan-src at the tag 2.3.1 (Rule classes and tests; the PHPStan inventories).
 #   .oracle/phpstan       phpstan/phpstan 2.3.1 + larastan + strict/deprecation rules, pinned by scripts/oracle-phpstan/composer.lock.
@@ -19,7 +19,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 PINT_REF=cef1b260c611f92e66902d678092e26932c9ea00
 FIXER_REF=0ee88422118f3cc59c8c3def222ba7f1493b6d5b # v3.95.17
-RECTOR_REF=16be33c1c2364d51038752a299fce01043d42576 # rector-src 2.6.1
+RECTOR_REF=0ddd8e3c8de9c32e9c12396a7f50234bdba559d0 # rector-src 2.8.4
 PHPSTAN_SRC_REF=cb3b7e99489b2e3789ee2eec10501cb7a72580ea # phpstan-src 2.3.1
 
 fetch() { # dir url ref
