@@ -33,11 +33,13 @@ cargo install --locked --path crates/pun-cli
 
 - Projects must target PHP 8.4 or later. Pun reads the target from `composer.json` unless `[php] version` overrides it.
 - PHP checks need no PHP or Node runtime.
-- Blade formatting requires Node.js and these project dependencies:
+- Blade formatting requires Node.js and these project dependencies. In a project with a `bun.lock` or `bun.lockb` file, Pun runs Prettier with Bun instead of Node.js.
 
 ```bash
-npm install --save-dev prettier@^3.8.4 prettier-plugin-blade@^3.2.2 prettier-plugin-tailwindcss@^0.8.0
+npm install --save-dev prettier@^3.9.6 prettier-plugin-blade@^3.3.3 prettier-plugin-tailwindcss@^0.8.1
 ```
+
+- In `*.blade.php` files, Pun does not run `no_unused_imports`, `fully_qualified_strict_types`, `global_namespace_import` or `declare_strict_types`, like Pint. These rules would corrupt the template's PHP blocks.
 
 - Migrating `.php-cs-fixer.php` or `rector.php` requires PHP and the corresponding tool. For Rector, run `composer install` first.
 

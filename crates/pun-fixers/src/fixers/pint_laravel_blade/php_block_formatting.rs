@@ -10,10 +10,10 @@ use std::path::Path;
 use std::sync::{LazyLock, Mutex};
 
 /// `PhpFragmentFormatter::DENYLIST` / `FRAGMENT_DENYLIST`.
-const DENYLIST: &[&str] = &["no_closing_tag", "Pint/laravel_blade"];
+const DENYLIST: &[&str] = &["no_closing_tag", "no_unused_imports", "Pint/laravel_blade"];
 const FRAGMENT_DENYLIST: &[&str] = &[
     "fully_qualified_strict_types",
-    "no_unused_imports",
+    "global_namespace_import",
     "declare_strict_types",
 ];
 
@@ -206,15 +206,19 @@ impl PhpBlockFormatting {
         if trim(arg).is_empty() {
             return arg.to_vec();
         }
-        let host = match control_directive(&name.to_ascii_lowercase()) {
-            Some(keyword) => [keyword, b" (", arg, b") {}"].concat(),
-            None => [b"__pint__(", arg, b");"].concat(),
+        let core = unindent_arg(arg, indent);
+        let (host, call) = match control_directive(&name.to_ascii_lowercase()) {
+            Some(keyword) => ([keyword, b" (", &core[..], b") {}"].concat(), false),
+            None => ([b"__pint__(", &core[..], b");"].concat(), true),
         };
-        let formatted = strip_php_wrapper(
+        let mut formatted = strip_php_wrapper(
             &self
                 .formatter
                 .format(&[b"<?php\n", &host[..], b"\n"].concat(), true),
         );
+        if call {
+            formatted = strip_host_trailing_comma(formatted, &host);
+        }
         let Some((open, close)) = strpos(&formatted, b"(", 0)
             .and_then(|open| Some((open, match_paren(&formatted, open)?)))
         else {
@@ -362,7 +366,7 @@ impl PhpBlockFormatting {
     }
 
     fn format_island(&self, region: &[u8], indent: &[u8]) -> Vec<u8> {
-        let formatted = rtrim(&self.formatter.format(region, false)).to_vec();
+        let formatted = rtrim(&self.formatter.format(region, true)).to_vec();
         if indent.is_empty() {
             return formatted;
         }
@@ -370,13 +374,15 @@ impl PhpBlockFormatting {
     }
 }
 
-/// `explode("\n")->map(index 0 or "" unchanged, else $indent.$line)->implode("\n")`.
+/// `reindentArg`: indent every continuation line; a blank one only when it is the last (the directive's ")").
 fn reindent_arg(inner: &[u8], indent: &[u8]) -> Vec<u8> {
-    let lines: Vec<Vec<u8>> = inner
-        .split(|&b| b == b'\n')
+    let lines: Vec<&[u8]> = inner.split(|&b| b == b'\n').collect();
+    let last = lines.len() - 1;
+    let lines: Vec<Vec<u8>> = lines
+        .into_iter()
         .enumerate()
         .map(|(index, line)| {
-            if index == 0 || line.is_empty() {
+            if index == 0 || (line.is_empty() && index != last) {
                 line.to_vec()
             } else {
                 [indent, line].concat()
@@ -384,6 +390,57 @@ fn reindent_arg(inner: &[u8], indent: &[u8]) -> Vec<u8> {
         })
         .collect();
     lines.join(&b'\n')
+}
+
+/// `unindentArg`: strip the indentation an earlier run added to the continuation lines of an argument.
+fn unindent_arg(inner: &[u8], indent: &[u8]) -> Vec<u8> {
+    if indent.is_empty() {
+        return inner.to_vec();
+    }
+    let lines: Vec<&[u8]> = inner
+        .split(|&b| b == b'\n')
+        .enumerate()
+        .map(|(index, line)| match line.strip_prefix(indent) {
+            Some(rest) if index != 0 => rest,
+            _ => line,
+        })
+        .collect();
+    lines.join(&b'\n')
+}
+
+/// `stripHostTrailingComma`: drop the trailing comma "trailing_comma_in_multiline" gave the synthetic call host,
+/// unless the argument arrived with it.
+fn strip_host_trailing_comma(formatted: Vec<u8>, host: &[u8]) -> Vec<u8> {
+    let Some(mut tokens) = host_tokens(&formatted) else {
+        return formatted;
+    };
+    let Some(comma) = host_trailing_comma(&tokens) else {
+        return formatted;
+    };
+    if host_tokens(host).is_some_and(|original| host_trailing_comma(&original).is_some()) {
+        return formatted;
+    }
+    tokens.clear_at(comma);
+    strip_php_wrapper(&tokens.generate_code())
+}
+
+/// `hostTokens`: `Tokens::fromCode("<?php\n".$host)`, or None on a CompileError/ParseError.
+fn host_tokens(host: &[u8]) -> Option<Tokens> {
+    let code = [b"<?php\n", host].concat();
+    pun_format::lint(&code).ok()?;
+    Some(Tokens::from_code(&code))
+}
+
+/// `hostTrailingComma`: the comma before the host's closing ")" and ";", walking back over comments.
+fn host_trailing_comma(tokens: &Tokens) -> Option<usize> {
+    let semicolon = tokens.get_prev_meaningful_token(tokens.count())?;
+    let close = tokens.get_prev_meaningful_token(semicolon)?;
+    if !tokens[close].equals(")", true) {
+        return None;
+    }
+    tokens
+        .get_prev_meaningful_token(close)
+        .filter(|&comma| tokens[comma].equals(",", true))
 }
 
 fn component_tag_spans(content: &[u8]) -> Vec<Span> {

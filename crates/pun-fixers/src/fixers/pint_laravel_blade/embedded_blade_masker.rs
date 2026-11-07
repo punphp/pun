@@ -27,9 +27,17 @@ enum Context {
     Statement,
 }
 
+/// `App\Exceptions\UnrestorableContentException`.
+#[derive(Debug)]
+pub(super) struct Unrestorable;
+
 #[derive(Default)]
 pub(super) struct EmbeddedBladeMasker {
     map: Vec<(Vec<u8>, Vec<u8>)>,
+    /// `$escapedTokens`: the escaped-"@@" placeholder for the bare and the quoted position.
+    escaped_tokens: [Option<Vec<u8>>; 2],
+    /// `$escapedCounts`: how many "@@" each of those placeholders stands in for, in insertion order.
+    escaped_counts: Vec<(Vec<u8>, usize)>,
     original: Vec<u8>,
     counter: usize,
 }
@@ -43,6 +51,8 @@ impl EmbeddedBladeMasker {
     /// `<script>` with quoted attributes): Pint casts it to `""` and empties the file; Pun reports the file instead.
     pub(super) fn pre_format(&mut self, content: &[u8]) -> Result<Vec<u8>, String> {
         self.map = Vec::new();
+        self.escaped_tokens = [None, None];
+        self.escaped_counts = Vec::new();
         self.original = content.to_vec();
         self.counter = 0;
         let this = RefCell::new(std::mem::take(self));
@@ -63,21 +73,32 @@ impl EmbeddedBladeMasker {
         result.map_err(|e| format!("preg_replace_callback(): {e}"))
     }
 
-    pub(super) fn post_format(&self, content: &[u8]) -> Vec<u8> {
-        if self.map.is_empty() {
-            return content.to_vec();
+    /// `Err(Unrestorable)` where Pint throws `UnrestorableContentException` (a placeholder prettier lost or
+    /// duplicated): `BladeFormatter::format` then hands back the untouched file.
+    pub(super) fn post_format(&self, content: &[u8]) -> Result<Vec<u8>, Unrestorable> {
+        if self.map.is_empty() && self.escaped_counts.is_empty() {
+            return Ok(content.to_vec());
         }
-        // Every token must appear exactly once; otherwise fall back to the original to avoid corrupting the file.
+        // Every token must appear exactly once.
         for (token, _) in &self.map {
             if substr_count(content, token) != 1 {
-                return self.original.clone();
+                return Err(Unrestorable);
+            }
+        }
+        // An escaped-"@@" placeholder is shared by every occurrence it masked, so it must come back with that count.
+        for (token, count) in &self.escaped_counts {
+            if substr_count(content, token) != *count {
+                return Err(Unrestorable);
             }
         }
         let mut result = content.to_vec();
         for (token, original) in &self.map {
             result = str_replace(token, original, &result);
         }
-        result
+        for (token, _) in &self.escaped_counts {
+            result = str_replace(token, b"@@", &result);
+        }
+        Ok(result)
     }
 
     fn mask_region(&mut self, region: &[u8], is_css: bool) -> Vec<u8> {
@@ -86,6 +107,14 @@ impl EmbeddedBladeMasker {
         let mut result = Vec::with_capacity(length);
         while offset < length {
             let c = region[offset];
+            // An escaped "@@" is not a directive, but prettier's blade plugin re-indents the raw-text block
+            // around it on every pass: mask it.
+            if c == b'@' && offset + 1 < length && region[offset + 1] == b'@' {
+                let token = self.escaped_at_token(false, 1);
+                result.extend_from_slice(&token);
+                offset += 2;
+                continue;
+            }
             if is_string_delimiter(c, is_css) {
                 let end = scan_string_literal(region, length, offset, c);
                 let literal = &region[offset..end];
@@ -100,7 +129,8 @@ impl EmbeddedBladeMasker {
                     );
                     result.extend_from_slice(&masked);
                 } else {
-                    result.extend_from_slice(literal);
+                    let masked = self.mask_escaped_at(literal);
+                    result.extend_from_slice(&masked);
                 }
                 offset = end;
                 continue;
@@ -120,6 +150,36 @@ impl EmbeddedBladeMasker {
             offset += span;
         }
         result
+    }
+
+    /// `maskEscapedAt`: mask every escaped "@@" in a string literal that carries no Blade echo.
+    fn mask_escaped_at(&mut self, literal: &[u8]) -> Vec<u8> {
+        let count = substr_count(literal, b"@@");
+        if count == 0 {
+            return literal.to_vec();
+        }
+        let token = self.escaped_at_token(true, count);
+        str_replace(b"@@", &token, literal)
+    }
+
+    /// `escapedAtToken`: the shared placeholder for the position, counting the occurrences it stands in for.
+    fn escaped_at_token(&mut self, quoted: bool, count: usize) -> Vec<u8> {
+        let original = &self.original;
+        let token = self.escaped_tokens[quoted as usize]
+            .get_or_insert_with(|| {
+                // `buildEscapedAtToken`: widen until the source no longer contains it.
+                let mut token = if quoted { b"0z".to_vec() } else { b"zz".to_vec() };
+                while contains(original, &token) {
+                    token.push(b'z');
+                }
+                token
+            })
+            .clone();
+        match self.escaped_counts.iter_mut().find(|(t, _)| *t == token) {
+            Some((_, n)) => *n += count,
+            None => self.escaped_counts.push((token.clone(), count)),
+        }
+        token
     }
 
     fn mask(&mut self, original: &[u8], context: Context) -> Vec<u8> {

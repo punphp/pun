@@ -151,15 +151,7 @@ fn blade_probe_is_reused_for_stdin_and_files() {
     // A normal file goes through Rayon rather than the main thread that ran the probe.
     std::fs::remove_file(dir.join("node-pids")).unwrap();
     std::fs::write(dir.join("a.blade.php"), input).unwrap();
-    let got = start(
-        &dir,
-        &[
-            "--max-processes=2",
-            "--format=json",
-            "a.blade.php",
-        ],
-    )
-    .finish(b"");
+    let got = start(&dir, &["--max-processes=2", "--format=json", "a.blade.php"]).finish(b"");
     assert!(
         got.status.success(),
         "{}",
@@ -197,7 +189,7 @@ fn failed_node_preload_aborts_and_reaps_the_probe() {
             String::from_utf8_lossy(&out.stdout),
             String::from_utf8_lossy(&out.stderr)
         );
-        assert!(message.contains("needs Node.js"), "{message}");
+        assert!(message.contains("needs a JavaScript runtime"), "{message}");
         assert_eq!(std::fs::read(dir.join("a.blade.php")).unwrap(), input);
         assert_eq!(pids(&dir).len(), 1);
         wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));

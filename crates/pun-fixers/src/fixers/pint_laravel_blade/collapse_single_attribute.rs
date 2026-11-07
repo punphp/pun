@@ -105,8 +105,9 @@ fn try_collapse_wrapped_attribute(
     }
     let suffix: &[u8] = if terminator == b"/>" { b" />" } else { b">" };
     let mut result = vec![[indent, b"<", tag, b" ", rtrim(trimmed_first)].concat()];
+    let shift = block_shift(lines, start + 1, end, indent.len());
     for continuation in start + 1..=end {
-        let mut line = dedent(&lines[continuation], dedent_by as usize).to_vec();
+        let mut line = dedent(&lines[continuation], shift).to_vec();
         if continuation == end {
             line = [rtrim(&line), suffix].concat();
         }
@@ -155,6 +156,16 @@ fn wrapped_attribute_end(lines: &[Vec<u8>], line_count: usize, start: usize) -> 
         }
     }
     None
+}
+
+/// `blockShift`: how far left the continuation lines must move to sit at the tag's indentation.
+fn block_shift(lines: &[Vec<u8>], start: usize, end: usize, indent: usize) -> usize {
+    let shallowest = lines[start..=end]
+        .iter()
+        .filter(|line| !trim(line).is_empty())
+        .map(|line| line.iter().take_while(|&&b| b == b' ').count())
+        .min();
+    shallowest.unwrap_or(indent).saturating_sub(indent)
 }
 
 fn dedent(line: &[u8], amount: usize) -> &[u8] {

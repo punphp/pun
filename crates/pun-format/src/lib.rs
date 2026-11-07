@@ -171,6 +171,44 @@ impl Fixer for Proxy {
     }
 }
 
+/// Pint's FixerFactory override: fixers that inject, remove or rewrite import statements would corrupt the raw
+/// `<?php` chunks of a Blade template, so they skip `*.blade.php` files (`App\Fixers\LaravelBlade\SkipBladeFilesFixer`
+/// and, for no_unused_imports, `App\Fixers\LaravelBlade\NoUnusedImportsFixer`).
+const BLADE_UNSAFE: &[&str] = &[
+    "declare_strict_types",
+    "fully_qualified_strict_types",
+    "global_namespace_import",
+    "no_unused_imports",
+];
+
+/// `SkipBladeFilesFixer`: the inner fixer, except that it does not support Blade templates.
+struct SkipBladeFiles(Box<dyn Fixer>);
+
+impl Fixer for SkipBladeFiles {
+    fn name(&self) -> &'static str {
+        self.0.name()
+    }
+    fn priority(&self) -> i32 {
+        self.0.priority()
+    }
+    fn is_risky(&self) -> bool {
+        self.0.is_risky()
+    }
+    fn is_candidate(&self, tokens: &Tokens) -> bool {
+        self.0.is_candidate(tokens)
+    }
+    fn supports(&self, file: &Path) -> bool {
+        // `! str_ends_with($file->getFilename(), '.blade.php')`
+        !file
+            .file_name()
+            .is_some_and(|n| n.as_encoded_bytes().ends_with(b".blade.php"))
+            && self.0.supports(file)
+    }
+    fn fix(&self, file: &Path, tokens: &mut Tokens) {
+        self.0.fix(file, tokens)
+    }
+}
+
 /// Enabled fixers, sorted exactly like `Utils::sortFixers` (priority desc, then name via strcmp).
 pub struct Pipeline {
     fixers: Vec<Box<dyn Fixer>>,
@@ -232,6 +270,9 @@ impl Pipeline {
                             name: "visibility_required",
                             inner: f,
                         });
+                    }
+                    if BLADE_UNSAFE.contains(&target) {
+                        f = Box::new(SkipBladeFiles(f));
                     }
                     fixers.push(f);
                 }
@@ -586,6 +627,33 @@ mod tests {
             f("unused", 9, none),
             Box::new(Plain),
         ]
+    }
+
+    /// Pint's FixerFactory: the import-rewriting fixers skip `*.blade.php` files (SkipBladeFilesFixer); they still run
+    /// on PHP files, keep their own `supports` and priority, and other fixers still run on Blade files.
+    #[test]
+    fn import_fixers_skip_blade_files() {
+        let all = || {
+            vec![
+                f("declare_strict_types", 2, drop_space),
+                f("upper", 1, upper),
+            ]
+        };
+        let p = Pipeline::new(&[rule("declare_strict_types"), rule("upper")], &all).unwrap();
+        let skip = p.fixers().next().unwrap();
+        assert_eq!(
+            (skip.name(), skip.priority(), skip.is_risky()),
+            ("declare_strict_types", 2, false)
+        );
+        let run = |file: &str| {
+            p.run(Path::new(file), b"<?php foo; bar;")
+                .unwrap()
+                .map(|f| f.code)
+        };
+        assert_eq!(run("dir/v.blade.php").unwrap(), b"<?php FOO; BAR;");
+        assert_eq!(run("dir/v.php").unwrap(), b"<?php FOO;BAR;");
+        // The wrapped fixer's own `supports` still applies (neither test fixer supports skip.php).
+        assert!(run("dir/skip.php").is_none());
     }
 
     #[test]

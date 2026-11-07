@@ -27,7 +27,7 @@ cargo install --locked --git https://github.com/punphp/pun punphp
 pun --version
 ```
 
-PHP files need no PHP or Node runtime. Blade formatting requires Node.js and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
+PHP files need no PHP or Node runtime. Blade formatting requires Node.js (or Bun) and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
 
 ## Start a project
 
