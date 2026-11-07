@@ -1039,8 +1039,16 @@ pub(super) fn check_constants(
     } else if acceptor.builtin && !matches!(call.kind, CallKind::Callable | CallKind::CallUserFunc) && allowed_type.zip(parameter_type).is_some_and(|(a, p)| {
         super::declared::with_classes(c, || is_super_type_of(a, p).yes())
     }) {
+        // only a constant another parameter of the function takes is reported here
+        let policies: Vec<_> = acceptor.param_types.iter().filter_map(|p| match p {
+            ParamType::Builtin(_, Some(policy)) => Some(policy),
+            _ => None,
+        }).collect();
         for constant in constants.iter().filter(|k| k.builtin) {
-            invalid(c, constant);
+            let one = std::slice::from_ref(constant);
+            if policies.iter().any(|policy| policy.check(one).is_ok()) {
+                invalid(c, constant);
+            }
         }
     }
 }

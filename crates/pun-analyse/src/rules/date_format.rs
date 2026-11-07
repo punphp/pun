@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's DateFormatFunctionReturnTypeExtension (`date_format()`) and DateFormatMethodReturnTypeExtension
+//! PHPStan 2.3.5's DateFormatFunctionReturnTypeExtension (`date_format()`) and DateFormatMethodReturnTypeExtension
 //! (`DateTimeInterface::format()`) as Mago return type providers, over DateFunctionReturnTypeHelper. The helper runs
 //! PHP's `date()` on a format it has no case for, in the default timezone the oracle's PHP runs with (UTC).
 
@@ -97,17 +97,11 @@ fn type_from_format_type(codebase: &CodebaseMetadata, format: &TUnion) -> TUnion
     let union = |a: &TUnion, b: &TUnion| combine_union_types(a, b, codebase, CombinerOptions::default());
     let types: Vec<TUnion> = constant_strings(format).into_iter().map(from_format).collect();
     let non_empty_format = format.types.iter().all(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.is_non_empty()));
-    let t = match types.split_first() {
+    match types.split_first() {
         None if non_empty_format => non_empty_string(),
         None => get_string(),
         Some((first, rest)) => rest.iter().fold(first.clone(), |t, next| union(&t, next)),
-    };
-    // `$type->isNumericString()->no()`: only constant strings can say no
-    let numeric_no = t.types.iter().all(|a| {
-        matches!(a, TAtomic::Scalar(TScalar::String(s))
-            if s.get_known_literal_value().is_some_and(|v| !std::str::from_utf8(v).is_ok_and(is_numeric)))
-    });
-    if numeric_no && non_empty_format { union(&t, &non_empty_string()) } else { t }
+    }
 }
 
 /// `buildReturnTypeFromFormat()` with `$useMicrosec`.
@@ -135,6 +129,19 @@ fn from_format(format: &[u8]) -> TUnion {
         b"h" => return range(1, 12, true),
         b"H" => return range(0, 23, true),
         b"u" | b"v" => return string(TString::general_with_props(true, true, true, false, TStringCasing::Unspecified)),
+        // values which do not depend on the locale (PHPStan 2.3.3)
+        b"a" => return strings(&["am", "pm"]),
+        b"A" => return strings(&["AM", "PM"]),
+        b"S" => return strings(&["st", "nd", "rd", "th"]),
+        b"D" => return strings(&["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]),
+        b"l" => return strings(&["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
+        b"M" => return strings(&["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]),
+        b"F" => {
+            return strings(&[
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+                "November", "December",
+            ]);
+        }
         _ => {}
     }
     let date = date(format);
@@ -145,6 +152,16 @@ fn from_format(format: &[u8]) -> TUnion {
         return string(TString::numeric());
     }
     string(TString::truthy())
+}
+
+/// `buildConstantStringsType()`
+fn strings(values: &[&str]) -> TUnion {
+    TUnion::from_vec(
+        values
+            .iter()
+            .map(|v| TAtomic::Scalar(TScalar::String(TString::known_literal(mago_word::word(v.as_bytes())))))
+            .collect(),
+    )
 }
 
 /// PHP 8's `is_numeric()` of a string.

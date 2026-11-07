@@ -18,11 +18,37 @@ impl StrictMixed {
         if !self.explicit && !self.implicit {
             return t.clone();
         }
-        if t.mixed_explicitness().is_some_and(|explicit| if explicit { self.explicit } else { self.implicit }) {
-            t.to_strict_mixed()
-        } else {
-            t.traverse(&|t| self.transform(t))
+        if let Type::Object(class, args, exact) = t
+            && !args.is_empty()
+        {
+            return self.transform_generic_object_arguments(class, args, *exact, t);
         }
+        self.transform_mixed(t).unwrap_or_else(|| t.traverse(&|t| self.transform(t)))
+    }
+
+    /// `transformMixedType()`: the checked copy of a mixed this level maps, else `None`.
+    fn transform_mixed(self, t: &Type) -> Option<Type> {
+        t.mixed_explicitness()
+            .is_some_and(|explicit| if explicit { self.explicit } else { self.implicit })
+            .then(|| t.to_strict_mixed())
+    }
+
+    /// `transformGenericObjectTypeArguments()` (PHPStan 2.3.2): an invariant argument of an invariant template is
+    /// compared with equals(), so only a top-level mixed in it is mapped, not one nested deeper.
+    fn transform_generic_object_arguments(self, class: &str, args: &[Type], exact: bool, t: &Type) -> Type {
+        let Some(reflection) = symbols::lookup(class) else {
+            return t.traverse(&|t| self.transform(t));
+        };
+        let args = args
+            .iter()
+            .enumerate()
+            .map(|(i, argument)| {
+                let invariant = !matches!(argument, Type::Projection(..))
+                    && reflection.templates.get(i).is_some_and(|template| template.variance == "invariant");
+                if invariant { self.transform_mixed(argument).unwrap_or_else(|| argument.clone()) } else { self.transform(argument) }
+            })
+            .collect();
+        Type::Object(class.to_string(), args, exact)
     }
 }
 

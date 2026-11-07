@@ -1020,3 +1020,146 @@ pub(crate) fn with_method_class(codebase: &CodebaseMetadata, class: &[u8], metho
     let k = codebase.get_class_like(class)?;
     CLASSES.iter().any(|c| k.original_name.as_bytes() == *c).then_some(k.original_name)
 }
+
+/// BuilderOfType::getResult() and RelationOfType::getResult() for Mago's expander (`builder-of<TModel[, TRelation]>`
+/// and `relation-of<TModel, TRelation>` once their arguments have no template left).
+pub(crate) fn late_builder(codebase: &CodebaseMetadata, name: &[u8], arguments: &[TUnion]) -> Option<TUnion> {
+    match (name, arguments) {
+        (mago_codex::ttype::expander::BUILDER_OF, [model, relation @ ..]) => {
+            let (relation, unknown) = relation.first().map_or((None, false), |key| resolve_relations(codebase, model, key));
+            let related = match relation.as_ref().and_then(|r| related_model(codebase, r)) {
+                Some(related) => related,
+                None if unknown => TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(mago_word::word(
+                    "Illuminate\\Database\\Eloquent\\Model",
+                ))))),
+                None => model.clone(),
+            };
+            let builders: Vec<TAtomic> = related
+                .types
+                .iter()
+                .filter_map(|t| match t {
+                    TAtomic::Object(TObject::Named(n)) if is_model(codebase, n.name.as_bytes()) => {
+                        let builder = builder_name(codebase, n.name.as_bytes());
+                        let generic = codebase.get_class_like(builder.as_bytes()).is_some_and(|k| !k.template_types.is_empty());
+                        let model = TUnion::from_atomic(t.clone());
+                        Some(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+                            builder,
+                            generic.then(|| vec![model]),
+                        ))))
+                    }
+                    _ => None,
+                })
+                .collect();
+            (!builders.is_empty()).then(|| TUnion::from_vec(builders))
+        }
+        (mago_codex::ttype::expander::RELATION_OF, [model, key]) => {
+            let relation = resolve_relations(codebase, model, key).0.unwrap_or_else(|| {
+                let mixed = mago_codex::ttype::get_mixed();
+                TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+                    mago_word::word("Illuminate\\Database\\Eloquent\\Relations\\Relation"),
+                    Some(vec![mixed.clone(), mixed.clone(), mixed]),
+                ))))
+            });
+            // eager loading creates the relation on a fresh model instance (`StaticType::getStaticObjectType()`)
+            let mut relation = TUnion::from_vec(relation.types.iter().cloned().map(plain).collect());
+            relation.set_ignore_nullable_issues(true);
+            relation.set_ignore_falsable_issues(true);
+            Some(relation)
+        }
+        _ => None,
+    }
+}
+
+fn is_model(codebase: &CodebaseMetadata, class: &[u8]) -> bool {
+    class.eq_ignore_ascii_case(MODEL) || codebase.is_instance_of(class, MODEL)
+}
+
+/// `getTemplateType(Relation::class, 'TRelatedModel')` of a relation type.
+fn related_model(codebase: &CodebaseMetadata, relation: &TUnion) -> Option<TUnion> {
+    let definer = codebase.get_class_like(RELATION)?.name;
+    let models: Vec<TAtomic> = relation
+        .types
+        .iter()
+        .filter_map(|t| match t {
+            TAtomic::Object(TObject::Named(n)) => get_specialized_template_type(
+                codebase,
+                mago_word::word("TRelatedModel"),
+                definer,
+                codebase.get_class_like(n.name.as_bytes())?,
+                n.type_parameters.as_deref(),
+            ),
+            _ => None,
+        })
+        .flat_map(|u| u.types.into_owned())
+        .collect();
+    (!models.is_empty()).then(|| TUnion::from_vec(models))
+}
+
+/// RelationOfType::resolveRelations(): the union of each constant key's relation path, and whether a path failed
+/// on an unknown model.
+fn resolve_relations(codebase: &CodebaseMetadata, model: &TUnion, key: &TUnion) -> (Option<TUnion>, bool) {
+    use mago_codex::ttype::atomic::scalar::TScalar;
+    let keys: Option<Vec<&[u8]>> = key
+        .types
+        .iter()
+        .map(|t| match t {
+            TAtomic::Scalar(TScalar::String(s)) => s.get_known_literal_value(),
+            _ => None,
+        })
+        .collect();
+    let Some(keys) = keys.filter(|k| !k.is_empty()) else { return (None, false) };
+    let mut results = Vec::new();
+    let mut unknown = false;
+    for path in keys {
+        let path = path.split(|&b| b == b':').next().unwrap_or_default();
+        let (relation, failed) = follow_relation_path(codebase, model, path);
+        unknown |= failed;
+        results.extend(relation.into_iter().flat_map(|r| r.types.into_owned()));
+    }
+    ((!results.is_empty()).then(|| TUnion::from_vec(results)), unknown)
+}
+
+/// RelationOfType::followRelationPath().
+fn follow_relation_path(codebase: &CodebaseMetadata, model: &TUnion, path: &[u8]) -> (Option<TUnion>, bool) {
+    let mut related = model.clone();
+    let mut relation = None;
+    for name in path.split(|&b| b == b'.') {
+        let mut relations = Vec::new();
+        for t in related.types.iter() {
+            let TAtomic::Object(TObject::Named(n)) = t else { continue };
+            let class = n.name.as_bytes();
+            if !codebase.method_exists(class, name) {
+                continue;
+            }
+            let Some(returned) = method_type(codebase, class, &TNamedObject::new(n.name), name, None) else { continue };
+            let relations_only = !returned.types.is_empty()
+                && returned.types.iter().all(|r| {
+                    matches!(r, TAtomic::Object(TObject::Named(o)) if o.name.as_bytes().eq_ignore_ascii_case(RELATION) || codebase.is_instance_of(o.name.as_bytes(), RELATION))
+                });
+            if relations_only {
+                relations.extend(returned.types.into_owned());
+            }
+        }
+        if relations.is_empty() {
+            return (None, is_unknown_model(codebase, &related));
+        }
+        let union = TUnion::from_vec(relations);
+        let Some(next) = related_model(codebase, &union) else { return (Some(union), false) };
+        related = next;
+        relation = Some(union);
+    }
+    (relation, false)
+}
+
+/// RelationOfType::isUnknownModel(): no class, or an abstract one.
+fn is_unknown_model(codebase: &CodebaseMetadata, ty: &TUnion) -> bool {
+    let classes: Vec<_> = ty
+        .types
+        .iter()
+        .filter_map(|t| match t {
+            TAtomic::Object(TObject::Named(n)) => codebase.get_class_like(n.name.as_bytes()),
+            _ => None,
+        })
+        .collect();
+    classes.is_empty() || classes.iter().any(|k| k.flags.is_abstract())
+}

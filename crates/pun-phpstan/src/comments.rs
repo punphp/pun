@@ -1,4 +1,4 @@
-//! `@phpstan-ignore`, `@phpstan-ignore-line` and `@phpstan-ignore-next-line` comments: PHPStan 2.3.1's
+//! `@phpstan-ignore`, `@phpstan-ignore-line` and `@phpstan-ignore-next-line` comments: PHPStan 2.3.5's
 //! `RichParser::getLinesToIgnore()` and `IgnoreLexer`, over the file's tokens as nikic/php-parser's lexer produces
 //! them (token_get_all plus its sentinel token).
 

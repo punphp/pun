@@ -1,4 +1,4 @@
-//! `pun analyse`: PHPStan 2.3.1's rules, level by level, on Mago's parser, name resolution and
+//! `pun analyse`: PHPStan 2.3.5's rules, level by level, on Mago's parser, name resolution and
 //! codex. Errors carry PHPStan's identifier and message so baselines and `ignoreErrors` keep matching.
 
 mod autoload;

@@ -113,6 +113,7 @@ pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use dead_code::impure_points;
 pub(crate) use named_argument::resolve as renamed_named_arguments;
 pub(crate) use larastan::finish as larastan_finish;
+pub(crate) use larastan::late_builder;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
 

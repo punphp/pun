@@ -461,6 +461,8 @@ pub(crate) fn build(
 ) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
     // Larastan's `collection-of<TModel>`, which the type builder leaves to expansion
     let _ = mago_codex::ttype::expander::COLLECTION_OF_RESULT.set(crate::laravel::collection_of);
+    // and its `builder-of<TModel[, TRelation]>` and `relation-of<TModel, TRelation>`
+    let _ = mago_codex::ttype::expander::BUILDER_OF_RESULT.set(crate::rules::late_builder);
     let version = php_version(project.php_version);
     let aliases = laravel_root
         .or_else(|| project.larastan.as_ref().map(|l| l.root.as_path()))

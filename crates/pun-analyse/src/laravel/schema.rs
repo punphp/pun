@@ -1,4 +1,4 @@
-//! Larastan's `SchemaAggregator` (src/Properties/SchemaAggregator.php, v3.10.0, itself from psalm/laravel-psalm-plugin):
+//! Larastan's `SchemaAggregator` (src/Properties/SchemaAggregator.php, v3.14.0, itself from psalm/laravel-psalm-plugin):
 //! the tables and columns the `up()` methods of the migrations build, function by function.
 
 use std::collections::HashMap;

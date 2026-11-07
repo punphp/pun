@@ -138,7 +138,7 @@ const PATTERNS: &[(Tok, &str)] = &[
     (Tok::ClosePhpdoc, r"\*/"),
     (
         Tok::PhpdocTag,
-        r"@(?:[a-z][a-z0-9-\\]+:)?[a-z][a-z0-9-\\]*+",
+        r"@(?:[a-z][a-z0-9-\\]+:)?[a-z][a-z0-9_\\-]*+",
     ),
     (Tok::DoctrineTag, r"@[a-z_\\][a-z0-9_\:\\]*[a-z_][a-z0-9_]*"),
     (Tok::Eol, r"\r?+\n[\x09\x20]*+(?:\*(?!/)\x20?+)?"),
@@ -1241,8 +1241,7 @@ pub enum TagValue {
     Invalid(String, ParseError),
 }
 
-/// `PhpDocParser::parse()` on a doc comment: its tags. `None` where PHPStan's parser throws (an argument of a
-/// `@\Doctrine` tag that does not parse).
+/// `PhpDocParser::parse()` on a doc comment: its tags. `None` where it does not start with `/**`.
 pub fn tags(doc: impl AsRef<[u8]>) -> Option<Vec<Tag>> {
     let mut t = Tokens::new(doc.as_ref());
     t.consume(Tok::OpenPhpdoc).ok()?;
@@ -1295,12 +1294,18 @@ fn parse_child(t: &mut Tokens) -> R<Option<Tag>> {
     if t.is(Tok::DoctrineTag) {
         let name = t.value().to_string();
         t.next();
-        parse_doctrine_tag_value(t)?;
-        return Ok(Some(Tag {
-            name,
-            line,
-            value: TagValue::Doctrine,
-        }));
+        t.push();
+        let value = match parse_doctrine_tag_value(t) {
+            Ok(()) => {
+                t.drop_save();
+                TagValue::Doctrine
+            }
+            Err(e) => {
+                t.rollback();
+                TagValue::Invalid(parse_optional_description(t, false)?, e)
+            }
+        };
+        return Ok(Some(Tag { name, line, value }));
     }
     parse_text(t);
     Ok(None)
@@ -1746,14 +1751,18 @@ fn parse_doctrine_arguments(t: &mut Tokens, deep: bool) -> R<()> {
 }
 
 fn parse_doctrine_argument(t: &mut Tokens) -> R<()> {
-    if !t.is(Tok::Ident) {
+    // a quoted key, e.g. "key"="value", is not valid Doctrine syntax, but is accepted as the key
+    if !t.is_any(&[Tok::Ident, Tok::DoubleQuoted, Tok::DoctrineString]) {
         return parse_doctrine_value(t);
     }
     t.push();
-    let named = t
-        .consume(Tok::Ident)
-        .and_then(|()| t.consume(Tok::Equal))
-        .and_then(|()| parse_doctrine_value(t));
+    let quoted = !t.is(Tok::Ident);
+    let key = t.bytes().to_vec();
+    t.next();
+    if quoted {
+        doctrine_string(t, key);
+    }
+    let named = t.consume(Tok::Equal).and_then(|()| parse_doctrine_value(t));
     if named.is_ok() {
         t.drop_save();
         return Ok(());

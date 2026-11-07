@@ -309,7 +309,7 @@ fn constant_arrays(t: &Type) -> Vec<UnpackingArray<'_>> {
     }
 }
 
-/// PHPStan 2.3.1 `ArrayUnpackingHelper::getKeyTypes()`. Resolve the whole spread before advancing the caller's
+/// PHPStan 2.3.5 `ArrayUnpackingHelper::getKeyTypes()`. Resolve the whole spread before advancing the caller's
 /// implicit index: an optional key or an overflow invalidates even keys visited before that failure.
 fn unpacked_keys(
     t: &Type,

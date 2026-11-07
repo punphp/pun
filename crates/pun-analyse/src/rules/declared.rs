@@ -1597,11 +1597,15 @@ fn inherited_constant_doc(
 pub struct Classes<'c, 'a, 'arena> {
     checker: &'c Checker<'a, 'arena>,
     cache: RefCell<HashMap<String, Option<Arc<Class>>>>,
-    /// classes being built (a cyclic hierarchy finds no class)
-    building: RefCell<std::collections::HashSet<String>>,
+}
+
+thread_local! {
+    /// classes being built (a cyclic hierarchy finds no class), across nested [`with_classes()`] calls: a class's
+    /// template bound naming the class itself is resolved while the class is built (`@template T of Error|self`)
+    static BUILDING: RefCell<std::collections::HashSet<String>> = RefCell::new(std::collections::HashSet::new());
     /// how many lookups found a class still being built: a class built meanwhile depends on the order it was asked
     /// for in, so it stays out of the run's [`ClassCache`]
-    cycles: std::cell::Cell<usize>,
+    static CYCLES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
 }
 
 /// The classes built in one run, shared by every file's checks: a class's reflection reads only the codebase and
@@ -1614,8 +1618,6 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         Classes {
             checker,
             cache: RefCell::new(HashMap::new()),
-            building: RefCell::new(std::collections::HashSet::new()),
-            cycles: std::cell::Cell::new(0),
         }
     }
 
@@ -1629,14 +1631,14 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             self.cache.borrow_mut().insert(key, found.clone());
             return found;
         }
-        if !self.building.borrow_mut().insert(key.clone()) {
-            self.cycles.set(self.cycles.get() + 1);
+        if !BUILDING.with_borrow_mut(|b| b.insert(key.clone())) {
+            CYCLES.set(CYCLES.get() + 1);
             return None;
         }
-        let cycles = self.cycles.get();
+        let cycles = CYCLES.get();
         let built = self.build(name).map(Arc::new);
-        self.building.borrow_mut().remove(&key);
-        if self.cycles.get() == cycles {
+        BUILDING.with_borrow_mut(|b| b.remove(&key));
+        if CYCLES.get() == cycles {
             shared.lock().expect("class cache").insert(key.clone(), built.clone());
         }
         self.cache.borrow_mut().insert(key, built.clone());

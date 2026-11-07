@@ -1981,7 +1981,7 @@ pub(in super::super) fn match_subject_types(
 mod tests {
     use super::{Accessory, Tri, Type, loose};
 
-    /// SwitchConditionRule on PHPStan 2.3.1: `numeric-string` and `decimal-int-string` subjects are never `==` to
+    /// SwitchConditionRule on PHPStan 2.3.5: `numeric-string` and `decimal-int-string` subjects are never `==` to
     /// `'abc'` or null (Mago types neither parameter as PHPStan does).
     #[test]
     fn numeric_strings() {

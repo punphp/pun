@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's `RegexGroupParser` with its value objects (`RegexAlternation`, `RegexCapturingGroup`,
+//! PHPStan 2.3.5's `RegexGroupParser` with its value objects (`RegexAlternation`, `RegexCapturingGroup`,
 //! `RegexNonCapturingGroup`, `RegexAstWalkResult`, `RegexGroupWalkResult`) and `RegexExpressionHelper`'s pattern
 //! helpers.
 
@@ -8,7 +8,7 @@ use std::sync::LazyLock;
 
 use pun_phpstan::types::Tri;
 
-use super::hoa::{self, Node};
+use super::parser::{self, Node};
 use super::types::{Atom, Flags, RType};
 
 /// `NOT_SUPPORTED_MODIFIERS`.
@@ -16,6 +16,12 @@ const NOT_SUPPORTED_MODIFIERS: &[char] = &['J'];
 
 /// `LITERALS_LIMIT`.
 const LITERALS_LIMIT: usize = 100;
+
+const NEGATIVE_ASSERTIONS: &[&str] = &["#negativelookahead", "#negativelookbehind"];
+
+const ASSERTIONS: &[&str] = &["#lookahead", "#lookbehind", "#negativelookahead", "#negativelookbehind"];
+
+const CONDITIONS: &[&str] = &["#namedcondition", "#absolutecondition", "#relativecondition", "#assertioncondition"];
 
 /// `RegexAlternation`; its id is its index in [`Walk::alternations`].
 #[derive(Clone, Debug)]
@@ -319,7 +325,8 @@ pub(super) fn parse_groups(regex: &str, capture_only_named_supported: bool) -> O
     Some(walk)
 }
 
-/// The cached part of `parseGroups()`: the pattern compiles, no unsupported modifier, and hoa parses it.
+/// The cached part of `parseGroups()`: the pattern compiles, no unsupported modifier, `RegexParser` parses it, and
+/// it calls no subroutine.
 fn parse_ast(regex: &str, modifiers: &str) -> Option<Node> {
     // pattern is invalid, so let the RegularExpressionPatternRule report it
     pun_phpstan::php::preg(regex).ok()?;
@@ -346,7 +353,14 @@ fn parse_ast(regex: &str, modifiers: &str) -> Option<Node> {
     } else {
         regex
     };
-    hoa::parse(remove_delimiters_and_modifiers(regex)?)
+    let ast = parser::parse(remove_delimiters_and_modifiers(regex)?)?;
+    // a subroutine call matches what another group matches, but it does not set that group
+    (!contains_subroutine_call(&ast)).then_some(ast)
+}
+
+/// `containsSubroutineCall()`.
+fn contains_subroutine_call(ast: &Node) -> bool {
+    ast.token() == Some("subroutine") || ast.children().iter().any(contains_subroutine_call)
 }
 
 fn empty_token() -> Node {
@@ -473,6 +487,16 @@ impl Walker<'_> {
                     in_optional_quantification,
                     parent: parent_group,
                     reset_group_counter: id == "#noncapturingreset",
+                })));
+            }
+            // capturing groups in a negative assertion are never set when the whole pattern matches,
+            // capturing groups in a conditional subpattern are set only when its condition says so
+            id if NEGATIVE_ASSERTIONS.contains(&id) || CONDITIONS.contains(&id) => {
+                parent_group = Some(Rc::new(Parent::NonCapturing(NonCapturing {
+                    alternation,
+                    in_optional_quantification: true,
+                    parent: parent_group,
+                    reset_group_counter: false,
                 })));
             }
             _ => {}
@@ -605,6 +629,17 @@ impl Walker<'_> {
         let mut quantified_literals = None;
         let id = ast.id();
 
+        if ASSERTIONS.contains(&id) {
+            // assertions are zero-width, they do not add anything to the matched string
+            return walk;
+        }
+        if CONDITIONS.contains(&id) {
+            // which branch of a conditional subpattern matches is not known, it might match an empty string
+            walk.only_literals = None;
+            walk.numeric = Tri::No;
+            return walk;
+        }
+
         if id == "#concatenation" && !children.is_empty() && !walk.in_optional_quantification {
             let mut meaningful_tokens = 0;
             for child in children {
@@ -632,7 +667,8 @@ impl Walker<'_> {
             if min == Some(0) {
                 walk.in_optional_quantification = true;
             }
-            if !walk.in_optional_quantification {
+            // repeating an atom that might match an empty string might match an empty string too
+            if !walk.in_optional_quantification && !self.is_maybe_empty_node(&children[0], &mut false) {
                 if min >= Some(1) {
                     walk.non_empty = Tri::Yes;
                 }
@@ -657,6 +693,10 @@ impl Walker<'_> {
             let mut only_literals = walk.only_literals.take();
             let literal = self.literal_value(ast, &mut only_literals, !in_class, false);
             walk.only_literals = only_literals;
+            if ast.token() == Some("backreference") {
+                // matches what another group matched, the content is not known
+                walk.numeric = Tri::No;
+            }
             if let Some(literal) = literal {
                 if !is_digits(&literal) {
                     walk.numeric = Tri::No;
@@ -776,9 +816,16 @@ impl Walker<'_> {
 
     /// `isMaybeEmptyNode()`.
     fn is_maybe_empty_node(&self, node: &Node, is_non_falsy: &mut bool) -> bool {
-        // every quantifier token has a minimum, so a quantification is maybe-empty exactly when it is 0
+        if ASSERTIONS.contains(&node.id()) || CONDITIONS.contains(&node.id()) {
+            return true;
+        }
+        // a quantification is maybe-empty when its minimum is 0, or when its atom is
         if node.id() == "#quantification" {
-            return quantification_range(node).0 == Some(0);
+            match quantification_range(node).0 {
+                Some(0) => return true,
+                Some(_) => return self.is_maybe_empty_node(&node.children()[0], &mut false),
+                None => {}
+            }
         }
         if let Some(literal) = self.literal_value(node, &mut None, false, false) {
             if !literal.is_empty() && literal != "0" {

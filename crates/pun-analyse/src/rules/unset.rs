@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's UnsetRule. Property checks precede the recursive offset/variable check; each argument
+//! PHPStan 2.3.5's UnsetRule. Property checks precede the recursive offset/variable check; each argument
 //! produces at most one error. Variable certainty is the statement's entry scope, not a syntactic read.
 
 use std::collections::{HashMap, HashSet};

@@ -6,7 +6,7 @@ use mago_names::ResolvedNames;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{Level, Tri, is_super_type_of, to_phpdoc};
+use pun_phpstan::types::{Level, Tri, is_super_type_of, to_phpdoc_fully_qualified};
 
 use super::{Checker, declared, function_checks, unset};
 
@@ -121,7 +121,10 @@ pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
         if let Some(ty) = c.phpstan_type(arg.value()) {
             let (identifier, ty) = declared::with_classes(c, || match dump {
                 Dump::Type => ("phpstan.dumpType", ty.describe(Level::Precise)),
-                Dump::PhpDoc => ("phpstan.dumpPhpDocType", to_phpdoc(&ty)),
+                Dump::PhpDoc => (
+                    "phpstan.dumpPhpDocType",
+                    to_phpdoc_fully_qualified(&ty),
+                ),
             });
             let message = if args.len() > 1 {
                 format!("Dumped type #{}: {ty}", i + 1)

@@ -255,7 +255,7 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
                 Kind::AnyOf(_) => "AnyOf",
             };
             return Err(format!(
-                "Call to undefined method _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\{class}::{m}()."
+                "Call to undefined method _PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\{class}::{m}()."
             ));
         }
     }
@@ -372,7 +372,7 @@ pub(crate) fn format_value(v: &Value) -> String {
 fn object_class(v: &Value) -> &'static str {
     match v {
         Value::DateTime(_) => "DateTimeImmutable",
-        _ => "_PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement",
+        _ => "_PHPStan_95d9e8b05\\Nette\\DI\\Definitions\\Statement",
     }
 }
 

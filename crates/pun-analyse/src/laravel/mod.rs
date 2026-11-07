@@ -516,7 +516,8 @@ fn readable(
 fn cast_type(cast: &str, original: TUnion, date: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
     let cast = cast.split(':').find(|p| *p != "encrypted").unwrap_or(cast);
     match cast {
-        "int" | "integer" | "timestamp" => return get_int(),
+        // (Larastan 3.14) an integer column keeps its own integer type
+        "int" | "integer" | "timestamp" => return if original.is_int() { original } else { get_int() },
         "real" | "float" | "double" => return get_float(),
         "decimal" => return get_numeric_string(),
         "string" => return get_string(),

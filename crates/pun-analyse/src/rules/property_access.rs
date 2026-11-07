@@ -882,7 +882,7 @@ fn static_check_named(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]
     let Holder::Class(class, is_static) = holder else {
         return;
     };
-    // PHPStan 2.3.1 reports `isset(self::$x)` and a read after `self::$x = ...` alike (oracle-checked), so neither
+    // PHPStan 2.3.5 reports `isset(self::$x)` and a read after `self::$x = ...` alike (oracle-checked), so neither
     // the allowed-undefined contexts nor assignments exempt a static fetch
     let declared = c
         .codebase

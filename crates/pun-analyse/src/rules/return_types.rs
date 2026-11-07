@@ -91,7 +91,7 @@ pub(super) fn registry(
     registry
 }
 
-/// PHPStan 2.3.1's ArrayMapFunctionReturnTypeExtension with one array, through Mago's ArrayMapProvider: a `null`
+/// PHPStan 2.3.5's ArrayMapFunctionReturnTypeExtension with one array, through Mago's ArrayMapProvider: a `null`
 /// callback returns the array itself, and a constant array's values are mapped one by one (`mapValueType()`).
 /// Every other call keeps the prelude's generic return, which is the extension's `array<K, V>` with the input's
 /// accessories.
@@ -164,7 +164,7 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
-/// PHPStan 2.3.1's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
+/// PHPStan 2.3.5's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
 /// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension, StrRepeatFunctionReturnTypeExtension,
 /// the integer/IP filter extensions
 /// and the array/list sliceArray methods.
@@ -396,7 +396,7 @@ impl FunctionCallHook for BuiltinFunctions {
 }
 
 /// FilterInput/FilterVarDynamicReturnTypeExtension and the integer/IP validation branches of
-/// FilterFunctionReturnTypeHelper (PHPStan 2.3.1). Other filters' exact casts/sanitization are not ported here.
+/// FilterFunctionReturnTypeHelper (PHPStan 2.3.5). Other filters' exact casts/sanitization are not ported here.
 struct FilterFunctions;
 
 impl FilterFunctions {
@@ -826,7 +826,7 @@ impl FilterFunctions {
     }
 }
 
-/// PHPStan 2.3.1's StrRepeatFunctionReturnTypeExtension, in its branch order. The size budget is
+/// PHPStan 2.3.5's StrRepeatFunctionReturnTypeExtension, in its branch order. The size budget is
 /// the sum of every constant input's byte length times one constant multiplier, strictly below 100.
 struct StrRepeat;
 
@@ -1416,7 +1416,7 @@ impl RandomInt {
     }
 }
 
-/// PHPStan 2.3.1's ParseUrlFunctionDynamicReturnTypeExtension. A URL of constant strings, which upstream runs
+/// PHPStan 2.3.5's ParseUrlFunctionDynamicReturnTypeExtension. A URL of constant strings, which upstream runs
 /// `parse_url()` on, keeps the functionMap return.
 struct ParseUrl;
 
@@ -1531,7 +1531,7 @@ impl FunctionReturnTypeProvider for ParseUrl {
     }
 }
 
-/// PHPStan 2.3.1's GetClassDynamicReturnTypeExtension for an object argument: `toGetClassResultType()`, each object's
+/// PHPStan 2.3.5's GetClassDynamicReturnTypeExtension for an object argument: `toGetClassResultType()`, each object's
 /// class-string, through Mago's GetClassProvider. Inside a trait, `$this`'s is a plain class-string (the stub's).
 struct GetClass;
 
@@ -1576,7 +1576,7 @@ impl FunctionReturnTypeProvider for GetClass {
     }
 }
 
-/// PHPStan 2.3.1's ClassImplementsFunctionReturnTypeExtension over the functions' reflected
+/// PHPStan 2.3.5's ClassImplementsFunctionReturnTypeExtension over the functions' reflected
 /// `array<string, class-string>|false`: an object has no `false`, an object or class-string with autoloading makes
 /// the union benevolent.
 struct ClassRelations;

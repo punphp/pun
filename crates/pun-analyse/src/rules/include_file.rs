@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's RequireFileExistsRule and IncludedFilePathResolver. The checker walks a trait's declaring
+//! PHPStan 2.3.5's RequireFileExistsRule and IncludedFilePathResolver. The checker walks a trait's declaring
 //! file, not the using class's file, so both compile-time path constants and the script-directory fallback use it.
 //!
 //! Runtime boundary: Pun does not start PHP or execute bootstrap code. `Project::include_paths` supplies PHP's

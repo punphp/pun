@@ -281,8 +281,12 @@ pub(crate) fn static_method_call<'arena>(
 fn called_on_model<'arena>(c: &Checker<'_, 'arena>, class: &Expression<'arena>) -> bool {
     match class {
         Expression::Identifier(id) => is_a(c, c.names.get(&id.span()), MODEL),
-        // relative names (`static`, `self`, `parent`)
-        Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) => false,
+        // `self`, `static` and `parent`: Scope::resolveName()
+        Expression::Self_(_) | Expression::Static(_) => c.class_scope().is_some_and(|k| is_a(c, k.name.as_bytes(), MODEL)),
+        Expression::Parent(_) => c
+            .class_scope()
+            .and_then(|k| k.direct_parent_class)
+            .is_some_and(|p| is_a(c, p.as_bytes(), MODEL)),
         e => c.type_of(e).is_some_and(|t| match t.types.as_ref() {
             // a constant string is a class-string when it names a class
             [

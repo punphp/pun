@@ -1,8 +1,8 @@
-//! PHPStan 2.3.1's regex array shapes: `$matches` of `preg_match()` and `preg_match_all()` typed from a constant
+//! PHPStan 2.3.5's regex array shapes: `$matches` of `preg_match()` and `preg_match_all()` typed from a constant
 //! pattern (`PregMatchParameterOutTypeExtension`, `PregMatchTypeSpecifyingExtension`, `RegexArrayShapeMatcher`).
 
 mod groups;
-mod hoa;
+mod parser;
 mod matcher;
 mod types;
 
