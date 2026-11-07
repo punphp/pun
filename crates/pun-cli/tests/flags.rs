@@ -260,14 +260,21 @@ fn dirty_matches_pint() {
     cx.same(DIRTY, "", &["--dirty", "app/Clean.php"]);
     let r = cx.same(DIRTY, "sub", &["--dirty", "--test", "--format=txt"]);
     assert_eq!(listed(&r), ["T.php", "inner/U.php"]);
-    // A clean tree ("No dirty files found.") and no repository at all: an empty, successful run.
+    // A clean tree ("No dirty files found."): an empty, successful run. No repository at all: Pint 1.32 aborts.
     cx.same("", "", &["--dirty"]);
-    cx.same("rm -rf .git", "", &["--dirty", "--format=json"]);
+    let message = "The [--dirty] option is only available when using Git.";
+    cx.same_error("rm -rf .git", &["--dirty", "--format=json"], message, "");
+    cx.same_error(
+        "rm -rf .git",
+        &["--dirty"],
+        message,
+        &format!("x {message}\n"),
+    );
 }
 
 /// `--diff=<branch>` = committed since the merge-base (`branch...HEAD`, so main's own later commits don't count),
 /// staged, unstaged and untracked; deletions are filtered out. `git diff` prints repo-root paths, so from a
-/// subdirectory only the untracked files (cwd-relative) survive. An unknown branch is an empty run.
+/// subdirectory only the untracked files (cwd-relative) survive. An unknown branch aborts the run.
 #[test]
 fn diff_matches_pint() {
     let Some(cx) = Cx::new() else { return };
@@ -286,7 +293,8 @@ fn diff_matches_pint() {
     cx.same(DIVERGED, "", &["--diff=main"]);
     let r = cx.same(DIVERGED, "sub", &["--diff=main", "--test", "--format=txt"]);
     assert_eq!(listed(&r), ["Un tr.php", "Untr.php"]);
-    cx.same(DIVERGED, "", &["--diff=nope", "--format=json"]);
+    let message = "The [--diff] option is only available when using Git.";
+    cx.same_error(DIVERGED, &["--diff=nope", "--format=json"], message, "");
     // --dirty wins over --diff.
     cx.same(
         DIVERGED,
@@ -304,12 +312,8 @@ fn git_selection_resolves_symlinks_like_pint() {
     let r = cx.same(link, "", &["--dirty"]);
     assert_eq!(r.files["app/Mod.php"], b"<?php\n\n$a = [1, 2];\n");
     cx.same(link, "", &["--diff=main", "--test", "--format=json"]);
-    cx.same_error(
-        "ln -s Missing.php app/Dangling.php",
-        &["--dirty"],
-        r#"The path "ROOT/app/Dangling.php" is not readable."#,
-        "x The path \"ROOT/app/Dangling.php\" is not readable.\n",
-    );
+    // A dangling symlink is not a file to Symfony's Finder (7.4.17), so it is never selected.
+    cx.same("ln -s Missing.php app/Dangling.php", "", &["--dirty"]);
 }
 
 /// `--repair` fixes and fails when anything changed, `--bail` stops at the first fixable file without writing.
@@ -352,11 +356,24 @@ fn parallel_matches_pint() {
 #[test]
 fn cache_flags_are_ignored_like_pint() {
     let Some(cx) = Cx::new() else { return };
+    // Pint 1.32 writes PHP-CS-Fixer's cache there (keyed by the PHP runtime's version); Pun has no cache, so the
+    // file is the only difference.
     for args in [
         &["--cache-file=c/pint.cache", "--test"][..],
         &["--cache-file", "c/pint.cache"],
     ] {
-        cx.same("", "", args);
+        let mut want = cx.pint("", "", args, b"");
+        assert!(want.files.remove("c/pint.cache").is_some(), "{args:?}");
+        let mut got = cx.ours("", "", args, b"");
+        if common::human(args) {
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
+        }
+        assert_eq!(got, want, "{args:?}");
     }
     cx.same_as("", "", &["--no-cache", "--test"], &["--test"], b"");
 }
@@ -565,5 +582,13 @@ fn staged_and_since_match_pint_on_the_same_files() {
         );
         assert_eq!(listed(&got).len(), files.len(), "{flag}");
     }
-    cx.same_as(DIVERGED, "", &["--since=nope"], &["--diff=nope"], b"");
+    // An unknown ref aborts like Pint's `--diff=nope`, naming `--since`.
+    let got = cx.ours(DIVERGED, "", &["--since=nope"], b"");
+    assert_eq!(
+        (common::strip_sgr(&got.stderr), got.code),
+        (
+            "x The [--since] option is only available when using Git.\n".into(),
+            Some(2)
+        )
+    );
 }

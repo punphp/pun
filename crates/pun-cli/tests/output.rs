@@ -1018,6 +1018,9 @@ fn prettier_preflight_like_pint() {
     );
     let mut flag = tree();
     flag.push(("bun.lock", ""));
+    // A Bun lock file runs the probe with Bun (Pint 1.32), which would otherwise resolve the packages from its global
+    // auto-install cache.
+    flag.push(("bunfig.toml", "[install]\nauto = \"disable\"\n"));
     cx.same_abort(
         &flag,
         &["--blade", "--test"],

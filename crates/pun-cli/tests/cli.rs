@@ -240,9 +240,14 @@ fn matches_pint() {
         cx.same(&dir, &tree, &[], args, &[], b"<?php\n$a = [1];\n");
     }
 
-    // Git selection: outside git, in a clean repo, with changes.
-    cx.same(&dir, &tree, &[], &["--dirty", "--test"], &[], b"");
-    cx.same(&dir, &tree, &[], &["--diff=main", "--test"], &[], b"");
+    // Git selection: outside git (Pint 1.32 aborts), in a clean repo, with changes.
+    for flag in ["dirty", "diff=main"] {
+        let message = format!(
+            "The [--{}] option is only available when using Git.",
+            flag.split('=').next().unwrap()
+        );
+        cx.same_error(&dir, &tree, &[&format!("--{flag}"), "--test"], &message);
+    }
 
     // Errors: unknown reporter, missing path, missing `in` dir, unreadable / unwritable files.
     cx.same_error(

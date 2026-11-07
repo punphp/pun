@@ -5,14 +5,15 @@
 //! - `.gitignore` is NOT honoured (Symfony `ignoreVCS` only skips VCS metadata dirs).
 //! - Excluded names without `/` match a directory of that name at any depth; names with `/` match as path segments.
 //! - Explicit file arguments bypass every filter (`Finder::append`).
-//! - Symlinked dirs are not followed; symlinked files are listed (Pint counts them) and the runner skips them.
+//! - Symlinked dirs are not followed; symlinked files are listed (Pint counts them) and the runner skips them. Dangling
+//!   symlinks are not listed.
 //!
 //! On top of Pint's finder, pun.toml's `[files]` and per-command `exclude` (context/plan/config.md §3, §7): an
 //! exclude entry with a glob metacharacter (`*`, `?`, `[`, `{`) is a Mago glob matched against the path relative to
 //! the project root. For `format` a plain entry keeps Symfony's `exclude()` meaning above; for every other file set a
 //! plain entry is Mago's root-relative path prefix. See [`files`].
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use mago_database::GlobSettings;
 use mago_database::matcher::{ExclusionMatcher, contains_glob_metacharacters};
 use pcre2::bytes::Regex;
@@ -194,8 +195,8 @@ impl Finder {
                     .unwrap()
                     .to_string_lossy()
                     .into_owned();
-                // Follows symlinks, like SplFileInfo::isDir(). Symfony's ONLY_FILES only drops directories, so dangling
-                // symlinks (and other non-regular files) are listed.
+                // Follows symlinks, like SplFileInfo::isDir(). Symfony's ONLY_FILES drops directories and (Finder 7.4.17,
+                // FileTypeFilterIterator) dangling symlinks; other non-regular files are listed.
                 let is_dir = entry.path().is_dir();
                 if is_dir {
                     let fname = entry.file_name().to_string_lossy();
@@ -211,6 +212,10 @@ impl Finder {
                     if pruned && entry.file_type().is_dir() {
                         it.skip_current_dir();
                     }
+                    continue;
+                }
+                // `!$fileinfo->isLink() || $fileinfo->isFile() || $fileinfo->isDir()`
+                if entry.path_is_symlink() && !entry.path().is_file() {
                     continue;
                 }
                 let fname = entry.file_name().to_string_lossy();
@@ -367,8 +372,8 @@ pub enum GitSelect {
 }
 
 /// Pint's GitPathsRepository: git's file list intersected with the full finder run in the project root.
-/// Git failing (not a repository, unknown branch) selects nothing: Pint's ConfigurationResolverFactory swallows
-/// that abort and reports an empty run.
+/// Git failing (not a repository, unknown branch) aborts with Pint's message (Pint 1.32's FixCode rethrows a
+/// non-zero abort); Pun's `--since` aborts like `--diff`, naming its own flag, and `--staged` selects nothing.
 pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
     let lists = |cmds: &[&[&str]]| -> Option<Vec<String>> {
         let mut all = Vec::new();
@@ -391,7 +396,7 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
             .collect()
     }
     let untracked: &[&str] = &["ls-files", "--others", "--exclude-standard", "--", "**.php"];
-    let names = match sel {
+    let names: Option<Vec<String>> = match sel {
         GitSelect::Dirty => git(&cfg.root, &["status", "--short", "--", "**.php"]).map(|out| {
             // mapWithKeys(substr($l, 3) => trim(substr($l, 0, 3))); git lists each path once, so no key collides.
             // Only exact "D" / "R" count: " D"/"D " are dropped, "RM" keeps "old -> new" (which then matches nothing).
@@ -423,11 +428,19 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
         GitSelect::Staged => lists(&[&diff(Some("--cached"))]),
         GitSelect::Since(r) => lists(&[&diff(Some(r)), untracked]),
     };
-    let wanted: std::collections::HashSet<PathBuf> = names
-        .unwrap_or_default()
-        .iter()
-        .map(|n| cfg.root.join(n))
-        .collect();
+    let names = match (names, sel) {
+        (Some(names), _) => names,
+        (None, GitSelect::Staged) => vec![],
+        (None, GitSelect::Dirty) => bail!("The [--dirty] option is only available when using Git."),
+        (None, GitSelect::Diff(_)) => {
+            bail!("The [--diff] option is only available when using Git.")
+        }
+        (None, GitSelect::Since(_)) => {
+            bail!("The [--since] option is only available when using Git.")
+        }
+    };
+    let wanted: std::collections::HashSet<PathBuf> =
+        names.iter().map(|n| cfg.root.join(n)).collect();
     if wanted.is_empty() {
         return Ok(vec![]);
     }

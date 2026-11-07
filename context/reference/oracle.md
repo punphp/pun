@@ -124,6 +124,9 @@ Intentional differences:
   Pun doesn't print it (cli-parity.sh strips it before comparing).
 - Missing prettier packages for `Pint/laravel_blade`: interactive Pint asks whether to install them; Pun always
   takes the non-interactive answer (no) and aborts with Pint's message.
+- Cache: Pint 1.32 caches (`setUsingCache(true)`) and writes PHP-CS-Fixer's cache file to `--cache-file`, pint.json's
+  `cache-file` or the system temp dir. The file records the PHP runtime's version, and Pun has no cache, so Pun writes
+  no such file; every run checks every file. Output is the same: a dry run caches no file that needs fixing.
 - Exceptions other than Pint's `abort()` (unreadable path, bad config) are rendered by Symfony with an
   "In File.php line N:" header naming PHP source; Pun prints the message without that box.
 
