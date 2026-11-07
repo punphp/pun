@@ -355,6 +355,13 @@ class, so `rector-ported` runs the same, much larger, set of Rector rules.
   `use` imports as strings. Each file is now lexed once into its `Context`, and names match the `use` items in
   place. laravel-framework lint with the same 451 rules: 72 s to 27 s on one profiling build, output byte-identical.
   What is left is Mago's per-file type analysis and parsing; no single rule stands out.
+- Pinkary lint, same rules, 2026-11-07: about 3.0 s to 2.0 s, output byte-identical. Three serial stretches were
+  cut. The finder walked every dot directory (Pinkary's 26k-file `.bench-tmp`) only to drop each file below it, and
+  it now prunes them, so startup goes from 0.55 s to 0.08 s. The project scan parsed each of its 8,200 files twice
+  (docblocks blanked, then as written), and it now parses once and runs the native scan with docblocks read as plain
+  comments. PHPStan's built-in symbols (`symbols.json`) loaded on the first rule thread while the others waited, and
+  they now load beside the scan. What is left is the scan itself (about 1.4 s, half parsing, half Mago's scanner) and
+  its serial autoload walk (about 0.3 s).
 
 ### Lint perf rounds
 
