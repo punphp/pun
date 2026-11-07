@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in function signatures exactly as PHPStan 2.3.1 reflects them, from the phar's own container
+ * Built-in function signatures exactly as PHPStan 2.3.5 reflects them, from the phar's own container
  * (ReflectionProvider -> NativeFunctionReflectionProvider: functionMap + PHP-version deltas, merged with
  * php-8-stubs, overlaid with stubs/*.stub PHPDocs, functionMetadata.php). Default config (no bleedingEdge,
  * so stricterFunctionMap is off).
@@ -32,6 +32,7 @@ use PHPStan\Type\VerbosityLevel;
 
 $root = dirname(__DIR__);
 Phar::loadPhar($root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar', 'phpstan.phar');
+
 require 'phar://phpstan.phar/vendor/autoload.php';
 require 'phar://phpstan.phar/vendor/phpstan/php-8-stubs/Php8StubsMap.php';
 
@@ -130,7 +131,7 @@ function t(Type $type, bool $source = false): string
 
         return $traverse($t);
     });
-    $s = (string) $mapped->toPhpDocNode();
+    $s = phpdoc_string($mapped->toPhpDocNode());
     $s = preg_replace_callback('/__PunHole\d+/', fn ($m) => $holes[$m[0]], $s);
     if ($source) {
         return $type instanceof PHPStan\Type\Generic\TemplateType ? $s : '__source<'.$id.', '.$s.'>';
@@ -209,6 +210,20 @@ function signature(ParametersAcceptor $v): array
 
     return $signature;
 }
+/** PHPStan 2.3.4+ prints class names of toPhpDocNode() as name nodes (`\\Foo`); Pun's data keeps them bare, as the
+ * PHPDoc parser reads them (the same type either way). */
+function phpdoc_string(PHPStan\PhpDocParser\Ast\Type\TypeNode $node): string
+{
+    [$node] = (new PHPStan\PhpDocParser\Ast\NodeTraverser([new class extends PHPStan\PhpDocParser\Ast\AbstractNodeVisitor {
+        public function leaveNode(PHPStan\PhpDocParser\Ast\Node $node)
+        {
+            return $node instanceof PHPStan\PhpDocParser\Ast\Type\NameNode ? new PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode($node->toString()) : null;
+        }
+    }]))->traverse([$node]);
+
+    return (string) $node;
+}
+
 
 function callable_entry(PHPStan\Reflection\FunctionReflection|PHPStan\Reflection\ExtendedMethodReflection $f): array
 {
@@ -243,7 +258,7 @@ function dump(int $phpVersion, array &$typeStrings): array
             $typeStrings[$i === 0 && preg_match('/\\b(static|self|parent)\\b|\\$this/i', $s) ? $class : ''][$s] = true;
         }
     }
-    $stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+    $stubs = _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap::class;
     $name = fn (string $n) => new PhpParser\Node\Name($n);
 
     $names = array_keys((new PHPStan\Php8StubsMap($phpVersion))->functions);

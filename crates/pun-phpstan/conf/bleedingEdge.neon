@@ -30,6 +30,8 @@ parameters:
 		unresolvedTemplateArguments: true
 		closureSignaturesFromUsages: true
 		staticVariablesFromUsages: true
+		backedEnumFromParameterType: true
 		unusedVariable: true
 		unusedParameters: true
+		reuseCollectedDataRuleErrors: true
 

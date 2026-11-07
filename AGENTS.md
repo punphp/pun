@@ -65,12 +65,12 @@ Pinkary is the slowest project for Pun because Blade formatting runs through Pre
 
 `BENCH=analyse` and `BENCH=lint` measure the same way and print the same two tables. The medians table adds each tool's error count and Pun's memory ratio. `BENCH=format` is the default and behaves as described above.
 
-- Setup: each project gets a scratch copy with `composer install` under `BENCH_SCRATCH` (default `target-bench/`), made once and reused. PHPStan 2.3.1 is copied from `.oracle/phpstan` into the copy's `vendor/`. `SETUP_ONLY=1` makes the copies without measuring, so run it through a normal heavy slot first.
+- Setup: each project gets a scratch copy with `composer install` under `BENCH_SCRATCH` (default `target-bench/`), made once and reused. PHPStan 2.3.5 is copied from `.oracle/phpstan` into the copy's `vendor/`. `SETUP_ONLY=1` makes the copies without measuring, so run it through a normal heavy slot first.
 - Pun runs as `pun analyse --config pun-bench-analyse.toml --format=json` and `pun lint --config pun-bench-lint.toml --format=json`, from `target/profiling/pun` or `PUN_BIN`. `pun-bench-analyse.toml` is what `pun migrate` writes from the same neon. `pun-bench-lint.toml` turns on every lint rule that has a Rector class, at `error`.
 - `BENCH_RESULTS=file.json` keeps runs across calls and adds each call's runs to them. Use it to split a slow project by tool (`TOOLS=`) or by run, so one call fits a 10-minute slot. Delete the file to start over.
 - The script sets `XDEBUG_MODE=off` and removes the coding-agent variables that switch PHPStan's output format.
 
-Analyse mode runs on pinkary, larastan (its v3.10.0 tag), laravel-framework, pest and laravel-pint. It uses each project's PHPStan includes and paths at level 0, without ignores or baseline. Its tools are:
+Analyse mode runs on pinkary, larastan (its v3.14.0 tag), laravel-framework, pest and laravel-pint. It uses each project's PHPStan includes and paths at level 0, without ignores or baseline. Its tools are:
 
 - `phpstan-cold`: the result cache is deleted before every run.
 - `phpstan-warm`: the result cache is warm. This is a reference row.

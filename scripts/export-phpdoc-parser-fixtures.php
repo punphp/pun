@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Oracle fixtures for pun_phpstan::phpdoc (phpstan/phpdoc-parser as PHPStan 2.3.1 bundles it): the tags
+ * Oracle fixtures for pun_phpstan::phpdoc (phpstan/phpdoc-parser as PHPStan 2.3.5 bundles it): the tags
  * PhpDocParser reads from doc comments, with the ParserException messages of invalid values, and the result of
  * TypeStringResolver's parse step on type strings.
  *
@@ -315,6 +315,13 @@ $docs = [
     "/** @_Foo(1 */",
     "/** @_Foo text */",
     "/** @\\Foo\\Bar(1) */",
+    "/** @\\Foo\\Bar(1 */",
+    "/** @\\Foo\\Bar(a=) desc\n * @var int */",
+    "/** @_Foo(\"key\"=1, \"a\"\"b\"=2) */",
+    "/** @_Foo(\"key\"=) */",
+    "/** @_Foo(\"key\") @var int */",
+    "/** @phpstan_foo-bar text\n * @var int */",
+    "/** @foo_bar text */",
     "/** @var int @phpstan-ignore-line */",
     "/** @var int\n */",
     "/**\n * @var int\n *\n * @return void\n */",

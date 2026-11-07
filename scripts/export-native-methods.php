@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in classes' methods, properties and constant native types as PHPStan 2.3.1's reflection gives them to the
+ * Built-in classes' methods, properties and constant native types as PHPStan 2.3.5's reflection gives them to the
  * overriding rules (NativeMethodReflection over php-8-stubs, BetterReflection's prototypes and tentative return
  * types), from the phar's own container at phpVersion 8.5, with the 8.4 differences.
  *
@@ -33,6 +33,20 @@ use PHPStan\Type\TypehintHelper;
 
 $root = dirname(__DIR__);
 Phar::loadPhar($root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar', 'phpstan.phar');
+
+/** PHPStan 2.3.4+ prints class names of toPhpDocNode() as name nodes (`\\Foo`); Pun's data keeps them bare, as the
+ * PHPDoc parser reads them (the same type either way). */
+function phpdoc_string(PHPStan\PhpDocParser\Ast\Type\TypeNode $node): string
+{
+    [$node] = (new PHPStan\PhpDocParser\Ast\NodeTraverser([new class extends PHPStan\PhpDocParser\Ast\AbstractNodeVisitor {
+        public function leaveNode(PHPStan\PhpDocParser\Ast\Node $node)
+        {
+            return $node instanceof PHPStan\PhpDocParser\Ast\Type\NameNode ? new PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode($node->toString()) : null;
+        }
+    }]))->traverse([$node]);
+
+    return (string) $node;
+}
 require 'phar://phpstan.phar/vendor/autoload.php';
 
 function container(int $phpVersion): PHPStan\DependencyInjection\Container
@@ -51,13 +65,13 @@ function t(Type $type): ?string
         return null;
     }
 
-    return (string) $type->toPhpDocNode();
+    return phpdoc_string($type->toPhpDocNode());
 }
 
 function dump(int $phpVersion): array
 {
     $provider = container($phpVersion)->getByType(ReflectionProvider::class);
-    $stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+    $stubs = _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap::class;
     $classes = [];
     foreach (array_keys($stubs::CLASSES) as $n) {
         if (!$provider->hasClass($n)) {

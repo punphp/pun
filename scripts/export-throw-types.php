@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in functions' and methods' throw types as PHPStan 2.3.1's reflection gives them to the throw points
+ * Built-in functions' and methods' throw types as PHPStan 2.3.5's reflection gives them to the throw points
  * (FunctionReflection::getThrowType() and MethodReflection::getThrowType(): functionMap, php-8-stubs and
  * stubs/*.stub PHPDocs), from the phar's own container at phpVersion 8.5.
  *
@@ -27,6 +27,20 @@ use PHPStan\Type\DynamicStaticMethodThrowTypeExtension;
 
 $root = dirname(__DIR__);
 Phar::loadPhar($root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar', 'phpstan.phar');
+
+/** PHPStan 2.3.4+ prints class names of toPhpDocNode() as name nodes (`\\Foo`); Pun's data keeps them bare, as the
+ * PHPDoc parser reads them (the same type either way). */
+function phpdoc_string(PHPStan\PhpDocParser\Ast\Type\TypeNode $node): string
+{
+    [$node] = (new PHPStan\PhpDocParser\Ast\NodeTraverser([new class extends PHPStan\PhpDocParser\Ast\AbstractNodeVisitor {
+        public function leaveNode(PHPStan\PhpDocParser\Ast\Node $node)
+        {
+            return $node instanceof PHPStan\PhpDocParser\Ast\Type\NameNode ? new PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode($node->toString()) : null;
+        }
+    }]))->traverse([$node]);
+
+    return (string) $node;
+}
 require 'phar://phpstan.phar/vendor/autoload.php';
 
 $tmp = sys_get_temp_dir().'/pun-throw-types';
@@ -38,7 +52,7 @@ $functionExtensions = $container->getServicesByTag('phpstan.dynamicFunctionThrow
 $methodExtensions = $container->getServicesByTag('phpstan.dynamicMethodThrowTypeExtension');
 $staticExtensions = $container->getServicesByTag('phpstan.dynamicStaticMethodThrowTypeExtension');
 
-$stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+$stubs = _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap::class;
 $symbols = json_decode(file_get_contents($root.'/crates/pun-phpstan/data/symbols.json'), true);
 
 $functions = [];
@@ -64,7 +78,7 @@ foreach (array_keys($symbols['functions']) as $name) {
     }
     $type = $f->getThrowType();
     if ($type !== null) {
-        $functions[strtolower($f->getName())] = (string) $type->toPhpDocNode();
+        $functions[strtolower($f->getName())] = phpdoc_string($type->toPhpDocNode());
     }
 }
 ksort($functions);
@@ -95,7 +109,7 @@ foreach (array_keys($stubs::CLASSES) as $n) {
         }
         $type = $m->getThrowType();
         if ($type !== null) {
-            $methods[strtolower($class->getName())][strtolower($m->getName())] = (string) $type->toPhpDocNode();
+            $methods[strtolower($class->getName())][strtolower($m->getName())] = phpdoc_string($type->toPhpDocNode());
         }
     }
 }

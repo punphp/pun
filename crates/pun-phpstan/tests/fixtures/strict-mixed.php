@@ -1,5 +1,5 @@
 <?php
-// PHPStan 2.3.1 cb3b7e99489b2e3789ee2eec10501cb7a72580ea.
+// PHPStan 2.3.5 95d9e8b0578ebf75439a3744a845ef25417028fa.
 // php strict-mixed.php /path/to/phpstan.phar > strict-mixed.json
 Phar::loadPhar($argv[1], 'phpstan.phar');
 require 'phar://phpstan.phar/vendor/autoload.php';
@@ -18,6 +18,10 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use PHPStan\Type\ErrorType;
+
+// RuleLevelHelper reads generic classes through reflection since PHPStan 2.3.2: boot a container.
+$tmp = sys_get_temp_dir() . '/pun-strict-mixed-' . getmypid();
+(new PHPStan\DependencyInjection\ContainerFactory($tmp))->create($tmp, [], []);
 
 $input = function (string|array $spec) use (&$input): Type {
     if (is_string($spec)) {

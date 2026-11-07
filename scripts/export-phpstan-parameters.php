@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Which PHPStan parameters each rule reads, as PHPStan 2.3.1 (and the Larastan, strict-rules and deprecation-rules
+ * Which PHPStan parameters each rule reads, as PHPStan 2.3.5 (and the Larastan, strict-rules and deprecation-rules
  * versions in .oracle/phpstan) wire them, for `pun migrate`'s phpstan.neon parameters (context/plan/migrate.md Build 5).
  *
  *   php scripts/export-phpstan-parameters.php <rule classes JSON>   prints {"rules": {class: [parameter]},
@@ -105,7 +105,7 @@ function reads(string $class, array $byNeon, array &$seen = []): array
     $constructor = (new ReflectionClass($class))->getConstructor();
     foreach ($constructor?->getParameters() ?? [] as $p) {
         foreach ($p->getAttributes(AutowiredParameter::class) as $a) {
-            $ref = $a->getArguments()['ref'] ?? null;
+            $ref = $a->getArguments()['ref'] ?? $a->getArguments()[0] ?? null; // (the PHAR passes it positionally)
             $out[] = $ref === null ? $p->getName() : trim($ref, '%');
         }
         $type = $p->getType();

@@ -1,0 +1,8 @@
+includes:
+	- inc/a.neon
+attributeServicesDirectories:
+	- src
+	- inc/ext/sub
+parameters:
+	level: 0
+	paths: [src]

@@ -1,6 +1,619 @@
 {
     "project": "larastan",
     "expected": {
-        "error": "Service (Larastan\\Larastan\\ReturnTypes\\ModelSerializationDynamicMethodReturnTypeExtension::__construct()): Class 'Larastan\\Larastan\\ReturnTypes\\ModelSerializationDynamicMethodReturnTypeExtension' not found."
+        "parameters": {
+            "singleReflectionFile": null,
+            "singleReflectionInsteadOfFile": null,
+            "analysedPaths": [
+                "{cwd}/src"
+            ],
+            "analysedPathsFromConfig": [
+                "{cwd}/src"
+            ],
+            "bootstrapFiles": [
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionUnionType.php",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionAttribute.php",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/Attribute85.php",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionIntersectionType.php",
+                "{cwd}/bootstrap.php"
+            ],
+            "excludePaths": {
+                "analyseAndScan": [],
+                "analyse": []
+            },
+            "level": 8,
+            "paths": [
+                "{cwd}/src"
+            ],
+            "exceptions": {
+                "implicitThrows": true,
+                "reportUncheckedExceptionDeadCatch": true,
+                "uncheckedExceptionRegexes": [],
+                "uncheckedExceptionClasses": [
+                    "Error"
+                ],
+                "checkedExceptionRegexes": [],
+                "checkedExceptionClasses": [],
+                "check": {
+                    "missingCheckedExceptionInThrows": false,
+                    "tooWideThrowType": true,
+                    "tooWideImplicitThrowType": false,
+                    "throwTypeCovariance": false
+                }
+            },
+            "featureToggles": {
+                "bleedingEdge": true,
+                "checkNonStringableDynamicAccess": true,
+                "checkParameterCastableToNumberFunctions": true,
+                "skipCheckGenericClasses": [],
+                "stricterFunctionMap": true,
+                "reportPreciseLineForUnusedFunctionParameter": true,
+                "checkPrintfParameterTypes": true,
+                "internalTag": true,
+                "newStaticInAbstractClassStaticMethod": true,
+                "checkExtensionsForComparisonOperators": true,
+                "checkGenericIterableClasses": true,
+                "reportTooWideBool": true,
+                "rawMessageInBaseline": true,
+                "reportNestedTooWideType": false,
+                "assignToByRefForeachExpr": true,
+                "curlSetOptArrayTypes": true,
+                "magicDirInInclude": true,
+                "checkDateIntervalConstructor": true,
+                "reportMethodPurityOverride": true,
+                "checkDynamicConstantNameValues": true,
+                "unusedLabel": true,
+                "newOnNonObject": true,
+                "unnecessaryNullCoalesce": true,
+                "finiteTypesInHaystack": true,
+                "switchConditionAlwaysFalse": true,
+                "checkImportedClassNameCase": true,
+                "sortWithoutEffect": true,
+                "unresolvedTemplateArguments": true,
+                "closureSignaturesFromUsages": true,
+                "staticVariablesFromUsages": true,
+                "backedEnumFromParameterType": true,
+                "unusedVariable": true,
+                "unusedParameters": true,
+                "reuseCollectedDataRuleErrors": true
+            },
+            "fileExtensions": [
+                "php"
+            ],
+            "checkAdvancedIsset": true,
+            "reportAlwaysTrueInLastCondition": false,
+            "checkClassCaseSensitivity": true,
+            "checkExplicitMixed": false,
+            "checkImplicitMixed": false,
+            "checkFunctionArgumentTypes": true,
+            "checkFunctionNameCase": false,
+            "checkInternalClassCaseSensitivity": false,
+            "checkMissingCallableSignature": false,
+            "checkMissingVarTagTypehint": true,
+            "checkArgumentsPassedByReference": true,
+            "checkMaybeUndefinedVariables": true,
+            "checkNullables": true,
+            "checkThisOnly": false,
+            "checkUnionTypes": true,
+            "checkBenevolentUnionTypes": false,
+            "checkExplicitMixedMissingReturn": false,
+            "checkPhpDocMissingReturn": true,
+            "checkPhpDocMethodSignatures": true,
+            "checkExtraArguments": true,
+            "checkMissingTypehints": true,
+            "checkTooWideParameterOutInProtectedAndPublicMethods": false,
+            "checkTooWideReturnTypesInProtectedAndPublicMethods": false,
+            "checkTooWideThrowTypesInProtectedAndPublicMethods": false,
+            "checkUninitializedProperties": false,
+            "checkDynamicProperties": false,
+            "strictRulesInstalled": false,
+            "deprecationRulesInstalled": true,
+            "inferPrivatePropertyTypeFromConstructor": false,
+            "checkStrictPrintfPlaceholderTypes": false,
+            "reportMaybes": true,
+            "reportMaybesInMethodSignatures": false,
+            "reportMaybesInPropertyPhpDocTypes": false,
+            "reportStaticMethodSignatures": false,
+            "reportWrongPhpDocTypeInVarTag": false,
+            "reportAnyTypeWideningInVarTag": false,
+            "reportNonIntStringArrayKey": false,
+            "reportUnsafeArrayStringKeyCasting": null,
+            "reportPossiblyNonexistentGeneralArrayOffset": false,
+            "reportPossiblyNonexistentConstantArrayOffset": false,
+            "checkMissingOverrideMethodAttribute": false,
+            "checkMissingOverridePropertyAttribute": null,
+            "mixinExcludeClasses": [
+                "Eloquent"
+            ],
+            "scanFiles": [],
+            "scanDirectories": [],
+            "parallel": {
+                "jobSize": 20,
+                "processTimeout": {
+                    "@float": "600.0"
+                },
+                "maximumNumberOfProcesses": "auto",
+                "minimumNumberOfJobsPerProcess": 2,
+                "buffer": 134217728,
+                "loadLimit": {
+                    "@float": "1.0"
+                }
+            },
+            "phpVersion": 80200,
+            "polluteScopeWithLoopInitialAssignments": true,
+            "polluteScopeWithAlwaysIterableForeach": true,
+            "polluteScopeWithBlock": true,
+            "propertyAlwaysWrittenTags": [],
+            "propertyAlwaysReadTags": [],
+            "additionalConstructors": [],
+            "treatPhpDocTypesAsCertain": true,
+            "usePathConstantsAsConstantString": false,
+            "rememberPossiblyImpureFunctionValues": true,
+            "tips": {
+                "discoveringSymbols": true,
+                "treatPhpDocTypesAsCertain": true,
+                "possiblyImpure": true
+            },
+            "tipsOfTheDay": true,
+            "reportMagicMethods": true,
+            "reportMagicProperties": true,
+            "ignoreErrors": [
+                {
+                    "rawMessage": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\Constant\\ConstantStringType but it's error-prone and dangerous.",
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "count": 1,
+                    "path": "{cwd}/src/Methods/HigherOrderCollectionProxyExtension.php"
+                },
+                {
+                    "rawMessage": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "count": 1,
+                    "path": "{cwd}/src/Methods/HigherOrderCollectionProxyExtension.php"
+                },
+                {
+                    "rawMessage": "Creating new PHPStan\\Reflection\\Php\\DummyParameter is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.constructor",
+                    "count": 1,
+                    "path": "{cwd}/src/Methods/ModelForwardsCallsExtension.php"
+                },
+                {
+                    "rawMessage": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\Constant\\ConstantStringType but it's error-prone and dangerous.",
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "count": 1,
+                    "path": "{cwd}/src/Properties/HigherOrderCollectionProxyPropertyExtension.php"
+                },
+                {
+                    "rawMessage": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "count": 1,
+                    "path": "{cwd}/src/Properties/HigherOrderCollectionProxyPropertyExtension.php"
+                },
+                {
+                    "rawMessage": "Call to internal method Symfony\\Component\\Console\\Command\\Command::mergeApplicationDefinition() from outside its root namespace Symfony.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/ReturnTypes/ConsoleCommand/ArgumentDynamicReturnTypeExtension.php"
+                },
+                {
+                    "rawMessage": "Call to internal method Symfony\\Component\\Console\\Command\\Command::mergeApplicationDefinition() from outside its root namespace Symfony.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/ReturnTypes/ConsoleCommand/HasArgumentDynamicReturnTypeExtension.php"
+                },
+                {
+                    "rawMessage": "Call to internal method Symfony\\Component\\Console\\Command\\Command::mergeApplicationDefinition() from outside its root namespace Symfony.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/ReturnTypes/ConsoleCommand/HasOptionDynamicReturnTypeExtension.php"
+                },
+                {
+                    "rawMessage": "Call to internal method Symfony\\Component\\Console\\Command\\Command::mergeApplicationDefinition() from outside its root namespace Symfony.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/ReturnTypes/ConsoleCommand/OptionDynamicReturnTypeExtension.php"
+                },
+                {
+                    "rawMessage": "Call to internal method Symfony\\Component\\Console\\Command\\Command::mergeApplicationDefinition() from outside its root namespace Symfony.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/Rules/ConsoleCommand/UndefinedArgumentOrOptionRule.php"
+                },
+                {
+                    "rawMessage": "Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error-prone and deprecated.",
+                    "identifier": "phpstanApi.instanceofType",
+                    "count": 2,
+                    "path": "{cwd}/src/Rules/ModelRuleHelper.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 2,
+                    "path": "{cwd}/src/Rules/NoAuthFacadeInRequestScopeRule.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 2,
+                    "path": "{cwd}/src/Rules/NoAuthHelperInRequestScopeRule.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/Rules/NoImplicitQueryBuilderCallRule.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 2,
+                    "path": "{cwd}/src/Rules/NoPublicModelScopeAndAccessorRule.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 1,
+                    "path": "{cwd}/src/Rules/UselessConstructs/NoUselessValueFunctionCallsRule.php"
+                },
+                {
+                    "rawMessage": "Call to internal method PHPStan\\Rules\\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.",
+                    "identifier": "method.internal",
+                    "count": 2,
+                    "path": "{cwd}/src/Rules/UselessConstructs/NoUselessWithFunctionCallsRule.php"
+                },
+                {
+                    "rawMessage": "Access to property $fields on an unknown class PhpMyAdmin\\SqlParser\\Statements\\CreateStatement.",
+                    "identifier": "class.notFound",
+                    "count": 2,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Access to property $name on an unknown class PhpMyAdmin\\SqlParser\\Statements\\CreateStatement.",
+                    "identifier": "class.notFound",
+                    "count": 2,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Access to property $options on an unknown class PhpMyAdmin\\SqlParser\\Components\\CreateDefinition.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Access to property $options on an unknown class PhpMyAdmin\\SqlParser\\Components\\OptionsArray.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Access to property $statements on an unknown class PhpMyAdmin\\SqlParser\\Parser.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Caught class PhpMyAdmin\\SqlParser\\Exceptions\\ParserException not found.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Class PhpMyAdmin\\SqlParser\\Statements\\CreateStatement not found.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Instantiated class PhpMyAdmin\\SqlParser\\Parser not found.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Parameter $definition of method Larastan\\Larastan\\SQL\\PhpMyAdminSqlParser::isNullable() has invalid type PhpMyAdmin\\SqlParser\\Components\\CreateDefinition.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Parameter $options of method Larastan\\Larastan\\SQL\\PhpMyAdminSqlParser::convertTypeOptions() has invalid type PhpMyAdmin\\SqlParser\\Components\\OptionsArray.",
+                    "identifier": "class.notFound",
+                    "count": 1,
+                    "path": "{cwd}/src/SQL/PhpMyAdminSqlParser.php"
+                },
+                {
+                    "rawMessage": "Implementing PHPStan\\Type\\CompoundType is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.interface",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/BuilderOf/BuilderOfType.php"
+                },
+                {
+                    "rawMessage": "Using PHPStan\\Type\\Traits\\LateResolvableTypeTrait is not covered by backward compatibility promise. The trait might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.trait",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/BuilderOf/BuilderOfType.php"
+                },
+                {
+                    "rawMessage": "Implementing PHPStan\\Type\\CompoundType is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.interface",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/CollectionOf/CollectionOfType.php"
+                },
+                {
+                    "rawMessage": "Using PHPStan\\Type\\Traits\\LateResolvableTypeTrait is not covered by backward compatibility promise. The trait might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.trait",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/CollectionOf/CollectionOfType.php"
+                },
+                {
+                    "rawMessage": "Implementing PHPStan\\Type\\CompoundType is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.interface",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/RelationOf/RelationOfType.php"
+                },
+                {
+                    "rawMessage": "Using PHPStan\\Type\\Traits\\LateResolvableTypeTrait is not covered by backward compatibility promise. The trait might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.trait",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/RelationOf/RelationOfType.php"
+                },
+                {
+                    "rawMessage": "Using PHPStan\\Type\\Traits\\NonGeneralizableTypeTrait is not covered by backward compatibility promise. The trait might change in a minor PHPStan version.",
+                    "identifier": "phpstanApi.trait",
+                    "count": 1,
+                    "path": "{cwd}/src/Types/CollectionOf/CollectionOfType.php"
+                },
+                {
+                    "identifier": "method.deprecated"
+                }
+            ],
+            "internalErrorsCountLimit": 50,
+            "cache": {
+                "nodesByStringCountMax": 256,
+                "nodesByStringSourceBytesMax": 4194304,
+                "resolvedPhpDocBlockCacheCountMax": 2048,
+                "nameScopeMapMemoryCacheCountMax": 512,
+                "phpStormStubsNodesCountMax": 128,
+                "memberCacheKeysMax": 2048,
+                "resolvedLocalTypeAliasesCountMax": 2048
+            },
+            "reportUnmatchedIgnoredErrors": false,
+            "reportIgnoresWithoutComments": false,
+            "typeAliases": [],
+            "universalObjectCratesClasses": [
+                "stdClass",
+                "Illuminate\\Http\\Request",
+                "Illuminate\\Support\\Optional"
+            ],
+            "stubFiles": [
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Memcached.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Redis.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionAttribute.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionClassConstant.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionFunctionAbstract.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionMethod.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionParameter.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionProperty.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionType.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/iterable.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ArrayObject.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/WeakReference.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/SensitiveParameterValue.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ImagickPixel.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/PDOStatement.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/date.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ibm_db2.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/mysqli.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/zip.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/dom.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/spl.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/SplObjectStorage.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Exception.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/arrayFunctions.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/core.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/typeCheckingFunctions.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Countable.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/file.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/stream_socket_client.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/stream_socket_server.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ctype.stub"
+            ],
+            "earlyTerminatingMethodCalls": [],
+            "earlyTerminatingFunctionCalls": [
+                "abort",
+                "dd"
+            ],
+            "resultCachePath": "{tmp}/phpstan/resultCache.php",
+            "resultCacheSkipIfOlderThanDays": 7,
+            "resultCacheChecksProjectExtensionFilesDependencies": false,
+            "dynamicConstantNames": [
+                "ICONV_IMPL",
+                "LIBXML_VERSION",
+                "LIBXML_DOTTED_VERSION",
+                "Memcached::HAVE_ENCODING",
+                "Memcached::HAVE_IGBINARY",
+                "Memcached::HAVE_JSON",
+                "Memcached::HAVE_MSGPACK",
+                "Memcached::HAVE_SASL",
+                "Memcached::HAVE_SESSION",
+                "PHP_VERSION",
+                "PHP_MAJOR_VERSION",
+                "PHP_MINOR_VERSION",
+                "PHP_RELEASE_VERSION",
+                "PHP_VERSION_ID",
+                "PHP_EXTRA_VERSION",
+                "PHP_WINDOWS_VERSION_MAJOR",
+                "PHP_WINDOWS_VERSION_MINOR",
+                "PHP_WINDOWS_VERSION_BUILD",
+                "PHP_ZTS",
+                "PHP_DEBUG",
+                "PHP_MAXPATHLEN",
+                "PHP_OS",
+                "PHP_OS_FAMILY",
+                "PHP_SAPI",
+                "PHP_EOL",
+                "PHP_INT_MAX",
+                "PHP_INT_MIN",
+                "PHP_INT_SIZE",
+                "PHP_FLOAT_DIG",
+                "PHP_FLOAT_EPSILON",
+                "PHP_FLOAT_MIN",
+                "PHP_FLOAT_MAX",
+                "DEFAULT_INCLUDE_PATH",
+                "PEAR_INSTALL_DIR",
+                "PEAR_EXTENSION_DIR",
+                "PHP_EXTENSION_DIR",
+                "PHP_PREFIX",
+                "PHP_BINDIR",
+                "PHP_BINARY",
+                "PHP_MANDIR",
+                "PHP_LIBDIR",
+                "PHP_DATADIR",
+                "PHP_SYSCONFDIR",
+                "PHP_LOCALSTATEDIR",
+                "PHP_CONFIG_FILE_PATH",
+                "PHP_CONFIG_FILE_SCAN_DIR",
+                "PHP_SHLIB_SUFFIX",
+                "PHP_FD_SETSIZE",
+                "OPENSSL_VERSION_NUMBER",
+                "ZEND_DEBUG_BUILD",
+                "ZEND_THREAD_SAFE",
+                "E_ALL"
+            ],
+            "customRulesetUsed": false,
+            "editorUrl": null,
+            "editorUrlTitle": null,
+            "errorFormat": null,
+            "sourceLocatorPlaygroundMode": false,
+            "fixer": {
+                "importNames": true,
+                "preferSelf": false
+            },
+            "__validate": true,
+            "parametersNotInvalidatingCache": [
+                [
+                    "parameters",
+                    "editorUrl"
+                ],
+                [
+                    "parameters",
+                    "editorUrlTitle"
+                ],
+                [
+                    "parameters",
+                    "errorFormat"
+                ],
+                [
+                    "parameters",
+                    "ignoreErrors"
+                ],
+                [
+                    "parameters",
+                    "reportUnmatchedIgnoredErrors"
+                ],
+                [
+                    "parameters",
+                    "tipsOfTheDay"
+                ],
+                [
+                    "parameters",
+                    "parallel"
+                ],
+                [
+                    "parameters",
+                    "internalErrorsCountLimit"
+                ],
+                [
+                    "parameters",
+                    "cache"
+                ],
+                [
+                    "parameters",
+                    "memoryLimitFile"
+                ],
+                [
+                    "parameters",
+                    "tmpDir"
+                ],
+                [
+                    "parameters",
+                    "pro"
+                ],
+                "parametersSchema"
+            ],
+            "checkOctaneCompatibility": false,
+            "noEnvCallsOutsideOfConfig": true,
+            "noModelMake": true,
+            "noImplicitQueryBuilderCall": false,
+            "noUnnecessaryCollectionCall": true,
+            "noUnnecessaryCollectionCallOnly": [],
+            "noUnnecessaryCollectionCallExcept": [],
+            "noUnnecessaryEnumerableToArrayCalls": false,
+            "squashedMigrationsPath": [],
+            "databaseMigrationsPath": [],
+            "disableMigrationScan": false,
+            "disableSchemaScan": false,
+            "configDirectories": [],
+            "viewDirectories": [],
+            "translationDirectories": [],
+            "checkModelProperties": false,
+            "checkUnusedViews": false,
+            "checkMissingTranslations": false,
+            "checkModelAppends": true,
+            "checkModelMethodVisibility": false,
+            "generalizeEnvReturnType": false,
+            "checkConfigTypes": false,
+            "checkAuthCallsWhenInRequestScope": false,
+            "parseModelCastsMethod": false,
+            "enableMigrationCache": true,
+            "checkUniqueJobUniqueFor": false,
+            "checkUniqueJobUniqueId": false,
+            "noBatchedUniqueJob": false,
+            "checkJobSerializesModels": false,
+            "checkBatchedJobIsBatchable": false,
+            "checkBatchableJobChecksCancellation": false,
+            "checkDispatchInTransactionAfterCommit": false,
+            "debugMode": true,
+            "productionMode": false,
+            "tempDir": "{tmp}/phpstan",
+            "rootDir": "{repo}/.oracle/phpstan/vendor/phpstan/phpstan",
+            "currentWorkingDirectory": "{cwd}",
+            "cliArgumentsVariablesRegistered": false,
+            "tmpDir": "{tmp}/phpstan",
+            "additionalConfigFiles": [
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon",
+                "{cwd}/phpstan.neon.dist"
+            ],
+            "allConfigFiles": [
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/parametersSchema.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level7.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level6.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level5.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level3.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level2.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level1.neon",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level0.neon",
+                "{cwd}/phpstan.neon.dist",
+                "{cwd}/vendor/phpstan/phpstan/conf/bleedingEdge.neon",
+                "phar://phpstan.phar/conf/bleedingEdge.neon",
+                "{cwd}/vendor/phpstan/phpstan-deprecation-rules/rules.neon",
+                "{cwd}/extension.neon",
+                "{cwd}/phpstan-baseline.neon"
+            ],
+            "composerAutoloaderProjectPaths": [],
+            "generateBaselineFile": null,
+            "usedLevel": "8",
+            "cliAutoloadFile": null,
+            "attributeServicesDirectories": [],
+            "attributeServicesClasses": [],
+            "sysGetTempDir": "{tmp}",
+            "pro": {
+                "dnsServers": [
+                    "1.1.1.2"
+                ],
+                "tmpDir": "{tmp}/phpstan-fixer"
+            }
+        }
     }
 }

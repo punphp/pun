@@ -70,8 +70,10 @@
             "unresolvedTemplateArguments": true,
             "closureSignaturesFromUsages": true,
             "staticVariablesFromUsages": true,
+            "backedEnumFromParameterType": true,
             "unusedVariable": true,
-            "unusedParameters": true
+            "unusedParameters": true,
+            "reuseCollectedDataRuleErrors": true
         },
         "fileExtensions": [
             "php"
@@ -278,6 +280,10 @@
         "editorUrlTitle": null,
         "errorFormat": null,
         "sourceLocatorPlaygroundMode": false,
+        "fixer": {
+            "importNames": true,
+            "preferSelf": false
+        },
         "__validate": true,
         "parametersNotInvalidatingCache": [
             [
@@ -355,6 +361,8 @@
         "generateBaselineFile": null,
         "usedLevel": "1",
         "cliAutoloadFile": null,
+        "attributeServicesDirectories": [],
+        "attributeServicesClasses": [],
         "sysGetTempDir": "{tmp}",
         "pro": {
             "dnsServers": [

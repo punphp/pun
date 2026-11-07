@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * End-to-end oracle for `@phpstan-ignore*` comments: runs the real PHPStan 2.3.1 (`analyse`, level 0, JSON output) on
+ * End-to-end oracle for `@phpstan-ignore*` comments: runs the real PHPStan 2.3.5 (`analyse`, level 0, JSON output) on
  * crates/pun-phpstan/tests/fixtures/local/*.php
  *
  *   - with the comments blanked out (same lines): the raw errors before any local ignore;

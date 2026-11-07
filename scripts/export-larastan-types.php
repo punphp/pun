@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 /*
- * Larastan 3.10.0's type tests as oracle fixtures for `pun analyse` (tests/larastan_types.rs).
+ * Larastan 3.14.0's type tests as oracle fixtures for `pun analyse` (tests/larastan_types.rs).
  *
  * Larastan's tests/Type/*Test.php (TypeInferenceTestCase) gather the `assertType()`, `assertNativeType()`,
  * `assertSuperType()` and `assertVariableCertainty()` calls of their data files, and tests/Integration/IntegrationTest.php
  * analyses its data files with PHPStan's level-8 test container. Each test class's files go through the real
- * PHPStan 2.3.1 with Larastan from inside the Larastan checkout (so Larastan boots its Testbench application, as in
+ * PHPStan 2.3.5 with Larastan from inside the Larastan checkout (so Larastan boots its Testbench application, as in
  * export-larastan-fixtures.php), with the test's getAdditionalConfigFiles() at level 8 (PHPStanTestCase's
  * config.level8.neon). FileAssertRule runs at every level, so the assertions that do not hold are among the errors,
  * and every error is recorded.
  *
- * <larastan> is a checkout of larastan/larastan v3.10.0 with `composer install` done and PHPStan 2.3.1 in
+ * <larastan> is a checkout of larastan/larastan v3.14.0 with `composer install` done and PHPStan 2.3.5 in
  * vendor/phpstan/phpstan (LARASTAN_DIR, default target-bench/larastan). Writes
  * crates/pun-analyse/tests/fixtures/larastan-types/<Dir>/<TestClass>.json, with each file's assertion lines, and copies
  * the checkout's files Pun needs below crates/pun-analyse/tests/fixtures/larastan-types/root/: tests/ (the data files,

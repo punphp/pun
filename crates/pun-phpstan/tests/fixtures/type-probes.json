@@ -58811,9 +58811,9 @@
     [
         null,
         "(U&int)|1",
-        "U of int (function probe(), parameter)",
-        "U of int",
-        "U of int",
+        "1|U of int (function probe(), parameter)",
+        "1|U of int",
+        "int",
         "(__template<U, 'function probe()', int|string>&int)|1",
         null
     ],
@@ -58829,9 +58829,9 @@
     [
         null,
         "1|(U&int)",
-        "U of int (function probe(), parameter)",
-        "U of int",
-        "U of int",
+        "1|U of int (function probe(), parameter)",
+        "1|U of int",
+        "int",
         "1|(__template<U, 'function probe()', int|string>&int)",
         null
     ],

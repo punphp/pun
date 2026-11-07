@@ -66,8 +66,10 @@ parameters:
 		unresolvedTemplateArguments: false
 		closureSignaturesFromUsages: false
 		staticVariablesFromUsages: false
+		backedEnumFromParameterType: false
 		unusedVariable: false
 		unusedParameters: false
+		reuseCollectedDataRuleErrors: false
 
 	fileExtensions:
 		- php
@@ -258,6 +260,10 @@ parameters:
 	errorFormat: null
 	sysGetTempDir: ::sys_get_temp_dir()
 	sourceLocatorPlaygroundMode: false
+	fixer:
+		importNames: true
+		preferSelf: false
+
 	pro:
 		dnsServers:
 			- '1.1.1.2'
@@ -319,37 +325,6 @@ parameters:
 autowiredAttributeServices:
 	level: null
 
-conditionalTags:
-	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
-		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
-
-	PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule:
-		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
-
-	PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule:
-		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
-
-	PHPStan\Rules\Properties\UninitializedPropertyRule:
-		phpstan.rules.rule: %checkUninitializedProperties%
-
-	PHPStan\Rules\Exceptions\MethodThrowTypeCovarianceRule:
-		phpstan.rules.rule: %exceptions.check.throwTypeCovariance%
-
-services:
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule
-
-	-
-		class: PHPStan\Rules\Properties\UninitializedPropertyRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MethodThrowTypeCovarianceRule
-		arguments:
-			implicitThrows: %exceptions.implicitThrows%
+extensionInterfaces:
+	PhpParser\NodeVisitor: phpstan.parser.richParserNodeVisitor
 

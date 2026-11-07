@@ -11,6 +11,7 @@ abstract class AnalysedCodeException extends Exception
 namespace PHPStan\Analyser;
 
 use Closure;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Registry as CollectorRegistry;
 use PHPStan\DependencyInjection\AutowiredParameter;
@@ -54,6 +55,7 @@ final class Analyser
 }
 namespace PHPStan\Analyser;
 
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Dependency\RootExportedNode;
 use function usort;
@@ -99,11 +101,8 @@ final class AnalyserResult
      */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $internalErrors;
-    /**
-     * @var CollectorData
-     */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public array $collectedData;
+    public LazyCollectedData $collectedData;
     /**
      * @var array<string, array<string>>|null
      */
@@ -149,7 +148,6 @@ final class AnalyserResult
      * @param list<Error> $locallyIgnoredErrors
      * @param array<string, LinesToIgnore> $linesToIgnore
      * @param array<string, LinesToIgnore> $unmatchedLineIgnores
-     * @param CollectorData $collectedData
      * @param list<InternalError> $internalErrors
      * @param array<string, array<string>>|null $dependencies
      * @param array<string, array<string>>|null $usedTraitDependencies
@@ -174,7 +172,7 @@ final class AnalyserResult
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $internalErrors,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        array $collectedData,
+        LazyCollectedData $collectedData,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         ?array $dependencies,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -252,9 +250,14 @@ final class AnalyserResult
     {
     }
     /**
+     * Decodes what came from the result cache; getLazyCollectedData() passes it on undecoded.
+     *
      * @return CollectorData
      */
     public function getCollectedData(): array
+    {
+    }
+    public function getLazyCollectedData(): LazyCollectedData
     {
     }
     /**
@@ -302,7 +305,11 @@ final class AnalyserResult
 }
 namespace PHPStan\Analyser;
 
+use Closure;
 use PHPStan\AnalysedCodeException;
+use PHPStan\Analyser\Ignore\LineIgnoreFixer;
+use PHPStan\Analyser\Ignore\UnmatchedIgnoreFixer;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
 use PHPStan\BetterReflection\Reflection\Exception\CircularReference;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
@@ -310,12 +317,21 @@ use PHPStan\DependencyInjection\AutowiredExtensions;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\ExtensionsCollection;
+use PHPStan\File\FileReader;
 use PHPStan\Node\CollectedDataNode;
+use PHPStan\Node\CollectedDataNodeReads;
 use PHPStan\Rules\Registry as RuleRegistry;
 use Throwable;
+use function array_key_exists;
+use function array_map;
 use function array_merge;
 use function count;
 use function get_class;
+use function hash_file;
+use function is_file;
+use function ksort;
+use function md5;
+use function serialize;
 use function sprintf;
 #[AutowiredService]
 final class AnalyserResultFinalizer
@@ -328,7 +344,13 @@ final class AnalyserResultFinalizer
     private \PHPStan\Analyser\RuleErrorTransformer $ruleErrorTransformer;
     private \PHPStan\Analyser\ScopeFactory $scopeFactory;
     private \PHPStan\Analyser\LocalIgnoresProcessor $localIgnoresProcessor;
+    private UnmatchedIgnoreFixer $unmatchedIgnoreFixer;
+    private LineIgnoreFixer $lineIgnoreFixer;
     private bool $reportUnmatchedIgnoredErrors;
+    private \PHPStan\Analyser\ValueDependencyCollector $valueDependencyCollector;
+    private bool $reuseCollectedDataRuleErrors;
+    /** The file of an error a rule on CollectedDataNode reports without one. */
+    public const NO_FILE = 'N/A';
     /**
      * @param ExtensionsCollection<IgnoreErrorExtension> $ignoreErrorExtensions
      */
@@ -339,22 +361,84 @@ final class AnalyserResultFinalizer
         \PHPStan\Analyser\RuleErrorTransformer $ruleErrorTransformer,
         \PHPStan\Analyser\ScopeFactory $scopeFactory,
         \PHPStan\Analyser\LocalIgnoresProcessor $localIgnoresProcessor,
+        UnmatchedIgnoreFixer $unmatchedIgnoreFixer,
+        LineIgnoreFixer $lineIgnoreFixer,
         #[AutowiredParameter]
-        bool $reportUnmatchedIgnoredErrors
+        bool $reportUnmatchedIgnoredErrors,
+        \PHPStan\Analyser\ValueDependencyCollector $valueDependencyCollector,
+        #[AutowiredParameter('%featureToggles.reuseCollectedDataRuleErrors%')]
+        bool $reuseCollectedDataRuleErrors
     )
     {
     }
-    public function finalize(\PHPStan\Analyser\AnalyserResult $analyserResult, bool $onlyFiles, bool $debug): \PHPStan\Analyser\FinalizerResult
+    /**
+     * @param Closure(string $ruleClass): void|null $preRuleCallback called only for a rule that runs, not for one whose errors are reused
+     * @param Closure(): void|null $postRuleCallback called when the rule's processNode() has returned or thrown, before its errors are processed
+     * @param array<string, CollectedDataRuleResult> $previousCollectedDataRuleResults the rule results of the
+     *        previous run, from the result cache - a rule whose input did not change reuses its errors.
+     *        Only with the reuseCollectedDataRuleErrors feature toggle, otherwise every rule runs. A rule that
+     *        does not call get() on the node always runs.
+     */
+    public function finalize(\PHPStan\Analyser\AnalyserResult $analyserResult, bool $onlyFiles, bool $debug, ?Closure $preRuleCallback = null, ?Closure $postRuleCallback = null, array $previousCollectedDataRuleResults = []): \PHPStan\Analyser\FinalizerResult
+    {
+    }
+    /**
+     * @param Closure(string): string $hashCollector
+     * @param list<Error> $errors
+     * @param array<string, array{string, string, string}> $valueDependencies
+     */
+    private function createRuleResult(CollectedDataNodeReads $reads, bool $onlyFiles, Closure $hashCollector, array $errors, array $valueDependencies): \PHPStan\Analyser\CollectedDataRuleResult
+    {
+    }
+    /**
+     * @param Closure(string): string $hashCollector
+     * @param array<string, string> $currentValues id => value, asked for once per run - every rule shares the values of the classes
+     */
+    private function canReuse(\PHPStan\Analyser\CollectedDataRuleResult $previousResult, bool $onlyFiles, Closure $hashCollector, array &$currentValues): bool
+    {
+    }
+    /**
+     * @param list<Error> $errors
+     * @param list<Error> $tempCollectorErrors
+     */
+    private function addRuleErrors(array $errors, CollectedDataNode $node, \PHPStan\Analyser\Scope $scope, array &$tempCollectorErrors): void
+    {
+    }
+    /**
+     * The result cache was discarded by the reader, so the run reports the failure and the collector
+     * rules do not run; the next run analyses everything and starts a new cache.
+     */
+    private function withUnreadableCollectedData(\PHPStan\Analyser\AnalyserResult $analyserResult, Throwable $t): \PHPStan\Analyser\AnalyserResult
     {
     }
     private function mergeFilteredPhpErrors(\PHPStan\Analyser\AnalyserResult $analyserResult): \PHPStan\Analyser\AnalyserResult
     {
     }
     /**
+     * Replaces each ignore of all errors on a line with an ignore of the identifiers of the errors reported there,
+     * including the errors of CollectedDataNode rules.
+     *
+     * @param list<Error> $errors
+     * @return list<Error>
+     */
+    private function fixAllLineErrorsIgnores(array $errors): array
+    {
+    }
+    /**
+     * @return list<FixedErrorDiff>
+     */
+    private function fixUnmatchedIgnore(string $file, ?string $code, int $line, ?string $identifier): array
+    {
+    }
+    /**
+     * Fixes ignores of all errors on a line, and reports unmatched inline ignores. Runs after the errors of CollectedDataNode rules
+     * are known, because they can be reported on the ignored lines too.
+     *
      * @param list<Error> $collectorErrors
      * @param list<Error> $locallyIgnoredCollectorErrors
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
      */
-    private function addUnmatchedIgnoredErrors(\PHPStan\Analyser\AnalyserResult $analyserResult, array $collectorErrors, array $locallyIgnoredCollectorErrors): \PHPStan\Analyser\FinalizerResult
+    private function processInlineIgnores(\PHPStan\Analyser\AnalyserResult $analyserResult, array $collectorErrors, array $locallyIgnoredCollectorErrors, array $collectedDataRuleResults = [], int $reusedRulesCount = 0): \PHPStan\Analyser\FinalizerResult
     {
     }
 }
@@ -496,8 +580,6 @@ use PHPStan\Reflection\Callables\SimpleThrowPoint;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\FunctionReflection;
-use PHPStan\Reflection\InitializerExprContext;
-use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
@@ -592,7 +674,6 @@ final class ArgumentsHandler
     private AssignHandler $assignHandler;
     private ClosureTypeResolver $closureTypeResolver;
     private ClosureParameterResolver $closureParameterResolver;
-    private InitializerExprTypeResolver $initializerExprTypeResolver;
     /**
      * @param ExtensionsCollection<FunctionParameterOutTypeExtension> $functionParameterOutTypeExtensions
      * @param ExtensionsCollection<MethodParameterOutTypeExtension> $methodParameterOutTypeExtensions
@@ -630,8 +711,7 @@ final class ArgumentsHandler
         bool $implicitThrows,
         AssignHandler $assignHandler,
         ClosureTypeResolver $closureTypeResolver,
-        ClosureParameterResolver $closureParameterResolver,
-        InitializerExprTypeResolver $initializerExprTypeResolver
+        ClosureParameterResolver $closureParameterResolver
     )
     {
     }
@@ -682,21 +762,18 @@ final class ArgumentsHandler
     {
     }
     /**
-     * A structural stand-in for an array literal argument that holds closures,
-     * built without walking anything: a nested array literal recurses, a closure /
-     * arrow function contributes its DECLARED signature
-     * (ClosureTypeResolver::getDeclaredClosureType()), and every other key/value
-     * is priced by the scope state it is already tracked as, falling back to the
-     * constant-expression resolver (literals, ::class, constants, concatenation)
-     * and ultimately to mixed. Widening a slot to mixed is safe: a template is
-     * never resolved below its bound, so the skeleton can only ever sharpen the
-     * resolution.
-     *
-     * Unlike gatherClosureArgType() this type never reaches $gatheredTypes: it
-     * exists solely to resolve the parameter type the nested closures are typed
-     * from. The argument's real type replaces it once the walk is done.
+     * @param Node\Arg[] $args
+     * @param ParametersAcceptor[] $parametersAcceptors
+     * @param ParametersAcceptor[]|null $namedArgumentsVariants
      */
-    private function gatherArrayArgTypeSkeleton(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Expr\Array_ $expr, \PHPStan\Analyser\MutatingScope $scope): Type
+    private function selectCountStableMetadataAcceptor(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, array $args, array $parametersAcceptors, ?array $namedArgumentsVariants, \PHPStan\Analyser\MutatingScope $scope): ParametersAcceptor
+    {
+    }
+    /**
+     * The parameter the argument is passed to: by name, by position, or the
+     * variadic one.
+     */
+    private function matchArgParameter(ParametersAcceptor $acceptor, Node\Arg $arg, int $i): ?ParameterReflection
     {
     }
     /**
@@ -1138,6 +1215,21 @@ final class ClosureProcessor
     {
     }
     /**
+     * Looked up instead of injected for the same reason as getParametersProcessor().
+     */
+    private function getAttributesHandler(): \PHPStan\Analyser\AttributesHandler
+    {
+    }
+    /**
+     * Returns what the attributes and the parameters of the closure or arrow function depend on.
+     *
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param \PhpParser\Node\Expr\Closure|\PhpParser\Node\Expr\ArrowFunction $expr
+     */
+    private function processAttributeGroupsAndParams(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node\Stmt $stmt, $expr, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback): ?Dependencies
+    {
+    }
+    /**
      * @param callable(Node $node, Scope $scope): void $nodeCallback
      */
     public function processClosureNode(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node\Stmt $stmt, Expr\Closure $expr, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\ExpressionContext $context, ?Type $passedToType, ?Type $nativePassedToType = null): \PHPStan\Analyser\ProcessClosureResult
@@ -1274,6 +1366,82 @@ interface CollectedDataEmitter
      * @param template-type<TCollector, Collector, 'TValue'> $data
      */
     public function emitCollectedData(string $collectorType, $data): void;
+}
+namespace PHPStan\Analyser;
+
+/**
+ * The errors of one rule on CollectedDataNode, with what the rule asked from the node to get them:
+ * a hash of the data of every collector it asked for, and the value of isOnlyFilesAnalysis() if it
+ * asked for that. It also keeps the values the rule declared through DependencyTracker, see
+ * ValueDependencyCollector. While all of it is the same, the next run reuses the errors instead of
+ * running the rule again.
+ */
+final class CollectedDataRuleResult
+{
+    /**
+     * @var array<string, string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $collectorHashes;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public ?bool $onlyFiles;
+    /**
+     * @var list<Error>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $errors;
+    /**
+     * @var list<array{string, string, string}>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $valueDependencies;
+    /**
+     * @param array<string, string> $collectorHashes collector type => hash of its data
+     * @param list<Error> $errors before the ignore extensions and the local ignores
+     * @param list<array{string, string, string}> $valueDependencies [extension class, key as the extension stores it, value]
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $collectorHashes,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        ?bool $onlyFiles,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $errors,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $valueDependencies = []
+    )
+    {
+    }
+    /**
+     * @return array<string, string>
+     */
+    public function getCollectorHashes(): array
+    {
+    }
+    /**
+     * Null when the rule did not ask.
+     */
+    public function getOnlyFiles(): ?bool
+    {
+    }
+    /**
+     * @return list<Error>
+     */
+    public function getErrors(): array
+    {
+    }
+    /**
+     * @return list<array{string, string, string}>
+     */
+    public function getValueDependencies(): array
+    {
+    }
+    /**
+     * @param callable(string): string $transform
+     */
+    public function transformPaths(callable $transform): self
+    {
+    }
 }
 namespace PHPStan\Analyser;
 
@@ -1588,6 +1756,10 @@ use PHPStan\Analyser\ResultCache\ResultCacheValueExtension;
  *
  * It tracks what the analysis of the current file depends on besides the analysed code, so that
  * the result cache re-analyses the file when that changes - see ResultCacheValueExtension.
+ * In a rule for CollectedDataNode, it tracks what the errors of the rule depend on: with the
+ * reuseCollectedDataRuleErrors feature toggle, the result cache reuses the errors of such a rule
+ * while its collected data and the tracked values stay the same. A rule that does not call get() on
+ * the node runs every time.
  *
  * Extensions that get no Scope because they describe a class - class reflection extensions - use
  * DeclarationDependencyTracker instead.
@@ -1692,6 +1864,8 @@ final class DirectInternalScopeFactory implements \PHPStan\Analyser\InternalScop
     private \PHPStan\Analyser\ConstantResolver $constantResolver;
     private bool $createsNodeCallbackScopes;
     private \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack;
+    /** The services the created scopes share, built on the first create(). */
+    private ?\PHPStan\Analyser\ScopeServices $services = null;
     /**
      * @param callable(Node $node, Scope $scope): void|null $nodeCallback
      * @param ExtensionsCollection<ExpressionTypeResolverExtension> $expressionTypeResolverExtensions
@@ -1928,13 +2102,15 @@ namespace PHPStan\Analyser;
 
 use Exception;
 use JsonSerializable;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use Override;
 use PhpParser\Node;
 use PHPStan\ShouldNotHappenException;
 use ReturnTypeWillChange;
 use Throwable;
 use function array_key_exists;
+use function array_map;
+use function count;
 use function is_bool;
 use function sprintf;
 /**
@@ -1970,8 +2146,11 @@ final class Error implements JsonSerializable
      */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $metadata;
+    /**
+     * @var list<FixedErrorDiff>
+     */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public ?\PHPStan\Analyser\FixedErrorDiff $fixedErrorDiff;
+    public array $fixedErrorDiffs;
     /**
      * @var array<string, string>
      */
@@ -1983,6 +2162,7 @@ final class Error implements JsonSerializable
      *
      * @param class-string<Node>|null $nodeType
      * @param mixed[] $metadata
+     * @param list<FixedErrorDiff> $fixedErrorDiffs one diff per fixed file
      * @param array<string, string> $traitContexts
      * @param bool|\Throwable $canBeIgnored
      */
@@ -2007,7 +2187,7 @@ final class Error implements JsonSerializable
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $metadata = [],
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        ?\PHPStan\Analyser\FixedErrorDiff $fixedErrorDiff = null,
+        array $fixedErrorDiffs = [],
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $traitContexts = []
     )
@@ -2121,9 +2301,32 @@ final class Error implements JsonSerializable
     {
     }
     /**
+     * Whether the rule attached a fix with RuleErrorBuilder::fixNode() or removeNode(),
+     * to be applied with ErrorFixer or `phpstan analyse --fix`.
+     */
+    public function isFixable(): bool
+    {
+    }
+    /**
      * @internal Experimental
+     * @deprecated Use getFixedErrorDiffs(), a fix can change several files.
      */
     public function getFixedErrorDiff(): ?\PHPStan\Analyser\FixedErrorDiff
+    {
+    }
+    /**
+     * The diffs are applied together or not at all.
+     *
+     * @internal Experimental
+     * @return list<FixedErrorDiff>
+     */
+    public function getFixedErrorDiffs(): array
+    {
+    }
+    /**
+     * @return list<FixedErrorDiff>
+     */
+    private function renameFixedFile(string $oldFile, string $newFile): array
     {
     }
     /**
@@ -2253,22 +2456,28 @@ final class ArrayDimFetchHandler implements ExprHandler
 }
 namespace PHPStan\Analyser\ExprHandler;
 
+use Closure as PhpClosure;
+use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Scalar;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\ExpressionResult;
 use PHPStan\Analyser\ExpressionResultFactory;
 use PHPStan\Analyser\ExpressionResultStorage;
 use PHPStan\Analyser\ExprHandler;
+use PHPStan\Analyser\ExprHandler\Helper\ClosureTypeResolver;
 use PHPStan\Analyser\Generics\ClosureSignatureInference;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\VariableFlow;
 use PHPStan\Analyser\VariableFlowBuilder;
@@ -2293,11 +2502,16 @@ use function array_map;
 use function array_merge;
 use function array_values;
 use function count;
+use function in_array;
 use function is_int;
+use function is_string;
 use function max;
 use function spl_object_id;
+use const PHP_INT_MAX;
 /**
  * @implements ExprHandler<Array_>
+ * @phpstan-type ArrayItemWalk array{arrayItem: ArrayItem, entryScope: MutatingScope, valueScope: MutatingScope, keyResult: ExpressionResult|null, valueResult: ExpressionResult|null, nested: mixed, itemWrite: VariableWrite|null}
+ * @phpstan-type ArrayWalk array{expr: Array_, beforeScope: MutatingScope, scope: MutatingScope, context: ExpressionContext, items: list<ArrayItemWalk>, literalWrite: VariableWrite|null}
  */
 #[AutowiredService]
 #[ShadowedByTurboExtension(__DIR__ . '/../../../turbo-ext/src/ArrayHandler.cpp')]
@@ -2305,13 +2519,88 @@ final class ArrayHandler implements ExprHandler
 {
     private InitializerExprTypeResolver $initializerExprTypeResolver;
     private ExpressionResultFactory $expressionResultFactory;
-    public function __construct(InitializerExprTypeResolver $initializerExprTypeResolver, ExpressionResultFactory $expressionResultFactory)
+    private ClosureTypeResolver $closureTypeResolver;
+    public function __construct(InitializerExprTypeResolver $initializerExprTypeResolver, ExpressionResultFactory $expressionResultFactory, ClosureTypeResolver $closureTypeResolver)
     {
     }
     public function supports(Expr $expr): bool
     {
     }
     public function processExpr(NodeScopeResolver $nodeScopeResolver, Stmt $stmt, Expr $expr, MutatingScope $scope, ExpressionResultStorage $storage, callable $nodeCallback, ExpressionContext $context): ExpressionResult
+    {
+    }
+    /**
+     * Walks the items in evaluation order. With $resolve, a closure / arrow
+     * function item and the closures of a nested literal are left for
+     * completeWalk(): the expected type they are walked with depends on the
+     * types of the items walked here. Creating a closure changes nothing in the
+     * scope but its template argument constraints - except a by-reference use,
+     * which binds the variable where the closure is created: such a closure is
+     * walked in place, with the expected type $resolve prices from the items
+     * walked before it.
+     *
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param (PhpClosure(ArrayWalk): array{?Type, ?Type})|null $resolve
+     * @return ArrayWalk
+     */
+    private function walkItems(NodeScopeResolver $nodeScopeResolver, Stmt $stmt, Array_ $expr, MutatingScope $scope, ExpressionResultStorage $storage, callable $nodeCallback, ExpressionContext $context, ?Type $passedToType, ?Type $nativePassedToType, ?PhpClosure $resolve): array
+    {
+    }
+    /**
+     * Walks the closures walkItems() deferred, each on the scope at its own
+     * position, with the expected types resolved from the walked items; their
+     * template argument constraints are carried over to the literal's scope.
+     *
+     * @param ArrayWalk $walk
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @return ArrayWalk
+     */
+    private function completeWalk(NodeScopeResolver $nodeScopeResolver, Stmt $stmt, array $walk, ExpressionResultStorage $storage, callable $nodeCallback, ?Type $passedToType, ?Type $nativePassedToType): array
+    {
+    }
+    /**
+     * The literal's type from the items walked so far. A deferred closure
+     * contributes its declared signature; an item not reached yet - when a
+     * closure with a by-reference use is resolved early - what does not depend
+     * on its position: a literal, a closure's declared signature, mixed for
+     * anything else.
+     *
+     * @param ArrayWalk $walk
+     */
+    private function getWalkedArrayType(NodeScopeResolver $nodeScopeResolver, array $walk): Type
+    {
+    }
+    /**
+     * @param ArrayWalk $walk
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     */
+    private function createResult(NodeScopeResolver $nodeScopeResolver, array $walk, ExpressionResultStorage $storage, callable $nodeCallback): ExpressionResult
+    {
+    }
+    /**
+     * @param ArrayItemWalk $item
+     */
+    private function getValueContext(ExpressionContext $context, array $item, ?Type $passedToType, ?Type $nativePassedToType, ?Type $keyType): ExpressionContext
+    {
+    }
+    /**
+     * The type of the item's key and the offset its value is written to,
+     * advancing the next implicit index - unknown past PHP_INT_MAX, where PHP
+     * cannot append. A plain variable key not walked yet is read from the scope.
+     *
+     * @return array{Type, int|string|null}
+     */
+    private function getKeyTypeAndOffset(NodeScopeResolver $nodeScopeResolver, ArrayItem $arrayItem, ?ExpressionResult $keyResult, MutatingScope $scope, ?int &$nextIndex): array
+    {
+    }
+    /** A plain variable key is read when PHP adds the item - after its value is evaluated. */
+    private static function isKeyWalkedFirst(ArrayItem $arrayItem): bool
+    {
+    }
+    private static function hasClosureItems(Array_ $expr): bool
+    {
+    }
+    private static function hasByRefUse(Closure $closure): bool
     {
     }
     /**
@@ -2525,6 +2814,7 @@ final class AssignHandler implements ExprHandler
     private ArrayUnpackingHelper $arrayUnpackingHelper;
     private const TERNARY_ARM_EXCLUDED_VALUES_LIMIT = 3;
     private const DERIVED_CONDITIONAL_EXPRESSIONS_LIMIT = 16;
+    private const ASSIGN_OP_BINARY_OPS = [Expr\AssignOp\BitwiseAnd::class => Expr\BinaryOp\BitwiseAnd::class, Expr\AssignOp\BitwiseOr::class => Expr\BinaryOp\BitwiseOr::class, Expr\AssignOp\BitwiseXor::class => Expr\BinaryOp\BitwiseXor::class, Expr\AssignOp\Coalesce::class => Expr\BinaryOp\Coalesce::class, Expr\AssignOp\Concat::class => Expr\BinaryOp\Concat::class, Expr\AssignOp\Div::class => Expr\BinaryOp\Div::class, Expr\AssignOp\Minus::class => Expr\BinaryOp\Minus::class, Expr\AssignOp\Mod::class => Expr\BinaryOp\Mod::class, Expr\AssignOp\Mul::class => Expr\BinaryOp\Mul::class, Expr\AssignOp\Plus::class => Expr\BinaryOp\Plus::class, Expr\AssignOp\Pow::class => Expr\BinaryOp\Pow::class, Expr\AssignOp\ShiftLeft::class => Expr\BinaryOp\ShiftLeft::class, Expr\AssignOp\ShiftRight::class => Expr\BinaryOp\ShiftRight::class];
     public function __construct(TemplateArgumentObserver $templateArgumentObserver, VarAnnotationProcessor $varAnnotationProcessor, PhpVersion $phpVersion, ExprPrinter $exprPrinter, \PHPStan\Analyser\ExprHandler\MatchHandler $matchHandler, \PHPStan\Analyser\ExprHandler\TernaryHandler $ternaryHandler, ExpressionResultFactory $expressionResultFactory, DefaultNarrowingHelper $defaultNarrowingHelper, IdenticalNarrowingHelper $identicalNarrowingHelper, PropertyReflectionFinder $propertyReflectionFinder, VirtualExprResultHelper $virtualExprResultHelper, NonNullabilityHelper $nonNullabilityHelper, \PHPStan\Analyser\ExprHandler\VariableHandler $variableHandler, \PHPStan\Analyser\ExprHandler\ArrayDimFetchHandler $arrayDimFetchHandler, \PHPStan\Analyser\ExprHandler\PropertyFetchHandler $propertyFetchHandler, \PHPStan\Analyser\ExprHandler\StaticPropertyFetchHandler $staticPropertyFetchHandler, MethodThrowPointHelper $methodThrowPointHelper, PropertyHookThrowPointsResolver $propertyHookThrowPointsResolver, StatementsHandler $statementsHandler, ArrayUnpackingHelper $arrayUnpackingHelper)
     {
     }
@@ -5020,6 +5310,65 @@ final class EarlyTerminatingCallHelper
 }
 namespace PHPStan\Analyser\ExprHandler\Helper;
 
+use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\BinaryOp\BooleanOr;
+use PhpParser\Node\Expr\BinaryOp\Identical;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name\FullyQualified;
+use PHPStan\Analyser\ExpressionResult;
+use PHPStan\Analyser\ExpressionResultStorage;
+use PHPStan\Analyser\MutatingScope;
+use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\SpecifiedTypes;
+use PHPStan\Analyser\TypeSpecifierContext;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Turbo\ShadowedByTurboExtension;
+use PHPStan\Type\BooleanType;
+use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Constant\ConstantBooleanType;
+use PHPStan\Type\Type;
+/**
+ * The scope after a foreach whose body may not have run narrows its iteratee
+ * to what an unentered loop leaves: `$iteratee === [] || is_object($iteratee)`.
+ */
+#[AutowiredService]
+#[ShadowedByTurboExtension(__DIR__ . '/../../../../turbo-ext/src/ForeachEmptyOrObjectNarrowingHelper.cpp')]
+final class ForeachEmptyOrObjectNarrowingHelper
+{
+    private ReflectionProvider $reflectionProvider;
+    private \PHPStan\Analyser\ExprHandler\Helper\IdenticalNarrowingHelper $identicalNarrowingHelper;
+    private \PHPStan\Analyser\ExprHandler\Helper\DefaultNarrowingHelper $defaultNarrowingHelper;
+    private \PHPStan\Analyser\ExprHandler\Helper\BooleanNarrowingHelper $booleanNarrowingHelper;
+    public function __construct(ReflectionProvider $reflectionProvider, \PHPStan\Analyser\ExprHandler\Helper\IdenticalNarrowingHelper $identicalNarrowingHelper, \PHPStan\Analyser\ExprHandler\Helper\DefaultNarrowingHelper $defaultNarrowingHelper, \PHPStan\Analyser\ExprHandler\Helper\BooleanNarrowingHelper $booleanNarrowingHelper)
+    {
+    }
+    /**
+     * The truthy narrowing of the disjunction, composed the way its walked
+     * synthetic would compute it: the comparison from the iteratee's result,
+     * is_object() from its conditional return type. The walk is the
+     * composition's miss seam.
+     */
+    public function narrowToEmptyOrObject(NodeScopeResolver $nodeScopeResolver, MutatingScope $scope, Expr $iteratee, ExpressionResult $iterateeResult, ExpressionResultStorage $storage): MutatingScope
+    {
+    }
+    private function composeScope(NodeScopeResolver $nodeScopeResolver, MutatingScope $scope, BooleanOr $condition, Identical $identical, FuncCall $isObjectCall, ExpressionResult $iterateeResult, ExpressionResultStorage $storage): ?MutatingScope
+    {
+    }
+    /** The type of `$iteratee === []`. */
+    private static function emptyArrayComparison(Type $iterateeType, ConstantArrayType $emptyArrayType): Type
+    {
+    }
+    /** The type of `is_object($iteratee)`. */
+    private static function isObjectVerdict(Type $iterateeType): Type
+    {
+    }
+}
+namespace PHPStan\Analyser\ExprHandler\Helper;
+
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -5033,10 +5382,8 @@ use PHPStan\Analyser\ExprHandler\AssignHandler;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\NativeTypeExpr;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
 use PHPStan\Node\InvalidateExprNode;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\FunctionReflection;
@@ -5063,7 +5410,6 @@ use PHPStan\Type\UnionType;
 use function array_slice;
 use function count;
 use function in_array;
-use function sprintf;
 use function str_starts_with;
 /**
  * The scope-only side effects of a function call, applied after the call's
@@ -5080,14 +5426,8 @@ use function str_starts_with;
 final class FuncCallScopeEffectsHelper
 {
     private \PHPStan\Analyser\ExprHandler\Helper\OutputBufferHelper $outputBufferHelper;
-    private bool $rememberPossiblyImpureFunctionValues;
     private AssignHandler $assignHandler;
-    public function __construct(
-        \PHPStan\Analyser\ExprHandler\Helper\OutputBufferHelper $outputBufferHelper,
-        #[AutowiredParameter]
-        bool $rememberPossiblyImpureFunctionValues,
-        AssignHandler $assignHandler
-    )
+    public function __construct(\PHPStan\Analyser\ExprHandler\Helper\OutputBufferHelper $outputBufferHelper, AssignHandler $assignHandler)
     {
     }
     /**
@@ -5492,7 +5832,7 @@ final class MethodThrowPointHelper
      *     passed in by the caller so this helper never asks Scope::getType() itself
      *     (the old-world call handlers resolve it directly, the new-world toString
      *     path prices the synthetic call on demand)
-     *     @param \PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall $normalizedMethodCall
+     * @param \PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall $normalizedMethodCall
      */
     public function getThrowPoint(MethodReflection $methodReflection, ParametersAcceptor $parametersAcceptor, $normalizedMethodCall, MutatingScope $scope, ExpressionContext $context, Type $methodCallReturnType): ?InternalThrowPoint
     {
@@ -6076,7 +6416,6 @@ use PHPStan\Analyser\ExprHandler\Helper\EarlyTerminatingCallHelper;
 use PHPStan\Analyser\ExprHandler\Helper\MethodCallReturnTypeHelper;
 use PHPStan\Analyser\ExprHandler\Helper\MethodThrowPointHelper;
 use PHPStan\Analyser\Generics\ClosureSignatureInference;
-use PHPStan\Analyser\Generics\TemplateArgumentFrame;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\InternalThrowPoint;
 use PHPStan\Analyser\MutatingScope;
@@ -6091,7 +6430,6 @@ use PHPStan\Dependency\Dependencies;
 use PHPStan\Dependency\DependencyTypes;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
 use PHPStan\Node\InvalidateExprNode;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -6114,7 +6452,6 @@ use PHPStan\Type\TypeUtils;
 use function array_map;
 use function array_merge;
 use function count;
-use function sprintf;
 use function strtolower;
 /**
  * @implements ExprHandler<MethodCall>
@@ -6946,7 +7283,6 @@ use PHPStan\Analyser\ExprHandler\Helper\DynamicReturnTypeStoragePrimer;
 use PHPStan\Analyser\ExprHandler\Helper\EarlyTerminatingCallHelper;
 use PHPStan\Analyser\ExprHandler\Helper\MethodCallReturnTypeHelper;
 use PHPStan\Analyser\ExprHandler\Helper\MethodThrowPointHelper;
-use PHPStan\Analyser\Generics\TemplateArgumentFrame;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\InternalThrowPoint;
 use PHPStan\Analyser\MutatingScope;
@@ -6961,7 +7297,6 @@ use PHPStan\Dependency\Dependencies;
 use PHPStan\Dependency\DependencyTypes;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
@@ -6987,7 +7322,6 @@ use function array_map;
 use function array_merge;
 use function count;
 use function in_array;
-use function sprintf;
 use function strtolower;
 /**
  * @implements ExprHandler<StaticCall>
@@ -7757,46 +8091,6 @@ use PHPStan\Analyser\ExpressionResult;
 use PHPStan\Analyser\ExpressionResultFactory;
 use PHPStan\Analyser\ExpressionResultStorage;
 use PHPStan\Analyser\ExprHandler;
-use PHPStan\Analyser\ExprHandler\Helper\DefaultNarrowingHelper;
-use PHPStan\Analyser\MutatingScope;
-use PHPStan\Analyser\NodeScopeResolver;
-use PHPStan\Analyser\TypeSpecifierContext;
-use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
-use PHPStan\Turbo\ShadowedByTurboExtension;
-use PHPStan\Type\Type;
-/**
- * PossiblyImpureCallExpr wraps a call so its remembered value can be invalidated
- * when the call may be impure. Its type is just the wrapped call's type, so it
- * can be priced like any other node rather than being a resolution special case.
- *
- * @implements ExprHandler<PossiblyImpureCallExpr>
- */
-#[AutowiredService]
-#[ShadowedByTurboExtension(__DIR__ . '/../../../../turbo-ext/src/PossiblyImpureCallExprHandler.cpp')]
-final class PossiblyImpureCallExprHandler implements ExprHandler
-{
-    private ExpressionResultFactory $expressionResultFactory;
-    private DefaultNarrowingHelper $defaultNarrowingHelper;
-    public function __construct(ExpressionResultFactory $expressionResultFactory, DefaultNarrowingHelper $defaultNarrowingHelper)
-    {
-    }
-    public function supports(Expr $expr): bool
-    {
-    }
-    public function processExpr(NodeScopeResolver $nodeScopeResolver, Stmt $stmt, Expr $expr, MutatingScope $scope, ExpressionResultStorage $storage, callable $nodeCallback, ExpressionContext $context): ExpressionResult
-    {
-    }
-}
-namespace PHPStan\Analyser\ExprHandler\Virtual;
-
-use PhpParser\Node\Expr;
-use PhpParser\Node\Stmt;
-use PHPStan\Analyser\ExpressionContext;
-use PHPStan\Analyser\ExpressionResult;
-use PHPStan\Analyser\ExpressionResultFactory;
-use PHPStan\Analyser\ExpressionResultStorage;
-use PHPStan\Analyser\ExprHandler;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -8099,6 +8393,7 @@ final class ExprHandlerRegistry
 }
 namespace PHPStan\Analyser;
 
+use Closure;
 use PhpParser\Node\Expr;
 use PHPStan\Node\Variable\VariableWrite;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
@@ -8123,7 +8418,14 @@ final class ExpressionContext
     private ?bool $valueConsumed;
     private ?Type $passedToType;
     private ?Type $nativePassedToType;
-    private function __construct(bool $isDeep, ?string $inAssignRightSideVariableName, ?Expr $inAssignRightSideExpr, bool $inThrow = \false, ?Type $inAssignRightSideType = null, ?Type $inAssignRightSideNativeType = null, bool $resolveTemplateArguments = \true, ?VariableWrite $valueFlowTarget = null, bool $valueFlowDirect = \false, bool $arrayDimFetchRoot = \false, bool $unsetTarget = \false, ?bool $valueConsumed = null, ?Type $passedToType = null, ?Type $nativePassedToType = null)
+    /**
+     * @var Closure(Type): array{?Type, ?Type}|null
+     */
+    private ?Closure $passedToTypeResolver;
+    /**
+     * @param (Closure(Type): array{?Type, ?Type})|null $passedToTypeResolver
+     */
+    private function __construct(bool $isDeep, ?string $inAssignRightSideVariableName, ?Expr $inAssignRightSideExpr, bool $inThrow = \false, ?Type $inAssignRightSideType = null, ?Type $inAssignRightSideNativeType = null, bool $resolveTemplateArguments = \true, ?VariableWrite $valueFlowTarget = null, bool $valueFlowDirect = \false, bool $arrayDimFetchRoot = \false, bool $unsetTarget = \false, ?bool $valueConsumed = null, ?Type $passedToType = null, ?Type $nativePassedToType = null, ?Closure $passedToTypeResolver = null)
     {
     }
     public static function createTopLevel(bool $resolveTemplateArguments = \true): self
@@ -8165,6 +8467,22 @@ final class ExpressionContext
     }
     /** Applies only to this expression; child expressions must receive their own expected types. */
     public function enterPassedToType(?Type $type, ?Type $nativeType): self
+    {
+    }
+    /**
+     * Like enterPassedToType(), for an array literal holding closures whose
+     * expected type depends on the literal's own type: ArrayHandler calls the
+     * resolver with the type of the items it walked before the closures.
+     *
+     * @param Closure(Type): array{?Type, ?Type} $resolver
+     */
+    public function enterPassedToTypeResolver(Closure $resolver): self
+    {
+    }
+    /**
+     * @return (Closure(Type): array{?Type, ?Type})|null
+     */
+    public function getPassedToTypeResolver(): ?Closure
     {
     }
     public function getPassedToType(): ?Type
@@ -9335,8 +9653,16 @@ final class FinalizerResult
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $locallyIgnoredCollectorErrors;
     /**
+     * @var array<string, CollectedDataRuleResult>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $collectedDataRuleResults;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public int $reusedRulesCount;
+    /**
      * @param list<Error> $collectorErrors
      * @param list<Error> $locallyIgnoredCollectorErrors
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
      */
     public function __construct(
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -9344,7 +9670,11 @@ final class FinalizerResult
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $collectorErrors,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        array $locallyIgnoredCollectorErrors
+        array $locallyIgnoredCollectorErrors,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $collectedDataRuleResults = [],
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        int $reusedRulesCount = 0
     )
     {
     }
@@ -9369,11 +9699,30 @@ final class FinalizerResult
     public function getLocallyIgnoredCollectorErrors(): array
     {
     }
+    /**
+     * @return array<string, CollectedDataRuleResult>
+     */
+    public function getCollectedDataRuleResults(): array
+    {
+    }
+    /**
+     * How many of the rules on CollectedDataNode reused their errors from the result cache.
+     */
+    public function getReusedRulesCount(): int
+    {
+    }
 }
 namespace PHPStan\Analyser;
 
+/**
+ * A unified diff of one file that fixes an error, computed against the contents with $originalHash.
+ */
 final class FixedErrorDiff
 {
+    /**
+     * @readonly
+     */
+    public string $file;
     /**
      * @readonly
      */
@@ -9382,7 +9731,7 @@ final class FixedErrorDiff
      * @readonly
      */
     public string $diff;
-    public function __construct(string $originalHash, string $diff)
+    public function __construct(string $file, string $originalHash, string $diff)
     {
     }
     /**
@@ -9416,11 +9765,14 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\UnionType;
+use function array_diff;
 use function array_keys;
 use function array_pop;
+use function array_values;
 use function count;
 use function in_array;
 use function is_array;
+use function is_bool;
 use function is_string;
 use function spl_object_id;
 use function str_starts_with;
@@ -9471,6 +9823,7 @@ final class ClosureSignatureInference
     private const CLOSED_BODY_ATTRIBUTE = 'closureSignatureClosedBody';
     private const ASSIGNED_CLOSURES_ATTRIBUTE = 'closureSignatureAssignedClosures';
     private const REBOUND_VARIABLES_ATTRIBUTE = 'closureSignatureReboundVariables';
+    private const ASSIGNED_TO_BY_REF_USE_ATTRIBUTE = 'closureSignatureAssignedToByRefUse';
     public function __construct(
         #[AutowiredParameter('%featureToggles.closureSignaturesFromUsages%')]
         bool $enabled
@@ -9491,7 +9844,7 @@ final class ClosureSignatureInference
      * by variable name - while observing, and in the second pass for a site the
      * observation resolved. Empty for a closure whose invocations cannot be
      * followed: a generator (invoking it does not run the body), a closure
-     * invoking its own by-ref variable.
+     * invoking its own by-ref variable or assigned to it.
      *
      * @return array<string, Type>
      * @param \PhpParser\Node\Expr\Closure|\PhpParser\Node\Expr\ArrowFunction $expr
@@ -9632,10 +9985,13 @@ final class ClosureSignatureInference
     {
     }
     /**
-     * @param Node\Stmt[] $stmts
+     * Closures and arrow functions written in the body are scanned for
+     * invocations of the variables they capture; their yields are their own.
+     *
+     * @param Node[] $stmts
      * @param array<int, string> $names
      */
-    private static function bodyYieldsOrInvokes(array $stmts, array $names): bool
+    private static function bodyYieldsOrInvokes(array $stmts, array $names, bool $checkYield = \true): bool
     {
     }
     /**
@@ -9786,6 +10142,18 @@ final class ClosureSignatureInference
      * @return array<string, list<Closure|ArrowFunction>>
      */
     private static function getAssignedClosures(Node $body, array $stmts): array
+    {
+    }
+    /**
+     * Whether the closure is assigned to one of its by-ref variables. The first
+     * question about a closure in the statements decides it for every closure
+     * in them, nested function-likes included - a closure created in another
+     * closure's body is observed through the enclosing body's frame - so each
+     * closure is decided by one walk.
+     *
+     * @param Node\Stmt[] $stmts
+     */
+    private static function isAssignedToByRefUse(Closure $expr, array $stmts): bool
     {
     }
     /**
@@ -10692,7 +11060,269 @@ final class TemplateArgumentStats
 }
 namespace PHPStan\Analyser\Ignore;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\InvalidArgumentException;
+use _PHPStan_95d9e8b05\Nette\Neon\Exception as NeonException;
+use _PHPStan_95d9e8b05\Nette\Neon\Lexer as NeonLexer;
+use _PHPStan_95d9e8b05\Nette\Neon\Node as NeonNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\ArrayItemNode as NeonArrayItemNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\ArrayNode as NeonArrayNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\LiteralNode as NeonLiteralNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Parser as NeonParser;
+use _PHPStan_95d9e8b05\Nette\Neon\TokenStream as NeonTokenStream;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use PhpParser\ConstExprEvaluationException;
+use PhpParser\ConstExprEvaluator;
+use PhpParser\Error as PhpParserError;
+use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\NodeFinder;
+use PhpParser\Parser;
+use PHPStan\Analyser\FixedErrorDiff;
+use PHPStan\Command\Environment;
+use PHPStan\Dependency\PackageDependencyResolver;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\NeonAdapter;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use PHPStan\Neon\Printer as NeonPrinter;
+use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_pop;
+use function array_search;
+use function array_slice;
+use function array_values;
+use function count;
+use function dirname;
+use function hash;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_int;
+use function is_string;
+use function rtrim;
+use function spl_object_id;
+use function sprintf;
+use function str_ends_with;
+use function str_replace;
+use function str_starts_with;
+use function strlen;
+use function strpos;
+use function strrpos;
+use function strspn;
+use function substr;
+use function substr_count;
+use function trim;
+use function usort;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
+/**
+ * Fixes ignoreErrors entries in the config files: removes an entry that matched no error,
+ * and lowers the count of an entry whose error occurred fewer times. A higher count is not fixed,
+ * it would ignore more errors - that is what --generate-baseline is for.
+ *
+ * The entry is looked for in the whole config cascade, except for files of installed Composer packages.
+ * The ignoreErrors parameter is merged from all of them, so the entry can come from more than one file.
+ * Entries without a path, including the ones written as a plain string pattern, are fixed too.
+ *
+ * Baselines can have tens of thousands of entries and each fixed error needs its own diff, which covers
+ * only the changed lines. In a PHP config file, a fix is an edit of the source range of the parsed node,
+ * printing the whole file with the format-preserving printer for every fix would make fixing a large baseline
+ * take hours. A NEON config file is printed with PHPStan\Neon\Printer, which copies the unchanged parts
+ * of the file as they are.
+ *
+ * @phpstan-import-type ExpandedIgnoredErrorData from IgnoredErrorHelperResult
+ * @phpstan-type PhpConfigEntry = array{
+ *     file: string,
+ *     values: array<string, mixed>,
+ *     format: 'php',
+ *     items: array<string, Node\ArrayItem>,
+ *     removableNode: Node|null,
+ *     line: int,
+ * }
+ * @phpstan-type NeonConfigEntry = array{
+ *     file: string,
+ *     values: array<string, mixed>,
+ *     format: 'neon',
+ *     items: array<string, NeonArrayItemNode>,
+ *     path: non-empty-list<NeonNode>,
+ *     entryValue: NeonNode,
+ *     line: int,
+ * }
+ * @phpstan-type ConfigEntry = PhpConfigEntry|NeonConfigEntry
+ * @phpstan-type Edit = array{start: int, end: int, replacement: string, line: int}
+ */
+#[AutowiredService]
+final class IgnoreErrorsConfigFixer
+{
+    private Parser $parser;
+    private PackageDependencyResolver $packageDependencyResolver;
+    private NeonPrinter $neonPrinter;
+    private FileHelper $fileHelper;
+    /**
+     * @var list<string>
+     */
+    private array $allConfigFiles;
+    private string $rootDir;
+    private string $currentWorkingDirectory;
+    private const ENTRY_KEYS = ['message', 'messages', 'rawMessage', 'rawMessages', 'identifier', 'identifiers', 'path', 'paths', 'count', 'reportUnmatched'];
+    /** key of the entries without a path in getEntriesByPath(), a normalized path is never empty */
+    private const NO_PATH = '';
+    private const MATCHED_FIELDS = ['message' => 'messages', 'rawMessage' => 'rawMessages', 'identifier' => 'identifiers'];
+    /** @var array<string, list<ConfigEntry>>|null entries by normalized path, or by self::NO_PATH */
+    private ?array $entriesByPath = null;
+    /** @var array<string, array{code: string, hash: string}> contents of the config files the entries were found in */
+    private array $files = [];
+    /** @var array<string, array{tokens: NeonTokenStream, root: NeonNode, codeWithoutCr: string, crlf: bool, mixedLineBreaks: bool}> parsed NEON config files */
+    private array $neonFiles = [];
+    /**
+     * @param list<string> $allConfigFiles
+     */
+    public function __construct(
+        #[AutowiredParameter('@currentPhpVersionPhpParser')]
+        Parser $parser,
+        PackageDependencyResolver $packageDependencyResolver,
+        NeonPrinter $neonPrinter,
+        FileHelper $fileHelper,
+        #[AutowiredParameter]
+        array $allConfigFiles,
+        #[AutowiredParameter]
+        string $rootDir,
+        #[AutowiredParameter]
+        string $currentWorkingDirectory
+    )
+    {
+    }
+    /**
+     * Config file and line of the entry, for reporting an entry without a path.
+     *
+     * @param string|ExpandedIgnoredErrorData $ignoreError
+     * @return array{string, int}|null
+     */
+    public function findEntryLocation($ignoreError): ?array
+    {
+    }
+    /**
+     * @param string|ExpandedIgnoredErrorData $ignoreError
+     * @return list<FixedErrorDiff>
+     */
+    public function removeUnmatched($ignoreError): array
+    {
+    }
+    /**
+     * @param ExpandedIgnoredErrorData $ignoreError
+     * @return list<FixedErrorDiff>
+     */
+    public function lowerCount(array $ignoreError, int $count): array
+    {
+    }
+    /**
+     * Removes the node, with the comma separating it from the other items when it is an array item,
+     * and with its lines when nothing else is on them.
+     *
+     * @return Edit
+     */
+    private function createRemovalEdit(string $code, Node $node): array
+    {
+    }
+    /**
+     * @param array<string, list<Edit>> $editsByFile
+     * @return list<FixedErrorDiff>
+     */
+    private function createDiffs(array $editsByFile): array
+    {
+    }
+    /**
+     * A unified diff without context lines, the lines of each edit make one hunk.
+     *
+     * @param list<Edit> $edits
+     */
+    private function createDiff(string $code, array $edits): ?string
+    {
+    }
+    /**
+     * Entries the expanded entry was made of. The list item is set when the entry matched through a list
+     * like `messages` that has other items too, only that item can then be removed.
+     *
+     * @param string|ExpandedIgnoredErrorData $ignoreError
+     * @return list<array{ConfigEntry, string|null, int|null}> the entry, and the list field and position of the item
+     */
+    private function findEntries($ignoreError): array
+    {
+    }
+    /**
+     * @return array<string, list<ConfigEntry>>
+     */
+    private function getEntriesByPath(): array
+    {
+    }
+    /**
+     * Every array that looks like an ignoreErrors entry, wherever it is in the file. Such an array is removable
+     * when it is an item of another array, or when it is added in a statement like `$ignoreErrors[] = [...];`.
+     *
+     * @return list<ConfigEntry>
+     */
+    private function findPhpEntries(string $file): array
+    {
+    }
+    /**
+     * Entries in the ignoreErrors parameter, which can be removed from its list.
+     *
+     * @return list<NeonConfigEntry>
+     */
+    private function findNeonEntries(string $file): array
+    {
+    }
+    private static function findNeonItem(NeonNode $node, string $key): ?NeonArrayItemNode
+    {
+    }
+    /**
+     * Prints the NEON file with the changes and turns it into one edit of its changed part.
+     *
+     * @param list<array{non-empty-list<NeonNode>, NeonNode|null}> $changes path from the root to the changed node,
+     *                                                                      and its replacement, or null to remove it
+     * @return Edit|null
+     */
+    private function createNeonEdit(string $file, array $changes): ?array
+    {
+    }
+    /**
+     * Replaces the changed nodes and clones their ancestors, the original tree stays as it is.
+     * The clones keep the token positions of the original nodes, so the printer knows what they stand for.
+     *
+     * @param list<array{non-empty-list<NeonNode>, NeonNode|null}> $changes
+     */
+    private static function changeNeonTree(NeonNode $root, array $changes): ?NeonNode
+    {
+    }
+    /**
+     * @param array{NeonNode, NeonNode} $oldChildren the original child and the node in its place
+     */
+    private static function replaceNeonChild(NeonNode $parent, array $oldChildren, ?NeonNode $newChild): bool
+    {
+    }
+    /**
+     * @return array<string, mixed>
+     */
+    private function getParameters(): array
+    {
+    }
+    private function normalizePath(string $path): string
+    {
+    }
+    /**
+     * @return string[]
+     */
+    private static function splitStringByLines(string $input): array
+    {
+    }
+}
+namespace PHPStan\Analyser\Ignore;
+
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Analyser\Error;
 use PHPStan\DependencyInjection\AutowiredService;
 use function implode;
@@ -10748,7 +11378,7 @@ final class IgnoreParseException extends Exception
 }
 namespace PHPStan\Analyser\Ignore;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Analyser\Error;
 use PHPStan\File\FileExcluder;
 use PHPStan\File\FileHelper;
@@ -10786,8 +11416,8 @@ final class IgnoredError
 }
 namespace PHPStan\Analyser\Ignore;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper;
@@ -10815,6 +11445,7 @@ use function sprintf;
 final class IgnoredErrorHelper
 {
     private FileHelper $fileHelper;
+    private \PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer $configFixer;
     /**
      * @var (string|IgnoredErrorData)[]
      */
@@ -10825,6 +11456,7 @@ final class IgnoredErrorHelper
      */
     public function __construct(
         FileHelper $fileHelper,
+        \PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer $configFixer,
         #[AutowiredParameter]
         array $ignoreErrors,
         #[AutowiredParameter]
@@ -10932,6 +11564,7 @@ use function sprintf;
 final class IgnoredErrorHelperResult
 {
     private FileHelper $fileHelper;
+    private \PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer $configFixer;
     /**
      * @var list<string>
      */
@@ -10958,6 +11591,7 @@ final class IgnoredErrorHelperResult
      */
     public function __construct(
         FileHelper $fileHelper,
+        \PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer $configFixer,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $errors,
         array $otherIgnoreErrors,
@@ -10985,6 +11619,161 @@ final class IgnoredErrorHelperResult
      * @param string[] $analysedFiles
      */
     public function process(array $errors, bool $onlyFiles, array $analysedFiles, bool $hasInternalErrors): \PHPStan\Analyser\Ignore\IgnoredErrorHelperProcessedResult
+    {
+    }
+}
+namespace PHPStan\Analyser\Ignore;
+
+use PhpParser\Token;
+use PHPStan\DependencyInjection\AutowiredService;
+use function count;
+use function implode;
+use function preg_match;
+use function preg_replace;
+use function sprintf;
+use function str_contains;
+use function str_ends_with;
+use function strlen;
+use function strpos;
+use function substr;
+use function substr_count;
+use function trim;
+use const T_COMMENT;
+use const T_DOC_COMMENT;
+use const T_WHITESPACE;
+/**
+ * Replaces the -line or -next-line variant of the ignore comment with an ignore of the identifiers
+ * of the errors reported on the ignored line. The text after the tag becomes the comment of every identifier.
+ */
+#[AutowiredService]
+final class LineIgnoreFixer
+{
+    private \PHPStan\Analyser\Ignore\UnmatchedIgnoreFixer $unmatchedIgnoreFixer;
+    public function __construct(\PHPStan\Analyser\Ignore\UnmatchedIgnoreFixer $unmatchedIgnoreFixer)
+    {
+    }
+    /**
+     * @param non-empty-list<string> $identifiers identifiers of all errors reported on $line, one for each error
+     */
+    public function fix(string $code, int $line, array $identifiers): ?string
+    {
+    }
+    /**
+     * @param non-empty-list<string> $identifiers
+     */
+    private static function createIgnore(array $identifiers, string $comment): string
+    {
+    }
+    /**
+     * Appends a comment with the ignore to the end of the line, which then ignores the line like
+     * a comment after code. A comment at the end of the line gets the ignore appended to it.
+     */
+    private static function appendToLine(string $code, int $line, string $ignore): ?string
+    {
+    }
+    /**
+     * Like the tag regexes in RichParser, which decide whether the -next-line tag is the last tag of a PHPDoc.
+     */
+    private static function hasPhpDocTag(string $text): bool
+    {
+    }
+    private static function hasBalancedParentheses(string $text): bool
+    {
+    }
+    /**
+     * @param Token[] $tokens
+     */
+    private static function findNextCodeToken(array $tokens, int $i): ?Token
+    {
+    }
+}
+namespace PHPStan\Analyser\Ignore;
+
+use PhpParser\Token;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Fixable\PhpDoc\PhpDocEditor;
+use PHPStan\PhpDocParser\Ast\Node;
+use PHPStan\PhpDocParser\Ast\PhpDoc\GenericTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use function array_values;
+use function count;
+use function preg_match;
+use function rtrim;
+use function str_contains;
+use function strlen;
+use function strpos;
+use function strrpos;
+use function strspn;
+use function substr;
+use function substr_count;
+use function trim;
+use const T_COMMENT;
+use const T_DOC_COMMENT;
+use const T_WHITESPACE;
+/**
+ * Removes inline ignores that no error matched. The comment that applies to a line is found
+ * the same way RichParser finds the lines an ignore comment applies to.
+ */
+#[AutowiredService]
+final class UnmatchedIgnoreFixer
+{
+    private \PHPStan\Analyser\Ignore\IgnoreLexer $ignoreLexer;
+    private PhpDocEditor $phpDocEditor;
+    private const IGNORE_TAG = '@phpstan-ignore';
+    public function __construct(\PHPStan\Analyser\Ignore\IgnoreLexer $ignoreLexer, PhpDocEditor $phpDocEditor)
+    {
+    }
+    /**
+     * Removes $identifier from the ignore comment with identifiers that applies to $line, or the whole ignore
+     * when it is the only identifier. Without $identifier, removes the ignore of $line without identifiers,
+     * the -line or -next-line variant. Plain comments are edited as text, PHPDocs with format-preserving printing
+     * so that their other tags are kept. Returns null when there is no such ignore, or when a plain comment has other contents.
+     */
+    public function fix(string $code, int $line, ?string $identifier): ?string
+    {
+    }
+    /**
+     * @return string|bool|null new text of the comment, null when the whole comment should be removed,
+     *                          false when the identifier is not there, true when the comment has other contents
+     */
+    private function removeCommentIdentifier(string $text, string $identifier)
+    {
+    }
+    /**
+     * @return string|false|null new text of the PHPDoc, null when the whole PHPDoc should be removed,
+     *                           false when the identifier is not there
+     */
+    private function removePhpDocIdentifier(string $text, string $identifier)
+    {
+    }
+    /**
+     * Removes the -line or -next-line tag of a PHPDoc that ignores $line, the same lines RichParser ignores for them.
+     *
+     * @return string|false|null new text of the PHPDoc, null when the whole PHPDoc should be removed,
+     *                           false when no such tag ignores $line
+     */
+    private function removePhpDocLineTag(string $text, int $startLine, int $line)
+    {
+    }
+    /**
+     * @return array{string|null, int}|false new list, null when the identifier was the only one, and where the list ends;
+     *                                       false when the identifier is not there
+     */
+    private function removeIdentifierFromList(string $list, string $identifier)
+    {
+    }
+    /**
+     * @param Token[] $tokens
+     */
+    private static function findNextCodeToken(array $tokens, int $i): ?Token
+    {
+    }
+    /**
+     * Replaces the comment with $newText. Without $newText, removes the line of a comment that is alone on it,
+     * otherwise the comment and the whitespace that separates it from the code.
+     */
+    private static function replaceComment(string $code, Token $token, ?string $newText): string
     {
     }
 }
@@ -11348,6 +12137,9 @@ final class InternalStatementExitPoint
     public function getStatement(): Stmt
     {
     }
+    public function withScope(\PHPStan\Analyser\MutatingScope $scope): self
+    {
+    }
     public function getScope(): \PHPStan\Analyser\MutatingScope
     {
     }
@@ -11531,6 +12323,9 @@ final class InternalThrowPoint
     {
     }
     public static function createFromPublic(\PHPStan\Analyser\ThrowPoint $throwPoint, \PHPStan\Analyser\MutatingScope $scope): self
+    {
+    }
+    public function withScope(\PHPStan\Analyser\MutatingScope $scope): self
     {
     }
     public function getScope(): \PHPStan\Analyser\MutatingScope
@@ -11825,7 +12620,6 @@ use PhpParser\Node;
 use PHPStan\Analyser\Generics\TemplateArgumentConstraints;
 use PHPStan\Analyser\Generics\TemplateArgumentFrame;
 use PHPStan\DependencyInjection\Container;
-use PHPStan\DependencyInjection\ExtensionsCollection;
 use PHPStan\DependencyInjection\GenerateFactory;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Parser\Parser;
@@ -11851,18 +12645,9 @@ final class LazyInternalScopeFactory implements \PHPStan\Analyser\InternalScopeF
     private $nodeCallback;
     private bool $createsNodeCallbackScopes;
     private Parser $currentSimpleVersionParser;
-    private ?ReflectionProvider $reflectionProvider = null;
-    private ?InitializerExprTypeResolver $initializerExprTypeResolver = null;
-    /** @var ExtensionsCollection<ExpressionTypeResolverExtension>|null */
-    private ?ExtensionsCollection $expressionTypeResolverExtensions = null;
-    private ?ExprPrinter $exprPrinter = null;
-    private ?\PHPStan\Analyser\TypeSpecifier $typeSpecifier = null;
-    private ?PropertyReflectionFinder $propertyReflectionFinder = null;
-    private ?\PHPStan\Analyser\ConstantResolver $constantResolver = null;
     private \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack;
-    private ?PhpVersion $phpVersionType = null;
-    private ?AttributeReflectionFactory $attributeReflectionFactory = null;
-    private ?ConfiguredPhpVersionRangeHelper $configuredPhpVersionRangeHelper = null;
+    /** The services the created scopes share, built on the first create(). */
+    private ?\PHPStan\Analyser\ScopeServices $services = null;
     private ?self $twin = null;
     /** @var WeakReference<self>|null */
     private ?WeakReference $origin = null;
@@ -12074,8 +12859,6 @@ use PHPStan\Analyser\Generics\TemplateArgumentConstraints;
 use PHPStan\Analyser\Generics\TemplateArgumentFrame;
 use PHPStan\Analyser\Traverser\TransformStaticTypeTraverser;
 use PHPStan\Collectors\Collector;
-use PHPStan\DependencyInjection\Container;
-use PHPStan\DependencyInjection\ExtensionsCollection;
 use PHPStan\Node\EmitCollectedDataNode;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Node\Expr\CloneReinitializationExpr;
@@ -12084,21 +12867,16 @@ use PHPStan\Node\Expr\NativeTypeExpr;
 use PHPStan\Node\Expr\OriginalForeachKeyExpr;
 use PHPStan\Node\Expr\OriginalForeachValueExpr;
 use PHPStan\Node\Expr\ParameterVariableOriginalValueExpr;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
 use PHPStan\Node\Expr\PropertyInitializationExpr;
 use PHPStan\Node\Expr\SetExistingOffsetValueTypeExpr;
 use PHPStan\Node\IssetExpr;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\VirtualNode;
-use PHPStan\Parser\Parser;
-use PHPStan\Php\ConfiguredPhpVersionRangeHelper;
-use PHPStan\Php\PhpVersion;
 use PHPStan\Php\PhpVersionFactory;
 use PHPStan\Php\PhpVersions;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\AttributeReflection;
-use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
@@ -12107,15 +12885,12 @@ use PHPStan\Reflection\ExtendedParametersAcceptor;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\InitializerExprContext;
-use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
 use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Turbo\ShadowedByTurboExtension;
@@ -12134,7 +12909,6 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ConstantTypeHelper;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\ExpressionTypeResolverExtension;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
@@ -12169,9 +12943,7 @@ use function array_merge;
 use function array_pop;
 use function array_shift;
 use function array_slice;
-use function array_unique;
 use function array_values;
-use function assert;
 use function count;
 use function ctype_alnum;
 use function explode;
@@ -12181,6 +12953,7 @@ use function in_array;
 use function is_string;
 use function ltrim;
 use function md5;
+use function min;
 use function preg_match;
 use function preg_match_all;
 use function spl_object_id;
@@ -12196,28 +12969,9 @@ use const PHP_INT_MIN;
 #[ShadowedByTurboExtension(__DIR__ . '/../../turbo-ext/src/MutatingScope.cpp')]
 class MutatingScope implements \PHPStan\Analyser\Scope, \PHPStan\Analyser\NodeCallbackInvoker, \PHPStan\Analyser\CollectedDataEmitter, \PHPStan\Analyser\DependencyTracker
 {
-    private Container $container;
+    private \PHPStan\Analyser\ScopeServices $services;
     protected \PHPStan\Analyser\InternalScopeFactory $scopeFactory;
-    private ReflectionProvider $reflectionProvider;
-    private InitializerExprTypeResolver $initializerExprTypeResolver;
-    /**
-     * @var ExtensionsCollection<ExpressionTypeResolverExtension>
-     */
-    private ExtensionsCollection $expressionTypeResolverExtensions;
-    private ExprPrinter $exprPrinter;
-    private \PHPStan\Analyser\TypeSpecifier $typeSpecifier;
-    private PropertyReflectionFinder $propertyReflectionFinder;
-    private Parser $parser;
-    private \PHPStan\Analyser\ConstantResolver $constantResolver;
-    private \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack;
     protected \PHPStan\Analyser\ScopeContext $context;
-    private PhpVersion $phpVersion;
-    private AttributeReflectionFactory $attributeReflectionFactory;
-    private ConfiguredPhpVersionRangeHelper $configuredPhpVersionRangeHelper;
-    /**
-     * @var callable(Node $node, Scope $scope): void|null
-     */
-    private $nodeCallback;
     private bool $declareStrictTypes;
     /**
      * @var \PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection|null
@@ -12285,7 +13039,6 @@ class MutatingScope implements \PHPStan\Analyser\Scope, \PHPStan\Analyser\NodeCa
     private ?self $scopeOutOfFirstLevelStatement = null;
     private ?self $scopeWithPromotedNativeTypes = null;
     /**
-     * @param callable(Node $node, Scope $scope): void|null $nodeCallback
      * @param array<string, ExpressionTypeHolder> $expressionTypes
      * @param array<string, ConditionalExpressionHolder[]> $conditionalExpressions
      * @param list<non-empty-string> $inClosureBindScopeClasses
@@ -12293,10 +13046,9 @@ class MutatingScope implements \PHPStan\Analyser\Scope, \PHPStan\Analyser\NodeCa
      * @param array<string, true> $currentlyAllowedUndefinedExpressions
      * @param array<string, ExpressionTypeHolder> $nativeExpressionTypes
      * @param list<array{MethodReflection|FunctionReflection|null, ParameterReflection|null}> $inFunctionCallsStack
-     * @param ExtensionsCollection<ExpressionTypeResolverExtension> $expressionTypeResolverExtensions
      * @param \PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection|null $function
      */
-    public function __construct(Container $container, \PHPStan\Analyser\InternalScopeFactory $scopeFactory, ReflectionProvider $reflectionProvider, InitializerExprTypeResolver $initializerExprTypeResolver, ExtensionsCollection $expressionTypeResolverExtensions, ExprPrinter $exprPrinter, \PHPStan\Analyser\TypeSpecifier $typeSpecifier, PropertyReflectionFinder $propertyReflectionFinder, Parser $parser, \PHPStan\Analyser\ConstantResolver $constantResolver, \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack, \PHPStan\Analyser\ScopeContext $context, PhpVersion $phpVersion, AttributeReflectionFactory $attributeReflectionFactory, ConfiguredPhpVersionRangeHelper $configuredPhpVersionRangeHelper, $nodeCallback = null, bool $declareStrictTypes = \false, $function = null, ?string $namespace = null, array $expressionTypes = [], array $nativeExpressionTypes = [], array $conditionalExpressions = [], array $inClosureBindScopeClasses = [], ?ClosureType $anonymousFunctionReflection = null, bool $inFirstLevelStatement = \true, array $currentlyAssignedExpressions = [], array $currentlyAllowedUndefinedExpressions = [], array $inFunctionCallsStack = [], bool $afterExtractCall = \false, ?self $parentScope = null, bool $nativeTypesPromoted = \false, ?TemplateArgumentFrame $templateArgumentFrame = null, ?TemplateArgumentConstraints $templateArgumentConstraints = null)
+    public function __construct(\PHPStan\Analyser\ScopeServices $services, \PHPStan\Analyser\InternalScopeFactory $scopeFactory, \PHPStan\Analyser\ScopeContext $context, bool $declareStrictTypes = \false, $function = null, ?string $namespace = null, array $expressionTypes = [], array $nativeExpressionTypes = [], array $conditionalExpressions = [], array $inClosureBindScopeClasses = [], ?ClosureType $anonymousFunctionReflection = null, bool $inFirstLevelStatement = \true, array $currentlyAssignedExpressions = [], array $currentlyAllowedUndefinedExpressions = [], array $inFunctionCallsStack = [], bool $afterExtractCall = \false, ?self $parentScope = null, bool $nativeTypesPromoted = \false, ?TemplateArgumentFrame $templateArgumentFrame = null, ?TemplateArgumentConstraints $templateArgumentConstraints = null)
     {
     }
     public function toNodeCallbackScope(): self
@@ -12433,12 +13185,6 @@ class MutatingScope implements \PHPStan\Analyser\Scope, \PHPStan\Analyser\NodeCa
      * @return list<string>
      */
     public function getMaybeDefinedVariables(): array
-    {
-    }
-    /**
-     * @return list<string>
-     */
-    public function findPossiblyImpureCallDescriptions(Expr $expr): array
     {
     }
     private function isGlobalVariable(string $variableName): bool
@@ -13365,6 +14111,16 @@ class MutatingScope implements \PHPStan\Analyser\Scope, \PHPStan\Analyser\NodeCa
     {
     }
     /**
+     * The analysed PHP version range comes either from the NEON phpVersion min/max
+     * config or from the composer.json "require.php" constraint - the very same
+     * source ConstantResolver narrows PHP_VERSION_ID with, so that
+     * Scope::getPhpVersion() never contradicts the PHP_VERSION_ID constant.
+     * Null when neither is set and a single PHP version is analysed.
+     */
+    private function getConfiguredPhpVersionRange(): ?Type
+    {
+    }
+    /**
      * Whether the type carries no information about the analysed PHP version,
      * i.e. it spans everything PHPStan is able to analyse.
      */
@@ -13839,9 +14595,7 @@ use PHPStan\Node\MethodCallableNode;
 use PHPStan\Node\MethodCallExpressionNode;
 use PHPStan\Node\StaticMethodCallableNode;
 use PHPStan\Node\StaticMethodCallExpressionNode;
-use PHPStan\Reflection\Native\NativeMethodReflection;
 use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
-use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Turbo\ShadowedByTurboExtension;
@@ -13898,10 +14652,13 @@ class NodeScopeResolver
     /**
      * Consume-stored mode: a walk that deliberately re-enters an
      * already-walked subtree (the nullsafe plain twin re-walking its
-     * receiver) consumes stored results unconditionally instead of
-     * re-processing - node callbacks fired during the original walk.
+     * receiver) consumes this node's stored result unconditionally instead
+     * of re-processing it - node callbacks fired during the original walk.
+     * Only this exact node is consumed: the rest of the twin (arguments,
+     * a dynamic name) is walked normally, even when the storage was seeded
+     * with results of an earlier loop convergence pass.
      */
-    private bool $consumeStoredExpressionResults = \false;
+    private ?Expr $consumeStoredExpression = null;
     private ?NonNullabilityHelper $nonNullabilityHelper = null;
     /**
      * Engine-feeding gatherer frames (return statements, execution ends,
@@ -14012,6 +14769,29 @@ class NodeScopeResolver
     {
     }
     /**
+     * The final walk of a loop body against its last convergence pass (see
+     * StatementsHandler::processLoopFinalStmtNodes()).
+     *
+     * @param Node\Stmt[] $stmts
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param array{array<int, array{StatementListWalkState, int}>, RecordingNodeCallback} $lastPass
+     */
+    public function processLoopFinalStmtNodes(Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context, array $lastPass): \PHPStan\Analyser\InternalStatementResult
+    {
+    }
+    /**
+     * One loop convergence pass over $stmts, re-walking only what differs from
+     * $previous, the previous pass (see StatementsHandler::processLoopPassStmtNodes()).
+     *
+     * @param Node\Stmt[] $stmts
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback}|null $previous
+     * @param array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback}|null $record
+     */
+    public function processLoopPassStmtNodes(Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context, ?array $previous, ?array &$record): \PHPStan\Analyser\InternalStatementResult
+    {
+    }
+    /**
      * @param Node\Stmt[] $stmts
      * @param callable(Node $node, Scope $scope): void $nodeCallback
      */
@@ -14029,10 +14809,6 @@ class NodeScopeResolver
     }
     /** Whether an on-demand walk answers already processed real nodes from their stored results (see processExprOnDemand()). */
     public function isReturningStoredExpressionResults(): bool
-    {
-    }
-    /** Whether the walk consumes stored results unconditionally (see processExprNodeConsumingStored()). */
-    public function isConsumingStoredExpressionResults(): bool
     {
     }
     public function lookForSetAllowedUndefinedExpressions(\PHPStan\Analyser\MutatingScope $scope, Expr $expr): \PHPStan\Analyser\MutatingScope
@@ -14054,15 +14830,15 @@ class NodeScopeResolver
      * are stored into the given storage - pass a duplicate to keep them isolated.
      */
     /**
-     * Processes an expression whose already-walked subtrees must be CONSUMED
-     * from their stored results instead of re-walked: the nullsafe handlers
+     * Processes an expression whose already-walked receiver must be CONSUMED
+     * from its stored result instead of re-walked: the nullsafe handlers
      * process the receiver once (real callbacks) and then walk the plain twin,
-     * whose receiver subtree answers from storage, re-anchored to the twin's
+     * whose receiver answers from storage, re-anchored to the twin's
      * (ensured) scope.
      *
      * @param callable(Node $node, Scope $scope): void $nodeCallback
      */
-    public function processExprNodeConsumingStored(Node\Stmt $stmt, Expr $expr, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\ExpressionContext $context): \PHPStan\Analyser\ExpressionResult
+    public function processExprNodeConsumingStored(Node\Stmt $stmt, Expr $expr, Expr $consumedExpr, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\ExpressionContext $context): \PHPStan\Analyser\ExpressionResult
     {
     }
     public function processExprOnDemand(Expr $expr, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage): \PHPStan\Analyser\ExpressionResult
@@ -14178,6 +14954,7 @@ class NodeScopeResolver
     {
     }
     private const REPLAYABLE_BODY_ATTRIBUTE = 'convergenceReplayableBody';
+    private const CONTEXT_SENSITIVE_STATEMENT_ATTRIBUTE = 'convergenceContextSensitiveStatement';
     /**
      * Whether a recorded convergence pass over the loop body can replace the
      * final walk. A pass runs at deep statement context, the final walk at top
@@ -14189,6 +14966,10 @@ class NodeScopeResolver
      * @param Node\Stmt[] $bodyStmts
      */
     public function isReplayableConvergenceBody(Node $loopNode, array $bodyStmts): bool
+    {
+    }
+    /** A statement that walks differently in a convergence pass than in the final walk. */
+    public function isContextSensitiveStatement(Node\Stmt $stmt): bool
     {
     }
     private function hasContextSensitiveConstruct(Node $node): bool
@@ -15226,13 +16007,100 @@ final class FileResultCacheValueExtension implements \PHPStan\Analyser\ResultCac
 }
 namespace PHPStan\Analyser\ResultCache;
 
+use Closure;
+use PHPStan\Collectors\CollectedData;
+use PHPStan\ShouldNotHappenException;
+use function array_key_exists;
+use function count;
+/**
+ * Collected data that is read from the result cache file only when something asks for it.
+ *
+ * The cached part is an index of where each analysed file's entry sits in the cache file; the
+ * fresh part is what this run's analysis produced. toArray() reads the cached entries and lays the
+ * fresh ones over them. Until then, the main process holds a few bytes per file, which is all the
+ * forked workers inherit.
+ *
+ * @phpstan-import-type CollectorData from CollectedData
+ */
+final class LazyCollectedData
+{
+    /**
+     * @var array<string, array{int, int}>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $cachedIndex;
+    /**
+     * @var Closure(array<string, array{int, int}>): CollectorData
+     */
+    private Closure $cachedReader;
+    /**
+     * @var CollectorData
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $fresh;
+    /**
+     * @param array<string, array{int, int}> $cachedIndex analysed file => [offset, length] of its entry in the cache file
+     * @param Closure(array<string, array{int, int}>): CollectorData $cachedReader
+     * @param CollectorData $fresh
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $cachedIndex,
+        Closure $cachedReader,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $fresh
+    )
+    {
+    }
+    /**
+     * @param CollectorData $data
+     */
+    public static function fromArray(array $data): self
+    {
+    }
+    /**
+     * Editor mode analyses a temporary copy of a file and reports it under the file's own path. Only
+     * the fresh side can hold the temporary path: ResultCacheManager::mergeCollectedData() takes both
+     * paths out of the cached index, and a cached entry is verified against its file on reading, so it
+     * could not be renamed anyway.
+     */
+    public function withRenamedFile(string $from, string $to): self
+    {
+    }
+    /**
+     * @return array<string, array{int, int}>
+     */
+    public function getCachedIndex(): array
+    {
+    }
+    /**
+     * @return CollectorData
+     */
+    public function getFresh(): array
+    {
+    }
+    public function isEmpty(): bool
+    {
+    }
+    /**
+     * Cached entries first, then the fresh ones; a fresh entry replaces a cached one for the same
+     * file. Reads the cache file every time: nothing is kept, so the caller decides how long the
+     * decoded data lives.
+     *
+     * @return CollectorData
+     */
+    public function toArray(): array
+    {
+    }
+}
+namespace PHPStan\Analyser\ResultCache;
+
+use PHPStan\Analyser\CollectedDataRuleResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyserResult;
-use PHPStan\Collectors\CollectedData;
 use PHPStan\Dependency\RootExportedNode;
 /**
  * @phpstan-import-type LinesToIgnore from FileAnalyserResult
- * @phpstan-import-type CollectorData from CollectedData
  */
 final class ResultCache
 {
@@ -15272,11 +16140,7 @@ final class ResultCache
      */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $unmatchedLineIgnores;
-    /**
-     * @var CollectorData
-     */
-    #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public array $collectedData;
+    private \PHPStan\Analyser\ResultCache\LazyCollectedData $collectedData;
     /**
      * @var array<string, array<string>>
      */
@@ -15315,13 +16179,22 @@ final class ResultCache
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $currentFileHashes;
     /**
+     * @var array<string, CollectedDataRuleResult>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $collectedDataRuleResults;
+    /**
+     * @var list<string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $filesWithCollectedDataRuleErrors;
+    /**
      * @param string[] $filesToAnalyse
      * @param mixed[] $meta
      * @param array<string, list<Error>> $errors
      * @param array<string, list<Error>> $locallyIgnoredErrors
      * @param array<string, LinesToIgnore> $linesToIgnore
      * @param array<string, LinesToIgnore> $unmatchedLineIgnores
-     * @param CollectorData $collectedData
      * @param array<string, array<string>> $dependencies
      * @param array<string, array<string>> $usedTraitDependencies
      * @param array<string, array{string, string, string, list<string>, list<string>}> $valueDependencies id => [extension class, key, current value, analysis dependents, declarations dependents] - see ValueDependencyCollector
@@ -15329,6 +16202,8 @@ final class ResultCache
      * @param array<string, array<RootExportedNode>> $exportedNodes the decoded ones - see $cachedExportedNodes for the rest
      * @param array<string, array{string, bool, string}> $projectExtensionFiles
      * @param array<string, string> $currentFileHashes
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
+     * @param list<string> $filesWithCollectedDataRuleErrors the files with errors of the rules on CollectedDataNode
      */
     public function __construct(
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -15349,8 +16224,7 @@ final class ResultCache
         array $linesToIgnore,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $unmatchedLineIgnores,
-        #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        array $collectedData,
+        \PHPStan\Analyser\ResultCache\LazyCollectedData $collectedData,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $dependencies,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -15366,7 +16240,11 @@ final class ResultCache
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $projectExtensionFiles,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        array $currentFileHashes
+        array $currentFileHashes,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $collectedDataRuleResults = [],
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $filesWithCollectedDataRuleErrors = []
     )
     {
     }
@@ -15419,10 +16297,7 @@ final class ResultCache
     public function getUnmatchedLineIgnores(): array
     {
     }
-    /**
-     * @return CollectorData
-     */
-    public function getCollectedData(): array
+    public function getCollectedData(): \PHPStan\Analyser\ResultCache\LazyCollectedData
     {
     }
     /**
@@ -15473,6 +16348,18 @@ final class ResultCache
     public function getCurrentFileHashes(): array
     {
     }
+    /**
+     * @return array<string, CollectedDataRuleResult>
+     */
+    public function getCollectedDataRuleResults(): array
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    public function getFilesWithCollectedDataRuleErrors(): array
+    {
+    }
 }
 namespace PHPStan\Analyser\ResultCache;
 
@@ -15497,10 +16384,13 @@ final class ResultCacheClearer
 }
 namespace PHPStan\Analyser\ResultCache;
 
-use _PHPStan_cb3b7e994\Nette\Neon\Neon;
+use Closure;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
 use PHPStan\Analyser\AnalyserResult;
+use PHPStan\Analyser\CollectedDataRuleResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyserResult;
+use PHPStan\Analyser\FinalizerResult;
 use PHPStan\Analyser\ValueDependencyCollector;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Command\Output;
@@ -15517,7 +16407,6 @@ use PHPStan\ExtensionInstaller\GeneratedConfig;
 use PHPStan\File\CouldNotReadFileException;
 use PHPStan\File\CouldNotWriteFileException;
 use PHPStan\File\FileFinder;
-use PHPStan\File\FileHelper;
 use PHPStan\File\FileStatSignatures;
 use PHPStan\Internal\ArrayHelper;
 use PHPStan\Internal\ComposerHelper;
@@ -15536,6 +16425,7 @@ use function array_filter;
 use function array_intersect;
 use function array_key_exists;
 use function array_keys;
+use function array_map;
 use function array_merge;
 use function array_unique;
 use function array_values;
@@ -15572,9 +16462,11 @@ use function sprintf;
 use function stat;
 use function str_ends_with;
 use function str_starts_with;
+use function stream_copy_to_stream;
 use function strlen;
 use function substr;
 use function time;
+use function uasort;
 use function uniqid;
 use function unlink;
 use function unserialize;
@@ -15595,7 +16487,6 @@ final class ResultCacheManager
     private ExportedNodeFetcher $exportedNodeFetcher;
     private FileFinder $scanFileFinder;
     private StubFilesProvider $stubFilesProvider;
-    private FileHelper $fileHelper;
     private PackageDependencyResolver $packageDependencyResolver;
     private ExtensionVersionProvider $extensionVersionProvider;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -15612,6 +16503,14 @@ final class ResultCacheManager
      * @var string[]
      */
     private array $composerAutoloaderProjectPaths;
+    /**
+     * @var string[]
+     */
+    private array $attributeServicesDirectories;
+    /**
+     * @var list<string>
+     */
+    private array $attributeServicesClasses;
     private string $usedLevel;
     private ?string $cliAutoloadFile;
     /**
@@ -15654,7 +16553,7 @@ final class ResultCacheManager
      * version with no distributed binary, or a libc the binaries are not built for.
      */
     private const EXTENSIONS_NOT_INVALIDATING_CACHE = ['xdebug', 'blackfire', 'phpstan_turbo'];
-    private const CACHE_VERSION = 'v22-valueDependencies';
+    private const CACHE_VERSION = 'v25-lazyCollectedData';
     /**
      * The recorded hash of a dependency that does not exist. A rule can depend on a path rather than on
      * a symbol - the file named in a require() - and such a dependency has to be watched while it is
@@ -15693,12 +16592,12 @@ final class ResultCacheManager
      * remember where it starts and walk past its entries.
      *
      * Nothing closure-shaped is written: a frame holds the plain serialized payload
-     * (`a:1:{s:9:"file.php";a:1:{i:0;O:22:"PHPStan\Analyser\Error"...`), and readCacheFile() builds
-     * the callback in PHP around the open handle and that offset, which is only the shape restore()
-     * expects. The var_export format writes a real `static function (): array` into the file instead,
-     * and PHP still compiles the array literal inside it.
+     * (`s:8:"file.php";` followed by `a:1:{i:0;O:22:"PHPStan\Analyser\Error"...`), and
+     * readCacheFile() builds the callback in PHP around the open handle and that offset, which is only
+     * the shape restore() expects. The var_export format writes a real `static function (): array`
+     * into the file instead, and PHP still compiles the array literal inside it.
      */
-    private const LAZY_SECTIONS = ['errors', 'locallyIgnoredErrors', 'collectedData', 'exportedNodes'];
+    private const LAZY_SECTIONS = ['errors', 'locallyIgnoredErrors', 'exportedNodes'];
     /** @var array<string, string> */
     private array $fileHashes = [];
     /**
@@ -15718,6 +16617,8 @@ final class ResultCacheManager
      * @param string[] $analysedPaths
      * @param string[] $analysedPathsFromConfig
      * @param string[] $composerAutoloaderProjectPaths
+     * @param string[] $attributeServicesDirectories
+     * @param list<string> $attributeServicesClasses classes registered from attributeServicesDirectories
      * @param string[] $bootstrapFiles
      * @param string[] $scanFiles
      * @param string[] $scanDirectories
@@ -15733,7 +16634,6 @@ final class ResultCacheManager
         #[AutowiredParameter('@fileFinderScan')]
         FileFinder $scanFileFinder,
         StubFilesProvider $stubFilesProvider,
-        FileHelper $fileHelper,
         PackageDependencyResolver $packageDependencyResolver,
         ExtensionVersionProvider $extensionVersionProvider,
         #[AutowiredParameter('%resultCachePath%')]
@@ -15745,6 +16645,10 @@ final class ResultCacheManager
         array $analysedPathsFromConfig,
         #[AutowiredParameter]
         array $composerAutoloaderProjectPaths,
+        #[AutowiredParameter]
+        array $attributeServicesDirectories,
+        #[AutowiredParameter]
+        array $attributeServicesClasses,
         #[AutowiredParameter]
         string $usedLevel,
         #[AutowiredParameter]
@@ -15859,9 +16763,8 @@ final class ResultCacheManager
     }
     /**
      * @param CollectorData $freshCollectedDataByFile
-     * @return CollectorData
      */
-    private function mergeCollectedData(\PHPStan\Analyser\ResultCache\ResultCache $resultCache, array $freshCollectedDataByFile): array
+    private function mergeCollectedData(\PHPStan\Analyser\ResultCache\ResultCache $resultCache, array $freshCollectedDataByFile): \PHPStan\Analyser\ResultCache\LazyCollectedData
     {
     }
     /**
@@ -15959,7 +16862,6 @@ final class ResultCacheManager
      * @param array<string, list<Error>> $locallyIgnoredErrors
      * @param array<string, LinesToIgnore> $linesToIgnore
      * @param array<string, LinesToIgnore> $unmatchedLineIgnores
-     * @param CollectorData $collectedData
      * @param array<string, array<string>> $dependencies
      * @param array<string, array<string>> $usedTraitDependencies
      * @param ValueDependencies $valueDependencies
@@ -15969,8 +16871,22 @@ final class ResultCacheManager
      * @param array<string, string> $currentFileHashes
      * @param mixed[] $meta
      * @param array<string, string> $stubFiles
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
+     * @param list<string> $filesWithCollectedDataRuleErrors
+     * @return LazyCollectedData The same collected data, with the cached entries indexed in the saved file
      */
-    private function save(int $lastFullAnalysisTime, array $errors, array $locallyIgnoredErrors, array $linesToIgnore, array $unmatchedLineIgnores, array $collectedData, array $dependencies, array $usedTraitDependencies, array $valueDependencies, array $packageDependencies, array $exportedNodes, \PHPStan\Analyser\ResultCache\CachedExportedNodes $cachedExportedNodes, array $projectExtensionFiles, array $currentFileHashes, array $meta, array $stubFiles): void
+    private function save(int $lastFullAnalysisTime, array $errors, array $locallyIgnoredErrors, array $linesToIgnore, array $unmatchedLineIgnores, \PHPStan\Analyser\ResultCache\LazyCollectedData $collectedData, array $dependencies, array $usedTraitDependencies, array $valueDependencies, array $packageDependencies, array $exportedNodes, \PHPStan\Analyser\ResultCache\CachedExportedNodes $cachedExportedNodes, array $projectExtensionFiles, array $currentFileHashes, array $meta, array $stubFiles, array $collectedDataRuleResults, array $filesWithCollectedDataRuleErrors): \PHPStan\Analyser\ResultCache\LazyCollectedData
+    {
+    }
+    /**
+     * The collected data section: the cached entries are copied byte for byte from the file they
+     * were restored from, the fresh ones are serialized. Written in the order of the file paths, as
+     * every other section is, so the file does not depend on which files were re-analysed.
+     *
+     * @param resource $handle
+     * @return array<string, array{int, int}> Where every copied entry is in the new file
+     */
+    private function writeCollectedDataFrame($handle, string $file, \PHPStan\Analyser\ResultCache\LazyCollectedData $collectedData): array
     {
     }
     /**
@@ -16027,15 +16943,24 @@ final class ResultCacheManager
     {
     }
     /**
-     * An array, as `name* count\n` followed by one length-prefixed frame per entry.
-     *
-     * Each entry is serialized as a single-element array so its key travels with it, which keeps string
-     * and integer keys distinct without a second frame for the key.
+     * An array, as `name* count\n` followed by one entry frame per element.
      *
      * @param resource $handle
      * @param array<mixed> $values
      */
     private function writeArrayFrame($handle, string $file, string $name, array $values): void
+    {
+    }
+    /**
+     * One element of an array frame: `keyLength valueLength\n`, the serialized key, the serialized
+     * value. The key has its own payload so a reader can index the entries without decoding the
+     * values, and serializing it keeps string and integer keys distinct.
+     *
+     * @param resource $handle
+     * @param int|string $key
+     * @param mixed $value
+     */
+    private function writeEntryFrame($handle, string $file, $key, $value): void
     {
     }
     /**
@@ -16051,12 +16976,73 @@ final class ResultCacheManager
     {
     }
     /**
-     * Walks past an array frame's entries without unserializing them, checking as it goes that the
+     * Walks past an array frame's entries decoding only their keys, checking as it goes that the
+     * file really holds them. Returns where each entry is: the offset of its header line and the
+     * length up to the end of its value, which is what stream_copy_to_stream() needs to carry the
+     * entry over to the next cache file unchanged.
+     *
+     * @param resource $handle
+     * @return array<string, array{int, int}>
+     */
+    private function indexEntryFrames($handle, int $count, int $fileSize, string $name): array
+    {
+    }
+    /**
+     * Walks past an array frame's entries without decoding anything, checking as it goes that the
      * file really holds them.
      *
      * @param resource $handle
      */
     private function skipEntryFrames($handle, int $count, int $fileSize, string $name): void
+    {
+    }
+    /**
+     * @param resource $handle
+     * @return array{int, int} The lengths of the key and value payloads
+     */
+    private function readEntryHeader($handle): array
+    {
+    }
+    /**
+     * The header and key of an entry frame, leaving the handle at its value.
+     *
+     * @param resource $handle
+     * @return array{int|string, int} The key and the length of the value payload
+     */
+    private function readEntryKey($handle): array
+    {
+    }
+    /**
+     * @return Closure(array<string, array{int, int}>): CollectorData
+     */
+    private function createCollectedDataReader(): Closure
+    {
+    }
+    /**
+     * Reads the collected data entries the index points at. The file is opened for the duration of
+     * the call only: an open handle would be inherited by the forked workers, and a rename over the
+     * file (the next save) must not find it open on Windows.
+     *
+     * @param array<string, array{int, int}> $index
+     * @return CollectorData
+     */
+    private function readCollectedData(array $index): array
+    {
+    }
+    /**
+     * Moves to an entry of the collected data section and past its key, refusing an entry that is
+     * not the one the index was built for.
+     *
+     * @param resource $handle
+     * @return array{string, int} The key as stored and the length of the value payload
+     */
+    private function seekToEntry($handle, int $offset, string $file): array
+    {
+    }
+    /**
+     * @return resource
+     */
+    private function openCacheFile()
     {
     }
     /**
@@ -16109,17 +17095,6 @@ final class ResultCacheManager
      * @return array<string, array{string, bool, string}>
      */
     private function getProjectExtensionFiles(?array $projectConfig, array $dependencies): array
-    {
-    }
-    /**
-     * Whether the file belongs to a package Composer installed, which only changes when Composer
-     * changes it - editing one is not a thing to do, and a version change is noticed through the
-     * metadata instead. A package from a path repository is the exception: it is the project's own
-     * code, sitting in vendor/ because Composer copied it there, and it is edited in place.
-     *
-     * @param list<string> $vendorDirs
-     */
-    private function isFileOfInstalledPackage(string $normalizedFileName, array $vendorDirs): bool
     {
     }
     /**
@@ -16301,6 +17276,8 @@ interface ResultCacheMetaExtension
 }
 namespace PHPStan\Analyser\ResultCache;
 
+use PHPStan\Analyser\AnalyserResultFinalizer;
+use PHPStan\Analyser\CollectedDataRuleResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\CollectorWithPaths;
@@ -16366,6 +17343,20 @@ final class ResultCachePathTransformer
      * @return array<string, list<Error>>
      */
     public function absolutizeErrors(array $errorsByFile): array
+    {
+    }
+    /**
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
+     * @return array<string, CollectedDataRuleResult>
+     */
+    public function relativizeCollectedDataRuleResults(array $collectedDataRuleResults): array
+    {
+    }
+    /**
+     * @param array<string, CollectedDataRuleResult> $collectedDataRuleResults
+     * @return array<string, CollectedDataRuleResult>
+     */
+    public function absolutizeCollectedDataRuleResults(array $collectedDataRuleResults): array
     {
     }
     /**
@@ -16549,25 +17540,46 @@ final class ResultCachePathTransformer
 }
 namespace PHPStan\Analyser\ResultCache;
 
+use Closure;
 use PHPStan\Analyser\AnalyserResult;
+use PHPStan\Analyser\FinalizerResult;
 final class ResultCacheProcessResult
 {
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public AnalyserResult $analyserResult;
+    /**
+     * @var Closure(FinalizerResult): ?LazyCollectedData
+     */
+    private Closure $saveCallback;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public bool $saved;
+    public ?\PHPStan\Analyser\ResultCache\LazyCollectedData $savedCollectedData = null;
+    /**
+     * @param Closure(FinalizerResult): ?LazyCollectedData $saveCallback returns the collected data as it can be read back from the saved file, or null when nothing was saved
+     */
     public function __construct(
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         AnalyserResult $analyserResult,
-        #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        bool $saved
+        Closure $saveCallback
     )
     {
     }
     public function getAnalyserResult(): AnalyserResult
     {
     }
-    public function isSaved(): bool
+    /**
+     * Writes the result cache, and says whether it was written.
+     *
+     * It is separate from ResultCacheManager::process() so that the caller can run the rules on
+     * CollectedDataNode on the merged result first, and save what they found too.
+     */
+    public function save(FinalizerResult $finalizerResult): bool
+    {
+    }
+    /**
+     * The collected data after save() wrote the cache file: the cached entries of the analyser result
+     * pointed into the file that the save replaced. Null when nothing was saved.
+     */
+    public function getSavedCollectedData(): ?\PHPStan\Analyser\ResultCache\LazyCollectedData
     {
     }
 }
@@ -16658,53 +17670,75 @@ final class RicherScopeGetTypeHelper
 }
 namespace PHPStan\Analyser;
 
+use PhpParser\ErrorHandler\Collecting;
 use PhpParser\Internal\TokenStream;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\Token;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileReader;
+use PHPStan\Fixable\NewClassNamesVisitor;
 use PHPStan\Fixable\PhpPrinter;
 use PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor;
 use PHPStan\Fixable\ReplacingNodeVisitor;
 use PHPStan\Node\VirtualNode;
+use PHPStan\Parser\Parser as AnalysisParser;
+use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrors\TransformedRuleError;
 use PHPStan\Rules\TipRuleError;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\SebastianBergmann\Diff\Differ;
-use _PHPStan_cb3b7e994\SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
+use _PHPStan_95d9e8b05\SebastianBergmann\Diff\Differ;
+use _PHPStan_95d9e8b05\SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 use function array_key_exists;
 use function array_shift;
+use function array_slice;
 use function count;
 use function get_class;
 use function hash;
+use function is_file;
+use function min;
+use function preg_split;
 use function str_contains;
 use function str_repeat;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
 #[AutowiredService]
 final class RuleErrorTransformer
 {
     private Parser $parser;
+    private AnalysisParser $analysisParser;
+    private bool $importNames;
+    private bool $preferSelf;
     private const PARSED_FILES_LIMIT = 4;
     private const PRINTERS_LIMIT = 4;
     private Differ $differ;
+    private UnifiedDiffOutputBuilder $diffOutputBuilder;
     /** @var array<string, array{code: string, hash: string, tokens: Token[], indent: string|null}> */
     private array $parsedFiles = [];
     /** @var array<string, PhpPrinter> */
     private array $printers = [];
     public function __construct(
         #[AutowiredParameter('@currentPhpVersionPhpParser')]
-        Parser $parser
+        Parser $parser,
+        #[AutowiredParameter('@defaultAnalysisParser')]
+        AnalysisParser $analysisParser,
+        #[AutowiredParameter('%fixer.importNames%')]
+        bool $importNames,
+        #[AutowiredParameter('%fixer.preferSelf%')]
+        bool $preferSelf
     )
     {
     }
@@ -16715,10 +17749,35 @@ final class RuleErrorTransformer
     {
     }
     /**
+     * Without $fileNodes (errors of CollectedDataNode rules, errors transformed inside collectors,
+     * and fixes in another file), the file is parsed with the cached analysis parser. ReplacingNodeVisitor
+     * finds the fixed nodes by their position, so the rule has to take them from a parse of the same file contents.
+     * Returns null when some of the nodes cannot be fixed.
+     *
      * @param Node\Stmt[] $fileNodes
-     * @param callable(Node): Node $newNodeCallable
+     * @param non-empty-list<NodeFix> $fixes
      */
-    private function fix(string $fixingFile, array $fileNodes, Node $originalNode, callable $newNodeCallable): ?\PHPStan\Analyser\FixedErrorDiff
+    private function fix(string $fixingFile, array $fileNodes, array $fixes): ?\PHPStan\Analyser\FixedErrorDiff
+    {
+    }
+    /**
+     * A fix that is not made through nodes, like removing a comment.
+     */
+    public function createFixedErrorDiff(string $file, string $originalCode, string $newCode): \PHPStan\Analyser\FixedErrorDiff
+    {
+    }
+    /**
+     * Same output as Differ::diff(), but the common leading and trailing lines are found here in linear time.
+     * Differ strips them too, but in quadratic time, which made each fix in a large file cost up to a second.
+     * The middle part is usually just the fixed node.
+     */
+    private function diff(string $from, string $to): string
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    private static function splitStringByLines(string $input): array
     {
     }
     /**
@@ -17138,7 +18197,7 @@ final class ScopeOps
     // parameter original-value markers (__phpstanOriginalForeachKey etc.) hide a
     // synthesized Variable child on purpose - reassigning the variable must
     // invalidate them through containment - so they can never be listed here.
-    private const COMPOSITIONAL_VIRTUAL_KEY_PREFIXES = ['__phpstanForeachValueByRef(', '__phpstanIntertwinedVariableByReference(', '__phpstanPossiblyImpure(', '__phpstanPropertyInitialization(', '__phpstanRemembered('];
+    private const COMPOSITIONAL_VIRTUAL_KEY_PREFIXES = ['__phpstanForeachValueByRef(', '__phpstanIntertwinedVariableByReference(', '__phpstanPropertyInitialization(', '__phpstanRemembered('];
     /**
      * Mirrors MutatingScope::getNodeKey().
      */
@@ -17223,6 +18282,14 @@ final class ScopeOps
      * @return array<string, ConditionalExpressionHolder[]>
      */
     public static function intersectConditionalExpressions(array $ourConditionalExpressions, array $theirConditionalExpressions): array
+    {
+    }
+    /**
+     * Only a variable can be undefined. Any other expression missing from a
+     * branch is just untracked there - a certainty-No conditional for it would,
+     * once its guard matches, discard a narrowing made after the merge.
+     */
+    private static function canBeUndefined(Expr $expr): bool
     {
     }
     /**
@@ -17318,6 +18385,95 @@ final class ScopeOps
      * @return array{array<string, ConditionalExpressionHolder[]>, array<string, ExpressionTypeHolder>}
      */
     public static function matchConditionalExpressions(array $conditionalExpressions, array $specifiedExpressions): array
+    {
+    }
+}
+namespace PHPStan\Analyser;
+
+use PhpParser\Node;
+use PHPStan\DependencyInjection\Container;
+use PHPStan\DependencyInjection\ExtensionsCollection;
+use PHPStan\Node\Printer\ExprPrinter;
+use PHPStan\Parser\Parser;
+use PHPStan\Php\ConfiguredPhpVersionRangeHelper;
+use PHPStan\Php\PhpVersion;
+use PHPStan\Reflection\AttributeReflectionFactory;
+use PHPStan\Reflection\InitializerExprTypeResolver;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
+use PHPStan\Type\ExpressionTypeResolverExtension;
+/**
+ * What every scope a factory creates shares: the services, the expression
+ * result storage stack and the node callback. A self-analysis creates
+ * hundreds of thousands of scopes - one reference to this object instead of
+ * a property per service each spares copying them into every scope and
+ * releasing them from it.
+ */
+final class ScopeServices
+{
+    /**
+     * @readonly
+     */
+    public Container $container;
+    /**
+     * @readonly
+     */
+    public ReflectionProvider $reflectionProvider;
+    /**
+     * @readonly
+     */
+    public InitializerExprTypeResolver $initializerExprTypeResolver;
+    /**
+     * @readonly
+     * @var ExtensionsCollection<ExpressionTypeResolverExtension>
+     */
+    public ExtensionsCollection $expressionTypeResolverExtensions;
+    /**
+     * @readonly
+     */
+    public ExprPrinter $exprPrinter;
+    /**
+     * @readonly
+     */
+    public \PHPStan\Analyser\TypeSpecifier $typeSpecifier;
+    /**
+     * @readonly
+     */
+    public PropertyReflectionFinder $propertyReflectionFinder;
+    /**
+     * @readonly
+     */
+    public Parser $parser;
+    /**
+     * @readonly
+     */
+    public \PHPStan\Analyser\ConstantResolver $constantResolver;
+    /**
+     * @readonly
+     */
+    public \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack;
+    /**
+     * @readonly
+     */
+    public PhpVersion $phpVersion;
+    /**
+     * @readonly
+     */
+    public AttributeReflectionFactory $attributeReflectionFactory;
+    /**
+     * @readonly
+     */
+    public ConfiguredPhpVersionRangeHelper $configuredPhpVersionRangeHelper;
+    /**
+     * @readonly
+     * @var callable(Node $node, Scope $scope): void|null
+     */
+    public $nodeCallback;
+    /**
+     * @param ExtensionsCollection<ExpressionTypeResolverExtension> $expressionTypeResolverExtensions
+     * @param (callable(Node $node, Scope $scope): void)|null $nodeCallback
+     */
+    public function __construct(Container $container, ReflectionProvider $reflectionProvider, InitializerExprTypeResolver $initializerExprTypeResolver, ExtensionsCollection $expressionTypeResolverExtensions, ExprPrinter $exprPrinter, \PHPStan\Analyser\TypeSpecifier $typeSpecifier, PropertyReflectionFinder $propertyReflectionFinder, Parser $parser, \PHPStan\Analyser\ConstantResolver $constantResolver, \PHPStan\Analyser\ExpressionResultStorageStack $expressionResultStorageStack, PhpVersion $phpVersion, AttributeReflectionFactory $attributeReflectionFactory, ConfiguredPhpVersionRangeHelper $configuredPhpVersionRangeHelper, $nodeCallback)
     {
     }
 }
@@ -17834,6 +18990,7 @@ use PHPStan\Parser\GotoLabelVisitor;
 use PHPStan\PhpDoc\Tag\VarTag;
 use PHPStan\TrinaryLogic;
 use PHPStan\Turbo\ShadowedByTurboExtension;
+use PHPStan\Type\ClosureType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\MixedType;
@@ -17841,8 +18998,10 @@ use PHPStan\Type\NeverType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 use function array_column;
 use function array_fill_keys;
+use function array_flip;
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
@@ -17933,6 +19092,75 @@ final class StatementsHandler
      * @param callable(Node $node, Scope $scope): void $nodeCallback
      */
     public function doProcessStmtNodes(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context): \PHPStan\Analyser\InternalStatementResult
+    {
+    }
+    /**
+     * One loop convergence pass. Against the previous pass's per-statement
+     * entries, a statement is re-walked only when its entry state differs in a
+     * key spelling no variable, or it mentions a variable whose state differs;
+     * otherwise its recorded emissions are replayed and its recorded effect is
+     * carried onto the current scope. Once the entry state equals the previous
+     * pass's, the rest of the previous pass stands. $record receives this pass's
+     * entries for the next one.
+     *
+     * @param Node\Stmt[] $stmts
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback}|null $previous
+     * @param array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback}|null $record
+     * @param-out array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback} $record
+     */
+    public function processLoopPassStmtNodes(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context, ?array $previous, ?array &$record): \PHPStan\Analyser\InternalStatementResult
+    {
+    }
+    /**
+     * The final walk of a loop body that the last convergence pass could not
+     * stand in for as a whole: like a later pass against $lastPass, with the
+     * replayed emissions going to the real callback, and every statement
+     * holding a construct that walks differently outside a pass (a nested
+     * loop runs its own convergence only here) walked.
+     *
+     * @param Node\Stmt[] $stmts
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param array{array<int, array{StatementListWalkState, int}>, RecordingNodeCallback} $lastPass
+     */
+    public function processLoopFinalStmtNodes(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context, array $lastPass): \PHPStan\Analyser\InternalStatementResult
+    {
+    }
+    /**
+     * Against the previous pass's per-statement entries, a statement is
+     * re-walked only when its entry state differs in a key spelling no
+     * variable, or it mentions a variable whose state differs; otherwise its
+     * recorded emissions are replayed into $replayTarget (none without one)
+     * and its recorded effect is carried onto the current scope. Once the
+     * entry state equals the previous pass's, the rest of the previous pass
+     * stands. A final walk records no entries.
+     *
+     * @param Node\Stmt[] $stmts
+     * @param callable(Node $node, Scope $scope): void $nodeCallback
+     * @param array{array<int, array{StatementListWalkState, int}>, ?RecordingNodeCallback}|null $previous
+     * @param (callable(Node $node, Scope $scope): void)|null $replayTarget
+     * @return array{InternalStatementResult, array<int, array{StatementListWalkState, int}>}
+     */
+    private function walkAgainstPreviousPass(\PHPStan\Analyser\NodeScopeResolver $nodeScopeResolver, Node $parentNode, array $stmts, \PHPStan\Analyser\MutatingScope $scope, \PHPStan\Analyser\ExpressionResultStorage $storage, callable $nodeCallback, \PHPStan\Analyser\StatementContext $context, ?array $previous, ?callable $replayTarget, bool $finalWalk): array
+    {
+    }
+    /**
+     * $variableNames and the variables holding a closure that captures one of
+     * them by reference: invoking it walks its body with the variable's current
+     * state (ClosureSignatureInference), so `$c();` reads `$x` without spelling it.
+     *
+     * @param list<string> $variableNames
+     * @return list<string>
+     */
+    private function withByRefClosureHolders(\PHPStan\Analyser\MutatingScope $scope, array $variableNames): array
+    {
+    }
+    /**
+     * The exit and throw points a replayed statement appended carry scopes of
+     * the recorded walk; carry the statement's recorded effect onto the current
+     * entry scope instead.
+     */
+    private function rebaseAppendedPoints(\PHPStan\Analyser\StatementListWalkState $state, int $exitPointCount, int $throwPointCount, \PHPStan\Analyser\MutatingScope $recordedEntry): void
     {
     }
     /**
@@ -18815,13 +20043,11 @@ namespace PHPStan\Analyser\StmtHandler;
 
 use IteratorAggregate;
 use PhpParser\Node;
-use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp;
-use PhpParser\Node\Expr\BinaryOp\BooleanOr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\List_;
 use PhpParser\Node\Expr\Variable;
@@ -18835,6 +20061,7 @@ use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\ExpressionResultStorage;
 use PHPStan\Analyser\ExpressionTypeHolder;
 use PHPStan\Analyser\ExprHandler\AssignHandler;
+use PHPStan\Analyser\ExprHandler\Helper\ForeachEmptyOrObjectNarrowingHelper;
 use PHPStan\Analyser\ExprHandler\Helper\IdenticalNarrowingHelper;
 use PHPStan\Analyser\InternalStatementResult;
 use PHPStan\Analyser\InternalThrowPoint;
@@ -20253,14 +21480,18 @@ use function strtolower;
  *   by the files analysed after it, so it is what the scope's file declares that depends on the
  *   value: a change of it re-analyses the scope's file and every file depending on it.
  *
- * Outside the analysis of a file - in the rules for CollectedDataNode, which run again on every
- * run anyway - nothing is collected.
+ * A rule for CollectedDataNode runs outside the analysis of a file. What it declares is collected
+ * for the rule itself, between startCollectedDataRule() and finishCollectedDataRule(), and stored
+ * with its errors: the next run reuses them only while every value is still the same. Outside of
+ * both, nothing is collected.
  *
  * DeclarationDependencyTracker records what a class declares depends on, through extensions that
  * describe a class rather than analyse code. Their result is remembered for the rest of the process
  * and reused by every file analysed after it without asking the extension again, so these are kept
  * for the whole process too, by class, and every file depending on the class - or on a class
  * extending it or implementing it - gets them as its own dependencies when its analysis finishes.
+ * A rule for CollectedDataNode gets those of every class, because it is not known which classes
+ * it read.
  *
  * @phpstan-type ValueDependencies = array{
  *     values: array<string, array{string, string, string}>,
@@ -20277,6 +21508,8 @@ final class ValueDependencyCollector
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public FileHelper $fileHelper;
     private ?string $analysedFile = null;
+    /** @var array<string, array{string, string, string}>|null id => [extension class, key, value], while a rule for CollectedDataNode runs */
+    private ?array $collectedDataRuleValues = null;
     /** @var array<string, array{string, string, string}> id => [extension class, key, value] */
     private array $values = [];
     /** @var array<string, array{analysis: array<string, true>, declarations: array<string, true>}> dependent file => ids */
@@ -20327,6 +21560,21 @@ final class ValueDependencyCollector
      * ClassResultCacheValueExtension.
      */
     public function recordClass(string $className, \PHPStan\Analyser\Scope $scope, bool $insideWalk): void
+    {
+    }
+    public function startCollectedDataRule(): void
+    {
+    }
+    /**
+     * With what every class seen in this process declares depends on, see recordForClass(): the
+     * rule may have read any of them, and an extension describes a class only once per process.
+     *
+     * @return array<string, array{string, string, string}> id => [extension class, key, value]
+     */
+    public function getCollectedDataRuleValues(): array
+    {
+    }
+    public function finishCollectedDataRule(): void
     {
     }
     public function getFileKey(string $file): string
@@ -21388,7 +22636,7 @@ interface CacheStorage
 namespace PHPStan\Cache;
 
 use InvalidArgumentException;
-use _PHPStan_cb3b7e994\Nette\Utils\Random;
+use _PHPStan_95d9e8b05\Nette\Utils\Random;
 use PHPStan\File\CouldNotReadFileException;
 use PHPStan\File\CouldNotWriteFileException;
 use PHPStan\File\FileReader;
@@ -21705,11 +22953,13 @@ final class RegistryFactory
 }
 namespace PHPStan\Command;
 
+use Closure;
 use PHPStan\Analyser\AnalyserResult;
 use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyserResult;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ResultCache\ResultCacheManagerFactory;
 use PHPStan\Analyser\ValueDependencyCollector;
 use PHPStan\Collectors\CollectedData;
@@ -21718,7 +22968,7 @@ use PHPStan\Internal\BytesHelper;
 use PHPStan\PhpDoc\StubFilesProvider;
 use PHPStan\PhpDoc\StubValidator;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
 use function array_merge;
 use function array_unique;
 use function count;
@@ -21771,6 +23021,15 @@ final class AnalyseApplication
     private function runAnalyser(array $files, array $allAnalysedFiles, bool $debug, ?string $projectConfigFile, ?string $tmpFile, ?string $insteadOfFile, \PHPStan\Command\Output $stdOutput, \PHPStan\Command\Output $errorOutput, InputInterface $input): AnalyserResult
     {
     }
+    /**
+     * Prints the rules on CollectedDataNode the way --debug prints the analysed files. They run after
+     * all files and can take longer than the analysis itself.
+     *
+     * @return array{Closure(string $ruleClass): void|null, Closure(): void|null}
+     */
+    private function createRuleCallbacks(bool $debug, \PHPStan\Command\Output $stdOutput): array
+    {
+    }
     private function switchTmpFileInAnalyserResult(AnalyserResult $analyserResult, ?string $insteadOfFile, ?string $tmpFile): AnalyserResult
     {
     }
@@ -21805,8 +23064,11 @@ final class AnalyseApplication
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\OndraM\CiDetector\CiDetector;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\OndraM\CiDetector\CiDetector;
 use Override;
+use PHPStan\Analyser\Error;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Command\ErrorFormatter\BaselineNeonErrorFormatter;
 use PHPStan\Command\ErrorFormatter\BaselinePhpErrorFormatter;
@@ -21823,31 +23085,38 @@ use PHPStan\File\FileWriter;
 use PHPStan\File\ParentDirectoryRelativePathHelper;
 use PHPStan\File\PathNotFoundException;
 use PHPStan\File\RelativePathHelper;
-use PHPStan\Fixable\FileChangedException;
-use PHPStan\Fixable\MergeConflictException;
-use PHPStan\Fixable\Patcher;
+use PHPStan\Fixable\ErrorFixer;
+use PHPStan\Fixable\FixResult;
 use PHPStan\Internal\AgentDetector;
 use PHPStan\Internal\BytesHelper;
 use PHPStan\Internal\ComposerHelper;
 use PHPStan\Internal\DirectoryCreator;
 use PHPStan\Internal\DirectoryCreatorException;
+use PHPStan\Process\ProcessHelper;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Turbo\TurboExtensionEnabler;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputArgument;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\StringInput;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\StreamOutput;
+use PHPStan\Turbo\TurboExtensionSelector;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputArgument;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\StringInput;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\StreamOutput;
+use _PHPStan_95d9e8b05\Symfony\Component\Process\Process;
 use Throwable;
+use function array_fill_keys;
+use function array_filter;
 use function array_intersect;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_reverse;
 use function array_values;
 use function count;
 use function dirname;
+use function escapeshellarg;
 use function filesize;
 use function fopen;
 use function get_class;
@@ -21859,12 +23128,15 @@ use function is_file;
 use function is_string;
 use function microtime;
 use function pathinfo;
+use function preg_match;
 use function rewind;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
 use function stream_get_contents;
 use function strlen;
 use function substr;
+use function trim;
 use const PATHINFO_BASENAME;
 use const PATHINFO_EXTENSION;
 /**
@@ -21886,6 +23158,10 @@ final class AnalyseCommand extends Command
      * a persisted result cache to be worth nagging about.
      */
     private const RESULT_CACHE_CI_NOTIFICATION_ELAPSED_LIMIT = 60.0;
+    /** Fixes can lead to new fixable errors, or to new fixes forever. */
+    private const FIX_ROUNDS_LIMIT = 10;
+    private const OPTION_FIX_ROUND = 'fix-round';
+    private const OPTION_FIXED_IGNORED_IN = 'fixed-ignored-in';
     /**
      * @param string[] $composerAutoloaderProjectPaths
      */
@@ -21909,6 +23185,14 @@ final class AnalyseCommand extends Command
     }
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+    }
+    /**
+     * After the fixes of the first round are written, every next round analyses the changed code
+     * in a new process, which also saves the result cache, and fixes what is still fixable.
+     * This applies fixes skipped because of a conflict and fixes of errors the previous round caused.
+     */
+    private function fixInRounds(\PHPStan\Command\InceptionResult $inceptionResult, InputInterface $input, int $fixableCount, FixResult $fixResult): int
     {
     }
     private function reportMissingResultCacheInCi(\PHPStan\Command\Output $errorOutput, \PHPStan\Command\AnalysisResult $analysisResult, bool $onlyFiles): void
@@ -21941,13 +23225,14 @@ namespace PHPStan\Command;
 use Closure;
 use PHPStan\Analyser\Analyser;
 use PHPStan\Analyser\AnalyserResult;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parallel\ParallelAnalyser;
 use PHPStan\Parallel\Scheduler;
 use PHPStan\Process\CpuCoreCounter;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\EventLoop\StreamSelectLoop;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\StreamSelectLoop;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
 use function array_filter;
 use function array_unshift;
 use function array_values;
@@ -21986,6 +23271,7 @@ final class AnalyserRunner
 }
 namespace PHPStan\Command;
 
+use Closure;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Collectors\CollectedData;
@@ -22012,9 +23298,9 @@ final class AnalysisResult
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $warnings;
     /**
-     * @var list<CollectedData>
+     * @var list<CollectedData>|Closure(): list<CollectedData>
      */
-    private array $collectedData;
+    private $collectedData;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public bool $defaultLevelUsed;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -22034,6 +23320,11 @@ final class AnalysisResult
     public bool $resultCacheExisted;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public int $workerCount;
+    /**
+     * @var list<Error>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $fixableIgnoredErrors;
     /** @var list<Error> sorted by their file name, line number and message */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $fileSpecificErrors;
@@ -22042,8 +23333,9 @@ final class AnalysisResult
      * @param list<string> $notFileSpecificErrors
      * @param list<InternalError> $internalErrors
      * @param list<string> $warnings
-     * @param list<CollectedData> $collectedData
+     * @param list<CollectedData>|(Closure(): list<CollectedData>) $collectedData A closure defers decoding the result cache until asked
      * @param list<string> $processedFiles
+     * @param list<Error> $fixableIgnoredErrors ignored errors that --fix-ignored can fix
      */
     public function __construct(
         array $fileSpecificErrors,
@@ -22053,7 +23345,7 @@ final class AnalysisResult
         array $internalErrors,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         array $warnings,
-        array $collectedData,
+        $collectedData,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         bool $defaultLevelUsed,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
@@ -22069,7 +23361,9 @@ final class AnalysisResult
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         bool $resultCacheExisted = \true,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        int $workerCount = 0
+        int $workerCount = 0,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $fixableIgnoredErrors = []
     )
     {
     }
@@ -22165,6 +23459,13 @@ final class AnalysisResult
     public function withFileSpecificErrors(array $fileSpecificErrors): self
     {
     }
+    /**
+     * @api
+     * @return list<Error>
+     */
+    public function getFixableIgnoredErrors(): array
+    {
+    }
 }
 namespace PHPStan\Command\Bisect;
 
@@ -22221,21 +23522,21 @@ final class BinarySearchStep
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\GuzzleHttp\Client;
-use _PHPStan_cb3b7e994\GuzzleHttp\Exception\GuzzleException;
-use _PHPStan_cb3b7e994\GuzzleHttp\RequestOptions;
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\GuzzleHttp\Client;
+use _PHPStan_95d9e8b05\GuzzleHttp\Exception\GuzzleException;
+use _PHPStan_95d9e8b05\GuzzleHttp\RequestOptions;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use Override;
 use PHPStan\Command\Bisect\BinarySearch;
 use PHPStan\File\FileReader;
 use PHPStan\Internal\HttpClientFactory;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Helper\ProgressBar;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputArgument;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Style\SymfonyStyle;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Helper\ProgressBar;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputArgument;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 use function array_filter;
 use function array_merge;
@@ -22314,6 +23615,7 @@ namespace PHPStan\Command;
 
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Container;
+use PHPStan\Reflection\BetterReflection\SourceLocator\BootstrapAutoloaderExceptionReporter;
 use function spl_autoload_functions;
 /**
  * Executes the configured bootstrapFiles, once per process.
@@ -22339,8 +23641,9 @@ use function spl_autoload_functions;
 final class BootstrapFilesRunner
 {
     private Container $container;
+    private BootstrapAutoloaderExceptionReporter $bootstrapAutoloaderExceptionReporter;
     private bool $hasRun = \false;
-    public function __construct(Container $container)
+    public function __construct(Container $container, BootstrapAutoloaderExceptionReporter $bootstrapAutoloaderExceptionReporter)
     {
     }
     /**
@@ -22366,10 +23669,10 @@ namespace PHPStan\Command;
 use Override;
 use PHPStan\Analyser\ResultCache\ResultCacheClearer;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function is_bool;
 use function is_string;
 final class ClearResultCacheCommand extends Command
@@ -22400,16 +23703,15 @@ final class ClearResultCacheCommand extends Command
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\Composer\Semver\Semver;
-use _PHPStan_cb3b7e994\Composer\XdebugHandler\XdebugHandler;
-use _PHPStan_cb3b7e994\Nette\DI\Helpers;
-use _PHPStan_cb3b7e994\Nette\DI\InvalidConfigurationException;
-use _PHPStan_cb3b7e994\Nette\DI\ServiceCreationException;
-use _PHPStan_cb3b7e994\Nette\FileNotFoundException;
-use _PHPStan_cb3b7e994\Nette\InvalidStateException;
-use _PHPStan_cb3b7e994\Nette\Schema\ValidationException;
-use _PHPStan_cb3b7e994\Nette\Utils\AssertionException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Composer\Semver\Semver;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\DI\ServiceCreationException;
+use _PHPStan_95d9e8b05\Nette\FileNotFoundException;
+use _PHPStan_95d9e8b05\Nette\InvalidStateException;
+use _PHPStan_95d9e8b05\Nette\Schema\ValidationException;
+use _PHPStan_95d9e8b05\Nette\Utils\AssertionException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Cache\FileCacheStorage;
 use PHPStan\Command\Symfony\SymfonyOutput;
 use PHPStan\Command\Symfony\SymfonyStyle;
@@ -22430,11 +23732,13 @@ use PHPStan\Internal\ComposerHelper;
 use PHPStan\Internal\DirectoryCreator;
 use PHPStan\Internal\DirectoryCreatorException;
 use PHPStan\Process\ForkedChildCrashReporter;
+use PHPStan\Process\Restart\RestartExtensionRegistry;
+use PHPStan\Process\Restart\RestartManager;
 use PHPStan\ShouldNotHappenException;
 use ReflectionClass;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\ConsoleOutputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\ConsoleOutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_filter;
 use function array_key_exists;
@@ -22483,6 +23787,9 @@ final class CommandHelper
     public static function executeBootstrapFile(string $file, Container $container, \PHPStan\Command\Output $errorOutput, bool $debugEnabled): void
     {
     }
+    public static function findDiscoverableConfigFile(string $currentWorkingDirectory): ?string
+    {
+    }
 }
 namespace PHPStan\Command;
 
@@ -22490,10 +23797,10 @@ use Override;
 use PHPStan\Diagnose\DiagnoseExtension;
 use PHPStan\Diagnose\PHPStanDiagnoseExtension;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function is_string;
 final class DiagnoseCommand extends Command
 {
@@ -22523,14 +23830,14 @@ final class DiagnoseCommand extends Command
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\Nette\Neon\Neon;
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use Override;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function is_string;
 final class DumpParametersCommand extends Command
 {
@@ -22583,9 +23890,9 @@ final class Environment
 }
 namespace PHPStan\Command\ErrorFormatter;
 
-use _PHPStan_cb3b7e994\Nette\DI\Helpers;
-use _PHPStan_cb3b7e994\Nette\Neon\Neon;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\Output;
 use PHPStan\File\RelativePathHelper;
@@ -22614,7 +23921,7 @@ final class BaselineNeonErrorFormatter
 }
 namespace PHPStan\Command\ErrorFormatter;
 
-use _PHPStan_cb3b7e994\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\Output;
 use PHPStan\File\RelativePathHelper;
@@ -22680,8 +23987,8 @@ final class CheckstyleErrorFormatter implements \PHPStan\Command\ErrorFormatter\
 }
 namespace PHPStan\Command\ErrorFormatter;
 
-use _PHPStan_cb3b7e994\OndraM\CiDetector\CiDetector;
-use _PHPStan_cb3b7e994\OndraM\CiDetector\Exception\CiNotDetectedException;
+use _PHPStan_95d9e8b05\OndraM\CiDetector\CiDetector;
+use _PHPStan_95d9e8b05\OndraM\CiDetector\Exception\CiNotDetectedException;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\Output;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -22762,7 +24069,7 @@ final class GithubErrorFormatter implements \PHPStan\Command\ErrorFormatter\Erro
 }
 namespace PHPStan\Command\ErrorFormatter;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\Output;
 use PHPStan\DependencyInjection\AutowiredParameter;
@@ -22789,11 +24096,11 @@ final class GitlabErrorFormatter implements \PHPStan\Command\ErrorFormatter\Erro
 }
 namespace PHPStan\Command\ErrorFormatter;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\Output;
 use stdClass;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Formatter\OutputFormatter;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Formatter\OutputFormatter;
 use function count;
 use function property_exists;
 final class JsonErrorFormatter implements \PHPStan\Command\ErrorFormatter\ErrorFormatter
@@ -22871,7 +24178,7 @@ use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Formatter\OutputFormatter;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Formatter\OutputFormatter;
 use function array_map;
 use function array_slice;
 use function count;
@@ -22917,6 +24224,9 @@ final class TableErrorFormatter implements \PHPStan\Command\ErrorFormatter\Error
     }
     /** @api */
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
+    {
+    }
+    private function printFixableIgnoredErrors(AnalysisResult $analysisResult, Output $output): void
     {
     }
     private function formatLineNumber(?int $lineNumber): string
@@ -22975,16 +24285,16 @@ final class TeamcityErrorFormatter implements \PHPStan\Command\ErrorFormatter\Er
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\OndraM\CiDetector\CiDetector;
+use _PHPStan_95d9e8b05\OndraM\CiDetector\CiDetector;
 use Override;
 use PHPStan\Internal\AgentDetector;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Helper\Helper;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Helper\ProgressBar;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Helper\TableSeparator;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Style\SymfonyStyle;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Terminal;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Helper\Helper;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Helper\ProgressBar;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Helper\TableSeparator;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Style\SymfonyStyle;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Terminal;
 use function array_unshift;
 use function explode;
 use function implode;
@@ -23033,14 +24343,14 @@ final class ErrorsConsoleStyle extends SymfonyStyle
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Decoder;
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Encoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Decoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Encoder;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use _PHPStan_cb3b7e994\GuzzleHttp\Exception\GuzzleException;
-use _PHPStan_cb3b7e994\GuzzleHttp\RequestOptions;
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\GuzzleHttp\Exception\GuzzleException;
+use _PHPStan_95d9e8b05\GuzzleHttp\RequestOptions;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use Phar;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
 use PHPStan\Analyser\InternalError;
@@ -23064,15 +24374,15 @@ use PHPStan\Process\ProcessHelper;
 use PHPStan\Process\ProcessPromise;
 use PHPStan\Process\SpawnedProcessPromise;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\ChildProcess\Process;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\EventLoop\StreamSelectLoop;
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
-use _PHPStan_cb3b7e994\React\Socket\ConnectionInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpServer;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Helper\ProgressBar;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\React\ChildProcess\Process;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\StreamSelectLoop;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\Socket\ConnectionInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpServer;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Helper\ProgressBar;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_merge;
 use function count;
@@ -23231,11 +24541,11 @@ namespace PHPStan\Command;
 use Override;
 use PHPStan\File\PathNotFoundException;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputArgument;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputArgument;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function is_array;
 use function is_bool;
 use function is_string;
@@ -23263,13 +24573,14 @@ final class FixerWorkerCommand extends Command
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Encoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Encoder;
 use PHPStan\Analyser\AnalyserResult;
 use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelperResult;
 use PHPStan\Analyser\InternalError;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ResultCache\ResultCacheManager;
 use PHPStan\Analyser\ResultCache\ResultCacheManagerFactory;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -23277,12 +24588,12 @@ use PHPStan\Parallel\ParallelAnalyser;
 use PHPStan\Parallel\Scheduler;
 use PHPStan\Process\CpuCoreCounter;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\EventLoop\StreamSelectLoop;
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
-use _PHPStan_cb3b7e994\React\Socket\ConnectionInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpConnector;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\StreamSelectLoop;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\Socket\ConnectionInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpConnector;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
 use function array_diff;
 use function array_key_exists;
 use function count;
@@ -23291,7 +24602,7 @@ use function filesize;
 use function in_array;
 use function is_file;
 use function memory_get_peak_usage;
-use function _PHPStan_cb3b7e994\React\Promise\resolve;
+use function _PHPStan_95d9e8b05\React\Promise\resolve;
 use function sprintf;
 use function usort;
 use const JSON_INVALID_UTF8_IGNORE;
@@ -23349,23 +24660,25 @@ final class FixerWorkerRunner
 }
 namespace PHPStan\Command;
 
-use Hoa\Compiler\Llk\Parser;
-use Hoa\Compiler\Llk\TreeNode;
-use Hoa\Exception\Exception;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
+use _PHPStan_95d9e8b05\Phplrt\Source\StringSource;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Parser\ParserException;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Regex\Parser\RegexNode;
+use PHPStan\Type\Regex\Parser\RegexParser;
+use PHPStan\Type\Regex\Parser\RegexSyntaxException;
 use PHPStan\Type\VerbosityLevel;
 use function count;
 use function strrpos;
 use function substr;
 final class IgnoredRegexValidator
 {
-    private Parser $parser;
+    private RegexParser $parser;
     private TypeStringResolver $typeStringResolver;
-    public function __construct(Parser $parser, TypeStringResolver $typeStringResolver)
+    public function __construct(RegexParser $parser, TypeStringResolver $typeStringResolver)
     {
     }
     public function validate(string $regex): \PHPStan\Command\IgnoredRegexValidatorResult
@@ -23374,16 +24687,16 @@ final class IgnoredRegexValidator
     /**
      * @return array<string, string>
      */
-    private function getIgnoredTypes(TreeNode $ast): array
+    private function getIgnoredTypes(RegexNode $ast): array
     {
     }
     private function removeDelimiters(string $regex): string
     {
     }
-    private function getText(TreeNode $treeNode): ?string
+    private function getText(RegexNode $treeNode): ?string
     {
     }
-    private function hasAnchorsInTheMiddle(TreeNode $ast): bool
+    private function hasAnchorsInTheMiddle(RegexNode $ast): bool
     {
     }
 }
@@ -23559,6 +24872,587 @@ final class InceptionResult
     {
     }
 }
+namespace PHPStan\Command\Neon2Attributes;
+
+/**
+ * An attribute from the PHPStan\DependencyInjection namespace to write into a PHP file.
+ */
+final class AttributeSpec
+{
+    /**
+     * @var non-empty-string
+     */
+    public string $name;
+    /**
+     * @var array<non-empty-string, mixed>
+     */
+    public array $arguments;
+    /**
+     * @param non-empty-string $name short name of the attribute class
+     * @param array<non-empty-string, mixed> $arguments named arguments; the values are scalars, lists and maps of them, ClassReference and AttributeSpec for `new`
+     */
+    public function __construct(string $name, array $arguments = [])
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+use Override;
+use PhpParser\Node;
+use PhpParser\PrettyPrinter\Standard;
+/**
+ * Prints attributes of parameters in a one-line parameter list on the same line,
+ * other attributes go on their own line.
+ */
+final class AttributesPrinter extends Standard
+{
+    public const INLINE_ATTRIBUTES = 'neon2attributesInline';
+    #[Override]
+    protected function pParam(Node\Param $node): string
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+use ReflectionClass;
+final class ClassAttributes
+{
+    /**
+     * @var ReflectionClass<object>
+     */
+    public ReflectionClass $reflection;
+    public \PHPStan\Command\Neon2Attributes\AttributeSpec $attribute;
+    /**
+     * @var array<string, AttributeSpec>
+     */
+    public array $parameterAttributes;
+    /**
+     * @param ReflectionClass<object> $reflection
+     * @param array<string, AttributeSpec> $parameterAttributes by constructor parameter name
+     */
+    public function __construct(ReflectionClass $reflection, \PHPStan\Command\Neon2Attributes\AttributeSpec $attribute, array $parameterAttributes)
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+/**
+ * Written as `ClassName::class`.
+ */
+final class ClassReference
+{
+    public string $className;
+    public function __construct(string $className)
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+use _PHPStan_95d9e8b05\Nette\FileNotFoundException;
+use _PHPStan_95d9e8b05\Nette\InvalidStateException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
+use PHPStan\DependencyInjection\LoaderFactory;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use function array_map;
+use function dirname;
+use function in_array;
+use function is_array;
+use function is_file;
+use function is_string;
+/**
+ * Finds the config files of an extension that phpstan/extension-installer would include
+ * for the projects that install it, listed in `extra.phpstan.includes` of composer.json.
+ */
+final class ComposerConfigIncludes
+{
+    /**
+     * @return list<string> the files not included by the project config file already
+     */
+    public static function findMissing(string $directory, ?string $projectConfigFile): array
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+/**
+ * A service entry of a NEON config file replaced by attributes on its class.
+ */
+final class ConvertedService
+{
+    public string $className;
+    /**
+     * @var list<string>
+     */
+    public array $attributes;
+    public string $configFile;
+    /**
+     * @param list<string> $attributes short names of the added attributes
+     */
+    public function __construct(string $className, array $attributes, string $configFile)
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+/**
+ * A service entry that stays in the NEON config file.
+ */
+final class KeptService
+{
+    /**
+     * @var self::CATEGORY_*
+     */
+    public string $category;
+    /**
+     * @var string
+     */
+    public string $name;
+    public ?string $reason;
+    public string $configFile;
+    public int $line;
+    /**
+     * @var int
+     */
+    public int $entries;
+    /** The attributes cannot express the entry. */
+    public const CATEGORY_KEPT = 'kept';
+    /** The class is registered more than once. */
+    public const CATEGORY_DUPLICATE = 'duplicate';
+    /** The class is not in a directory from the attributeServicesDirectories section. */
+    public const CATEGORY_OUTSIDE = 'outside';
+    /**
+     * @param self::CATEGORY_* $category
+     * @param string $name class name, or the service name when the entry is not a class
+     * @param int $entries how many config entries stay, more than one for a class registered several times
+     */
+    public function __construct(string $category, string $name, ?string $reason, string $configFile, int $line, int $entries = 1)
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+use _PHPStan_95d9e8b05\Nette\Neon\Entity;
+use _PHPStan_95d9e8b05\Nette\Neon\Exception as NeonException;
+use _PHPStan_95d9e8b05\Nette\Neon\Lexer as NeonLexer;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\ArrayItemNode as NeonArrayItemNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\ArrayNode as NeonArrayNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Parser as NeonParser;
+use _PHPStan_95d9e8b05\Nette\Neon\TokenStream as NeonTokenStream;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\ExtensionInterface;
+use PHPStan\DependencyInjection\ExtensionInterfacesExtension;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileReader;
+use PHPStan\Neon\Printer as NeonPrinter;
+use ReflectionClass;
+use ReflectionNamedType;
+use function array_diff;
+use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_unique;
+use function array_values;
+use function class_exists;
+use function count;
+use function implode;
+use function in_array;
+use function interface_exists;
+use function is_a;
+use function is_array;
+use function is_int;
+use function is_string;
+use function ltrim;
+use function preg_match;
+use function realpath;
+use function rtrim;
+use function sort;
+use function sprintf;
+use function str_contains;
+use function str_replace;
+use function str_starts_with;
+use function strcasecmp;
+use function strrpos;
+use function strtolower;
+use function strtr;
+use function substr;
+/**
+ * Replaces the `rules`, `services` and `conditionalTags` entries of NEON config files
+ * with PHPStan's DI attributes on the registered classes.
+ *
+ * An entry is converted only when the attributes register the same service: the same class,
+ * factory, autowiring, arguments and tags. Everything else stays in the config file
+ * and is reported with the reason.
+ */
+#[AutowiredService]
+final class Neon2AttributesMigrator
+{
+    private NeonPrinter $neonPrinter;
+    private \PHPStan\Command\Neon2Attributes\PhpClassAttributesWriter $attributesWriter;
+    private const SERVICE_KEYS = ['class', 'type', 'factory', 'create', 'arguments', 'autowired', 'tags'];
+    private const NEW_EXPRESSION_MARKER = 'olvlvl\ComposerAttributeCollector\NewExpression';
+    private const DI_ATTRIBUTES = ['AutowiredService', 'NonAutowiredService', 'RegisteredRule', 'RegisteredCollector', 'GenerateFactory', 'Conditional'];
+    public function __construct(NeonPrinter $neonPrinter, \PHPStan\Command\Neon2Attributes\PhpClassAttributesWriter $attributesWriter)
+    {
+    }
+    /**
+     * @param list<string> $configFiles NEON config files to migrate
+     * @param list<string> $attributeServicesDirectories
+     * @param int $phpVersionId the lowest PHP version the attributes must work on, for #[Conditional]
+     * @param list<string> $otherServiceNames names of services defined outside of $configFiles, an entry with the same name overrides them
+     * @param array<class-string, string> $interfaceTagMapping all extension interfaces with their tags, including the ones from the extensionInterfaces sections of $configFiles
+     */
+    public function migrate(array $configFiles, array $attributeServicesDirectories, int $phpVersionId, array $otherServiceNames, array $interfaceTagMapping): \PHPStan\Command\Neon2Attributes\Neon2AttributesResult
+    {
+    }
+    /**
+     * @return ServiceDefinition|string the definition, or why it cannot be converted
+     */
+    private function createDefinition(string $section, NeonArrayItemNode $item)
+    {
+    }
+    /**
+     * @param array<mixed> $value
+     * @return \PHPStan\Command\Neon2Attributes\ServiceDefinition|string
+     */
+    private function createFactoryDefinition(?string $name, array $value)
+    {
+    }
+    /**
+     * @param ReflectionClass<object> $reflection
+     * @param array<mixed>|null $conditionalTags
+     * @param array<class-string, string> $interfaceTagMapping
+     * @return ClassAttributes|string the attributes, or why the definition cannot be converted
+     */
+    private function createClassAttributes(string $section, \PHPStan\Command\Neon2Attributes\ServiceDefinition $definition, ReflectionClass $reflection, ?array $conditionalTags, int $phpVersionId, array $interfaceTagMapping)
+    {
+    }
+    /**
+     * @param ReflectionClass<object> $reflection
+     * @return ClassReference|list<ClassReference>|string|null null for the default autowiring
+     * @param mixed $autowired
+     */
+    private function createAs(ReflectionClass $reflection, $autowired)
+    {
+    }
+    /**
+     * @param ReflectionClass<object> $reflection
+     * @param array<mixed> $arguments
+     * @return array<string, AttributeSpec>|string attributes by constructor parameter name, or why they cannot be written
+     */
+    private function createParameterAttributes(ReflectionClass $reflection, array $arguments)
+    {
+    }
+    /**
+     * @param array<mixed> $conditionalTags
+     * @param list<string> $interfaceTags
+     * @return non-empty-list<string>|string the conditions that all must be met, or why they cannot be converted
+     */
+    private function createCondition(array $conditionalTags, array $interfaceTags)
+    {
+    }
+    /**
+     * @return string|non-empty-list<string>|null
+     * @param mixed $condition
+     */
+    private static function convertCondition($condition)
+    {
+    }
+    /**
+     * @param array{code: string, tokens: NeonTokenStream, root: NeonArrayNode} $file
+     * @param list<NeonArrayItemNode> $items
+     */
+    private function removeItems(array $file, array $items): string
+    {
+    }
+    private function getEntryName(NeonArrayItemNode $item): string
+    {
+    }
+    /**
+     * Turns `[@service, method]` into `@service::method`.
+     * @param mixed $factory
+     * @return mixed
+     */
+    private static function normalizeFactory($factory)
+    {
+    }
+    /**
+     * @param mixed $factory
+     */
+    private static function isServiceMethodFactory($factory): bool
+    {
+    }
+    /**
+     * @param list<string> $directories
+     */
+    private static function isOutsideClass(string $name, array $directories): bool
+    {
+    }
+    /**
+     * @param list<string> $directories
+     */
+    private static function isInDirectories(string $file, array $directories): bool
+    {
+    }
+    private static function getShortName(string $className): string
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+final class Neon2AttributesResult
+{
+    /**
+     * @var array<string, string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $changedFiles;
+    /**
+     * @var list<ConvertedService>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $convertedServices;
+    /**
+     * @var list<KeptService>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $keptServices;
+    /**
+     * @param array<string, string> $changedFiles new contents by path
+     * @param list<ConvertedService> $convertedServices
+     * @param list<KeptService> $keptServices
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $changedFiles,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $convertedServices,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $keptServices
+    )
+    {
+    }
+    /**
+     * @return array<string, string>
+     */
+    public function getChangedFiles(): array
+    {
+    }
+    /**
+     * @return list<ConvertedService>
+     */
+    public function getConvertedServices(): array
+    {
+    }
+    /**
+     * @return list<KeptService>
+     */
+    public function getKeptServices(): array
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+use PhpParser\ErrorHandler\Collecting;
+use PhpParser\Internal\TokenStream;
+use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\CloningVisitor;
+use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\ParserFactory;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\File\FileReader;
+use PHPStan\Fixable\NewClassNamesVisitor;
+use PHPStan\Fixable\PhpPrinter;
+use PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor;
+use PHPStan\ShouldNotHappenException;
+use function array_is_list;
+use function count;
+use function is_array;
+use function is_bool;
+use function is_int;
+use function is_string;
+use function ltrim;
+use function sprintf;
+use function str_contains;
+use function str_repeat;
+use function strcasecmp;
+/**
+ * Adds attributes to classes and their constructor parameters, keeping the rest of the file as it was.
+ */
+#[AutowiredService]
+final class PhpClassAttributesWriter
+{
+    private const DI_NAMESPACE = 'PHPStan\DependencyInjection\\';
+    /**
+     * @param list<ClassAttributes> $edits classes declared in the file
+     * @return string the new contents of the file
+     */
+    public function write(string $file, array $edits): string
+    {
+    }
+    /**
+     * @param list<Node\Stmt> $stmts
+     */
+    private function addAttributes(string $file, array $stmts, \PHPStan\Command\Neon2Attributes\ClassAttributes $edit): void
+    {
+    }
+    /**
+     * @param list<Node\Stmt> $stmts statements of a namespace, or of a file without one
+     */
+    private function addAttributesInScope(array $stmts, string $shortName, \PHPStan\Command\Neon2Attributes\ClassAttributes $edit): bool
+    {
+    }
+    private function createAttribute(\PHPStan\Command\Neon2Attributes\AttributeSpec $attribute): Node\Attribute
+    {
+    }
+    /**
+     * @return list<Node\Arg>
+     */
+    private function createArgs(\PHPStan\Command\Neon2Attributes\AttributeSpec $attribute): array
+    {
+    }
+    /**
+     * @param mixed $value
+     */
+    private function createExpr($value): Node\Expr
+    {
+    }
+}
+namespace PHPStan\Command\Neon2Attributes;
+
+/**
+ * A `rules` or `services` entry of a NEON config file reduced to what the attributes can express.
+ */
+final class ServiceDefinition
+{
+    public string $className;
+    public ?string $name;
+    /**
+     * @var array<mixed>
+     */
+    public array $arguments;
+    public ?string $factory;
+    /**
+     * @var mixed
+     */
+    public $autowired;
+    /**
+     * @var list<string>
+     */
+    public array $tags;
+    /**
+     * @var string|null
+     */
+    public ?string $generatedFactory;
+    /**
+     * @param array<mixed> $arguments
+     * @param list<string> $tags
+     * @param string|null $generatedFactory interface of a generated factory, the class is the result type of its create() method
+     * @param mixed $autowired
+     */
+    public function __construct(string $className, ?string $name, array $arguments, ?string $factory, $autowired, array $tags, ?string $generatedFactory)
+    {
+    }
+}
+namespace PHPStan\Command;
+
+use _PHPStan_95d9e8b05\Nette\Neon\Exception as NeonException;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
+use Override;
+use PHPStan\Command\Neon2Attributes\ComposerConfigIncludes;
+use PHPStan\Command\Neon2Attributes\ConvertedService;
+use PHPStan\Command\Neon2Attributes\KeptService;
+use PHPStan\Command\Neon2Attributes\Neon2AttributesMigrator;
+use PHPStan\Dependency\PackageDependencyResolver;
+use PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\ExtensionInterfacesExtension;
+use PHPStan\DependencyInjection\NonAutowiredService;
+use PHPStan\DependencyInjection\ValidateServiceTagsExtension;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use PHPStan\File\FileWriter;
+use PHPStan\File\RelativePathHelper;
+use PHPStan\Php\ComposerPhpVersionFactory;
+use PHPStan\Php\PhpVersion;
+use PHPStan\ShouldNotHappenException;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
+use function array_diff;
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_values;
+use function count;
+use function dirname;
+use function getcwd;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_string;
+use function sprintf;
+use function str_ends_with;
+use function str_starts_with;
+use function sys_get_temp_dir;
+use function uniqid;
+use function unlink;
+use const PHP_VERSION;
+use const PHP_VERSION_ID;
+final class Neon2AttributesCommand extends Command
+{
+    /**
+     * @var string[]
+     */
+    private array $composerAutoloaderProjectPaths;
+    private const NAME = 'migrate:neon2attributes';
+    /**
+     * @param string[] $composerAutoloaderProjectPaths
+     */
+    public function __construct(array $composerAutoloaderProjectPaths)
+    {
+    }
+    #[Override]
+    protected function configure(): void
+    {
+    }
+    #[Override]
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+    }
+    #[Override]
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+    }
+    private function migrate(InputInterface $input, OutputInterface $output, ?string $memoryLimit, ?string $autoloadFile, ?string $configuration, bool $allowXdebug, bool $debugEnabled, ?string $generatedConfigFile): int
+    {
+    }
+    /**
+     * The merged extensionInterfaces sections of the config files.
+     *
+     * @param list<string> $configFiles
+     * @return array<mixed>
+     */
+    private static function findExtensionInterfaces(array $configFiles): array
+    {
+    }
+    /**
+     * Services defined by PHPStan's own attributes and by the config files that are not migrated.
+     *
+     * @param list<string> $configFiles
+     * @return list<string>
+     */
+    private static function findOtherServiceNames(array $configFiles): array
+    {
+    }
+}
 namespace PHPStan\Command;
 
 /**
@@ -23607,16 +25501,16 @@ interface OutputStyle
 }
 namespace PHPStan\Command;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
 use Override;
 use PHPStan\Analyser\ResultCache\ResultCacheManagerFactory;
 use PHPStan\File\PathNotFoundException;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputArgument;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputArgument;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function count;
 use function date;
 use function is_array;
@@ -23658,7 +25552,7 @@ namespace PHPStan\Command\Symfony;
 
 use PHPStan\Command\Output;
 use PHPStan\Command\OutputStyle;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
@@ -23702,7 +25596,7 @@ final class SymfonyOutput implements Output
 namespace PHPStan\Command\Symfony;
 
 use PHPStan\Command\OutputStyle;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Style\StyleInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Style\StyleInterface;
 /**
  * @internal
  */
@@ -23759,11 +25653,11 @@ use PHPStan\Cache\ArenaCache;
 use PHPStan\File\PathNotFoundException;
 use PHPStan\Parallel\WorkerRunner;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Command\Command;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputArgument;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputOption;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Command\Command;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputArgument;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputOption;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use function is_array;
 use function is_bool;
 use function is_string;
@@ -25216,9 +27110,9 @@ final class ExportedNodeVisitor extends NodeVisitorAbstract
 }
 namespace PHPStan\Dependency;
 
-use _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap;
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper;
@@ -25234,6 +27128,7 @@ use function is_array;
 use function is_file;
 use function is_string;
 use function realpath;
+use function rtrim;
 use function str_starts_with;
 use function strlen;
 use function strtolower;
@@ -25261,6 +27156,8 @@ final class PackageDependencyResolver
     private array $resolvedPackages = [];
     /** @var array<string, true>|null names of the installed packages that came from a path repository */
     private ?array $pathPackages = null;
+    /** @var list<string>|null normalized vendor directories of the analysed project */
+    private ?array $vendorDirs = null;
     /** @var array{classes: array<string, string>, functions: array<string, string>, constants: array<string, string>}|null symbol => extension name */
     private ?array $versionedExtensionSymbols = null;
     /** @param string[] $composerAutoloaderProjectPaths */
@@ -25285,6 +27182,20 @@ final class PackageDependencyResolver
      * moves the version or the reference with it.
      */
     public function isPathPackage(string $package): bool
+    {
+    }
+    /**
+     * Whether the file belongs to a package Composer installed, which only changes when Composer
+     * changes it - editing one is not a thing to do. A package from a path repository is the exception:
+     * it is the project's own code, sitting in vendor/ because Composer copied it there, and it is edited in place.
+     */
+    public function isFileOfInstalledPackage(string $file): bool
+    {
+    }
+    /**
+     * Unlike resolvePackage(), also matches a directory that IS a package's install path.
+     */
+    public function resolveDirectoryPackage(string $directory): ?string
     {
     }
     private function doResolvePackage(string $file): ?string
@@ -25353,6 +27264,7 @@ final class PackageDependencyResolver
      *
      * @phpstan-assert !null $this->installPathToPackage
      * @phpstan-assert !null $this->pathPackages
+     * @phpstan-assert !null $this->vendorDirs
      */
     private function resolveInstalledPackages(): void
     {
@@ -25449,48 +27361,382 @@ interface RootExportedNode extends \PHPStan\Dependency\ExportedNode
     public function getType(): string;
     public function getName(): string;
 }
-namespace PHPStan\DependencyInjection;
+namespace PHPStan\DependencyInjection\AttributeServices;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\ContainerBuilder;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Reference;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\ServiceDefinition;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
-use _PHPStan_cb3b7e994\Nette\DI\Helpers;
-use _PHPStan_cb3b7e994\Nette\PhpGenerator\Dumper;
-use _PHPStan_cb3b7e994\Nette\PhpGenerator\PhpLiteral;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
-use _PHPStan_cb3b7e994\Nette\Schema\Schema;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\TargetMethodParameter;
-use Override;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+use function count;
+use function hash;
+use function intdiv;
+use function is_array;
+use function is_dir;
+use function is_string;
+use function ksort;
+use function rtrim;
+use function sort;
+use function sprintf;
+use function str_contains;
+use function str_ends_with;
+use function str_starts_with;
+use function strlen;
+use function usort;
+use const PHP_VERSION_ID;
+/**
+ * Validates the merged `attributeServicesDirectories` section and computes each directory's
+ * contribution to the container cache key.
+ *
+ * Runs on every PHPStan run, before the container compiles - the result decides whether
+ * a cached container can be reused, so it cannot sit behind the container cache itself.
+ * Directories owned by a regularly installed vendor package contribute their package's
+ * version identity (no filesystem walk); directories of the project itself, and packages
+ * installed from path repositories, contribute per-file content hashes.
+ */
+final class AttributeServicesDirectoriesResolver
+{
+    private FileHelper $fileHelper;
+    /**
+     * @var string[]
+     */
+    private array $composerAutoloaderProjectPaths;
+    private int $runtimePhpVersionId;
+    private \PHPStan\DependencyInjection\AttributeServices\ComposerProjectFactory $composerProjectFactory;
+    /** @var list<ComposerProject>|null */
+    private ?array $composerProjects = null;
+    /**
+     * @param string[] $composerAutoloaderProjectPaths
+     */
+    public function __construct(FileHelper $fileHelper, array $composerAutoloaderProjectPaths, int $runtimePhpVersionId = PHP_VERSION_ID)
+    {
+    }
+    /**
+     * @param mixed $rawSectionValue
+     * @throws InvalidAttributeServicesDirectoriesException
+     */
+    public function resolve($rawSectionValue): \PHPStan\DependencyInjection\AttributeServices\ResolvedAttributeServicesDirectories
+    {
+    }
+    /**
+     * @param list<string> $errors
+     */
+    private function resolveDirectory(string $directory, array &$errors): \PHPStan\DependencyInjection\AttributeServices\ResolvedAttributeServicesDirectory
+    {
+    }
+    private function findPackage(string $directory): ?\PHPStan\DependencyInjection\AttributeServices\ComposerPackage
+    {
+    }
+    /**
+     * @return list<ComposerProject>
+     */
+    private function getComposerProjects(): array
+    {
+    }
+    /**
+     * Content hashes of the PHP files under the directory that can carry PHPStan's DI attributes -
+     * the cache-key fallback when a package version cannot stand in for the directory contents.
+     * Mirrors how config files invalidate the container in Configurator::getAllConfigFilesHashes().
+     *
+     * @param list<string> $errors
+     * @return array<string, string>
+     */
+    private function hashDirectory(string $directory, array &$errors): array
+    {
+    }
+    /**
+     * Unique directories with entries nested inside another configured directory dropped -
+     * the outer directory already covers them for both discovery and hashing.
+     *
+     * @param list<string> $directories
+     * @return list<string>
+     */
+    private function deduplicateNested(array $directories): array
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetClass;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+use PHPStan\DependencyInjection\AutowiredExtensions;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\ContainerExtension;
+use PHPStan\DependencyInjection\ExtensionInterface;
+use PHPStan\DependencyInjection\GenerateFactory;
+use PHPStan\DependencyInjection\NonAutowiredService;
+use PHPStan\DependencyInjection\RegisteredCollector;
+use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\File\FileReader;
+use PHPStan\ShouldNotHappenException;
+use PhpToken;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionAttribute;
+use ReflectionClass;
+use SplFileInfo;
+use Throwable;
+use function array_key_exists;
+use function class_exists;
+use function count;
+use function dirname;
+use function enum_exists;
+use function explode;
+use function function_exists;
+use function interface_exists;
+use function is_array;
+use function is_string;
+use function realpath;
+use function sort;
+use function sprintf;
+use function str_contains;
+use function str_ends_with;
+use function str_starts_with;
+use function stripos;
+use function strtolower;
+use function strtr;
+use function trait_exists;
+use function usort;
+use const T_ATTRIBUTE;
+use const T_CLASS;
+use const T_INTERFACE;
+use const T_NAME_QUALIFIED;
+use const T_NAMESPACE;
+use const T_STRING;
+use const T_TRAIT;
+/**
+ * Finds classes carrying PHPStan's DI attributes in the directories listed
+ * in the `attributeServicesDirectories` section.
+ *
+ * Runs only while the container compiles (a container-cache hit never gets here).
+ * Class names are read from the tokens of the files that can use the attributes, the classes
+ * are loaded by the registered autoloaders - Composer's of any type, or the one from
+ * --autoload-file - and the attributes are read with native runtime reflection.
+ * A file that looks like it uses one of the attributes but whose class cannot be
+ * autoloaded from it is an explicit error.
+ */
+final class AttributeServicesDiscoverer
+{
+    public const PUBLIC_CLASS_ATTRIBUTES = [AutowiredService::class, NonAutowiredService::class, RegisteredRule::class, RegisteredCollector::class, GenerateFactory::class, Conditional::class, ExtensionInterface::class];
+    /**
+     * Classes allowed in `new` arguments of the attributes. Code that must run on PHP 8.0
+     * writes `new Foo(...)` as `[NEW_EXPRESSION_MARKER => [Foo::class, [arguments]]]`,
+     * like simple-downgrader does and composer-attribute-collector understands.
+     */
+    private const NEW_EXPRESSION_CLASSES = [AutowiredService::class, RegisteredRule::class, RegisteredCollector::class];
+    private const NEW_EXPRESSION_MARKER = 'olvlvl\ComposerAttributeCollector\NewExpression';
+    public const PUBLIC_PARAMETER_ATTRIBUTES = [AutowiredParameter::class];
+    private const ATTRIBUTE_SHORT_NAMES = ['AutowiredService', 'NonAutowiredService', 'RegisteredRule', 'RegisteredCollector', 'GenerateFactory', 'Conditional', 'AutowiredParameter', 'AutowiredExtensions', 'ContainerExtension', 'ExtensionInterface', 'ValidatesStubFiles'];
+    /** @var list<string> */
+    private array $errors = [];
+    /**
+     * @throws InvalidAttributeServicesDirectoriesException
+     */
+    public function discover(\PHPStan\DependencyInjection\AttributeServices\ResolvedAttributeServicesDirectories $resolvedDirectories): \PHPStan\DependencyInjection\AttributeServices\DiscoveredAttributeTargets
+    {
+    }
+    /**
+     * @param array<class-string, list<TargetClass<object>>> $targetClasses
+     * @param array<class-string, list<TargetMethodParameter<object>>> $targetMethodParameters
+     */
+    private function collectClass(string $className, string $file, string $contents, array &$targetClasses, array &$targetMethodParameters): void
+    {
+    }
+    /**
+     * @param ReflectionAttribute<object> $attribute
+     */
+    private function instantiateAttribute(ReflectionAttribute $attribute): object
+    {
+    }
+    /**
+     * @throws ShouldNotHappenException
+     * @param mixed $value
+     */
+    private function instantiateNewExpression($value): ?object
+    {
+    }
+    private function checkDisallowedAttribute(string $attributeName, string $className): void
+    {
+    }
+    /**
+     * Canonical attribute class name when $attributeName is one of $allowedAttributes, null otherwise.
+     *
+     * @param list<class-string> $allowedAttributes
+     * @return class-string|null
+     */
+    private function resolveKnownAttribute(string $attributeName, array $allowedAttributes): ?string
+    {
+    }
+    private function isPhpStanAttribute(string $attributeName): bool
+    {
+    }
+    private function classCanBeLoaded(string $className): bool
+    {
+    }
+    private static function isSameFile(string $a, string $b): bool
+    {
+    }
+    /**
+     * Names of the classes, interfaces, traits and enums the file declares, none when the file
+     * has no attribute outside of comments and strings. Loading a class runs the code of its file,
+     * so classes of files that cannot carry the attributes, like rule test data, are not loaded.
+     *
+     * @return list<string>
+     */
+    private static function findDeclaredClasses(string $contents): array
+    {
+    }
+    /**
+     * @param array<int, PhpToken> $tokens
+     */
+    private static function findNextSignificantToken(array $tokens, int $i): ?PhpToken
+    {
+    }
+    /**
+     * @return list<string> normalized with forward slashes, sorted
+     */
+    private function listPhpFiles(string $directory): array
+    {
+    }
+    /**
+     * Whether the file contents can change what discovery finds or reports. The container
+     * cache key of a directory hashes only these files, so editing any other file does not
+     * recompile the container.
+     */
+    public static function mayAffectDiscovery(string $contents): bool
+    {
+    }
+    /**
+     * Cheap gate before the file is tokenized: any syntactically possible reference to one of
+     * PHPStan's attributes - a `use` import, a group use, a fully qualified name, an alias of
+     * either - contains "phpstan" and "dependencyinjection" case-insensitively, so a file
+     * without them cannot use them.
+     */
+    private static function isPrefilterPositive(string $contents): bool
+    {
+    }
+    /**
+     * Stricter check used only to decide whether a file that yielded no autoloadable class
+     * deserves an error: does it mention any of the DI attributes by name?
+     */
+    private static function suggestsDiAttributes(string $contents): bool
+    {
+    }
+    private function getShortName(string $className): string
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use function count;
+/**
+ * Hands the resolved `attributeServicesDirectories` section from ContainerFactory to the
+ * compiler extensions consuming attribute targets. A static slot because Nette constructs
+ * compiler extensions with `new $className()` - there is no injection channel that early.
+ *
+ * ContainerFactory::create() seeds the slot right before the container compiles, and every
+ * container build in the process funnels through it (CommandHelper, DerivativeContainerFactory,
+ * PHPStanTestCase), so the slot always describes the build currently on the call stack.
+ * Discovery is lazy - on a container-cache hit nothing ever asks for the targets,
+ * so no third-party class is autoloaded.
+ */
+final class AttributeServicesDiscoveryContext
+{
+    private static ?\PHPStan\DependencyInjection\AttributeServices\ResolvedAttributeServicesDirectories $currentDirectories = null;
+    private static ?\PHPStan\DependencyInjection\AttributeServices\DiscoveredAttributeTargets $targets = null;
+    public static function set(\PHPStan\DependencyInjection\AttributeServices\ResolvedAttributeServicesDirectories $directories): void
+    {
+    }
+    /**
+     * @throws InvalidAttributeServicesDirectoriesException
+     */
+    public static function getTargets(): \PHPStan\DependencyInjection\AttributeServices\DiscoveredAttributeTargets
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\Nette\DI\ContainerBuilder;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Reference;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\ServiceDefinition;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\Neon\Entity;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
+use _PHPStan_95d9e8b05\Nette\PhpGenerator\Dumper;
+use _PHPStan_95d9e8b05\Nette\PhpGenerator\PhpLiteral;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetClass;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetMethodParameter;
 use PHPStan\Collectors\RegistryFactory;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\ConditionalTagsExtension;
+use PHPStan\DependencyInjection\GenerateFactory;
+use PHPStan\DependencyInjection\NonAutowiredService;
+use PHPStan\DependencyInjection\RegisteredCollector;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\LazyRegistry;
 use PHPStan\ShouldNotHappenException;
 use ReflectionClass;
-use stdClass;
 use function array_key_exists;
 use function array_slice;
 use function count;
 use function explode;
 use function implode;
 use function is_array;
+use function is_string;
 use function preg_split;
 use function sprintf;
+use function str_starts_with;
 use function strcasecmp;
 use function strtolower;
 use function substr;
 use const PREG_SPLIT_DELIM_CAPTURE;
-#[\PHPStan\DependencyInjection\ContainerExtension('autowiredAttributeServices')]
-final class AutowiredAttributeServicesExtension extends CompilerExtension
+/**
+ * Turns attribute targets into service definitions. Serves both sources of targets -
+ * PHPStan's own vendor/attributes.php and the directories listed
+ * in the `attributeServicesDirectories` section - through AttributeTargetsProvider.
+ */
+final class AttributeServicesRegistrar
 {
-    #[Override]
-    public function getConfigSchema(): Schema
+    /**
+     * @param array<class-string, string> $interfaceTagMapping tags added to the services implementing the interfaces
+     * @return list<class-string> the registered classes
+     */
+    public static function registerServices(ContainerBuilder $builder, \PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider $targets, ?int $level, array $interfaceTagMapping): array
     {
     }
-    #[Override]
-    public function loadConfiguration(): void
+    /**
+     * @return array<lowercase-string, non-empty-list<TargetMethodParameter<AutowiredParameter>>>
+     */
+    public static function collectConstructorParameters(\PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider $targets): array
+    {
+    }
+    /**
+     * @template T of object
+     * @param class-string<T> $attributeClass
+     * @param list<array{TargetClass<object>, bool}> $conditionalTargets attributes wrapped in #[Conditional] and whether the condition is met
+     * @return list<array{TargetClass<T>, bool}> targets and whether they get their tags
+     */
+    private static function findTargetClasses(\PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider $targetsProvider, string $attributeClass, array $conditionalTargets): array
+    {
+    }
+    /**
+     * The strings are NEON values like in the conditionalTags config section, so 'not(%foo%)' is supported too.
+     *
+     * @param string|non-empty-list<string> $if
+     */
+    public static function isConditionMet(ContainerBuilder $builder, $if): bool
+    {
+    }
+    /**
+     * @return mixed
+     */
+    private static function expandCondition(ContainerBuilder $builder, string $condition)
     {
     }
     /**
@@ -25498,6 +27744,30 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
      * @param array<lowercase-string, non-empty-list<TargetMethodParameter<AutowiredParameter>>> $constructorParameters
      */
     public static function processConstructorParameters(ContainerBuilder $builder, string $className, ServiceDefinition $definition, array $constructorParameters): void
+    {
+    }
+    /**
+     * '@service::method' calls a method of another service, 'Class::method' a static method.
+     */
+    private static function createFactory(string $factory): Statement
+    {
+    }
+    /**
+     * Treats the reference like a NEON service argument: Nette\DI\Helpers::filterArguments() turns
+     * `Class::CONST`, `::CONST`, `Enum::Case` and `@service` strings into constants and references,
+     * also inside the value of a referenced parameter. A parameter with such strings is inlined
+     * like Nette does in NEON, other parameters are looked up at runtime.
+     *
+     * @return mixed
+     */
+    private static function createArgument(ContainerBuilder $builder, string $ref)
+    {
+    }
+    /**
+     * @param mixed $value
+     * @param mixed $filtered
+     */
+    private static function isFiltered($value, $filtered): bool
     {
     }
     /**
@@ -25523,6 +27793,318 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
      * @throws ShouldNotHappenException
      */
     private static function checkParameterExists(ContainerBuilder $builder, string $ref, array $keys): void
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetClass;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+use function array_key_exists;
+use function array_values;
+use function sprintf;
+use function strtolower;
+/**
+ * Single view over PHPStan's own attribute targets collected at composer dump time
+ * into vendor/attributes.php and the targets discovered at container compile time
+ * in the directories listed in the `attributeServicesDirectories` section.
+ *
+ * Targets from vendor/attributes.php win over discovered targets of the same class
+ * so that pointing the section at PHPStan's own code cannot re-register services.
+ */
+final class AttributeTargetsProvider
+{
+    private \PHPStan\DependencyInjection\AttributeServices\DiscoveredAttributeTargets $discoveredTargets;
+    public function __construct(\PHPStan\DependencyInjection\AttributeServices\DiscoveredAttributeTargets $discoveredTargets)
+    {
+    }
+    public static function create(): self
+    {
+    }
+    /**
+     * @template T of object
+     * @param class-string<T> $attributeClass
+     * @return list<TargetClass<T>>
+     */
+    public function findTargetClasses(string $attributeClass): array
+    {
+    }
+    /**
+     * @template T of object
+     * @param class-string<T> $attributeClass
+     * @return list<TargetMethodParameter<T>>
+     */
+    public function findTargetMethodParameters(string $attributeClass): array
+    {
+    }
+    /**
+     * Whether the class was discovered in the attributeServicesDirectories section
+     * rather than coming from PHPStan's own vendor/attributes.php.
+     */
+    public function isDiscoveredClass(string $className): bool
+    {
+    }
+    /**
+     * @param TargetMethodParameter<object> $target
+     */
+    private static function getParameterKey(TargetMethodParameter $target): string
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+/**
+ * One installed Composer package of the analysed project.
+ */
+final class ComposerPackage
+{
+    public string $name;
+    /**
+     * @var string|null
+     */
+    public ?string $cacheToken;
+    /**
+     * @param string|null $cacheToken version identity usable as a cache key, or null when the
+     *                                installed files can change without the version changing
+     *                                (path repositories, missing reference)
+     */
+    public function __construct(string $name, ?string $cacheToken)
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use function str_starts_with;
+/**
+ * Installed Composer packages of one project the analysis runs against
+ * (an entry of composerAutoloaderProjectPaths).
+ */
+final class ComposerProject
+{
+    /**
+     * @var array<string, ComposerPackage>
+     */
+    public array $packagesByInstallPath;
+    /**
+     * @param array<string, ComposerPackage> $packagesByInstallPath install path => package, longest path first
+     */
+    public function __construct(array $packagesByInstallPath)
+    {
+    }
+    public function findPackageOfDirectory(string $directory): ?\PHPStan\DependencyInjection\AttributeServices\ComposerPackage
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
+use PHPStan\File\CouldNotReadFileException;
+use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use PHPStan\Internal\ComposerHelper;
+use function is_array;
+use function is_file;
+use function is_string;
+use function preg_match;
+use function realpath;
+use function rtrim;
+use function str_starts_with;
+use function strlen;
+use function uksort;
+/**
+ * Finds the installed packages of a Composer project with cache tokens derived
+ * from installed.php versions, for the container cache key of
+ * AttributeServicesDirectoriesResolver.
+ */
+final class ComposerProjectFactory
+{
+    private FileHelper $fileHelper;
+    public function __construct(FileHelper $fileHelper)
+    {
+    }
+    public function create(string $projectPath): ?\PHPStan\DependencyInjection\AttributeServices\ComposerProject
+    {
+    }
+    /**
+     * @return array<mixed>|null
+     */
+    private function loadInstalledJson(string $vendorDirectory): ?array
+    {
+    }
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function loadInstalledVersions(string $vendorDirectory): array
+    {
+    }
+    /**
+     * Version identity of the package usable as a container cache key, or null when the installed
+     * files can change without the recorded version changing - a path repository (the install path
+     * escapes the vendor directory or is a symlink) or a missing reference. Null makes the resolver
+     * fall back to hashing the directory contents.
+     *
+     * @param array<string, array<string, mixed>> $versions
+     */
+    private function createCacheToken(string $packageName, string $installPath, string $vendorDirectory, array $versions): ?string
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetClass;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+/**
+ * Attribute targets found in the directories listed
+ * in the `attributeServicesDirectories` section.
+ */
+final class DiscoveredAttributeTargets
+{
+    /**
+     * @var array<class-string, list<TargetClass<object>>>
+     */
+    public array $targetClasses;
+    /**
+     * @var array<class-string, list<TargetMethodParameter<object>>>
+     */
+    public array $targetMethodParameters;
+    /**
+     * @param array<class-string, list<TargetClass<object>>> $targetClasses
+     * @param array<class-string, list<TargetMethodParameter<object>>> $targetMethodParameters
+     */
+    public function __construct(array $targetClasses, array $targetMethodParameters)
+    {
+    }
+    public static function createEmpty(): self
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
+use function implode;
+final class InvalidAttributeServicesDirectoriesException extends InvalidConfigurationException
+{
+    /**
+     * @var non-empty-list<string>
+     */
+    private array $errors;
+    /**
+     * @param non-empty-list<string> $errors
+     */
+    public function __construct(array $errors)
+    {
+    }
+    /**
+     * @return non-empty-list<string>
+     */
+    public function getErrors(): array
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+/**
+ * The validated result of the merged `attributeServicesDirectories` section.
+ */
+final class ResolvedAttributeServicesDirectories
+{
+    /**
+     * @var list<ResolvedAttributeServicesDirectory>
+     */
+    public array $directories;
+    /**
+     * @param list<ResolvedAttributeServicesDirectory> $directories
+     */
+    public function __construct(array $directories)
+    {
+    }
+    public static function createEmpty(): self
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    public function getDirectoryPaths(): array
+    {
+    }
+    /**
+     * @return array<string, string>
+     */
+    public function getCacheKeyComponent(): array
+    {
+    }
+}
+namespace PHPStan\DependencyInjection\AttributeServices;
+
+/**
+ * One validated directory from the `attributeServicesDirectories` section together
+ * with everything discovery and container-cache invalidation need to know about it.
+ */
+final class ResolvedAttributeServicesDirectory
+{
+    /**
+     * @var string
+     */
+    public string $directory;
+    /**
+     * @var string|null
+     */
+    public ?string $packageName;
+    /**
+     * @var array<string, string>
+     */
+    public array $cacheKeyComponent;
+    /**
+     * @param string $directory normalized with forward slashes, no trailing slash
+     * @param string|null $packageName owning Composer package, null for a directory of the project itself
+     * @param array<string, string> $cacheKeyComponent the directory's contribution to the container cache key -
+     *                                                 a package version token, or per-file content hashes
+     */
+    public function __construct(string $directory, ?string $packageName, array $cacheKeyComponent)
+    {
+    }
+}
+namespace PHPStan\DependencyInjection;
+
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
+use Override;
+/**
+ * Registers the top-level `attributeServicesDirectories` section so that Nette accepts it.
+ *
+ * The section itself is processed by ContainerFactory before the container compiles -
+ * the directories feed the container cache key and AttributeServicesDiscoveryContext.
+ */
+#[\PHPStan\DependencyInjection\ContainerExtension('attributeServicesDirectories')]
+final class AttributeServicesDirectoriesExtension extends CompilerExtension
+{
+    #[Override]
+    public function getConfigSchema(): Schema
+    {
+    }
+}
+namespace PHPStan\DependencyInjection;
+
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
+use Override;
+use PHPStan\DependencyInjection\AttributeServices\AttributeServicesRegistrar;
+use PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider;
+use stdClass;
+use function array_keys;
+#[\PHPStan\DependencyInjection\ContainerExtension('autowiredAttributeServices')]
+final class AutowiredAttributeServicesExtension extends CompilerExtension
+{
+    #[Override]
+    public function getConfigSchema(): Schema
+    {
+    }
+    #[Override]
+    public function loadConfiguration(): void
     {
     }
 }
@@ -25554,11 +28136,11 @@ final class AutowiredExtensions
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\FactoryDefinition;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Reference;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\ServiceDefinition;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\FactoryDefinition;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Reference;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\ServiceDefinition;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\Attributes;
 use Override;
 use PHPStan\ShouldNotHappenException;
 use ReflectionMethod;
@@ -25597,17 +28179,20 @@ namespace PHPStan\DependencyInjection;
 use Attribute;
 /**
  * Autowires constructor parameters in service classes using #[AutowiredService],
- * #[GeneratedFactory], #[RegisteredRule] or #[RegisteredCollector] attributes.
+ * #[GenerateFactory], #[RegisteredRule] or #[RegisteredCollector] attributes.
  *
  * If ref is omitted, it looks for parameter of the same name.
  *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_PARAMETER)]
 final class AutowiredParameter
 {
     public ?string $ref;
+    /** @api */
     public function __construct(?string $ref = null)
     {
     }
@@ -25622,8 +28207,17 @@ use Attribute;
  * Pass autoTag: false for services whose implemented interfaces
  * must not lead to the associated tags.
  *
+ * The factory is a method of another service like '@App\MyFactory::create',
+ * or a static method like 'App\MyFactory::create'.
+ *
+ * A single type in `as` becomes the type of the service, like `class: Interface, factory: Implementation`
+ * in NEON: the service is autowired only as that type and gets the tags of the interfaces that type implements.
+ * A list of types restricts autowiring without changing the type of the service.
+ *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class AutowiredService
@@ -25636,6 +28230,7 @@ final class AutowiredService
     public $as;
     public bool $autoTag;
     /**
+     * @api
      * @param true|list<class-string>|class-string $as
      */
     public function __construct(?string $name = null, ?string $factory = null, $as = \true, bool $autoTag = \true)
@@ -25674,24 +28269,88 @@ final class BleedingEdgeToggle
 }
 namespace PHPStan\DependencyInjection;
 
+use Attribute;
+use PHPStan\ShouldNotHappenException;
+use function is_array;
+/**
+ * Registers the class with the wrapped attribute, but adds the tags only when the condition is met:
+ * the rule tag for RegisteredRule, the collector tag for RegisteredCollector,
+ * and the tags of the implemented extension interfaces for AutowiredService.
+ * The service is always registered so that it can still be autowired.
+ *
+ * The condition has the same syntax as values in the conditionalTags config section:
+ * a parameter reference like '%featureToggles.foo%', its negation 'not(%featureToggles.foo%)',
+ * or a list of them that all must be met.
+ *
+ * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
+ * and AutowiredAttributeServicesExtension, and in the attributeServicesDirectories
+ * config section thanks to AttributeServicesDiscoverer.
+ *
+ * @api
+ */
+#[Attribute(Attribute::TARGET_CLASS)]
+final class Conditional
+{
+    /**
+     * @var string|non-empty-list<string>
+     */
+    public $if;
+    /**
+     * @var \PHPStan\DependencyInjection\AutowiredService|\PHPStan\DependencyInjection\RegisteredCollector|\PHPStan\DependencyInjection\RegisteredRule
+     */
+    public $attribute;
+    /**
+     * On PHP < 8.1, simple-downgrader writes `new` in attribute arguments as the array,
+     * and composer-attribute-collector turns it back into the object in vendor/attributes.php.
+     * Code running on PHP 8.0 in the attributeServicesDirectories section can write the array by hand,
+     * AttributeServicesDiscoverer turns it into the object.
+     *
+     * @api
+     * @param AutowiredService|RegisteredCollector|RegisteredRule|array{
+     *     'olvlvl\ComposerAttributeCollector\NewExpression': array{
+     *         class-string<AutowiredService>,
+     *         array{0?: string|null, 1?: string|null, 2?: true|list<class-string>|class-string, 3?: bool}
+     *         |array{name?: string|null, factory?: string|null, as?: true|list<class-string>|class-string, autoTag?: bool},
+     *     }|array{
+     *         class-string<RegisteredCollector>|class-string<RegisteredRule>,
+     *         array{int}|array{level: int},
+     *     },
+     * } $attribute
+     * @param string|non-empty-list<string> $if
+     */
+    public function __construct($attribute, $if)
+    {
+    }
+}
+namespace PHPStan\DependencyInjection;
+
 use InvalidArgumentException;
-use _PHPStan_cb3b7e994\Nette;
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
 use Override;
 use PHPStan\ShouldNotHappenException;
-use function array_fill_keys;
-use function array_reduce;
+use function array_keys;
 use function array_values;
 use function count;
+use function in_array;
 use function is_array;
 use function sprintf;
 #[\PHPStan\DependencyInjection\ContainerExtension('conditionalTags')]
 final class ConditionalTagsExtension extends CompilerExtension
 {
+    /**
+     * Accepts any tag, the tags of third-party extension interfaces are known only
+     * after all sections are processed. loadConfiguration() checks them.
+     */
     #[Override]
     public function getConfigSchema(): Nette\Schema\Schema
+    {
+    }
+    #[Override]
+    public function loadConfiguration(): void
     {
     }
     #[Override]
@@ -25699,18 +28358,26 @@ final class ConditionalTagsExtension extends CompilerExtension
     {
     }
     /**
+     * Shared with the #[Conditional] attribute. A list of conditions must all be met.
+     *
+     * @param mixed $condition with parameters already expanded
+     */
+    public static function isConditionMet($condition): bool
+    {
+    }
+    /**
      * @param mixed $parameter
      */
-    public function resolveValue($parameter): bool
+    private static function resolveValue($parameter): bool
     {
     }
 }
 namespace PHPStan\DependencyInjection;
 
 use DirectoryIterator;
-use _PHPStan_cb3b7e994\Nette\DI\Config\Loader;
-use _PHPStan_cb3b7e994\Nette\DI\Container as OriginalNetteContainer;
-use _PHPStan_cb3b7e994\Nette\DI\ContainerLoader;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Loader;
+use _PHPStan_95d9e8b05\Nette\DI\Container as OriginalNetteContainer;
+use _PHPStan_95d9e8b05\Nette\DI\ContainerLoader;
 use Override;
 use PHPStan\File\CouldNotReadFileException;
 use PHPStan\File\CouldNotWriteFileException;
@@ -25737,12 +28404,14 @@ use function unlink;
 use const E_USER_DEPRECATED;
 use const PHP_RELEASE_VERSION;
 use const PHP_VERSION_ID;
-final class Configurator extends \_PHPStan_cb3b7e994\Nette\Bootstrap\Configurator
+final class Configurator extends \_PHPStan_95d9e8b05\Nette\Bootstrap\Configurator
 {
     private \PHPStan\DependencyInjection\LoaderFactory $loaderFactory;
     private bool $journalContainer;
     /** @var string[] */
     private array $allConfigFiles = [];
+    /** @var array<string, string> */
+    private array $attributeServicesDirectoriesCacheKey = [];
     public function __construct(\PHPStan\DependencyInjection\LoaderFactory $loaderFactory, bool $journalContainer)
     {
     }
@@ -25754,6 +28423,12 @@ final class Configurator extends \_PHPStan_cb3b7e994\Nette\Bootstrap\Configurato
      * @param string[] $allConfigFiles
      */
     public function setAllConfigFiles(array $allConfigFiles): void
+    {
+    }
+    /**
+     * @param array<string, string> $cacheKeyComponent
+     */
+    public function setAttributeServicesDirectoriesCacheKey(array $cacheKeyComponent): void
     {
     }
     /**
@@ -25857,9 +28532,9 @@ final class ContainerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Extensions\ExtensionsExtension;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Extensions\ExtensionsExtension;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\Attributes;
 use Override;
 use PHPStan\ShouldNotHappenException;
 use function is_a;
@@ -25872,7 +28547,9 @@ use function usort;
  *
  * Extending ExtensionsExtension is required, not cosmetic. Compiler::processExtensions() starts with
  *
- *     $first = $this->getExtensions(ParametersExtension::class) + $this->getExtensions(ExtensionsExtension::class);
+ * ```php
+ * $first = $this->getExtensions(ParametersExtension::class) + $this->getExtensions(ExtensionsExtension::class);
+ * ```
  *
  * and only extensions matching those types by instanceof have their loadConfiguration() called before
  * the compiler snapshots its extension list. Everything registered after that snapshot is rejected with
@@ -25896,19 +28573,19 @@ final class ContainerExtensionsExtension extends ExtensionsExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\Bootstrap\Extensions\PhpExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Config\Adapters\PhpAdapter;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
-use _PHPStan_cb3b7e994\Nette\DI\Helpers;
-use _PHPStan_cb3b7e994\Nette\Schema\Context as SchemaContext;
-use _PHPStan_cb3b7e994\Nette\Schema\Elements\AnyOf;
-use _PHPStan_cb3b7e994\Nette\Schema\Elements\Structure;
-use _PHPStan_cb3b7e994\Nette\Schema\Elements\Type;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
-use _PHPStan_cb3b7e994\Nette\Schema\Processor;
-use _PHPStan_cb3b7e994\Nette\Schema\Schema;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
-use _PHPStan_cb3b7e994\Nette\Utils\Validators;
+use _PHPStan_95d9e8b05\Nette\Bootstrap\Extensions\PhpExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Adapters\PhpAdapter;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\DI\Helpers;
+use _PHPStan_95d9e8b05\Nette\Schema\Context as SchemaContext;
+use _PHPStan_95d9e8b05\Nette\Schema\Elements\AnyOf;
+use _PHPStan_95d9e8b05\Nette\Schema\Elements\Structure;
+use _PHPStan_95d9e8b05\Nette\Schema\Elements\Type;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Processor;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Validators;
 use Phar;
 use PhpParser\Parser;
 use PHPStan\Analyser\ExprHandlerRegistry;
@@ -25919,6 +28596,8 @@ use PHPStan\BetterReflection\SourceLocator\SourceStubber\PhpStormStubsSourceStub
 use PHPStan\BetterReflection\SourceLocator\Type\SourceLocator;
 use PHPStan\Command\CommandHelper;
 use PHPStan\Command\Environment;
+use PHPStan\DependencyInjection\AttributeServices\AttributeServicesDirectoriesResolver;
+use PHPStan\DependencyInjection\AttributeServices\AttributeServicesDiscoveryContext;
 use PHPStan\File\FileHelper;
 use PHPStan\Node\Printer\Printer;
 use PHPStan\Php\PhpVersion;
@@ -26159,9 +28838,9 @@ final class DuplicateIncludedFilesException extends Exception
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
-use _PHPStan_cb3b7e994\Nette\Schema\Schema;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
 use Override;
 #[\PHPStan\DependencyInjection\ContainerExtension('expandRelativePaths')]
 final class ExpandRelativePathExtension extends CompilerExtension
@@ -26181,14 +28860,45 @@ use Attribute;
  * get the tag automatically. ValidateServiceTagsExtension checks that manually
  * tagged services implement the associated interface.
  *
+ * Third-party interfaces get the attribute in a directory from the
+ * attributeServicesDirectories section, or are listed in the extensionInterfaces
+ * section of the configuration file instead.
+ *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class ExtensionInterface
 {
     public string $tag;
+    /** @api */
     public function __construct(string $tag)
+    {
+    }
+}
+namespace PHPStan\DependencyInjection;
+
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
+use Override;
+/**
+ * Registers the top-level `extensionInterfaces` section mapping third-party extension
+ * interfaces to their service tags, like #[ExtensionInterface] on the interface itself:
+ *
+ * extensionInterfaces:
+ *     App\MyExtension: app.myExtension
+ *
+ * The section is read by ValidateServiceTagsExtension::getExtendedInterfaceTagMapping().
+ */
+#[\PHPStan\DependencyInjection\ContainerExtension(self::NAME)]
+final class ExtensionInterfacesExtension extends CompilerExtension
+{
+    public const NAME = 'extensionInterfaces';
+    #[Override]
+    public function getConfigSchema(): Schema
     {
     }
 }
@@ -26230,6 +28940,8 @@ use Attribute;
  *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class GenerateFactory
@@ -26243,6 +28955,7 @@ final class GenerateFactory
      */
     public ?string $resultType;
     /**
+     * @api
      * @param class-string $interface
      * @param class-string $resultType
      */
@@ -26293,7 +29006,7 @@ final class InvalidExcludePathsException extends Exception
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
 final class InvalidIgnoredErrorException extends InvalidConfigurationException
 {
 }
@@ -26326,7 +29039,7 @@ final class InvalidIgnoredErrorPatternsException extends Exception
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
 final class InvalidPhpVersionException extends InvalidConfigurationException
 {
 }
@@ -26357,7 +29070,7 @@ final class LazyExtensionsCollection implements \PHPStan\DependencyInjection\Ext
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\Config\Loader;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Loader;
 use PHPStan\Command\Environment;
 use PHPStan\File\FileHelper;
 final class LoaderFactory
@@ -26463,13 +29176,13 @@ final class OptionalPath
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\Config\Adapter;
-use _PHPStan_cb3b7e994\Nette\DI\Config\Helpers;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
-use _PHPStan_cb3b7e994\Nette\DI\InvalidConfigurationException;
-use _PHPStan_cb3b7e994\Nette\Neon\Entity;
-use _PHPStan_cb3b7e994\Nette\Neon\Exception;
-use _PHPStan_cb3b7e994\Nette\Neon\Neon;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Adapter;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Helpers;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\Neon\Entity;
+use _PHPStan_95d9e8b05\Nette\Neon\Exception;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
 use Override;
 use PHPStan\DependencyInjection\Neon\OptionalPath;
 use PHPStan\File\FileHelper;
@@ -26500,7 +29213,7 @@ final class NeonAdapter implements Adapter
      * @var array<string, mixed>
      */
     private array $parameters;
-    public const CACHE_KEY = 'v33-known-placeholders-expanded';
+    public const CACHE_KEY = 'v34-attribute-services-directories';
     private const PREVENT_MERGING_SUFFIX = '!';
     /** @var FileHelper[] */
     private array $fileHelpers = [];
@@ -26555,9 +29268,9 @@ final class NeonAdapter implements Adapter
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\Config\Adapter;
-use _PHPStan_cb3b7e994\Nette\Neon\Exception;
-use _PHPStan_cb3b7e994\Nette\Neon\Neon;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Adapter;
+use _PHPStan_95d9e8b05\Nette\Neon\Exception;
+use _PHPStan_95d9e8b05\Nette\Neon\Neon;
 use Override;
 use PHPStan\File\FileReader;
 use function sprintf;
@@ -26587,7 +29300,7 @@ final class NeonCachedFileReader implements Adapter
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\Config\Loader;
+use _PHPStan_95d9e8b05\Nette\DI\Config\Loader;
 use Override;
 use PHPStan\File\FileHelper;
 final class NeonLoader extends Loader
@@ -26626,10 +29339,10 @@ final class NetteContainer implements Container
     /**
      * @readonly
      */
-    private \_PHPStan_cb3b7e994\Nette\DI\Container $container;
+    private \_PHPStan_95d9e8b05\Nette\DI\Container $container;
     /** @var mixed[] */
     private ?array $parameters = null;
-    public function __construct(\_PHPStan_cb3b7e994\Nette\DI\Container $container)
+    public function __construct(\_PHPStan_95d9e8b05\Nette\DI\Container $container)
     {
     }
     public function hasService(string $serviceName): bool
@@ -26698,14 +29411,21 @@ namespace PHPStan\DependencyInjection;
 use Attribute;
 /**
  * Registers a non-autowired named service in the DI container.
+ *
+ * The factory is a method of another service like '@App\MyFactory::create',
+ * or a static method like 'App\MyFactory::create'.
+ *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class NonAutowiredService
 {
     public string $name;
     public ?string $factory;
+    /** @api */
     public function __construct(string $name, ?string $factory = null)
     {
     }
@@ -26722,10 +29442,10 @@ final class ParameterNotFoundException extends Exception
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
-use _PHPStan_cb3b7e994\Nette\Schema\Schema;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
 use Override;
 #[\PHPStan\DependencyInjection\ContainerExtension('parametersSchema')]
 final class ParametersSchemaExtension extends CompilerExtension
@@ -26737,10 +29457,10 @@ final class ParametersSchemaExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\DI\Container as NetteDiContainer;
-use _PHPStan_cb3b7e994\Nette\PhpGenerator\ClassType;
-use _PHPStan_cb3b7e994\Nette\PhpGenerator\Method;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\Container as NetteDiContainer;
+use _PHPStan_95d9e8b05\Nette\PhpGenerator\ClassType;
+use _PHPStan_95d9e8b05\Nette\PhpGenerator\Method;
 use Override;
 use function array_keys;
 /**
@@ -26772,7 +29492,7 @@ final class PreloadParametersExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\Definitions\Statement;
+use _PHPStan_95d9e8b05\Nette\DI\Definitions\Statement;
 use function array_merge;
 use function array_unique;
 use function array_values;
@@ -26843,11 +29563,14 @@ use Attribute;
  *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class RegisteredCollector
 {
     public int $level;
+    /** @api */
     public function __construct(int $level)
     {
     }
@@ -26860,11 +29583,14 @@ use Attribute;
  *
  * Works thanks to https://github.com/ondrejmirtes/composer-attribute-collector
  * and AutowiredAttributeServicesExtension.
+ *
+ * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class RegisteredRule
 {
     public int $level;
+    /** @api */
     public function __construct(int $level)
     {
     }
@@ -26897,9 +29623,9 @@ final class ReportUnsafeArrayStringKeyCastingToggle
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\Schema\Expect;
-use _PHPStan_cb3b7e994\Nette\Schema\Schema;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Schema\Expect;
+use _PHPStan_95d9e8b05\Nette\Schema\Schema;
 use Override;
 use PHPStan\Rules\LazyRegistry;
 #[\PHPStan\DependencyInjection\ContainerExtension('rules')]
@@ -26916,12 +29642,11 @@ final class RulesExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
 use Override;
+use PHPStan\DependencyInjection\AttributeServices\AttributeServicesRegistrar;
+use PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider;
 use PHPStan\PhpDoc\StubValidator;
-use function strcasecmp;
-use function strtolower;
 final class StubValidatorRuleServicesExtension extends CompilerExtension
 {
     #[Override]
@@ -26931,7 +29656,7 @@ final class StubValidatorRuleServicesExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
 use Override;
 use PHPStan\DependencyInjection\Neon\OptionalPath;
 use PHPStan\File\FileExcluder;
@@ -26954,11 +29679,9 @@ final class ValidateExcludePathsExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use Hoa\Compiler\Llk\Llk;
-use Hoa\File\Read;
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\Utils\RegexpException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\Utils\RegexpException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use Override;
 use PHPStan\Analyser\ConstantResolver;
 use PHPStan\Analyser\NameScope;
@@ -26985,6 +29708,7 @@ use PHPStan\Type\Constant\OversizedArrayBuilder;
 use PHPStan\Type\DirectTypeAliasResolverProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\OperatorTypeSpecifyingExtensionRegistry;
+use PHPStan\Type\Regex\Parser\RegexParser;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeAliasResolver;
 use PHPStan\Type\UnaryOperatorTypeSpecifyingExtensionRegistry;
@@ -27024,18 +29748,21 @@ final class ValidateIgnoredErrorsExtension extends CompilerExtension
 }
 namespace PHPStan\DependencyInjection;
 
-use _PHPStan_cb3b7e994\Nette\DI\CompilerExtension;
-use _PHPStan_cb3b7e994\Nette\PhpGenerator\ClassType;
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\Nette\DI\Compiler;
+use _PHPStan_95d9e8b05\Nette\DI\CompilerExtension;
+use _PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException;
+use _PHPStan_95d9e8b05\Nette\PhpGenerator\ClassType;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\Attributes;
 use Override;
-use PhpParser\NodeVisitor;
-use PHPStan\Parser\RichParser;
+use PHPStan\DependencyInjection\AttributeServices\AttributeTargetsProvider;
 use PHPStan\ShouldNotHappenException;
 use ReflectionClass;
 use function array_flip;
 use function array_key_exists;
 use function array_keys;
-use function count;
+use function interface_exists;
+use function is_array;
+use function is_string;
 use function sprintf;
 #[\PHPStan\DependencyInjection\ContainerExtension('validateServiceTags')]
 final class ValidateServiceTagsExtension extends CompilerExtension
@@ -27043,11 +29770,30 @@ final class ValidateServiceTagsExtension extends CompilerExtension
     /** @var array<class-string, string>|null */
     private static ?array $interfaceTagMapping = null;
     /**
-     * Derived from the #[ExtensionInterface] attribute above each extension interface.
+     * PHPStan's own extension interfaces, derived from the #[ExtensionInterface] attribute above each of them.
+     * Vendor interfaces like PhpParser\NodeVisitor are in the extensionInterfaces section of conf/config.neon.
      *
      * @return array<class-string, string>
      */
     public static function getInterfaceTagMapping(): array
+    {
+    }
+    /**
+     * PHPStan's own extension interfaces plus the third-party ones, marked with #[ExtensionInterface]
+     * in the attributeServicesDirectories section or listed in the extensionInterfaces section.
+     *
+     * @return array<class-string, string>
+     * @throws InvalidConfigurationException
+     */
+    public static function getExtendedInterfaceTagMapping(Compiler $compiler): array
+    {
+    }
+    /**
+     * @param array<mixed> $configured the extensionInterfaces section
+     * @return array<class-string, string>
+     * @throws InvalidConfigurationException
+     */
+    public static function createInterfaceTagMapping(array $configured): array
     {
     }
     /**
@@ -27119,6 +29865,7 @@ use PHPStan\File\RelativePathHelper;
 use PHPStan\Internal\ComposerHelper;
 use PHPStan\Php\ComposerPhpVersionFactory;
 use PHPStan\Php\PhpVersion;
+use PHPStan\ShouldNotHappenException;
 use ReflectionClass;
 use function array_count_values;
 use function array_key_exists;
@@ -27193,11 +29940,11 @@ final class PHPStanDiagnoseExtension
 }
 namespace PHPStan\Diagnose;
 
+use _PHPStan_95d9e8b05\Fidry\CpuCoreCounter\Diagnoser;
 use PHPStan\Command\Output;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Process\CpuCoreCounter;
-use PHPStan\Process\SystemResources;
 use function sprintf;
 /**
  * Reports what PHPStan believes about the machine, so a user who disagrees with the
@@ -27207,11 +29954,9 @@ use function sprintf;
 final class SystemResourcesDiagnoseExtension implements \PHPStan\Diagnose\DiagnoseExtension
 {
     private CpuCoreCounter $cpuCoreCounter;
-    private SystemResources $systemResources;
     private ?float $loadLimit;
     public function __construct(
         CpuCoreCounter $cpuCoreCounter,
-        SystemResources $systemResources,
         #[AutowiredParameter('%parallel.loadLimit%')]
         ?float $loadLimit
     )
@@ -27285,8 +30030,8 @@ namespace PHPStan\File;
 
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
-use _PHPStan_cb3b7e994\Symfony\Component\Finder\Finder;
-use _PHPStan_cb3b7e994\Symfony\Component\Finder\Glob;
+use _PHPStan_95d9e8b05\Symfony\Component\Finder\Finder;
+use _PHPStan_95d9e8b05\Symfony\Component\Finder\Glob;
 use function array_key_exists;
 use function array_keys;
 use function closedir;
@@ -27619,7 +30364,7 @@ final class FileFinderResult
 }
 namespace PHPStan\File;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use function array_pop;
@@ -28072,57 +30817,308 @@ final class SystemAgnosticSimpleRelativePathHelper implements \PHPStan\File\Rela
 }
 namespace PHPStan\Fixable;
 
-use Exception;
-final class FileChangedException extends Exception
-{
-}
-namespace PHPStan\Fixable;
-
-use Exception;
-final class MergeConflictException extends Exception
-{
-}
-namespace PHPStan\Fixable;
-
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
-use _PHPStan_cb3b7e994\PhpMerge\internal\Hunk;
-use _PHPStan_cb3b7e994\PhpMerge\internal\Line;
-use _PHPStan_cb3b7e994\PhpMerge\MergeConflict;
-use _PHPStan_cb3b7e994\PhpMerge\PhpMerge;
-use PHPStan\Analyser\FixedErrorDiff;
+use PHPStan\Analyser\Error;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileReader;
-use ReflectionClass;
-use _PHPStan_cb3b7e994\SebastianBergmann\Diff\Differ;
-use _PHPStan_cb3b7e994\SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
-use function array_map;
+use PHPStan\File\FileWriter;
+use function array_key_exists;
+use function array_values;
+use function is_file;
+/**
+ * Applies the fixes of errors to the files on disk in one go, like one round of `phpstan analyse --fix`.
+ *
+ * The fix of an error is applied whole or not at all. It is skipped when it overlaps with a fix
+ * of an earlier error or when a file it changes was changed since the analysis.
+ * Fixing errors caused by other fixes needs a new analysis, which `phpstan analyse --fix` runs in rounds.
+ *
+ * @api
+ */
+#[AutowiredService]
+final class ErrorFixer
+{
+    private \PHPStan\Fixable\Patcher $patcher;
+    public function __construct(\PHPStan\Fixable\Patcher $patcher)
+    {
+    }
+    /**
+     * Errors that are not fixable are ignored.
+     *
+     * @param list<Error> $errors
+     */
+    public function fix(array $errors): \PHPStan\Fixable\FixResult
+    {
+    }
+}
+namespace PHPStan\Fixable;
+
+use PHPStan\Analyser\Error;
+/**
+ * @api
+ */
+final class FixResult
+{
+    /**
+     * @var list<Error>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $fixedErrors;
+    /**
+     * @var list<Error>
+     */
+    private array $skippedErrors;
+    /**
+     * @var list<string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $changedFiles;
+    /**
+     * @param list<Error> $fixedErrors
+     * @param list<Error> $skippedErrors
+     * @param list<string> $changedFiles
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $fixedErrors,
+        array $skippedErrors,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $changedFiles
+    )
+    {
+    }
+    /**
+     * Errors whose fixes were applied. Two errors with the same fix, like an error
+     * in a trait reported for each class using it, are both fixed by one change.
+     *
+     * @return list<Error>
+     */
+    public function getFixedErrors(): array
+    {
+    }
+    /**
+     * Errors whose fixes overlap with the fix of another error or whose files changed since the analysis.
+     *
+     * @return list<Error>
+     */
+    public function getSkippedErrors(): array
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    public function getChangedFiles(): array
+    {
+    }
+}
+namespace PHPStan\Fixable;
+
+use Override;
+use PhpParser\Comment\Doc;
+use PhpParser\NameContext;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Stmt;
+use PhpParser\NodeFinder;
+use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Ast\AbstractNodeVisitor;
+use PHPStan\PhpDocParser\Ast\Node as PhpDocNodeInterface;
+use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
+use PHPStan\PhpDocParser\Ast\NodeVisitor\CloningVisitor as PhpDocCloningVisitor;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\RelativeNameNode;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
+use PHPStan\PhpDocParser\Printer\Printer;
+use function array_pop;
+use function array_search;
+use function array_splice;
+use function count;
+use function explode;
+use function ltrim;
+use function str_contains;
+use function str_starts_with;
+use function strcasecmp;
+use function strtolower;
+use function substr;
+/**
+ * Writes the class names that were added to a file, e.g. by a fix,
+ * relative to the namespace and the `use` statements, and adds the `use`
+ * statements they need, the same way in PHP code and in PHPDocs.
+ *
+ * Runs after php-parser's NameResolver in the same traversal, on statements
+ * cloned with CloningVisitor:
+ *
+ * - in PHP code, an added name is a FullyQualified without the origNode attribute,
+ * - in a PHPDoc that changed, an added name is a fully qualified name (\Foo\Bar)
+ *   in a tag that was not there before.
+ *
+ * Names that were already in the file are kept as they are written.
+ *
+ * An added class name is written as:
+ *
+ * 1. `self` for the current class, if $preferSelf is enabled,
+ * 2. relative to an existing `use`, or to the current namespace,
+ * 3. its short name with a new `use`, if $importNames is enabled
+ *    and the short name does not mean something else in the file already,
+ * 4. otherwise fully qualified.
+ *
+ * @internal
+ */
+final class NewClassNamesVisitor extends NodeVisitorAbstract
+{
+    private NameContext $nameContext;
+    private bool $importNames;
+    private bool $preferSelf;
+    private const SKIP_ATTRIBUTE = 'phpstanNewClassNamesSkip';
+    private const SELF_NOT_ALLOWED_ATTRIBUTE = 'phpstanNewClassNamesSelfNotAllowed';
+    /** @var list<non-empty-string|null> */
+    private array $classNames = [];
+    /** @var array<lowercase-string, true> lowercase first parts of names in the current namespace that already mean something */
+    private array $takenNames = [];
+    /** @var list<non-empty-string> */
+    private array $addedUses = [];
+    private Lexer $phpDocLexer;
+    private PhpDocParser $phpDocParser;
+    public function __construct(NameContext $nameContext, bool $importNames, bool $preferSelf)
+    {
+    }
+    #[Override]
+    public function beforeTraverse(array $nodes): ?array
+    {
+    }
+    #[Override]
+    public function enterNode(Node $node): ?Node
+    {
+    }
+    #[Override]
+    public function leaveNode(Node $node): ?Node
+    {
+    }
+    #[Override]
+    public function afterTraverse(array $nodes): ?array
+    {
+    }
+    /**
+     * @param non-empty-string $className
+     * @return Name|null null to keep it fully qualified
+     */
+    private function resolve(string $className, bool $selfAllowed): ?Name
+    {
+    }
+    /**
+     * Names that the file already uses without a leading backslash, and classes declared in it.
+     * Importing a class with one of these short names would change what the existing code means.
+     *
+     * @param Node[] $nodes
+     * @return array<lowercase-string, true>
+     */
+    private function findTakenNames(array $nodes): array
+    {
+    }
+    /**
+     * Writes the fully qualified class names in the PHPDoc tags that the fix added,
+     * like the added class names in PHP code.
+     */
+    private function writeNewPhpDocNames(Node $node): void
+    {
+    }
+    private function parsePhpDoc(Doc $doc): PhpDocNode
+    {
+    }
+    /**
+     * Function and constant names are not class names,
+     * and `self` is not valid PHP everywhere a class name is.
+     */
+    private function markNames(Node $node): void
+    {
+    }
+    /**
+     * Inserts the added `use` statements in alphabetical order among the existing ones.
+     *
+     * @param list<Stmt> $stmts statements of a namespace, or of a file without one
+     * @return list<Stmt>
+     */
+    private function addUses(array $stmts): array
+    {
+    }
+    /**
+     * @param list<Stmt> $stmts
+     * @param non-empty-string $className
+     * @return list<Stmt>
+     */
+    private function addUse(array $stmts, string $className): array
+    {
+    }
+}
+namespace PHPStan\Fixable;
+
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use PHPStan\Analyser\FixedErrorDiff;
+use PHPStan\DependencyInjection\AutowiredService;
+use function array_splice;
 use function count;
 use function hash;
 use function implode;
+use function intdiv;
 use function str_starts_with;
 use function substr;
-use const PHP_VERSION_ID;
 use const PREG_SPLIT_DELIM_CAPTURE;
 use const PREG_SPLIT_NO_EMPTY;
+/**
+ * Applies unified diffs that were computed against the current contents of the files.
+ *
+ * Each diff is reduced to its change runs (lines removed from the original file
+ * and lines inserted in their place). Runs are spliced into the original file
+ * in a single pass, so the cost is linear in the size of the files and the diffs.
+ *
+ * The diffs of one error form a group, which is applied as a whole or skipped
+ * as a whole: when a run of the group overlaps a run of an earlier group, or when
+ * a diff of the group was computed against different contents.
+ */
 #[AutowiredService]
 final class Patcher
 {
-    private Differ $differ;
-    public function __construct()
+    /**
+     * @param array<string, string> $contentsByFile current contents of the files the diffs change
+     * @param list<list<FixedErrorDiff>> $diffGroups diffs of each error
+     * @return array{contents: array<string, string>, appliedCount: int, skippedCount: int, skippedGroups: list<int>} contents of the files in $contentsByFile, keys of the skipped $diffGroups
+     */
+    public function apply(array $contentsByFile, array $diffGroups): array
     {
     }
     /**
-     * @param FixedErrorDiff[] $diffs
-     * @throws FileChangedException
-     * @throws MergeConflictException
+     * @param list<array{int, int, list<string>}> $runs
      */
-    public function applyDiffs(string $fileName, array $diffs): string
+    private static function splice(string $fileContents, array $runs): string
     {
     }
     /**
-     * @return array<array{mixed, Differ::OLD|Differ::ADDED|Differ::REMOVED}>
+     * Returns the index in $acceptedRuns where $run belongs, or null when it conflicts with an accepted run.
+     * When the run at the returned index is identical to $run, the change is already accepted.
+     *
+     * @param list<array{int, int, list<string>}> $acceptedRuns
+     * @param array{int, int, list<string>} $run
      */
-    private function reconstructFullDiff(string $originalText, string $unifiedDiff): array
+    private static function findInsertionIndex(array $acceptedRuns, array $run): ?int
+    {
+    }
+    /**
+     * @param array{int, int, list<string>} $a
+     * @param array{int, int, list<string>} $b
+     */
+    private static function isBefore(array $a, array $b): bool
+    {
+    }
+    /**
+     * @return list<array{int, int, list<string>}> [0-based start line in the original file, number of removed lines, added lines]
+     */
+    private static function parseChangeRuns(string $unifiedDiff): array
     {
     }
     /**
@@ -28162,8 +31158,11 @@ use PHPStan\PhpDocParser\Ast\NodeTraverser;
 use PHPStan\PhpDocParser\Ast\NodeVisitor\CloningVisitor;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use PHPStan\PhpDocParser\Printer\Printer;
 use function count;
 /**
@@ -28176,13 +31175,22 @@ final class PhpDocEditor
     private Printer $printer;
     private Lexer $lexer;
     private PhpDocParser $phpDocParser;
-    public function __construct(Printer $printer, Lexer $lexer, PhpDocParser $phpDocParser)
+    public function __construct(Printer $printer)
     {
     }
     /**
      * @param callable(Node): (Node|Node[]|null) $callback
      */
     public function edit(\PhpParser\Node $node, callable $callback): void
+    {
+    }
+    /**
+     * Edits the text of a PHPDoc with format-preserving printing.
+     *
+     * @param callable(Node): (Node|Node[]|null) $callback
+     * @return string|null null when the PHPDoc is left without contents
+     */
+    public function editText(string $phpDoc, callable $callback): ?string
     {
     }
 }
@@ -28242,34 +31250,69 @@ namespace PHPStan\Fixable;
 
 use Override;
 use PhpParser\Node;
+use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Node\VirtualNode;
+use PHPStan\Rules\NodeFix;
 use PHPStan\ShouldNotHappenException;
+use function array_key_exists;
+use function count;
+use function get_class;
+use function is_array;
+use function spl_object_id;
+/**
+ * Applies the NodeFixes of one error to the nodes of one file. Runs after CloningVisitor in the same traversal.
+ *
+ * Nodes are matched by their class and position in the file, not by identity, so a rule can take them
+ * from any parse of the same file contents. A CollectedDataNode rule parses files itself,
+ * and the parser cache does not keep the parsed nodes of every file until the fixes are made.
+ */
 final class ReplacingNodeVisitor extends NodeVisitorAbstract
 {
-    private Node $originalNode;
-    /**
-     * @var callable(Node): Node
-     */
-    private $newNodeCallable;
+    /** @var array<string, list<callable(Node): (Node|NodeVisitor::REMOVE_NODE)>> */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public bool $found = \false;
+    public array $callbacks = [];
+    /** @var array<string, true> nodes in an array, those can be removed */
+    private array $removable = [];
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public int $appliedCount = 0;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public bool $failed = \false;
     /**
-     * @param callable(Node): Node $newNodeCallable
+     * @param non-empty-list<NodeFix> $fixes
      */
-    public function __construct(Node $originalNode, $newNodeCallable)
+    public function __construct(array $fixes)
+    {
+    }
+    /**
+     * CloningVisitor has just cloned $node, its subnodes are still the original nodes.
+     */
+    #[Override]
+    public function enterNode(Node $node): ?Node
     {
     }
     /**
      * The replacement happens in leaveNode() so that the callable receives a node
-     * whose children have already been cloned by CloningVisitor. That makes it
-     * possible to run both visitors in a single traversal.
+     * whose children have already been cloned and fixed.
+     * @return \PhpParser\Node|int|null
      */
     #[Override]
-    public function leaveNode(Node $node): ?Node
+    public function leaveNode(Node $node)
     {
     }
-    public function isFound(): bool
+    /**
+     * Whether every node was found and fixed.
+     */
+    public function isComplete(): bool
+    {
+    }
+    private static function getKey(Node $node): ?string
+    {
+    }
+    /**
+     * @return array<Node>|null
+     */
+    private static function getItems(Node $node): ?array
     {
     }
 }
@@ -28327,8 +31370,8 @@ final class CombinationsHelper
 }
 namespace PHPStan\Internal;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PHPStan\File\CouldNotReadFileException;
 use PHPStan\File\FileReader;
 use function basename;
@@ -28441,8 +31484,8 @@ final class DirectoryCreatorException extends Exception
 }
 namespace PHPStan\Internal;
 
-use _PHPStan_cb3b7e994\GuzzleHttp\Client;
-use _PHPStan_cb3b7e994\GuzzleHttp\RequestOptions;
+use _PHPStan_95d9e8b05\GuzzleHttp\Client;
+use _PHPStan_95d9e8b05\GuzzleHttp\RequestOptions;
 use PHPStan\DependencyInjection\AutowiredService;
 use function extension_loaded;
 #[AutowiredService]
@@ -28617,6 +31660,286 @@ use function str_replace;
 final class SprintfHelper
 {
     public static function escapeFormatString(string $format): string
+    {
+    }
+}
+namespace PHPStan\Neon;
+
+use DateTimeInterface;
+use _PHPStan_95d9e8b05\Nette\Neon\Node;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\ArrayItemNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\BlockArrayNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\EntityChainNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\EntityNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\InlineArrayNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\LiteralNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Node\StringNode;
+use _PHPStan_95d9e8b05\Nette\Neon\Token;
+use _PHPStan_95d9e8b05\Nette\Neon\TokenStream;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\PhpDocParser\Printer\DiffElem;
+use PHPStan\PhpDocParser\Printer\Differ;
+use function array_slice;
+use function array_values;
+use function count;
+use function get_class;
+use function implode;
+use function in_array;
+use function ltrim;
+use function spl_object_id;
+use function str_contains;
+use function strlen;
+use function substr;
+/**
+ * Format-preserving printer of NEON syntax trees parsed by nette/neon,
+ * inspired by the format-preserving printers of nikic/php-parser and phpstan/phpdoc-parser.
+ *
+ * A tree is changed by replacing its nodes with changed clones. A clone keeps the token positions of the node
+ * it was cloned from and stands for it: what did not change in it is printed as it was written, with
+ * its comments and whitespace. A node created with `new` has no token positions and is printed anew.
+ * Items of lists are compared with the original ones, so they can be removed, added and reordered.
+ *
+ * nette/neon removes \r from the input before tokenizing it, so the printed code has \n line breaks.
+ */
+#[AutowiredService]
+final class Printer
+{
+    private const DEFAULT_INDENT = "\t";
+    private const DATE_FORMAT = 'Y-m-d H:i:s.u e';
+    /**
+     * Delimits a reference to a range of tokens of the original code in the printed code,
+     * so that the unchanged code is copied once at the end, not by every node that contains it.
+     */
+    private const COPY = "\x00";
+    /** The PCRE of PHP < 8.2 does not accept a NUL byte in a pattern, only its escape. */
+    private const COPY_PATTERN = '~\x00(\d+)-(\d+)\x00~';
+    private const TRIVIA_TOKENS = [Token::Newline, Token::Whitespace, Token::Comment];
+    /**
+     * Prepared token streams by spl_object_id(). The stream is kept with them, so that its ID cannot be reused.
+     * WeakMap is not available on PHP 7.4.
+     *
+     * @var array<int, array{stream: TokenStream, code: string, offsets: list<int>, tokens: list<Token>}>
+     */
+    private array $streams = [];
+    /**
+     * Prepared original trees by spl_object_id(), with the root node for the same reason.
+     *
+     * @var array<int, array{root: Node, originals: array<string, Node|false>, ends: array<int, int>, indent: string}>
+     */
+    private array $trees = [];
+    private string $code = '';
+    private bool $useCopies = \true;
+    /** @var list<int> byte offset of each token, and the length of the code at the end */
+    private array $offsets = [];
+    /** @var list<Token> */
+    private array $tokens = [];
+    /** @var array<string, Node|false> original nodes by class and position, false when ambiguous */
+    private array $originals = [];
+    /** @var array<int, int> effective end token of original nodes by spl_object_id() */
+    private array $ends = [];
+    private string $indentUnit = self::DEFAULT_INDENT;
+    /** @var Differ<Node> */
+    private Differ $differ;
+    public function __construct()
+    {
+    }
+    /**
+     * Prints $node, which is $originalNode or a changed copy of it.
+     * The original tree has to be parsed from $originalTokens, and stay unchanged.
+     */
+    public function printFormatPreserving(Node $node, Node $originalNode, TokenStream $originalTokens): string
+    {
+    }
+    /**
+     * Prints $node like printFormatPreserving(), as the changes of the original code.
+     * Unchanged code is not copied, so the time depends on the size of the changes, not of the code.
+     *
+     * @return list<array{start: int, end: int, replacement: string}> byte offsets in the original code without \r,
+     *                                                                  the end is exclusive
+     */
+    public function printChanges(Node $node, Node $originalNode, TokenStream $originalTokens): array
+    {
+    }
+    /**
+     * @param list<array{start: int, end: int, replacement: string}> $changes
+     */
+    private function addChange(array &$changes, int $start, int $end, string $replacement): void
+    {
+    }
+    /**
+     * The printed code with unchanged ranges of the original code as references to its tokens,
+     * see copy(). Unless the code has the character of the references, then they are the code itself.
+     */
+    private function printWithCopies(Node $node, Node $originalNode, TokenStream $originalTokens): string
+    {
+    }
+    private function prepare(Node $originalNode, TokenStream $originalTokens): void
+    {
+    }
+    private function indexOriginals(Node $node): void
+    {
+    }
+    private static function getKey(Node $node): ?string
+    {
+    }
+    private function findOriginal(Node $node): ?Node
+    {
+    }
+    /**
+     * @param string $indent indentation of the line the node starts on
+     */
+    private function p(Node $node, string $indent): string
+    {
+    }
+    private function printItem(ArrayItemNode $node, ArrayItemNode $original, string $indent): string
+    {
+    }
+    /**
+     * Prints the original node with its children replaced.
+     *
+     * @param list<array{Node, Node}> $pairs original child and its replacement, in the order of the source
+     */
+    private function splice(Node $original, array $pairs): string
+    {
+    }
+    /**
+     * Every item of a block array is on its own lines. The comment at the end of the last line of an item
+     * belongs to the item, and so do the lines between the previous item and the item, like comments.
+     */
+    private function printBlockItems(BlockArrayNode $node, BlockArrayNode $original): string
+    {
+    }
+    /**
+     * @param list<Node> $originalItems
+     */
+    private function printBlockRun(array $originalItems, ?int $runStart, ?int $runEnd): string
+    {
+    }
+    /**
+     * The comment and whitespace after the item on its last line.
+     *
+     * @param list<Node> $originalItems
+     */
+    private function getBlockItemTrail(array $originalItems, int $i): string
+    {
+    }
+    /**
+     * The lines before the item after the line break of the previous item, like empty lines and comments,
+     * with the indentation of the item.
+     *
+     * @param list<Node> $originalItems
+     * @param int<0, max> $i
+     */
+    private function getBlockItemLead(BlockArrayNode $original, array $originalItems, int $i, string $itemIndent): string
+    {
+    }
+    /**
+     * Position of the first line break from $pos, or the end of the code.
+     */
+    private function findLineBreak(int $pos): int
+    {
+    }
+    /**
+     * @param list<Node> $originalItems
+     */
+    private function getBlockItemIndent(array $originalItems): string
+    {
+    }
+    /**
+     * Items of an inline array, like `[a, b]`, and attributes of an entity, like `Foo(a, b)`.
+     *
+     * @param array<Node> $items
+     * @param array<Node> $originalItems
+     * @param int $open position of the opening bracket
+     * @param int $close position of the closing bracket
+     */
+    private function printInlineItems(array $items, array $originalItems, int $open, int $close, string $indent): string
+    {
+    }
+    /**
+     * @param list<Node> $originalItems
+     */
+    private function printInlineRun(array $originalItems, ?int $runStart, ?int $runEnd): string
+    {
+    }
+    /**
+     * @param list<Node> $originalItems
+     */
+    private function getInlineSeparator(array $originalItems, int $i): string
+    {
+    }
+    /**
+     * Kept items with their original index, and added items without it. Unchanged items at the start
+     * and at the end are common, like after removing one item from a long list. They are not left
+     * to the differ, and each of the two runs is one element with the index of its last item,
+     * so that the time does not grow with the length of the list.
+     *
+     * @param list<Node> $old
+     * @param list<Node> $new
+     * @return list<array{Node, int<0, max>, int<0, max>}|array{Node, null, null}>
+     */
+    private function diff(array $old, array $new): array
+    {
+    }
+    private function printListItem(Node $item, string $indent, bool $inline): string
+    {
+    }
+    /**
+     * The value of a block item after its key and colon, or after its dash.
+     */
+    private function printValueAfterHead(Node $value, string $indent): string
+    {
+    }
+    private function printNew(Node $node, string $indent): string
+    {
+    }
+    /**
+     * A key without a value, like `key:`, has a null value positioned at the token after the colon.
+     */
+    private function isEmptyValue(Node $node): bool
+    {
+    }
+    /**
+     * The first token of the original node. A block array starts with the comment lines right above its first item,
+     * they belong to the item like the lines between two items belong to the second one.
+     */
+    private function start(Node $original): int
+    {
+    }
+    /**
+     * The last token of the original node. A node ending with an empty value ends before it,
+     * its end position is after it. A block array ends at the end of its last line.
+     */
+    private function end(Node $original): int
+    {
+    }
+    /**
+     * The unchanged original node, see copy().
+     */
+    private function text(Node $original): string
+    {
+    }
+    /**
+     * Unchanged code of the tokens from $from to $to, inclusive, to be put into the printed code as it is.
+     * The text is not there yet, use textRange() to look at it.
+     */
+    private function copy(int $from, int $to): string
+    {
+    }
+    /**
+     * Code of the tokens from $from to $to, inclusive.
+     */
+    private function textRange(int $from, int $to): string
+    {
+    }
+    private function isFirstOnLine(int $pos): bool
+    {
+    }
+    /**
+     * Indentation of the line of the token.
+     */
+    private function indentAt(int $pos): string
     {
     }
 }
@@ -29715,16 +33038,12 @@ final class CollectedDataNode extends NodeAbstract implements \PHPStan\Node\Virt
      * @var CollectorData
      */
     private array $collectedData;
-    #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public bool $onlyFiles;
+    private bool $onlyFiles;
+    private ?\PHPStan\Node\CollectedDataNodeReads $reads;
     /**
      * @param CollectorData $collectedData
      */
-    public function __construct(
-        array $collectedData,
-        #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        bool $onlyFiles
-    )
+    public function __construct(array $collectedData, bool $onlyFiles, ?\PHPStan\Node\CollectedDataNodeReads $reads = null)
     {
     }
     /**
@@ -29753,6 +33072,36 @@ final class CollectedDataNode extends NodeAbstract implements \PHPStan\Node\Virt
      */
     #[Override]
     public function getSubNodeNames(): array
+    {
+    }
+}
+namespace PHPStan\Node;
+
+use function array_keys;
+/**
+ * What a rule asked from a CollectedDataNode while it ran. The result cache reuses the rule's errors
+ * on the next run when none of it changed.
+ */
+final class CollectedDataNodeReads
+{
+    /** @var array<string, true> */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $collectorTypes = [];
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public bool $onlyFilesRead = \false;
+    public function addCollectorType(string $collectorType): void
+    {
+    }
+    public function addOnlyFiles(): void
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    public function getCollectorTypes(): array
+    {
+    }
+    public function isOnlyFilesRead(): bool
     {
     }
 }
@@ -30348,42 +33697,6 @@ final class ParameterVariableOriginalValueExpr extends Expr implements VirtualNo
     {
     }
     public function getVariableName(): string
-    {
-    }
-    #[Override]
-    public function getType(): string
-    {
-    }
-    /**
-     * @return string[]
-     */
-    #[Override]
-    public function getSubNodeNames(): array
-    {
-    }
-}
-namespace PHPStan\Node\Expr;
-
-use Override;
-use PhpParser\Node\Expr;
-use PHPStan\Node\VirtualNode;
-use PHPStan\Turbo\ReferencedByTurboExtension;
-#[ReferencedByTurboExtension('possiblyImpureCallExpr')]
-final class PossiblyImpureCallExpr extends Expr implements VirtualNode
-{
-    public Expr $callExpr;
-    public Expr $impactedExpr;
-    #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public string $callDescription;
-    public function __construct(
-        Expr $callExpr,
-        Expr $impactedExpr,
-        #[\PHPStan\Reflection\Attribute\PrivateProperty]
-        string $callDescription
-    )
-    {
-    }
-    public function getCallDescription(): string
     {
     }
     #[Override]
@@ -32212,7 +35525,6 @@ use PHPStan\Node\Expr\NativeTypeExpr;
 use PHPStan\Node\Expr\OriginalForeachKeyExpr;
 use PHPStan\Node\Expr\OriginalForeachValueExpr;
 use PHPStan\Node\Expr\ParameterVariableOriginalValueExpr;
-use PHPStan\Node\Expr\PossiblyImpureCallExpr;
 use PHPStan\Node\Expr\PropertyInitializationExpr;
 use PHPStan\Node\Expr\SetExistingOffsetValueTypeExpr;
 use PHPStan\Node\Expr\SetOffsetValueTypeExpr;
@@ -32279,9 +35591,6 @@ final class Printer extends Standard
     {
     }
     protected function pPHPStan_Node_AlwaysRememberedExpr(AlwaysRememberedExpr $expr): string
-    {
-    }
-    protected function pPHPStan_Node_PossiblyImpureCallExpr(PossiblyImpureCallExpr $expr): string
     {
     }
     protected function pPHPStan_Node_PropertyInitializationExpr(PropertyInitializationExpr $expr): string
@@ -33497,8 +36806,8 @@ use PHPStan\Command\Output;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Diagnose\DiagnoseExtension;
 use PHPStan\Process\ProcessHelper;
+use PHPStan\Process\Restart\OpcacheSettings;
 use PHPStan\Turbo\TurboExtensionEnabler;
-use PHPStan\Turbo\TurboProcessRestarter;
 use function function_exists;
 use function getmypid;
 use function opcache_get_status;
@@ -33517,9 +36826,9 @@ use const PHP_OS_FAMILY;
  *   version. The extension arms the phar-fork-guard: libphar serves phar://
  *   reads through one shared per-archive fd whose seek cursor forked
  *   processes race on, corrupting reads — the guard gives each forked child
- *   a private cursor. TurboProcessRestarter re-executes the main process
- *   with the distributed binary loaded when needed (a forked worker inherits
- *   the parent's extensions; the spawn-time `-d extension=` injection cannot
+ *   a private cursor. RestartManager re-executes the main process with the
+ *   distributed binary loaded when needed (a forked worker inherits the
+ *   parent's extensions; the spawn-time `-d extension=` injection cannot
  *   reach it). Outside a phar there is nothing to guard, and no turbo is
  *   lost by forking either: the distributed binaries only exist next to a
  *   phar, so spawned workers of a source checkout run without turbo too —
@@ -33527,8 +36836,8 @@ use const PHP_OS_FAMILY;
  * - JIT off — its shared code buffer is not safe to populate concurrently
  *   from forked children. Plain OPcache is fine: concurrent population of
  *   its SHM under the allocator lock is php-fpm's normal operating model,
- *   and TurboProcessRestarter deliberately activates it for the restarted
- *   process (with JIT pinned off).
+ *   and RestartManager deliberately activates it for the restarted process
+ *   (with JIT pinned off).
  *
  * A forked worker ends with the extension's _exit() instead of PHP's full
  * teardown (see ForkedChildTerminator): the child inherits every loaded
@@ -33556,10 +36865,10 @@ use PHPStan\Command\InceptionNotSuccessfulException;
 use PHPStan\Process\ForkedChildCrashReporter;
 use PHPStan\Process\ForkedChildTerminator;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\EventLoop\TimerInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpServer;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\StreamOutput;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\TimerInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpServer;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
 use function fclose;
 use function function_exists;
@@ -33628,12 +36937,13 @@ final class ForkedProcess extends \PHPStan\Parallel\ProcessBase
 namespace PHPStan\Parallel;
 
 use Closure;
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Decoder;
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Encoder;
-use _PHPStan_cb3b7e994\Nette\Utils\Random;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Decoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Encoder;
+use _PHPStan_95d9e8b05\Nette\Utils\Random;
 use PHPStan\Analyser\AnalyserResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\InternalError;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ValueDependencyCollector;
 use PHPStan\Cache\ArenaCache;
 use PHPStan\Command\CommandHelper;
@@ -33645,12 +36955,12 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Process\ProcessHelper;
 use PHPStan\Process\TerminationSignal;
 use PHPStan\Reflection\BetterReflection\SourceLocator\PreForkDirectorySymbolScanner;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\Promise\Deferred;
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
-use _PHPStan_cb3b7e994\React\Socket\ConnectionInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpServer;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\Promise\Deferred;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\Socket\ConnectionInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpServer;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
 use Throwable;
 use function array_map;
 use function array_pop;
@@ -33709,8 +37019,8 @@ final class ParallelAnalyser
 }
 namespace PHPStan\Parallel;
 
-use _PHPStan_cb3b7e994\React\Stream\ReadableStreamInterface;
-use _PHPStan_cb3b7e994\React\Stream\WritableStreamInterface;
+use _PHPStan_95d9e8b05\React\Stream\ReadableStreamInterface;
+use _PHPStan_95d9e8b05\React\Stream\WritableStreamInterface;
 use Throwable;
 /**
  * A parallel analysis worker as seen by ParallelAnalyser / ProcessPool.
@@ -33743,10 +37053,10 @@ interface Process
 namespace PHPStan\Parallel;
 
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\EventLoop\TimerInterface;
-use _PHPStan_cb3b7e994\React\Stream\ReadableStreamInterface;
-use _PHPStan_cb3b7e994\React\Stream\WritableStreamInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\TimerInterface;
+use _PHPStan_95d9e8b05\React\Stream\ReadableStreamInterface;
+use _PHPStan_95d9e8b05\React\Stream\WritableStreamInterface;
 use Throwable;
 use function sprintf;
 /**
@@ -33794,7 +37104,7 @@ abstract class ProcessBase implements \PHPStan\Parallel\Process
 namespace PHPStan\Parallel;
 
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\Socket\TcpServer;
+use _PHPStan_95d9e8b05\React\Socket\TcpServer;
 use function array_key_exists;
 use function array_keys;
 use function count;
@@ -33944,8 +37254,8 @@ final class Scheduler implements DiagnoseExtension
 namespace PHPStan\Parallel;
 
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\ChildProcess\Process;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\ChildProcess\Process;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
 use Throwable;
 use function fclose;
 use function rewind;
@@ -33982,8 +37292,8 @@ final class SpawnedProcess extends \PHPStan\Parallel\ProcessBase
 }
 namespace PHPStan\Parallel;
 
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Decoder;
-use _PHPStan_cb3b7e994\Clue\React\NDJson\Encoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Decoder;
+use _PHPStan_95d9e8b05\Clue\React\NDJson\Encoder;
 use PHPStan\Analyser\FileAnalyser;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Analyser\NodeScopeResolver;
@@ -33998,13 +37308,13 @@ use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Turbo\TurboExtensionEnabler;
-use _PHPStan_cb3b7e994\React\EventLoop\StreamSelectLoop;
-use _PHPStan_cb3b7e994\React\Socket\ConnectionInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpConnector;
-use _PHPStan_cb3b7e994\React\Stream\ReadableStreamInterface;
-use _PHPStan_cb3b7e994\React\Stream\WritableStreamInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\StringInput;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\OutputInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\StreamSelectLoop;
+use _PHPStan_95d9e8b05\React\Socket\ConnectionInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpConnector;
+use _PHPStan_95d9e8b05\React\Stream\ReadableStreamInterface;
+use _PHPStan_95d9e8b05\React\Stream\WritableStreamInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\StringInput;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_fill_keys;
 use function array_filter;
@@ -34820,6 +38130,16 @@ final class PathRoutingParser implements \PHPStan\Parser\Parser
     public function parseFile(string $file): array
     {
     }
+    /**
+     * Whether parseFile() returns the simplified AST of the file, without function bodies
+     * and code for other PHP versions, instead of the full AST of an analysed file.
+     */
+    public function returnsSimplifiedAst(string $file): bool
+    {
+    }
+    private function getParser(string $file): \PHPStan\Parser\Parser
+    {
+    }
     public function parseString(string $sourceCode): array
     {
     }
@@ -34972,7 +38292,6 @@ final class RichParser implements \PHPStan\Parser\Parser
      */
     private ExtensionsCollection $nodeVisitors;
     private IgnoreLexer $ignoreLexer;
-    public const VISITOR_SERVICE_TAG = 'phpstan.parser.richParserNodeVisitor';
     private const PHPDOC_TAG_REGEX = '(@(?:[a-z][a-z0-9-\\\\]+:)?[a-z][a-z0-9-\\\\]*+)';
     private const PHPDOC_DOCTRINE_TAG_REGEX = '(@[a-z_\\\\][a-z0-9_\:\\\\]*[a-z_][a-z0-9_]*)';
     /**
@@ -35235,8 +38554,8 @@ final class ComposerPhpVersionFactory
 }
 namespace PHPStan\Php;
 
-use _PHPStan_cb3b7e994\Composer\Semver\VersionParser;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Composer\Semver\VersionParser;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use function sprintf;
 final class ComposerPhpVersionParser
 {
@@ -37889,7 +41208,7 @@ use Closure;
 use Generator;
 use Iterator;
 use IteratorAggregate;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\ConstantResolver;
 use PHPStan\Analyser\NameScope;
@@ -37917,6 +41236,7 @@ use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\InvalidTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\NameNode;
 use PHPStan\PhpDocParser\Ast\Type\NullableTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ObjectShapeNode;
 use PHPStan\PhpDocParser\Ast\Type\OffsetAccessTypeNode;
@@ -37975,12 +41295,12 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IterableType;
 use PHPStan\Type\KeyOfType;
 use PHPStan\Type\LateResolvableArrayShapeType;
+use PHPStan\Type\LateResolvableObjectShapeType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NewObjectType;
 use PHPStan\Type\NonAcceptingNeverType;
 use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\NullType;
-use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\OffsetAccessType;
@@ -38050,6 +41370,12 @@ final class TypeNodeResolver
     }
     /** @api */
     public function resolve(TypeNode $typeNode, NameScope $nameScope): Type
+    {
+    }
+    /**
+     * A name node is always a class, even when it is named like a keyword or a template type.
+     */
+    private function resolveNameNode(NameNode $typeNode, NameScope $nameScope): Type
     {
     }
     private function resolveIdentifierTypeNode(IdentifierTypeNode $typeNode, NameScope $nameScope): Type
@@ -38232,34 +41558,28 @@ final class TypeStringResolver
 }
 namespace PHPStan\Process;
 
-use _PHPStan_cb3b7e994\Fidry\CpuCoreCounter\CpuCoreCounter as FidryCpuCoreCounter;
-use _PHPStan_cb3b7e994\Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
+use _PHPStan_95d9e8b05\Fidry\CpuCoreCounter\CpuCoreCounter as FidryCpuCoreCounter;
+use _PHPStan_95d9e8b05\Fidry\CpuCoreCounter\Finder\CpuCoreFinder;
+use _PHPStan_95d9e8b05\Fidry\CpuCoreCounter\Finder\FinderRegistry;
+use _PHPStan_95d9e8b05\Fidry\CpuCoreCounter\ParallelisationResult;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
-use function min;
 #[AutowiredService]
 final class CpuCoreCounter
 {
     private ?float $loadLimit;
-    private \PHPStan\Process\SystemResources $systemResources;
-    private ?int $count = null;
-    /**
-     * What fidry/cpu-core-counter found: the raw count, the count left after the
-     * load limit and KUBERNETES_CPU_LIMIT were applied, and that environment limit.
-     *
-     * @var array{int, int, int|null}|null
-     */
-    private ?array $detected = null;
+    private ?ParallelisationResult $result = null;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public CpuCoreFinder $countLimitFinder;
     public function __construct(
         #[AutowiredParameter('%parallel.loadLimit%')]
-        ?float $loadLimit,
-        \PHPStan\Process\SystemResources $systemResources
+        ?float $loadLimit
     )
     {
     }
     /**
      * Cores PHPStan may actually use: what the machine reports, reduced by the load
-     * limit and capped by the CPU quota of the cgroup it runs in.
+     * limit and capped by the cgroup CPU quota or, failing that, KUBERNETES_CPU_LIMIT.
      */
     public function getNumberOfCpuCores(): int
     {
@@ -38268,15 +41588,10 @@ final class CpuCoreCounter
     public function getDetectedNumberOfCpuCores(): int
     {
     }
-    /** The detected count after the load limit and KUBERNETES_CPU_LIMIT, before any cgroup quota. */
-    public function getNumberOfCpuCoresAfterLimits(): int
+    public function getCountLimitFinder(): CpuCoreFinder
     {
     }
-    public function getKubernetesCpuLimit(): ?int
-    {
-    }
-    /** @return array{int, int, int|null} */
-    private function detect(): array
+    private function detect(): ParallelisationResult
     {
     }
 }
@@ -38330,8 +41645,8 @@ final class ForkedChildCrashReporter
 }
 namespace PHPStan\Process;
 
+use PHPStan\Turbo\ForkedChild;
 use PHPStan\Turbo\TurboExtensionEnabler;
-use PHPStanTurbo\Runtime;
 use function register_shutdown_function;
 /**
  * Ends a pcntl_fork()ed worker with _exit() instead of PHP's full teardown.
@@ -38352,9 +41667,10 @@ use function register_shutdown_function;
  * Everything the parent reads from the child, the results over the socket
  * and the captured output, has gone through unbuffered fds by then.
  *
- * PHP itself has no _exit(); the turbo extension provides it, and fork mode
- * from a phar requires the extension anyway (see ForkParallelChecker). A
- * source checkout forking without it keeps the plain exit().
+ * PHP itself has no _exit(); the turbo extension provides it
+ * (ForkedChild::exitImmediately()), and fork mode from a phar requires the
+ * extension anyway (see ForkParallelChecker). A source checkout forking
+ * without it keeps the plain exit().
  */
 final class ForkedChildTerminator
 {
@@ -38369,14 +41685,14 @@ use PHPStan\Command\FixerWorkerRunner;
 use PHPStan\Command\Symfony\SymfonyOutput;
 use PHPStan\Command\Symfony\SymfonyStyle;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\EventLoop\TimerInterface;
-use _PHPStan_cb3b7e994\React\Promise\Deferred;
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
-use _PHPStan_cb3b7e994\React\Socket\TcpServer;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\StringInput;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\StreamOutput;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\EventLoop\TimerInterface;
+use _PHPStan_95d9e8b05\React\Promise\Deferred;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\Socket\TcpServer;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\StringInput;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\StreamOutput;
 use function fclose;
 use function pcntl_fork;
 use function pcntl_waitpid;
@@ -38464,9 +41780,10 @@ final class ProcessCrashedException extends Exception
 namespace PHPStan\Process;
 
 use PHPStan\Command\AnalyseCommand;
+use PHPStan\Process\Restart\OpcacheSettings;
+use PHPStan\Process\Restart\RestartManager;
 use PHPStan\Turbo\TurboExtensionSelector;
-use PHPStan\Turbo\TurboProcessRestarter;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\InputInterface;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\InputInterface;
 use function array_merge;
 use function escapeshellarg;
 use function getmypid;
@@ -38486,7 +41803,7 @@ use const PHP_OS_FAMILY;
  * configuration the worker runs with. The php.ini is inherited through
  * `-c`, but command-line `-d` entries are not, so whatever the spawning
  * process got that way - the turbo extension and the OPcache setup of the
- * TurboProcessRestarter restart - is repeated here; see
+ * restart (RestartManager) - is repeated here; see
  * resolveWorkerIniEntries() for the set and the reasoning.
  */
 final class ProcessHelper
@@ -38503,14 +41820,14 @@ final class ProcessHelper
      * The ini entries a spawned worker gets as `-d name=value`, besides
      * memory_limit, sys_temp_dir and the extension.
      *
-     * The OPcache entries are the ones the TurboProcessRestarter restart
-     * gives the main process (see its resolveOpcacheArgs() for what each
-     * does). A spawned worker compiles the whole application again and gains
+     * The OPcache entries are the ones the restart gives the main process
+     * (see OpcacheSettings::resolveIniEntries() for what each does).
+     * A spawned worker compiles the whole application again and gains
      * the same from them - optimized opcodes, interned strings, the
      * inheritance cache - and, with the turbo extension active in a phar,
      * the optimizer pass dropping PHPStan's own run-time type checks, which
      * exists only inside OPcache. Without them, a worker on a pcntl host
-     * re-executed itself through TurboProcessRestarter to get OPcache: one
+     * re-executed itself through the restart to get OPcache: one
      * exec more per worker, and one that rebuilt the command line from
      * scratch, dropping the sys_temp_dir and extension entries of the spawn.
      * A Windows worker ran without OPcache altogether.
@@ -38528,9 +41845,9 @@ final class ProcessHelper
      * mapping private to the process.
      *
      * The restart marker closes the loop: the worker's configuration is
-     * decided here, so the worker must not run TurboProcessRestarter itself.
+     * decided here, so the worker must not restart itself.
      *
-     * @param list<string> $opcacheArgs TurboProcessRestarter::getOpcacheArgs() of the spawning process
+     * @param list<string> $opcacheArgs OpcacheSettings::getIniEntries() of the spawning process
      * @return list<string>
      */
     public static function resolveWorkerIniEntries(array $opcacheArgs, string $osFamily, int $parentPid, int $workerNumber): array
@@ -38539,7 +41856,7 @@ final class ProcessHelper
 }
 namespace PHPStan\Process;
 
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
 /**
  * A PHPStan Pro analysis worker as seen by FixerApplication.
  *
@@ -38556,13 +41873,828 @@ interface ProcessPromise
      */
     public function run(): PromiseInterface;
 }
+namespace PHPStan\Process\Restart;
+
+use function addcslashes;
+use function array_key_exists;
+use function explode;
+use function file_get_contents;
+use function file_put_contents;
+use function ini_get_all;
+use function is_string;
+use function parse_ini_string;
+use function php_ini_loaded_file;
+use function php_ini_scanned_files;
+use function preg_match;
+use function preg_quote;
+use function preg_replace;
+use function strlen;
+use function substr;
+use function sys_get_temp_dir;
+use function tempnam;
+use function trim;
+use function unlink;
+use const PHP_EOL;
+use const PREG_OFFSET_CAPTURE;
+/**
+ * Builds the php.ini the restarted process runs with.
+ *
+ * It is a concatenation of every ini file the current process loaded, with the
+ * `extension=`/`zend_extension=` lines of the stripped extensions commented
+ * out, followed by the runtime `ini_get_all()` diff, followed by the forced
+ * settings. The runtime diff is what makes argv reconstruction unnecessary:
+ * a `php -d memory_limit=2G bin/phpstan` survives the restart even though
+ * $argv contains no `-d` flags, and so does every other command-line
+ * override.
+ *
+ * Unlike composer/xdebug-handler, whose tmp ini this is otherwise modelled
+ * on, nothing about opcache is decided here — its settings pass through
+ * verbatim, unless the opcache row of ExtensionRegistry forces them like any
+ * other reason's settings.
+ */
+final class IniComposer
+{
+    /**
+     * Writes the composed ini for the current process.
+     *
+     * @param list<string> $strippedExtensions
+     * @param array<string, string> $iniSettings
+     * @return string|null the path of the composed ini, null when it could not be built
+     */
+    public static function compose(array $strippedExtensions, array $iniSettings): ?string
+    {
+    }
+    /**
+     * @param list<string> $iniFiles
+     * @param list<string> $strippedExtensions
+     * @param array<string, string> $iniSettings
+     * @param array<string, mixed> $runtimeSettings as returned by ini_get_all(null, false)
+     * @return string|null null when one of the ini files could not be read or parsed
+     */
+    public static function composeContent(array $iniFiles, array $strippedExtensions, array $iniSettings, array $runtimeSettings): ?string
+    {
+    }
+    /**
+     * Every ini file the current process loaded, in load order.
+     *
+     * @return list<string>
+     */
+    public static function getAllIniFiles(): array
+    {
+    }
+    /**
+     * Directives after a [PATH=] or [HOST=] section only apply to that path or
+     * host, so copying them into an unsectioned file would apply them to
+     * everything.
+     */
+    private static function cutAtFirstSection(string $data): string
+    {
+    }
+    /**
+     * @param list<string> $strippedExtensions
+     */
+    private static function stripExtensionLines(string $data, array $strippedExtensions): string
+    {
+    }
+    /**
+     * A stripped extension's own settings have no owner in the restarted
+     * process; carrying them over would only make php complain.
+     *
+     * @param list<string> $strippedExtensions
+     */
+    private static function belongsToExtension(string $settingName, array $strippedExtensions): bool
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+use function explode;
+use function extension_loaded;
+use function in_array;
+use function ini_get;
+use function max;
+use function strtolower;
+use function trim;
+/**
+ * The OPcache configuration PHPStan runs with: the restart activates it for
+ * the main process (the opcache row of ExtensionRegistry), and ProcessHelper
+ * repeats it on the command line of every worker it spawns.
+ *
+ * bin/phpstan loads this class before the Composer autoloader, so it must only
+ * call functions native to PHP 7.4 - see PreAutoloadFilesTest.
+ */
+final class OpcacheSettings
+{
+    /** Shared memory reserved (not touched) for the opcode cache, in MB — see resolveIniEntries() for the sizing */
+    private const OPCACHE_MEMORY_CONSUMPTION_MB_LIMIT = 256;
+    /** Carved out of the memory above for interned strings, in MB */
+    private const OPCACHE_INTERNED_STRINGS_BUFFER_MB_LIMIT = 64;
+    private const OPCACHE_MAX_ACCELERATED_FILES_LIMIT = 20000;
+    /** PHP's default opcache.optimization_level, pinned so the optimizer (and the extension's pass in it) always runs */
+    private const OPCACHE_OPTIMIZATION_LEVEL = '0x7FFEBFFF';
+    /** The php.ini directives resolveIniEntries() reacts to */
+    private const OPCACHE_INI_INPUTS = ['opcache.file_cache_only', 'opcache.preload', 'opcache.memory_consumption', 'opcache.interned_strings_buffer', 'opcache.max_accelerated_files'];
+    /**
+     * Whether the OPcache configuration the restart would set differs from
+     * the one in effect — a reason to restart of its own: with every other
+     * extension already as PHPStan wants it (turbo loaded through php.ini,
+     * say) there would be nothing else to restart for, and OPcache would stay
+     * dormant.
+     *
+     * @param list<string> $opcacheArgs `name=value` entries, see resolveIniEntries()
+     * @param array<string, string|false> $currentIniValues ini_get() of each of those names
+     */
+    public static function isRestartNeeded(array $opcacheArgs, array $currentIniValues): bool
+    {
+    }
+    /**
+     * @param list<string> $opcacheArgs
+     * @return array<string, string|false>
+     */
+    public static function getCurrentIniValues(array $opcacheArgs): array
+    {
+    }
+    /**
+     * The ini parser stores booleans as "1" / "" for php.ini and -d values
+     * alike; ini_set()-style spellings are folded the same way.
+     */
+    private static function normalizeIniValue(string $value): string
+    {
+    }
+    /**
+     * Entries activating OPcache for the restarted process, and for the
+     * workers ProcessHelper spawns — see resolveIniEntries() for the
+     * reasoning behind each of them.
+     *
+     * Nothing is added when OPcache is not loaded at all — real on PHP <= 8.4,
+     * gone on 8.5+ (always built in and loaded). Loading it from here is not
+     * worth it: zend_extension=opcache emits a startup warning on builds
+     * without the shared object, and on 8.5+ always.
+     *
+     * @return list<string>
+     */
+    public static function getIniEntries(): array
+    {
+    }
+    /**
+     * OPcache directives for the restarted process, as `name=value` ini
+     * entries, given the current values of the OPCACHE_INI_INPUTS directives
+     * (the restarted process loads the same php.ini, so they are what it
+     * would otherwise run with).
+     *
+     * The exec is paid for anyway, so it doubles as the chance to activate
+     * OPcache, usually dormant on CLI (opcache.enable_cli defaults to off):
+     * optimized opcodes and the inheritance cache speed up the whole run, and
+     * the pcntl_fork()ed workers inherit the parent's warm shared memory
+     * instead of each compiling lazily-loaded classes for itself. Concurrent
+     * population of that inherited cache is safe — it is php-fpm's normal
+     * operating model (see ForkParallelChecker).
+     *
+     * JIT is always pinned off, even when the user's ini enables it — it is a
+     * measured slowdown for PHPStan's workload and its shared code buffer is
+     * not fork-safe, so honoring it would cost twice (the same treatment the
+     * restart gives xdebug). Merely flipping
+     * opcache.enable_cli=1 could also activate it behind the user's back: on
+     * PHP <= 8.3 opcache.jit defaults to `tracing`, so an ini setting just a
+     * non-zero opcache.jit_buffer_size (common web-tuning advice) suddenly
+     * JITs; on PHP >= 8.4 the buffer defaults to 64M, so an ini setting just
+     * opcache.jit does
+     * (https://php.watch/versions/8.4/opcache-jit-ini-default-changes).
+     * Pinning both directives covers both generations of defaults.
+     *
+     * Timestamp checks are switched off, or nothing of PHPStan itself would be
+     * cached: opcache_compile_file() refuses any file whose mtime it reads as
+     * 0, which is what every member of the distributed phar carried until the
+     * build started stamping them (phar.yml). It reads the mtime whenever
+     * opcache.validate_timestamps, opcache.file_update_protection or
+     * opcache.max_file_size is on, so all three go — for a private cache that
+     * dies with the process they revalidate nothing anyway, and skipping them
+     * also drops a stat() per include. The uncached state is what made
+     * OPcache *slower* than no OPcache for phar runs: code compiled under an
+     * active OPcache but not persisted never gets its strings interned into
+     * SHM, so its type names have no class-entry cache slot and every
+     * class-typed parameter, return and property check falls back to a
+     * lowercased-copy class-table lookup (measured at +27% CPU on slevomat).
+     *
+     * The buffers are raised above the stock 128M/8M/10000 for the same
+     * reason: once any of them is exhausted, everything compiled afterwards
+     * lands in that same uncached, uninterned state — the stock 8M of interned
+     * strings run out during PHPStan's own boot already, which alone costs the
+     * whole gain. PHPStan's phar needs about 35M of code; project bootstraps
+     * loaded by extensions (a Doctrine objectManagerLoader booting the whole
+     * app, say) add hundreds of MB, and the shared memory is only reserved,
+     * not touched, until used. It is not sized for the largest possible
+     * project, though — an SHM reservation that cannot be satisfied is fatal
+     * (exit code 254) in the restarted process, with no parent left to fall
+     * back to. Sizes the php.ini already grants are never lowered, and the
+     * interned strings buffer is kept below the memory it is carved out of
+     * (another fatal startup error otherwise).
+     *
+     * That private cache must neither outlive the process nor reach outside
+     * it, which is what the remaining entries guard against in a php.ini tuned
+     * for the web server rather than for us:
+     * - opcache.file_cache is blanked. A file cache is validated by the PHP
+     *   build id and (only with opcache.validate_timestamps) the mtime — so
+     *   with the checks off it would keep serving the previous PHPStan's
+     *   opcodes after an update, the phar path being the same, and it would
+     *   fill the web server's cache directory with this run's scripts.
+     * - opcache.save_comments is pinned on: stripping doc comments (a common
+     *   web tuning) breaks annotation readers in the project code the
+     *   extensions bootstrap, which worked with OPcache dormant.
+     * - opcache.optimization_level is pinned to PHP's default: the
+     *   extension's pass dropping PHPStan's own type checks
+     *   (TurboExtensionEnabler::trustOwnTypesIfSuitable()) runs inside the
+     *   optimizer, which a php.ini can switch off entirely.
+     *
+     * Two configurations are left alone entirely — no OPcache entries at all,
+     * so the restarted process runs with what the php.ini says, as before:
+     * - opcache.file_cache_only: blanking the file cache would be a fatal
+     *   startup error, and it usually means shared memory is unavailable on
+     *   that host on purpose.
+     * - opcache.preload: the application's preload script would run inside
+     *   PHPStan (there is no CLI exemption), and it cannot be blanked (the
+     *   directive rejects an empty value).
+     *
+     * @param array<string, string|false> $ini
+     * @return list<string>
+     */
+    public static function resolveIniEntries(array $ini): array
+    {
+    }
+    /**
+     * @param string|false $value
+     */
+    private static function isIniOn($value): bool
+    {
+    }
+    /**
+     * @param string|false $value
+     */
+    private static function iniInt($value): int
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+use PHPStan\Command\Output;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Diagnose\DiagnoseExtension;
+use function array_map;
+use function implode;
+use function sprintf;
+#[AutowiredService]
+final class RestartDiagnoseExtension implements DiagnoseExtension
+{
+    public function print(Output $output): void
+    {
+    }
+    private function describeRestartIfStartedNow(): string
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+use function array_merge;
+use function extension_loaded;
+use function file_exists;
+use function function_exists;
+use function ini_get;
+use function is_resource;
+use function pcntl_async_signals;
+use function pcntl_exec;
+use function pcntl_signal;
+use function proc_close;
+use function proc_open;
+use function sapi_windows_set_ctrl_handler;
+use function unlink;
+use function uopz_allow_exit;
+use const PHP_BINARY;
+use const SIG_IGN;
+use const SIGINT;
+/**
+ * Runs the restarted command.
+ *
+ * pcntl_exec() is preferred: the process image is replaced, so file
+ * descriptors, signal handling, the exit code and the pid stay exactly as the
+ * caller sees them, and nothing has to be forwarded. Where it is unavailable
+ * (i.e. Windows, or a build without pcntl) the command runs as a child process
+ * whose exit code is passed on, mirroring what composer/xdebug-handler does.
+ */
+final class RestartExecutor
+{
+    /** The exit code reported when the child process could not be waited for. */
+    private const UNKNOWN_EXIT_CODE = 255;
+    public static function isSupported(): bool
+    {
+    }
+    /**
+     * On success this never returns — either the process image is replaced, or
+     * the restarted command runs to completion and its exit code is passed on.
+     * It returns only when the restart could not be performed at all.
+     *
+     * @param list<string> $arguments php arguments, the script and its own arguments included
+     * @param string|null $temporaryIni composed ini to delete once the restarted command is done
+     */
+    public static function execute(array $arguments, ?string $temporaryIni): void
+    {
+    }
+    private static function isExitDisabledByUopz(): bool
+    {
+    }
+    private static function ignoreInterrupts(): void
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+use PHPStan\Turbo\TurboExtensionSelector;
+use function array_key_exists;
+use function explode;
+use function extension_loaded;
+use function function_exists;
+use function get_loaded_extensions;
+use function getenv;
+use function in_array;
+use function ini_get;
+use function phpversion;
+use function sprintf;
+use function str_replace;
+use function strtolower;
+/**
+ * The table of extensions PHPStan restarts for, and how each one is dealt with.
+ *
+ * Adding a future extension is one row. The rows fall into four kinds:
+ *
+ * - **coverage and debugging hooks** (xdebug, pcov) and **opcode rewriters**
+ *   (uopz) install themselves before any PHP code of the process runs, and
+ *   cost between 1.5× and 4.5× of an analysis that never asked for them.
+ *   None of them can be switched off from inside the process — xdebug.mode,
+ *   pcov.enabled and uopz.disable are all read at startup — so restarting is
+ *   the only way. All three do have a startup switch, which is why all three
+ *   are flag rows rather than strip rows: measured against a run without the
+ *   extension at all, disarming it lands inside the ±2 % noise floor, and it
+ *   leaves the extension's own functions reflectable so the analysis result
+ *   does not change.
+ * - **the turbo extension**, the inverse case: it has to be *loaded* from a
+ *   binary next to the phar. A pcntl_fork()ed worker inherits the parent's
+ *   extensions, so the spawn-time `-d extension=` injection cannot reach it
+ *   and dl() cannot load a binary from next to the phar — the main process
+ *   has to be re-executed with it before anything else runs.
+ * - **OPcache**, another inverse case: usually dormant on CLI, and
+ *   activated by the restart in the configuration OpcacheSettings describes.
+ *   Forked workers then inherit the parent's warm opcode cache, and spawned
+ *   ones get the same configuration from ProcessHelper. Only where fork is
+ *   reachable: elsewhere the main process stays as it is, as it did before
+ *   this registry existed (on Windows a second OPcache instance of the same
+ *   user would attach to the restarted process's named mapping).
+ * - **extensions the turbo extension cannot run next to**: Tideways wraps
+ *   internal function calls in a way that hands the extension's native code
+ *   a corrupted argument, crashing the analysis
+ *   (https://github.com/phpstan/phpstan/issues/15407). No startup switch is
+ *   known to keep those hooks out — tideways.enable_cli is documented to
+ *   stop trace collection only — so it is the one strip row, and only where
+ *   turbo runs: without it Tideways is just another unmeasured profiler.
+ *
+ * Extensions that only arm on demand — excimer, xhprof, memprof,
+ * opentelemetry — measured free while merely loaded, and are deliberately
+ * absent from every list here.
+ */
+final class RestartExtensionRegistry
+{
+    /**
+     * Profilers reported by diagnose but never neutralized: their idle cost has
+     * not been measured. Every extension of this shape that *has* been measured
+     * (excimer, xhprof, memprof, opentelemetry) turned out to be free while
+     * merely loaded, so the expectation for these is the same — they stay
+     * listed only so that a slow-run report surfaces them. A row moves out of
+     * here in whichever direction the numbers point.
+     */
+    private const UNMEASURED_PROFILER_EXTENSIONS = ['blackfire', 'spx', 'tideways_xhprof'];
+    /**
+     * Extensions whose idle cost has been measured, kept here so diagnose can
+     * still say they are loaded without implying they cost anything.
+     */
+    private const MEASURED_FREE_EXTENSIONS = ['excimer', 'memprof', 'opentelemetry', 'xhprof'];
+    /**
+     * Reasons found in the current process.
+     *
+     * @return list<RestartReason>
+     */
+    public static function collectReasons(bool $allowXdebug, ?string $pharPath = null): array
+    {
+    }
+    /**
+     * @param list<string> $loadedExtensions
+     * @param array<string, string> $iniSettings
+     * @param string|null $turboExtensionPath the turbo binary to load, null when there is none to load or loading it would not pay off
+     * @param list<string> $opcacheIniEntries `name=value` entries of OpcacheSettings::getIniEntries(), empty when OPcache is to be left alone
+     * @param array<string, string|false> $currentOpcacheIniValues ini_get() of each of those names
+     * @return list<RestartReason>
+     */
+    public static function collectReasonsFor(array $loadedExtensions, array $iniSettings, ?string $turboExtensionPath, bool $allowXdebug, array $opcacheIniEntries = [], array $currentOpcacheIniValues = []): array
+    {
+    }
+    /**
+     * Coverage and profiler extensions loaded in the current process, described
+     * for diagnose output.
+     *
+     * @return list<string>
+     */
+    public static function describeDetectedExtensions(): array
+    {
+    }
+    /**
+     * Whether xdebug would actually halt at breakpoints and slow the process
+     * down. Also drives the "--xdebug" notes in CommandHelper.
+     */
+    public static function isXdebugActive(): bool
+    {
+    }
+    /**
+     * @param array<string, string> $iniSettings the effective settings, with any XDEBUG_MODE override already applied
+     */
+    private static function isXdebugArmed(array $iniSettings): bool
+    {
+    }
+    private static function isForkCapable(): bool
+    {
+    }
+    /**
+     * The turbo binary the restart should load, null when there is none or
+     * when loading it would not buy anything.
+     */
+    public static function findTurboExtensionToLoad(?string $pharPath = null): ?string
+    {
+    }
+    private static function isIniSettingEnabled(string $value): bool
+    {
+    }
+    private static function describeIniSetting(string $name): string
+    {
+    }
+    private static function describeVersion(string $extension): string
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+use function array_merge;
+use function array_reverse;
+use function array_slice;
+use function constant;
+use function defined;
+use function explode;
+use function fclose;
+use function function_exists;
+use function fwrite;
+use function get_cfg_var;
+use function getenv;
+use function getmypid;
+use function implode;
+use function in_array;
+use function ini_get;
+use function pcntl_fork;
+use function pcntl_signal;
+use function php_ini_loaded_file;
+use function posix_getppid;
+use function posix_kill;
+use function putenv;
+use function register_shutdown_function;
+use function sprintf;
+use function strpos;
+use function strtoupper;
+use function unlink;
+use function usleep;
+use const PHP_EOL;
+use const PHP_SAPI;
+use const SIG_IGN;
+use const SIGKILL;
+use const STDERR;
+use const STDIN;
+use const STDOUT;
+/**
+ * Re-executes the PHPStan process once, with everything that would slow the
+ * analysis down neutralized and everything that would speed it up loaded.
+ *
+ * Called from bin/phpstan before the Composer autoloader, because an extension
+ * can only be loaded or unloaded by starting a process, and because the
+ * cheapest restart is the one that happens before any work is done. The
+ * namespace is deliberately self-contained for that reason: no autoloading, no
+ * dependencies beyond PHPStan\Turbo.
+ *
+ * Running before the autoloader also means running before the symfony
+ * polyfills are registered, on every PHP the phar supports — down to 7.4. The
+ * files bin/phpstan loads first may only call functions native to PHP 7.4, or
+ * guard the newer ones with function_exists().
+ *
+ * There is exactly one restart. Reasons are collected from
+ * ExtensionRegistry, their neutralizations merged into one composed php.ini
+ * (IniComposer) plus one command line, and the result exec'd
+ * (RestartExecutor). The composed ini is exported through PHPRC, so spawned
+ * workers inherit it and forked ones inherit it in memory. A marker
+ * environment variable naming the reasons is set on the restarted command; its
+ * presence stops a second restart, so an extension that is somehow still armed
+ * afterwards degrades to a diagnose note rather than to a boot loop.
+ *
+ * Only -vvv (or composer/xdebug-handler's XDEBUG_HANDLER_DEBUG) prints the
+ * restart line. After the restart there is nothing left to warn about, and the
+ * output is noisy enough as it is — `diagnose` carries the full story.
+ */
+final class RestartManager
+{
+    /**
+     * Names the reasons the running process was restarted for, as a CSV. Its
+     * presence means "do not restart again".
+     */
+    public const REASONS_ENV_VARIABLE = 'PHPSTAN_RESTART';
+    /**
+     * Set by ProcessHelper on the workers it spawns: their configuration is
+     * decided by the process spawning them, so they never restart themselves.
+     */
+    public const RESTARTED_INI = 'phpstan.restarted';
+    /**
+     * Points the restarted process at the composed ini it has to delete when it
+     * is done.
+     */
+    private const TEMPORARY_INI_ENV_VARIABLE = 'PHPSTAN_RESTART_INI';
+    /**
+     * Appended to the upper-cased application name, PHPSTAN_ALLOW_XDEBUG for
+     * PHPStan: a deprecated alias of --xdebug. composer/xdebug-handler derived
+     * it from the prefix it was constructed with, and CI configurations set it.
+     */
+    private const ALLOW_XDEBUG_ENV_VARIABLE_SUFFIX = '_ALLOW_XDEBUG';
+    /**
+     * composer/xdebug-handler's switch for reporting its restart; it prints the
+     * restart line too, so that CI configurations relying on it keep working.
+     */
+    private const XDEBUG_HANDLER_DEBUG_ENV_VARIABLE = 'XDEBUG_HANDLER_DEBUG';
+    /** How often the watchdog checks whether the restarted process is still alive */
+    private const WATCHDOG_POLL_INTERVAL_MICROSECONDS = 100000;
+    /**
+     * Commands that must run in the process they were started in. Workers are
+     * already clean through PHPRC inheritance; diagnose reports what a restart
+     * would do instead of doing it; the rest analyse nothing, so re-executing
+     * them would buy an exec and no speed.
+     */
+    private const NON_RESTARTING_COMMANDS = ['worker', 'fixer:worker', 'diagnose', 'clear-result-cache', 'dump-parameters'];
+    /**
+     * On success this never returns — the process is replaced by, or waits for,
+     * the restarted one.
+     *
+     * @param list<string> $argv
+     * @param string|null $pharPath the phar to look for the turbo binary next to, see TurboProcessRestarter
+     * @param list<string>|null $extensions restart only for these reasons, null for all of them
+     * @param string $appName prefix of the <APP>_ALLOW_XDEBUG environment variable, see TurboProcessRestarter
+     */
+    public static function run(array $argv, ?string $pharPath = null, ?array $extensions = null, string $appName = 'phpstan'): void
+    {
+    }
+    /**
+     * The reasons this process should restart for. Empty when it must not
+     * restart at all — see isEligible().
+     *
+     * @param list<string> $argv
+     * @return list<RestartReason>
+     */
+    public static function collectReasons(array $argv, ?string $pharPath = null, string $appName = 'phpstan'): array
+    {
+    }
+    /**
+     * Whether the command in $argv may restart at all, regardless of what is
+     * loaded.
+     *
+     * @param list<string> $argv
+     */
+    public static function isEligible(array $argv): bool
+    {
+    }
+    public static function wasRestarted(): bool
+    {
+    }
+    /**
+     * The extensions the running process was restarted for, empty when it was
+     * not restarted.
+     *
+     * @return list<string>
+     */
+    public static function getPerformedRestartReasons(): array
+    {
+    }
+    public static function wasRestartedFor(string $extension): bool
+    {
+    }
+    /**
+     * @param list<string> $argv
+     * @param non-empty-list<RestartReason> $reasons
+     */
+    private static function restart(array $argv, array $reasons): void
+    {
+    }
+    /**
+     * Exports the arming switches an ini file cannot express — xdebug reads
+     * XDEBUG_MODE in preference to xdebug.mode, so flagging the ini alone would
+     * be silently overridable by the environment PHPStan was started in.
+     *
+     * @param array<string, string> $environmentVariables
+     * @return callable(): void the rollback
+     */
+    private static function exportEnvironment(array $environmentVariables): callable
+    {
+    }
+    /**
+     * Exports the composed ini so every descendant PHP process picks it up:
+     * spawned workers read it from PHPRC, forked ones inherit it in memory.
+     *
+     * @return (callable(): void)|null the environment rollback, null when the environment could not be written
+     */
+    private static function propagateComposedIni(string $temporaryIni): ?callable
+    {
+    }
+    /**
+     * The restarted process owns the composed ini: it outlives every worker
+     * reading it, and pcntl_exec() left the process that composed it no chance
+     * to delete anything.
+     *
+     * A shutdown function deletes it when the run ends - Ctrl+C and SIGTERM
+     * included, which end the run through the event loop. A watchdog covers
+     * the rest: SIGKILL, and the very crashes some of the restart reasons are
+     * about (https://github.com/phpstan/phpstan/issues/15407).
+     */
+    private static function cleanUpComposedIni(): void
+    {
+    }
+    /**
+     * Forks a process that waits for this one to end, whichever way, and then
+     * deletes the composed ini - the role the waiting parent plays for a
+     * proc_open() restart, which pcntl_exec() does not have. It runs before
+     * the autoloader, so it holds next to nothing of the parent's memory.
+     *
+     * It ignores the terminal's signals (a Ctrl+C reaches the whole process
+     * group) and closes the standard streams, so that a caller reading
+     * PHPStan's output through a pipe sees it end with PHPStan. It ends by
+     * SIGKILLing itself: PHP's teardown would run the module shutdown of every
+     * extension it inherited, which a fork-unsafe one wedges (see
+     * ForkedChildTerminator).
+     */
+    private static function startComposedIniWatchdog(string $temporaryIni): void
+    {
+    }
+    private static function deleteComposedIni(?string $temporaryIni): void
+    {
+    }
+    /**
+     * @return list<string>
+     */
+    private static function getPassedThroughArguments(): array
+    {
+    }
+    /**
+     * The first argument that is not an option — what Symfony resolves the
+     * command name from. The value of a space-separated option can be mistaken
+     * for it, which can only ever produce a name that is not in
+     * NON_RESTARTING_COMMANDS, so the restart happens as it would anyway.
+     *
+     * @param list<string> $argv
+     */
+    private static function findCommandName(array $argv): ?string
+    {
+    }
+    /**
+     * Whether the run asked for xdebug to be left alone, through --xdebug or
+     * through the deprecated environment variable.
+     *
+     * @param list<string> $argv
+     */
+    public static function isXdebugAllowed(array $argv, string $appName = 'phpstan'): bool
+    {
+    }
+    /**
+     * @param list<string> $argv
+     */
+    private static function isRestartReported(array $argv): bool
+    {
+    }
+    /**
+     * @param non-empty-list<RestartReason> $reasons
+     */
+    private static function writeRestartLine(array $reasons): void
+    {
+    }
+}
+namespace PHPStan\Process\Restart;
+
+/**
+ * One reason the process must be re-executed, together with everything needed
+ * to neutralize it in the restarted process.
+ *
+ * The four neutralization channels are what an extension needs:
+ *
+ * - ini settings are appended after everything else in the composed php.ini,
+ *   so they win over the user's files and over the runtime diff. Prefer this
+ *   one whenever the extension has a switch: a disarmed extension measures the
+ *   same as an absent one (xdebug.mode=off, pcov.enabled=0 and
+ *   uopz.disable=1), and leaving it loaded keeps its own functions
+ *   reflectable, so the analysis result does not change;
+ * - environment variables, for arming that the ini cannot express: xdebug
+ *   reads XDEBUG_MODE in preference to xdebug.mode, so flagging the ini alone
+ *   would be silently overridable. They are exported before the restart, so
+ *   descendants inherit them;
+ * - stripped extensions are commented out of the composed php.ini. Only
+ *   Tideways needs this today — it has no off switch for the hooks that
+ *   crash the turbo extension — and stripping is strictly worse where a
+ *   flag exists: it takes the extension's own symbols out of reflection and so
+ *   changes what PHPStan knows about code calling them;
+ * - command-line arguments are passed to the restarted php binary, for the
+ *   inverse case of *loading* an extension from a path that is not in any ini
+ *   file. They deliberately do not reach descendant processes, which is why
+ *   the turbo binary is still injected into spawned workers by ProcessHelper.
+ */
+final class RestartReason
+{
+    /**
+     * @var string
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public string $extension;
+    /**
+     * @var string
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public string $description;
+    /**
+     * @var array<string, string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $iniSettings;
+    /**
+     * @var array<string, string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $environmentVariables;
+    /**
+     * @var list<string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $strippedExtensions;
+    /**
+     * @var list<string>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $commandLineArguments;
+    /**
+     * @param string $extension the extension this reason is about, as reported by extension_loaded()
+     * @param string $description why the restart is needed, for diagnose output
+     * @param array<string, string> $iniSettings ini settings forced in the restarted process
+     * @param array<string, string> $environmentVariables environment variables exported before the restart
+     * @param list<string> $strippedExtensions extension names whose extension=/zend_extension= lines get commented out
+     * @param list<string> $commandLineArguments php arguments prepended to the restarted command
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        string $extension,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        string $description,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $iniSettings = [],
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $environmentVariables = [],
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $strippedExtensions = [],
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $commandLineArguments = []
+    )
+    {
+    }
+    public function getExtension(): string
+    {
+    }
+    public function getDescription(): string
+    {
+    }
+    /** @return array<string, string> */
+    public function getIniSettings(): array
+    {
+    }
+    /** @return array<string, string> */
+    public function getEnvironmentVariables(): array
+    {
+    }
+    /** @return list<string> */
+    public function getStrippedExtensions(): array
+    {
+    }
+    /** @return list<string> */
+    public function getCommandLineArguments(): array
+    {
+    }
+}
 namespace PHPStan\Process;
 
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\React\ChildProcess\Process;
-use _PHPStan_cb3b7e994\React\EventLoop\LoopInterface;
-use _PHPStan_cb3b7e994\React\Promise\Deferred;
-use _PHPStan_cb3b7e994\React\Promise\PromiseInterface;
+use _PHPStan_95d9e8b05\React\ChildProcess\Process;
+use _PHPStan_95d9e8b05\React\EventLoop\LoopInterface;
+use _PHPStan_95d9e8b05\React\Promise\Deferred;
+use _PHPStan_95d9e8b05\React\Promise\PromiseInterface;
 use function fclose;
 use function rewind;
 use function stream_get_contents;
@@ -38591,103 +42723,6 @@ final class SpawnedProcessPromise implements \PHPStan\Process\ProcessPromise
     {
     }
     private function cancel(): void
-    {
-    }
-}
-namespace PHPStan\Process;
-
-use PHPStan\DependencyInjection\AutowiredService;
-use function array_key_exists;
-use function array_slice;
-use function ceil;
-use function count;
-use function ctype_digit;
-use function explode;
-use function file_get_contents;
-use function implode;
-use function in_array;
-use function is_file;
-use function max;
-use function min;
-use function str_starts_with;
-use function substr;
-use function trim;
-/**
- * CPU resources the current process may actually use.
- *
- * The count can be constrained by a cgroup. A container limited with
- * `docker run --cpus=2` or a Kubernetes `limits.cpu: 2` gets a CFS bandwidth
- * quota while all of the host's CPUs stay visible and unmasked, so nproc, lscpu
- * and /proc/cpuinfo all report the host's core count - see fidry/cpu-core-counter,
- * which has no cgroup finder at all. Spawning one worker per "detected" core in
- * such a container would result in 64 workers fighting over 2-CPU cores on a CI job.
- *
- * Returns null when no cgroup limits CPU bandwidth (or the platform cannot say),
- * never a guess: the caller falls back to the detected core count.
- */
-#[AutowiredService]
-final class SystemResources
-{
-    /**
-     * @var string
-     */
-    private string $filesystemRoot;
-    /**
-     * Which cgroup the process belongs to cannot change while it runs, unlike the values
-     * read out of that cgroup - so the path is memoized and nothing else is.
-     *
-     * @var array<string, string|null>
-     */
-    private array $cgroupPaths = [];
-    /**
-     * @param string $filesystemRoot Prefix for every /proc and /sys path read, so tests
-     *                               can run against a fixture tree. Empty means the real
-     *                               filesystem.
-     */
-    public function __construct(string $filesystemRoot = '')
-    {
-    }
-    /**
-     * Number of CPU cores the current cgroup's CFS quota allows, or null when no
-     * cgroup limits CPU bandwidth.
-     *
-     * @return positive-int|null
-     */
-    public function getCpuQuota(): ?int
-    {
-    }
-    /** @return positive-int|null */
-    private function getCgroupV2CpuQuota(): ?int
-    {
-    }
-    /** @return positive-int|null */
-    private function getCgroupV1CpuQuota(): ?int
-    {
-    }
-    /**
-     * The current process' path within a cgroup hierarchy, or null when it is not in
-     * one. An empty controller asks for the v2 unified hierarchy.
-     */
-    private function getCgroupPath(string $controller): ?string
-    {
-    }
-    private function findCgroupPath(string $controller): ?string
-    {
-    }
-    /**
-     * The cgroup's own path and every ancestor up to the root, because a limit set on
-     * an ancestor binds the leaf just as tightly - Kubernetes puts the pod's quota on
-     * the pod slice, not on the container's own cgroup.
-     *
-     * @return list<string>
-     */
-    private function getAncestorPaths(string $path): array
-    {
-    }
-    private function readIntFile(string $path): ?int
-    {
-    }
-    private function readFile(string $path): ?string
     {
     }
 }
@@ -39434,7 +43469,7 @@ final class AttributeReflectionFactory
 namespace PHPStan\Reflection\BetterReflection;
 
 use Closure;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\Identifier\Exception\InvalidIdentifierName;
@@ -39624,6 +43659,7 @@ use PHPStan\File\FileHelper;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\BetterReflection\SourceLocator\AutoloadFunctionsSourceLocator;
 use PHPStan\Reflection\BetterReflection\SourceLocator\AutoloadSourceLocator;
+use PHPStan\Reflection\BetterReflection\SourceLocator\BootstrapAutoloaderExceptionReporter;
 use PHPStan\Reflection\BetterReflection\SourceLocator\CachedPhpInternalSourceLocator;
 use PHPStan\Reflection\BetterReflection\SourceLocator\ComposerJsonAndInstalledJsonSourceLocatorMaker;
 use PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher;
@@ -39662,6 +43698,7 @@ final class BetterReflectionSourceLocatorFactory
     private ComposerJsonAndInstalledJsonSourceLocatorMaker $composerJsonAndInstalledJsonSourceLocatorMaker;
     private OptimizedPsrAutoloaderLocatorFactory $optimizedPsrAutoloaderLocatorFactory;
     private FileNodesFetcher $fileNodesFetcher;
+    private BootstrapAutoloaderExceptionReporter $bootstrapAutoloaderExceptionReporter;
     /**
      * @var string[]
      */
@@ -39708,6 +43745,7 @@ final class BetterReflectionSourceLocatorFactory
         ComposerJsonAndInstalledJsonSourceLocatorMaker $composerJsonAndInstalledJsonSourceLocatorMaker,
         OptimizedPsrAutoloaderLocatorFactory $optimizedPsrAutoloaderLocatorFactory,
         FileNodesFetcher $fileNodesFetcher,
+        BootstrapAutoloaderExceptionReporter $bootstrapAutoloaderExceptionReporter,
         #[AutowiredParameter]
         array $scanFiles,
         #[AutowiredParameter]
@@ -39810,6 +43848,7 @@ use PHPStan\BetterReflection\Identifier\IdentifierType;
 use PHPStan\BetterReflection\Reflection\Reflection;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Type\SourceLocator;
+use Throwable;
 use function class_exists;
 use function interface_exists;
 use function PHPStan\autoloadFunctions;
@@ -39818,7 +43857,8 @@ final class AutoloadFunctionsSourceLocator implements SourceLocator
 {
     private \PHPStan\Reflection\BetterReflection\SourceLocator\AutoloadSourceLocator $autoloadSourceLocator;
     private \PHPStan\Reflection\BetterReflection\SourceLocator\ReflectionClassSourceLocator $reflectionClassSourceLocator;
-    public function __construct(\PHPStan\Reflection\BetterReflection\SourceLocator\AutoloadSourceLocator $autoloadSourceLocator, \PHPStan\Reflection\BetterReflection\SourceLocator\ReflectionClassSourceLocator $reflectionClassSourceLocator)
+    private \PHPStan\Reflection\BetterReflection\SourceLocator\BootstrapAutoloaderExceptionReporter $exceptionReporter;
+    public function __construct(\PHPStan\Reflection\BetterReflection\SourceLocator\AutoloadSourceLocator $autoloadSourceLocator, \PHPStan\Reflection\BetterReflection\SourceLocator\ReflectionClassSourceLocator $reflectionClassSourceLocator, \PHPStan\Reflection\BetterReflection\SourceLocator\BootstrapAutoloaderExceptionReporter $exceptionReporter)
     {
     }
     #[Override]
@@ -39832,8 +43872,8 @@ final class AutoloadFunctionsSourceLocator implements SourceLocator
 }
 namespace PHPStan\Reflection\BetterReflection\SourceLocator;
 
+use Composer\Autoload\ClassLoader;
 use Override;
-use ParseError;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
@@ -39853,6 +43893,7 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ConstantTypeHelper;
 use ReflectionClass;
 use ReflectionFunction;
+use Throwable;
 use function array_key_exists;
 use function array_keys;
 use function class_exists;
@@ -39860,13 +43901,18 @@ use function constant;
 use function count;
 use function defined;
 use function function_exists;
+use function get_included_files;
+use function ini_get;
 use function interface_exists;
+use function is_array;
 use function is_file;
 use function is_string;
 use function opcache_invalidate;
+use function realpath;
 use function restore_error_handler;
 use function set_error_handler;
 use function spl_autoload_functions;
+use function str_contains;
 use function strtolower;
 use function trait_exists;
 use const PHP_VERSION_ID;
@@ -39888,6 +43934,8 @@ final class AutoloadSourceLocator implements SourceLocator
     private array $scannedFiles = [];
     /** @var array<string, int> */
     private array $startLineByClass = [];
+    /** How many get_included_files() entries invalidateIncludedFiles() has handled. */
+    private static int $invalidatedIncludedFilesCount = 0;
     public function __construct(\PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher $fileNodesFetcher, bool $executeAutoloadersInFileReadTrap)
     {
     }
@@ -39926,7 +43974,59 @@ final class AutoloadSourceLocator implements SourceLocator
     private function locateClassByName(string $className): ?array
     {
     }
+    /**
+     * Asks Composer's ClassLoader which file loadClass() would include, without
+     * including it. With OPcache holding a file this process already ran, an
+     * include inside the trap runs the cached script instead of the trap's empty
+     * one, and a file declaring a function dies with "Cannot redeclare".
+     *
+     * A path behind a stream wrapper is left to the trap: realpath() cannot
+     * resolve it, and the phar's own ClassLoader maps PHPStan\ to phar://.
+     *
+     * @param callable(string): void $autoloader
+     */
+    private static function findFileWithComposer(callable $autoloader, string $className): ?string
+    {
+    }
+    /**
+     * An autoloader can include a file that this process already included for real, for example a file
+     * a bootstrap autoloader included without declaring the class. With OPcache active, the trapped
+     * include of that file runs the script OPcache compiled from the real file, not the empty script
+     * FileReadTrapStreamWrapper serves, and dies with "Cannot redeclare". Invalidating the entries of
+     * the included files makes that include go through the trap. The opcache_invalidate() loop after
+     * the trap cannot do this, because the include has already run by then. That loop removes the
+     * empty script the trap left in OPcache.
+     *
+     * Only an autoloader that runs inside the trap needs this. findFileWithComposer() includes nothing.
+     * Forked workers switch OPcache off (see ForkedProcess), so they skip this.
+     */
+    private static function invalidateIncludedFiles(): void
+    {
+    }
     private function silenceErrors(): void
+    {
+    }
+}
+namespace PHPStan\Reflection\BetterReflection\SourceLocator;
+
+use PHPStan\Command\Output;
+use PHPStan\DependencyInjection\AutowiredService;
+use Throwable;
+use function get_class;
+use function sprintf;
+/**
+ * Prints the exceptions that AutoloadFunctionsSourceLocator swallows from autoloaders registered
+ * by bootstrapFiles. BootstrapFilesRunner enables it with --debug, where the analysis runs in the
+ * main process. The class is then reported as not found, and this keeps the autoloader's reason.
+ */
+#[AutowiredService]
+final class BootstrapAutoloaderExceptionReporter
+{
+    private ?Output $output = null;
+    public function enable(Output $output): void
+    {
+    }
+    public function report(string $className, Throwable $e): void
     {
     }
 }
@@ -40032,12 +44132,15 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ConstantNameHelper;
 use function strtolower;
 // autoTag: false - must not be tagged as a RichParser node visitor
+/**
+ * @phpstan-import-type ClassLikeNode from FetchedNodesResult
+ */
 #[AutowiredService(\null, \null, \true, \false)]
 final class CachingVisitor extends NodeVisitorAbstract
 {
     private string $fileName;
     private string $contents;
-    /** @var array<string, list<FetchedNode<Node\Stmt\ClassLike>>> */
+    /** @var array<string, list<FetchedNode<ClassLikeNode>>> */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $classNodes;
     /** @var array<string, list<FetchedNode<Node\Stmt\Function_>>> */
@@ -40059,7 +44162,7 @@ final class CachingVisitor extends NodeVisitorAbstract
     {
     }
     /**
-     * @return array<string, list<FetchedNode<Node\Stmt\ClassLike>>>
+     * @return array<string, list<FetchedNode<ClassLikeNode>>>
      */
     public function getClassNodes(): array
     {
@@ -40082,8 +44185,8 @@ final class CachingVisitor extends NodeVisitorAbstract
 }
 namespace PHPStan\Reflection\BetterReflection\SourceLocator;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PHPStan\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
 use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr0Mapping;
 use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping;
@@ -40242,10 +44345,13 @@ final class FetchedNode
 namespace PHPStan\Reflection\BetterReflection\SourceLocator;
 
 use PhpParser\Node;
+/**
+ * @phpstan-type ClassLikeNode = Node\Stmt\Class_|Node\Stmt\Interface_|Node\Stmt\Trait_|Node\Stmt\Enum_
+ */
 final class FetchedNodesResult
 {
     /**
-     * @var array<string, list<FetchedNode<Node\Stmt\ClassLike>>>
+     * @var array<string, list<FetchedNode<ClassLikeNode>>>
      */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $classNodes;
@@ -40260,7 +44366,7 @@ final class FetchedNodesResult
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $constantNodes;
     /**
-     * @param array<string, list<FetchedNode<Node\Stmt\ClassLike>>> $classNodes
+     * @param array<string, list<FetchedNode<ClassLikeNode>>> $classNodes
      * @param array<string, list<FetchedNode<Node\Stmt\Function_>>> $functionNodes
      * @param array<string, list<FetchedNode<Node\Stmt\Const_|Node\Expr\FuncCall>>> $constantNodes
      */
@@ -40275,7 +44381,7 @@ final class FetchedNodesResult
     {
     }
     /**
-     * @return array<string, list<FetchedNode<Node\Stmt\ClassLike>>>
+     * @return array<string, list<FetchedNode<ClassLikeNode>>>
      */
     public function getClassNodes(): array
     {
@@ -40571,6 +44677,9 @@ use function array_values;
 use function current;
 use function sprintf;
 use function strtolower;
+/**
+ * @phpstan-import-type ClassLikeNode from FetchedNodesResult
+ */
 final class OptimizedDirectorySourceLocator implements SourceLocator
 {
     private \PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher $fileNodesFetcher;
@@ -40626,7 +44735,7 @@ final class OptimizedDirectorySourceLocator implements SourceLocator
     {
     }
     /**
-     * @param FetchedNode<Node\Stmt\ClassLike>|FetchedNode<Node\Stmt\Function_>|FetchedNode<Node\Stmt\Const_|Node\Expr\FuncCall> $fetchedNode
+     * @param FetchedNode<ClassLikeNode>|FetchedNode<Node\Stmt\Function_>|FetchedNode<Node\Stmt\Const_|Node\Expr\FuncCall> $fetchedNode
      * @return \PHPStan\BetterReflection\Reflection\ReflectionClass|\PHPStan\BetterReflection\Reflection\ReflectionConstant|\PHPStan\BetterReflection\Reflection\ReflectionFunction
      */
     private function nodeToReflection(Reflector $reflector, \PHPStan\Reflection\BetterReflection\SourceLocator\FetchedNode $fetchedNode, ?int $positionInNode = null)
@@ -41382,8 +45491,8 @@ final class SymbolFinderInFiles
 }
 namespace PHPStan\Reflection\BetterReflection\SourceStubber;
 
-use _PHPStan_cb3b7e994\Composer\Semver\VersionParser;
-use _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap;
+use _PHPStan_95d9e8b05\Composer\Semver\VersionParser;
+use _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Internal\ComposerHelper;
@@ -42001,7 +46110,7 @@ interface ClassMemberReflection
 }
 namespace PHPStan\Reflection;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use function array_key_exists;
 use function ltrim;
 final class ClassNameHelper
@@ -44598,7 +48707,7 @@ final class InitializerExprContext implements \PHPStan\Reflection\NamespaceAnswe
 namespace PHPStan\Reflection;
 
 use Closure;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node\Arg;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr;
@@ -44667,6 +48776,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\GenericClassStringType;
+use PHPStan\Type\Generic\GenericStaticType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
@@ -44689,6 +48799,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypehintHelper;
 use PHPStan\Type\TypeResult;
+use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\UnaryOperatorTypeSpecifyingExtensionRegistry;
@@ -44751,6 +48862,13 @@ final class InitializerExprTypeResolver
     }
     /** @api */
     public function getType(Expr $expr, \PHPStan\Reflection\InitializerExprContext $context): Type
+    {
+    }
+    /**
+     * Resolves the backing value of an enum case. A read of the case while
+     * its value is being resolved gives mixed - like a class constant does - to prevent endless recursions.
+     */
+    public function getEnumCaseValueType(string $className, string $caseName, Expr $valueExpr, \PHPStan\Reflection\InitializerExprContext $context): Type
     {
     }
     /**
@@ -44976,10 +49094,20 @@ final class InitializerExprTypeResolver
     {
     }
     /**
+     * With $nativeTypesPromoted, PHPDoc types of the constants are ignored:
+     * a constant that can be overridden in a child class resolves only to its native type.
+     *
      * @param callable(Expr): Type $getTypeCallback
      * @param \PhpParser\Node\Name|\PhpParser\Node\Expr $class
      */
-    public function getClassConstFetchTypeByReflection($class, string $constantName, ?\PHPStan\Reflection\ClassReflection $classReflection, callable $getTypeCallback): Type
+    public function getClassConstFetchTypeByReflection($class, string $constantName, ?\PHPStan\Reflection\ClassReflection $classReflection, callable $getTypeCallback, bool $nativeTypesPromoted = \false): Type
+    {
+    }
+    /**
+     * Resolves `static` in the type of a class constant against the class
+     * the constant is fetched on.
+     */
+    private function transformStaticType(Type $type, Type $fetchedOnType): Type
     {
     }
     /**
@@ -46173,6 +50301,128 @@ use PHPStan\Reflection\ExtendedFunctionVariant;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
+use PHPStan\TrinaryLogic;
+use PHPStan\Turbo\ReferencedByTurboExtension;
+use PHPStan\Type\Type;
+use function array_map;
+/**
+ * from() and tryFrom() of a backed enum. Reflection declares their parameter
+ * as int|string, but PHP only accepts the enum's backing type.
+ */
+#[ReferencedByTurboExtension('backedEnumFromMethodReflection')]
+final class BackedEnumFromMethodReflection implements ExtendedMethodReflection
+{
+    private ExtendedMethodReflection $method;
+    private Type $backingType;
+    /** @var list<ExtendedParametersAcceptor>|null */
+    private ?array $variants = null;
+    public function __construct(ExtendedMethodReflection $method, Type $backingType)
+    {
+    }
+    public function getDeclaringClass(): ClassReflection
+    {
+    }
+    public function isStatic(): bool
+    {
+    }
+    public function isPrivate(): bool
+    {
+    }
+    public function isPublic(): bool
+    {
+    }
+    public function getDocComment(): ?string
+    {
+    }
+    public function getName(): string
+    {
+    }
+    public function getPrototype(): ClassMemberReflection
+    {
+    }
+    public function getVariants(): array
+    {
+    }
+    public function getOnlyVariant(): ExtendedParametersAcceptor
+    {
+    }
+    public function getNamedArgumentsVariants(): ?array
+    {
+    }
+    public function isDeprecated(): TrinaryLogic
+    {
+    }
+    public function getDeprecatedDescription(): ?string
+    {
+    }
+    public function isFinal(): TrinaryLogic
+    {
+    }
+    public function isFinalByKeyword(): TrinaryLogic
+    {
+    }
+    public function isInternal(): TrinaryLogic
+    {
+    }
+    /**
+     * @return \PHPStan\TrinaryLogic|bool
+     */
+    public function isBuiltin()
+    {
+    }
+    public function getThrowType(): ?Type
+    {
+    }
+    public function hasSideEffects(): TrinaryLogic
+    {
+    }
+    public function getAsserts(): Assertions
+    {
+    }
+    public function acceptsNamedArguments(): TrinaryLogic
+    {
+    }
+    public function getSelfOutType(): ?Type
+    {
+    }
+    public function returnsByReference(): TrinaryLogic
+    {
+    }
+    /**
+     * @return \PHPStan\TrinaryLogic|bool
+     */
+    public function isAbstract()
+    {
+    }
+    public function isPure(): TrinaryLogic
+    {
+    }
+    public function getPureUnlessCallableIsImpureParameters(): array
+    {
+    }
+    public function getPureUnlessParameterPassedParameters(): array
+    {
+    }
+    public function getAttributes(): array
+    {
+    }
+    public function mustUseReturnValue(): TrinaryLogic
+    {
+    }
+    public function getResolvedPhpDoc(): ?ResolvedPhpDocBlock
+    {
+    }
+}
+namespace PHPStan\Reflection\Php;
+
+use PHPStan\PhpDoc\ResolvedPhpDocBlock;
+use PHPStan\Reflection\Assertions;
+use PHPStan\Reflection\ClassMemberReflection;
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ExtendedFunctionVariant;
+use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Reflection\ExtendedParameterReflection;
+use PHPStan\Reflection\ExtendedParametersAcceptor;
 use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\PassedByReference;
@@ -46830,6 +51080,7 @@ use function array_slice;
 use function count;
 use function explode;
 use function implode;
+use function in_array;
 use function is_array;
 use function sprintf;
 use function strtolower;
@@ -46854,6 +51105,7 @@ final class PhpClassReflectionExtension
     private ParameterAllowedConstantsMapProvider $allowedConstantsMapProvider;
     private bool $inferPrivatePropertyTypeFromConstructor;
     private PhpVersion $phpVersion;
+    private bool $backedEnumFromParameterType;
     /** @var LruCache<true> shared LRU over the member cache keys below */
     private LruCache $memberCacheOrder;
     /** @var PhpPropertyReflection[][] */
@@ -46888,6 +51140,8 @@ final class PhpClassReflectionExtension
         #[AutowiredParameter]
         bool $inferPrivatePropertyTypeFromConstructor,
         PhpVersion $phpVersion,
+        #[AutowiredParameter('%featureToggles.backedEnumFromParameterType%')]
+        bool $backedEnumFromParameterType,
         #[AutowiredParameter('%cache.memberCacheKeysMax%')]
         int $memberCacheKeysMax
     )
@@ -47579,8 +51833,7 @@ final class PhpMethodReflection implements ExtendedMethodReflection
 {
     private InitializerExprTypeResolver $initializerExprTypeResolver;
     private ClassReflection $declaringClass;
-    #[\PHPStan\Reflection\Attribute\PrivateProperty]
-    public ?ClassReflection $declaringTrait;
+    private ?ClassReflection $declaringTrait;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public ReflectionMethod $reflection;
     private ReflectionProvider $reflectionProvider;
@@ -47647,7 +51900,6 @@ final class PhpMethodReflection implements ExtendedMethodReflection
     public function __construct(
         InitializerExprTypeResolver $initializerExprTypeResolver,
         ClassReflection $declaringClass,
-        #[\PHPStan\Reflection\Attribute\PrivateProperty]
         ?ClassReflection $declaringTrait,
         #[\PHPStan\Reflection\Attribute\PrivateProperty]
         ReflectionMethod $reflection,
@@ -49900,6 +54152,23 @@ final class Php8SignatureMapProvider implements \PHPStan\Reflection\SignatureMap
     {
     }
     /**
+     * PHP checks a tentative return type of a built-in method like a real one,
+     * and overriding it with an incompatible type is deprecated,
+     * so it is used as the native return type when the signature does not have one.
+     *
+     * @param array{positional: array<int, FunctionSignature>, named: ?array<int, FunctionSignature>} $signatures
+     * @return array{positional: array<int, FunctionSignature>, named: ?array<int, FunctionSignature>}
+     */
+    private function applyTentativeReturnType(string $className, ?ReflectionMethod $reflectionMethod, array $signatures): array
+    {
+    }
+    /**
+     * @return array{positional: array<int, FunctionSignature>, named: ?array<int, FunctionSignature>}
+     */
+    private function getMethodSignaturesWithoutTentativeReturnType(string $className, string $methodName, ?ReflectionMethod $reflectionMethod): array
+    {
+    }
+    /**
      * @param \ReflectionFunctionAbstract|null $reflectionFunction
      */
     public function getFunctionSignatures(string $functionName, ?string $className, $reflectionFunction): array
@@ -49951,7 +54220,7 @@ final class Php8SignatureMapProvider implements \PHPStan\Reflection\SignatureMap
 }
 namespace PHPStan\Reflection\SignatureMap;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Analyser\NameScope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -50263,9 +54532,11 @@ use PHPStan\Reflection\Dummy\ChangedTypePropertyReflection;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\ResolvedPropertyReflection;
 use PHPStan\Turbo\ShadowedByTurboExtension;
+use PHPStan\Type\Generic\GenericStaticType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
+use function count;
 #[ShadowedByTurboExtension(__DIR__ . '/../../../turbo-ext/src/CalledOnTypeUnresolvedPropertyPrototypeReflection.cpp')]
 final class CalledOnTypeUnresolvedPropertyPrototypeReflection implements \PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection
 {
@@ -51244,6 +55515,7 @@ namespace PHPStan\Rules\Api;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -51265,6 +55537,9 @@ final class ApiClassConstFetchRule implements Rule
     {
     }
     public function processNode(Node $node, Scope $scope): array
+    {
+    }
+    private function isConstantCovered(ClassConstantReflection $constantReflection): bool
     {
     }
 }
@@ -51377,7 +55652,7 @@ final class ApiInstanceofRule implements Rule
 }
 namespace PHPStan\Rules\Api;
 
-use _PHPStan_cb3b7e994\olvlvl\ComposerAttributeCollector\Attributes;
+use _PHPStan_95d9e8b05\olvlvl\ComposerAttributeCollector\Attributes;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Instanceof_;
 use PHPStan\Analyser\Scope;
@@ -51581,6 +55856,7 @@ use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use function count;
 use function sprintf;
 /**
  * @implements Rule<Node\Stmt\TraitUse>
@@ -51696,8 +55972,8 @@ final class OldPhpParser4ClassRule implements Rule
 }
 namespace PHPStan\Rules\Api;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
@@ -51942,6 +56218,7 @@ use function array_keys;
 use function array_search;
 use function array_values;
 use function count;
+use function get_debug_type;
 use function implode;
 use function is_bool;
 use function is_float;
@@ -51966,6 +56243,14 @@ final class DuplicateKeysInLiteralArraysRule implements Rule
     {
     }
     public function processNode(Node $node, Scope $scope): array
+    {
+    }
+    /**
+     * Indexes seen key values by their type and value, so that looking one up
+     * is as strict as an identity comparison without scanning every key seen so far.
+     * @param int|float|string|bool|null $value
+     */
+    private static function getSeenKey($value): string
     {
     }
 }
@@ -52331,8 +56616,10 @@ use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Internal\SprintfHelper;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\Api\ApiRuleHelper;
 use function array_key_exists;
 use function count;
 use function sprintf;
@@ -52343,11 +56630,13 @@ final class AttributesCheck
     private ReflectionProvider $reflectionProvider;
     private \PHPStan\Rules\FunctionCallParametersCheck $functionCallParametersCheck;
     private \PHPStan\Rules\ClassNameCheck $classCheck;
+    private ApiRuleHelper $apiRuleHelper;
     private bool $deprecationRulesInstalled;
     public function __construct(
         ReflectionProvider $reflectionProvider,
         \PHPStan\Rules\FunctionCallParametersCheck $functionCallParametersCheck,
         \PHPStan\Rules\ClassNameCheck $classCheck,
+        ApiRuleHelper $apiRuleHelper,
         #[AutowiredParameter]
         bool $deprecationRulesInstalled
     )
@@ -52360,6 +56649,9 @@ final class AttributesCheck
      * @param \PHPStan\Analyser\Scope&\PHPStan\Analyser\NodeCallbackInvoker&\PHPStan\Analyser\CollectedDataEmitter $scope
      */
     public function check(\PHPStan\Analyser\Scope $scope, array $attrGroups, int $requiredTarget, string $targetName): array
+    {
+    }
+    private function isApi(ClassReflection $attributeClass): bool
     {
     }
 }
@@ -53404,7 +57696,6 @@ use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Parser\LastConditionVisitor;
 use PHPStan\Rules\Comparison\ConstantConditionInTraitHelper;
-use PHPStan\Rules\Comparison\PossiblyImpureTipHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
@@ -53424,14 +57715,12 @@ use function sprintf;
 final class ImpossibleInstanceOfRule implements Rule
 {
     private RuleLevelHelper $ruleLevelHelper;
-    private PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $reportAlwaysTrueInLastCondition;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         RuleLevelHelper $ruleLevelHelper,
-        PossiblyImpureTipHelper $possiblyImpureTipHelper,
         ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         #[AutowiredParameter]
         bool $treatPhpDocTypesAsCertain,
@@ -54083,6 +58372,8 @@ namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -54091,6 +58382,7 @@ use function strtolower;
 /**
  * @implements Rule<Node\Expr\New_>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [0]]], '%featureToggles.newStaticInAbstractClassStaticMethod%')]
 final class NewStaticInAbstractClassStaticMethodRule implements Rule
 {
     public function getNodeType(): string
@@ -54473,7 +58765,6 @@ use function sprintf;
 final class BooleanAndConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -54481,7 +58772,6 @@ final class BooleanAndConstantConditionRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -54529,7 +58819,6 @@ use function sprintf;
 final class BooleanNotConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -54537,7 +58826,6 @@ final class BooleanNotConstantConditionRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -54582,7 +58870,6 @@ use function sprintf;
 final class BooleanOrConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -54590,7 +58877,6 @@ final class BooleanOrConstantConditionRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -54779,13 +59065,11 @@ use function sprintf;
 #[RegisteredRule(4)]
 final class ConstantLooseComparisonRule implements Rule
 {
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $reportAlwaysTrueInLastCondition;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         #[AutowiredParameter]
         bool $treatPhpDocTypesAsCertain,
@@ -54830,14 +59114,12 @@ use function sprintf;
 final class DoWhileLoopConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -54883,7 +59165,6 @@ use function sprintf;
 final class ElseIfConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -54891,7 +59172,6 @@ final class ElseIfConstantConditionRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55054,14 +59334,12 @@ use function sprintf;
 final class IfConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55101,7 +59379,6 @@ use function sprintf;
 final class ImpossibleCheckTypeFunctionCallRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -55109,7 +59386,6 @@ final class ImpossibleCheckTypeFunctionCallRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55248,7 +59524,6 @@ use function sprintf;
 final class ImpossibleCheckTypeMethodCallRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -55256,7 +59531,6 @@ final class ImpossibleCheckTypeMethodCallRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55322,7 +59596,6 @@ use function sprintf;
 final class ImpossibleCheckTypeStaticMethodCallRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -55330,7 +59603,6 @@ final class ImpossibleCheckTypeStaticMethodCallRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ImpossibleCheckTypeHelper $impossibleCheckTypeHelper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55364,6 +59636,9 @@ namespace PHPStan\Rules\Comparison;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -55388,13 +59663,18 @@ use function strtolower;
  *
  * @implements Rule<FuncCall>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.finiteTypesInHaystack%')]
 final class ImpossibleInArrayHaystackFiniteTypesRule implements Rule
 {
     private InitializerExprTypeResolver $initializerExprTypeResolver;
     private bool $treatPhpDocTypesAsCertain;
     /** Argument positions of the needle and the haystack per supported function. */
     private const FUNCTIONS = ['in_array' => ['needle' => 0, 'haystack' => 1], 'array_search' => ['needle' => 0, 'haystack' => 1], 'array_keys' => ['needle' => 1, 'haystack' => 0]];
-    public function __construct(InitializerExprTypeResolver $initializerExprTypeResolver, bool $treatPhpDocTypesAsCertain)
+    public function __construct(
+        InitializerExprTypeResolver $initializerExprTypeResolver,
+        #[AutowiredParameter]
+        bool $treatPhpDocTypesAsCertain
+    )
     {
     }
     public function getNodeType(): string
@@ -55449,7 +59729,6 @@ use function sprintf;
 final class LogicalXorConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
@@ -55457,7 +59736,6 @@ final class LogicalXorConstantConditionRule implements Rule
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55515,13 +59793,11 @@ use function sprintf;
 final class MatchExpressionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $constantConditionRuleHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $constantConditionRuleHelper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55573,12 +59849,10 @@ use function sprintf;
 #[RegisteredRule(4)]
 final class NumberComparisonOperatorsConstantConditionRule implements Rule
 {
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         #[AutowiredParameter]
         bool $treatPhpDocTypesAsCertain,
@@ -55594,35 +59868,6 @@ final class NumberComparisonOperatorsConstantConditionRule implements Rule
      * @param \PHPStan\Analyser\Scope&\PHPStan\Analyser\NodeCallbackInvoker&\PHPStan\Analyser\CollectedDataEmitter $scope
      */
     public function processNode(Node $node, \PHPStan\Analyser\Scope $scope): array
-    {
-    }
-}
-namespace PHPStan\Rules\Comparison;
-
-use PhpParser\Node\Expr;
-use PHPStan\Analyser\MutatingScope;
-use PHPStan\Analyser\Scope;
-use PHPStan\DependencyInjection\AutowiredParameter;
-use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\Rules\RuleError;
-use PHPStan\Rules\RuleErrorBuilder;
-use function count;
-#[AutowiredService]
-final class PossiblyImpureTipHelper
-{
-    private bool $possiblyImpureTip;
-    public function __construct(
-        #[AutowiredParameter('%tips.possiblyImpure%')]
-        bool $possiblyImpureTip
-    )
-    {
-    }
-    /**
-     * @template T of RuleError
-     * @param RuleErrorBuilder<T> $ruleErrorBuilder
-     * @return RuleErrorBuilder<T>
-     */
-    public function addTip(Scope $scope, Expr $conditionExpr, RuleErrorBuilder $ruleErrorBuilder): RuleErrorBuilder
     {
     }
 }
@@ -55652,14 +59897,12 @@ use function sprintf;
 final class StrictComparisonOfDifferentTypesRule implements Rule
 {
     private RicherScopeGetTypeHelper $richerScopeGetTypeHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $reportAlwaysTrueInLastCondition;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         RicherScopeGetTypeHelper $richerScopeGetTypeHelper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         #[AutowiredParameter]
         bool $treatPhpDocTypesAsCertain,
@@ -55687,6 +59930,9 @@ use PhpParser\Node\Expr\BinaryOp\Equal;
 use PHPStan\Analyser\CollectedDataEmitter;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\SwitchConditionNode;
 use PHPStan\Php\PhpVersion;
@@ -55699,15 +59945,22 @@ use function sprintf;
 /**
  * @implements Rule<SwitchConditionNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.switchConditionAlwaysFalse%')]
 final class SwitchConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $constantConditionRuleHelper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private ExprPrinter $exprPrinter;
     private PhpVersion $phpVersion;
     private bool $treatPhpDocTypesAsCertain;
-    public function __construct(\PHPStan\Rules\Comparison\ConstantConditionRuleHelper $constantConditionRuleHelper, \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper, \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper, ExprPrinter $exprPrinter, PhpVersion $phpVersion, bool $treatPhpDocTypesAsCertain)
+    public function __construct(
+        \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $constantConditionRuleHelper,
+        \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
+        ExprPrinter $exprPrinter,
+        PhpVersion $phpVersion,
+        #[AutowiredParameter]
+        bool $treatPhpDocTypesAsCertain
+    )
     {
     }
     public function getNodeType(): string
@@ -55751,14 +60004,12 @@ use function sprintf;
 final class TernaryOperatorConstantConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55817,14 +60068,12 @@ use PHPStan\Type\Constant\ConstantBooleanType;
 final class WhileLoopAlwaysFalseConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -55867,14 +60116,12 @@ use PHPStan\Type\NeverType;
 final class WhileLoopAlwaysTrueConditionRule implements Rule
 {
     private \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper;
-    private \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper;
     private \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper;
     private \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper;
     private bool $treatPhpDocTypesAsCertain;
     private bool $treatPhpDocTypesAsCertainTip;
     public function __construct(
         \PHPStan\Rules\Comparison\ConstantConditionRuleHelper $helper,
-        \PHPStan\Rules\Comparison\PossiblyImpureTipHelper $possiblyImpureTipHelper,
         \PHPStan\Rules\Comparison\ConstantConditionInTraitHelper $constantConditionInTraitHelper,
         \PHPStan\Rules\Comparison\FunctionCallConstantConditionHelper $functionCallConstantConditionHelper,
         #[AutowiredParameter]
@@ -56245,6 +60492,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\ConstantResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\VerbosityLevel;
@@ -56254,6 +60503,7 @@ use function strtolower;
 /**
  * @implements Rule<FuncCall>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [2]]], '%featureToggles.checkDynamicConstantNameValues%')]
 final class ValueAssignedToDefineRule implements Rule
 {
     private ConstantResolver $constantResolver;
@@ -56272,6 +60522,8 @@ namespace PHPStan\Rules\Constants;
 use PhpParser\Node;
 use PHPStan\Analyser\ConstantResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\VerbosityLevel;
@@ -56279,6 +60531,7 @@ use function sprintf;
 /**
  * @implements Rule<Node\Stmt\Const_>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [2]]], '%featureToggles.checkDynamicConstantNameValues%')]
 final class ValueAssignedToGlobalConstantRule implements Rule
 {
     private ConstantResolver $constantResolver;
@@ -56298,6 +60551,8 @@ use DateInterval;
 use PhpParser\Node;
 use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use Throwable;
 use function count;
 use function sprintf;
@@ -56305,6 +60560,7 @@ use function strtolower;
 /**
  * @implements Rule<Node\Expr\New_>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [5]]], '%featureToggles.checkDateIntervalConstructor%')]
 final class DateIntervalInstantiationRule implements \PHPStan\Rules\Rule
 {
     public function getNodeType(): string
@@ -56938,6 +61194,8 @@ namespace PHPStan\Rules\DeadCode;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\Variable\VariableWrite;
 use PHPStan\Node\VariableWritesNode;
@@ -56955,6 +61213,7 @@ use function ucfirst;
 /**
  * @implements Rule<VariableWritesNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.unusedVariable%')]
 final class UnusedVariableRule implements Rule
 {
     private ExprPrinter $exprPrinter;
@@ -57319,7 +61578,7 @@ final class CaughtExceptionExistenceRule implements Rule
 }
 namespace PHPStan\Rules\Exceptions;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -57412,6 +61671,9 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Rules\Methods\ParentMethodHelper;
 use PHPStan\Rules\Rule;
@@ -57424,11 +61686,16 @@ use function sprintf;
 /**
  * @implements Rule<InClassMethodNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [AutowiredService::class, []]], '%exceptions.check.throwTypeCovariance%')]
 final class MethodThrowTypeCovarianceRule implements Rule
 {
     private ParentMethodHelper $parentMethodHelper;
     private bool $implicitThrows;
-    public function __construct(ParentMethodHelper $parentMethodHelper, bool $implicitThrows)
+    public function __construct(
+        ParentMethodHelper $parentMethodHelper,
+        #[AutowiredParameter('%exceptions.implicitThrows%')]
+        bool $implicitThrows
+    )
     {
     }
     public function getNodeType(): string
@@ -57442,6 +61709,8 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\FunctionReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -57449,6 +61718,7 @@ use function sprintf;
 /**
  * @implements Rule<FunctionReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [AutowiredService::class, []]], '%exceptions.check.missingCheckedExceptionInThrows%')]
 final class MissingCheckedExceptionInFunctionThrowsRule implements Rule
 {
     private \PHPStan\Rules\Exceptions\MissingCheckedExceptionInThrowsCheck $check;
@@ -57466,6 +61736,8 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -57473,6 +61745,7 @@ use function sprintf;
 /**
  * @implements Rule<MethodReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [AutowiredService::class, []]], '%exceptions.check.missingCheckedExceptionInThrows%')]
 final class MissingCheckedExceptionInMethodThrowsRule implements Rule
 {
     private \PHPStan\Rules\Exceptions\MissingCheckedExceptionInThrowsCheck $check;
@@ -57490,6 +61763,8 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\PropertyHookReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -57499,6 +61774,7 @@ use function ucfirst;
 /**
  * @implements Rule<PropertyHookReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [AutowiredService::class, []]], '%exceptions.check.missingCheckedExceptionInThrows%')]
 final class MissingCheckedExceptionInPropertyHookThrowsRule implements Rule
 {
     private \PHPStan\Rules\Exceptions\MissingCheckedExceptionInThrowsCheck $check;
@@ -57759,6 +62035,8 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\FunctionReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -57766,6 +62044,7 @@ use function sprintf;
 /**
  * @implements Rule<FunctionReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%exceptions.check.tooWideThrowType%')]
 final class TooWideFunctionThrowTypeRule implements Rule
 {
     private \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check;
@@ -57784,6 +62063,9 @@ namespace PHPStan\Rules\Exceptions;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\Rule;
@@ -57799,13 +62081,21 @@ use function sprintf;
 /**
  * @implements Rule<MethodReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%exceptions.check.tooWideThrowType%')]
 final class TooWideMethodThrowTypeRule implements Rule
 {
     private FileTypeMapper $fileTypeMapper;
     private \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check;
     private bool $checkProtectedAndPublicMethods;
     private bool $tooWideImplicitThrows;
-    public function __construct(FileTypeMapper $fileTypeMapper, \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check, bool $checkProtectedAndPublicMethods, bool $tooWideImplicitThrows)
+    public function __construct(
+        FileTypeMapper $fileTypeMapper,
+        \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check,
+        #[AutowiredParameter('%checkTooWideThrowTypesInProtectedAndPublicMethods%')]
+        bool $checkProtectedAndPublicMethods,
+        #[AutowiredParameter('%exceptions.check.tooWideImplicitThrowType%')]
+        bool $tooWideImplicitThrows
+    )
     {
     }
     public function getNodeType(): string
@@ -57822,6 +62112,9 @@ namespace PHPStan\Rules\Exceptions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\PropertyHookReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -57831,11 +62124,16 @@ use function ucfirst;
 /**
  * @implements Rule<PropertyHookReturnStatementsNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%exceptions.check.tooWideThrowType%')]
 final class TooWidePropertyHookThrowTypeRule implements Rule
 {
     private \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check;
     private bool $checkProtectedAndPublicMethods;
-    public function __construct(\PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check, bool $checkProtectedAndPublicMethods)
+    public function __construct(
+        \PHPStan\Rules\Exceptions\TooWideThrowTypeCheck $check,
+        #[AutowiredParameter('%checkTooWideThrowTypesInProtectedAndPublicMethods%')]
+        bool $checkProtectedAndPublicMethods
+    )
     {
     }
     public function getNodeType(): string
@@ -57909,12 +62207,10 @@ interface FileRuleError extends \PHPStan\Rules\RuleError
 }
 namespace PHPStan\Rules;
 
-use PhpParser\Node;
 interface FixableNodeRuleError extends \PHPStan\Rules\RuleError
 {
-    public function getOriginalNode(): Node;
-    /** @return callable(Node): Node */
-    public function getNewNodeCallable(): callable;
+    /** @return non-empty-list<NodeFix> */
+    public function getNodeFixes(): array;
 }
 namespace PHPStan\Rules;
 
@@ -57975,9 +62271,11 @@ final class FoundTypeResult
 }
 namespace PHPStan\Rules;
 
+use Closure;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\CollectedDataEmitter;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
@@ -57985,6 +62283,8 @@ use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ConstantReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
+use PHPStan\Reflection\FunctionReflection;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
@@ -58013,6 +62313,8 @@ use function array_merge;
 use function count;
 use function implode;
 use function in_array;
+use function is_bool;
+use function is_float;
 use function is_int;
 use function is_string;
 use function lcfirst;
@@ -58026,6 +62328,7 @@ final class FunctionCallParametersCheck
     private UnresolvableTypeHelper $unresolvableTypeHelper;
     private PropertyReflectionFinder $propertyReflectionFinder;
     private ReflectionProvider $reflectionProvider;
+    private \PHPStan\Rules\ParameterClosureTypeHelper $parameterClosureTypeHelper;
     private bool $checkArgumentTypes;
     private bool $checkArgumentsPassedByReference;
     private bool $checkExtraArguments;
@@ -58036,6 +62339,7 @@ final class FunctionCallParametersCheck
         UnresolvableTypeHelper $unresolvableTypeHelper,
         PropertyReflectionFinder $propertyReflectionFinder,
         ReflectionProvider $reflectionProvider,
+        \PHPStan\Rules\ParameterClosureTypeHelper $parameterClosureTypeHelper,
         #[AutowiredParameter('%checkFunctionArgumentTypes%')]
         bool $checkArgumentTypes,
         #[AutowiredParameter]
@@ -58053,8 +62357,9 @@ final class FunctionCallParametersCheck
      * @return list<IdentifierRuleError>
      * @param \PHPStan\Analyser\Scope&\PHPStan\Analyser\NodeCallbackInvoker&\PHPStan\Analyser\CollectedDataEmitter $scope
      * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall|\PhpParser\Node\Expr\New_ $funcCall
+     * @param \PHPStan\Reflection\FunctionReflection|\PHPStan\Reflection\MethodReflection|null $calleeReflection
      */
-    public function check(ParametersAcceptor $parametersAcceptor, \PHPStan\Analyser\Scope $scope, bool $isBuiltin, $funcCall, string $nodeType, TrinaryLogic $acceptsNamedArguments, string $singleInsufficientParameterMessage, string $pluralInsufficientParametersMessage, string $singleInsufficientParameterInVariadicFunctionMessage, string $pluralInsufficientParametersInVariadicFunctionMessage, string $singleInsufficientParameterWithOptionalParametersMessage, string $pluralInsufficientParametersWithOptionalParametersMessage, string $wrongArgumentTypeMessage, string $voidReturnTypeUsed, string $parameterPassedByReferenceMessage, string $unresolvableTemplateTypeMessage, string $missingParameterMessage, string $unknownParameterMessage, string $unresolvableReturnTypeMessage, string $unresolvableParameterTypeMessage, string $namedArgumentMessage, string $invalidConstantMessage, string $exclusiveConstantsMessage, string $bitmaskNotAllowedMessage, ?array $renamedNamedArgumentParameterData): array
+    public function check(ParametersAcceptor $parametersAcceptor, \PHPStan\Analyser\Scope $scope, bool $isBuiltin, $funcCall, string $nodeType, TrinaryLogic $acceptsNamedArguments, string $singleInsufficientParameterMessage, string $pluralInsufficientParametersMessage, string $singleInsufficientParameterInVariadicFunctionMessage, string $pluralInsufficientParametersInVariadicFunctionMessage, string $singleInsufficientParameterWithOptionalParametersMessage, string $pluralInsufficientParametersWithOptionalParametersMessage, string $wrongArgumentTypeMessage, string $voidReturnTypeUsed, string $parameterPassedByReferenceMessage, string $unresolvableTemplateTypeMessage, string $missingParameterMessage, string $unknownParameterMessage, string $unresolvableReturnTypeMessage, string $unresolvableParameterTypeMessage, string $namedArgumentMessage, string $invalidConstantMessage, string $exclusiveConstantsMessage, string $bitmaskNotAllowedMessage, ?array $renamedNamedArgumentParameterData, $calleeReflection = null): array
     {
     }
     /**
@@ -58074,6 +62379,18 @@ final class FunctionCallParametersCheck
      * @return list<ConstantReflection>|null Null when the expression is not a constant or bitmask of constants
      */
     private function resolveConstantReflections(Expr $expr, Scope $scope): ?array
+    {
+    }
+    /**
+     * Rewrites the call to pass every argument positionally, skipped optional parameters get their default values.
+     *
+     * @return (Closure(Node\Expr\FuncCall|Node\Expr\MethodCall|Node\Expr\StaticCall|Node\Expr\New_): (Node\Expr\FuncCall|Node\Expr\MethodCall|Node\Expr\StaticCall|Node\Expr\New_))|false
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall|\PhpParser\Node\Expr\New_ $funcCall
+     */
+    private function createPositionalArgumentsFix(ParametersAcceptor $parametersAcceptor, $funcCall)
+    {
+    }
+    private function createDefaultValueExpr(Type $type): ?Expr
     {
     }
     private function callReturnsByReference(Expr $expr, Scope $scope): bool
@@ -59260,6 +63577,8 @@ namespace PHPStan\Rules\Functions;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -59273,6 +63592,7 @@ use function in_array;
 /**
  * @implements Rule<Node\Expr\FuncCall>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [5]]], '%featureToggles.checkParameterCastableToNumberFunctions%')]
 final class ParameterCastableToNumberRule implements Rule
 {
     private ReflectionProvider $reflectionProvider;
@@ -59300,7 +63620,10 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ParameterCastableToStringCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use function array_key_exists;
+use function array_slice;
+use function count;
 use function in_array;
 /**
  * @implements Rule<Node\Expr\FuncCall>
@@ -59372,6 +63695,9 @@ namespace PHPStan\Rules\Functions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Php\PhpVersions;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
@@ -59395,6 +63721,7 @@ use function sprintf;
 /**
  * @implements Rule<Node\Expr\FuncCall>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [5]]], '%featureToggles.checkPrintfParameterTypes%')]
 final class PrintfParameterTypeRule implements Rule
 {
     private PrintfFormatParser $printfFormatParser;
@@ -59403,7 +63730,13 @@ final class PrintfParameterTypeRule implements Rule
     private bool $checkStrictPrintfPlaceholderTypes;
     private const FORMAT_ARGUMENT_POSITIONS = ['printf' => 0, 'sprintf' => 0, 'fprintf' => 1];
     private const MINIMUM_NUMBER_OF_ARGUMENTS = ['printf' => 1, 'sprintf' => 1, 'fprintf' => 2];
-    public function __construct(PrintfFormatParser $printfFormatParser, ReflectionProvider $reflectionProvider, RuleLevelHelper $ruleLevelHelper, bool $checkStrictPrintfPlaceholderTypes)
+    public function __construct(
+        PrintfFormatParser $printfFormatParser,
+        ReflectionProvider $reflectionProvider,
+        RuleLevelHelper $ruleLevelHelper,
+        #[AutowiredParameter]
+        bool $checkStrictPrintfPlaceholderTypes
+    )
     {
     }
     public function getNodeType(): string
@@ -59680,7 +64013,6 @@ use PHPStan\Type\TypeUtils;
 use function array_key_exists;
 use function in_array;
 use const SORT_FLAG_CASE;
-use const SORT_LOCALE_STRING;
 use const SORT_NATURAL;
 use const SORT_NUMERIC;
 use const SORT_REGULAR;
@@ -59693,6 +64025,8 @@ final class SortParameterCastableToStringRule implements Rule
 {
     private ReflectionProvider $reflectionProvider;
     private ParameterCastableToStringCheck $parameterCastableToStringCheck;
+    /** Value of SORT_LOCALE_STRING; the constant itself is deprecated since PHP 8.6. */
+    private const SORT_LOCALE_STRING = 5;
     public function __construct(ReflectionProvider $reflectionProvider, ParameterCastableToStringCheck $parameterCastableToStringCheck)
     {
     }
@@ -59709,6 +64043,9 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -59729,6 +64066,7 @@ use const SORT_REGULAR;
  *
  * @implements Rule<Node\Expr\FuncCall>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [5]]], '%featureToggles.sortWithoutEffect%')]
 final class SortWithoutEffectRule implements Rule
 {
     private ReflectionProvider $reflectionProvider;
@@ -59749,7 +64087,13 @@ final class SortWithoutEffectRule implements Rule
      */
     private const KSORT_LIST_SAFE_FLAGS = [SORT_REGULAR, SORT_NUMERIC];
     private const REASON_MESSAGES = ['empty' => 'Parameter #1 $array (%s) of function %s is empty, call has no effect.', 'list' => 'Parameter #1 $array (%s) of function %s is a list, call has no effect.', 'noop' => 'Parameter #1 $array (%s) of function %s has at most 1 element, call has no effect.'];
-    public function __construct(ReflectionProvider $reflectionProvider, bool $treatPhpDocTypesAsCertain, bool $treatPhpDocTypesAsCertainTip)
+    public function __construct(
+        ReflectionProvider $reflectionProvider,
+        #[AutowiredParameter]
+        bool $treatPhpDocTypesAsCertain,
+        #[AutowiredParameter('%tips.treatPhpDocTypesAsCertain%')]
+        bool $treatPhpDocTypesAsCertainTip
+    )
     {
     }
     public function getNodeType(): string
@@ -59809,6 +64153,8 @@ namespace PHPStan\Rules\Functions;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Node\VariableWritesNode;
 use PHPStan\Rules\Rule;
@@ -59818,6 +64164,7 @@ use function sprintf;
 /**
  * @implements Rule<VariableWritesNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.unusedParameters%')]
 final class UnusedFunctionParametersRule implements Rule
 {
     private UnusedParametersCheck $check;
@@ -61081,6 +65428,8 @@ namespace PHPStan\Rules\Keywords;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Parser\GotoLabelVisitor;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -61088,6 +65437,7 @@ use function sprintf;
 /**
  * @implements Rule<Node\Stmt\Label>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.unusedLabel%')]
 final class UnusedLabelRule implements Rule
 {
     public function getNodeType(): string
@@ -62450,6 +66800,8 @@ namespace PHPStan\Rules\Methods;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Node\VariableWritesNode;
 use PHPStan\Rules\Rule;
@@ -62465,6 +66817,7 @@ use function str_starts_with;
  *
  * @implements Rule<VariableWritesNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [4]]], '%featureToggles.unusedParameters%')]
 final class UnusedMethodParametersRule implements Rule
 {
     private UnusedParametersCheck $check;
@@ -62797,6 +67150,37 @@ final class ExistingNamesInUseRule implements Rule
      * @return list<IdentifierRuleError>
      */
     private function checkClasses(Scope $scope, array $uses): array
+    {
+    }
+}
+namespace PHPStan\Rules;
+
+use PhpParser\Node;
+use PhpParser\NodeVisitor;
+/**
+ * One change of a fixable error, registered with RuleErrorBuilder::fixNode() or removeNode().
+ */
+final class NodeFix
+{
+    /**
+     * @readonly
+     */
+    public Node $node;
+    /**
+     * @readonly
+     * @var callable(Node): (Node|NodeVisitor::REMOVE_NODE)
+     */
+    public $callback;
+    /**
+     * @readonly
+     * @var string|null
+     */
+    public ?string $file;
+    /**
+     * @param callable(Node): (Node|NodeVisitor::REMOVE_NODE) $callback
+     * @param string|null $file the file of the node, null for the file of the error
+     */
+    public function __construct(Node $node, $callback, ?string $file)
     {
     }
 }
@@ -63170,10 +67554,73 @@ final class ParameterCastableToStringCheck
     {
     }
     /** @param callable(Type): Type $castFn */
-    public function checkParameter(Arg $parameter, Scope $scope, string $errorMessageTemplate, callable $castFn, string $functionName, string $parameterName): ?\PHPStan\Rules\IdentifierRuleError
+    public function checkParameter(Arg $parameter, Scope $scope, string $errorMessageTemplate, callable $castFn, string $functionName, string $parameterName, ?Type $arrayTypeToCheck = null): ?\PHPStan\Rules\IdentifierRuleError
     {
     }
     public function getParameterName(Arg $parameter, int $parameterIdx, ?ParameterReflection $parameterReflection): string
+    {
+    }
+}
+namespace PHPStan\Rules;
+
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
+use PHPStan\Analyser\DependencyTracker;
+use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredExtensions;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\ExtensionsCollection;
+use PHPStan\Reflection\FunctionReflection;
+use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ParameterReflection;
+use PHPStan\Type\FunctionParameterClosureTypeExtension;
+use PHPStan\Type\MethodParameterClosureTypeExtension;
+use PHPStan\Type\StaticMethodParameterClosureTypeExtension;
+use PHPStan\Type\Type;
+/**
+ * Asks the parameter closure type extensions for the type of a closure passed to a parameter,
+ * the same way ArgumentsHandler does when it analyses the closure body.
+ */
+#[AutowiredService]
+final class ParameterClosureTypeHelper
+{
+    /**
+     * @var ExtensionsCollection<FunctionParameterClosureTypeExtension>
+     */
+    private ExtensionsCollection $functionParameterClosureTypeExtensions;
+    /**
+     * @var ExtensionsCollection<MethodParameterClosureTypeExtension>
+     */
+    private ExtensionsCollection $methodParameterClosureTypeExtensions;
+    /**
+     * @var ExtensionsCollection<StaticMethodParameterClosureTypeExtension>
+     */
+    private ExtensionsCollection $staticMethodParameterClosureTypeExtensions;
+    /**
+     * @param ExtensionsCollection<FunctionParameterClosureTypeExtension> $functionParameterClosureTypeExtensions
+     * @param ExtensionsCollection<MethodParameterClosureTypeExtension> $methodParameterClosureTypeExtensions
+     * @param ExtensionsCollection<StaticMethodParameterClosureTypeExtension> $staticMethodParameterClosureTypeExtensions
+     */
+    public function __construct(
+        #[AutowiredExtensions(FunctionParameterClosureTypeExtension::class)]
+        ExtensionsCollection $functionParameterClosureTypeExtensions,
+        #[AutowiredExtensions(MethodParameterClosureTypeExtension::class)]
+        ExtensionsCollection $methodParameterClosureTypeExtensions,
+        #[AutowiredExtensions(StaticMethodParameterClosureTypeExtension::class)]
+        ExtensionsCollection $staticMethodParameterClosureTypeExtensions
+    )
+    {
+    }
+    /**
+     * @param \PHPStan\Analyser\Scope&\PHPStan\Analyser\DependencyTracker $scope
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall|\PhpParser\Node\Expr\New_ $callLike
+     * @param \PHPStan\Reflection\FunctionReflection|\PHPStan\Reflection\MethodReflection $calleeReflection
+     */
+    public function getParameterType($callLike, $calleeReflection, ParameterReflection $parameter, \PHPStan\Analyser\Scope $scope): ?Type
     {
     }
 }
@@ -64530,7 +68977,7 @@ final class NotAnalysedTraitRule implements Rule
 }
 namespace PHPStan\Rules\Playground;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\VirtualNode;
@@ -65902,6 +70349,8 @@ namespace PHPStan\Rules\Properties;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\ClassPropertiesNode;
 use PHPStan\Reflection\ConstructorsHelper;
 use PHPStan\Rules\Rule;
@@ -65910,6 +70359,7 @@ use function sprintf;
 /**
  * @implements Rule<ClassPropertiesNode>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [AutowiredService::class, []]], '%checkUninitializedProperties%')]
 final class UninitializedPropertyRule implements Rule
 {
     private ConstructorsHelper $constructorsHelper;
@@ -66094,8 +70544,8 @@ final class PurePropertyHookRule implements Rule
 }
 namespace PHPStan\Rules\Regexp;
 
-use _PHPStan_cb3b7e994\Nette\Utils\RegexpException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\RegexpException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
@@ -67189,6 +71639,7 @@ interface RuleError
 namespace PHPStan\Rules;
 
 use PhpParser\Node;
+use PhpParser\NodeVisitor;
 use PHPStan\Analyser\Error;
 use PHPStan\ShouldNotHappenException;
 use function array_map;
@@ -67331,14 +71782,28 @@ final class RuleErrorBuilder
     {
     }
     /**
-     * @internal Experimental
+     * Every call adds a change to the fix of the error. The changes are applied together or not at all.
+     * Several changes of the same node are applied in the order they were added.
+     *
      * @template TNode of Node
      * @param TNode $node
-     * @param callable(TNode): Node $cb
+     * @param callable(TNode): (Node|NodeVisitor::REMOVE_NODE) $cb returning NodeVisitor::REMOVE_NODE works like removeNode()
+     * @param string|null $file the file of the node when it is not the file of the error
      * @phpstan-this-out self<T&FixableNodeRuleError>
      * @return self<T&FixableNodeRuleError>
      */
-    public function fixNode(Node $node, callable $cb): self
+    public function fixNode(Node $node, callable $cb, ?string $file = null): self
+    {
+    }
+    /**
+     * Adds removing the node to the fix of the error, see fixNode(). Only a node in an array,
+     * like a statement, an argument, or an array item, can be removed. Otherwise the error is not fixable.
+     *
+     * @param string|null $file the file of the node when it is not the file of the error
+     * @phpstan-this-out self<T&FixableNodeRuleError>
+     * @return self<T&FixableNodeRuleError>
+     */
+    public function removeNode(Node $node, ?string $file = null): self
     {
     }
     /**
@@ -67895,8 +72360,8 @@ final class RuleError127 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -67904,19 +72369,15 @@ use PHPStan\Rules\RuleError;
 final class RuleError129 implements RuleError, FixableNodeRuleError
 {
     public string $message;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -67949,9 +72410,9 @@ final class RuleError13 implements RuleError, FileRuleError, TipRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -67960,30 +72421,26 @@ final class RuleError131 implements RuleError, LineRuleError, FixableNodeRuleErr
 {
     public string $message;
     public int $line;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getLine(): int
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -67993,9 +72450,8 @@ final class RuleError133 implements RuleError, FileRuleError, FixableNodeRuleErr
     public string $message;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68005,22 +72461,19 @@ final class RuleError133 implements RuleError, FileRuleError, FixableNodeRuleErr
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68031,9 +72484,8 @@ final class RuleError135 implements RuleError, LineRuleError, FileRuleError, Fix
     public int $line;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68046,20 +72498,17 @@ final class RuleError135 implements RuleError, LineRuleError, FileRuleError, Fix
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68069,30 +72518,26 @@ final class RuleError137 implements RuleError, TipRuleError, FixableNodeRuleErro
 {
     public string $message;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68103,9 +72548,8 @@ final class RuleError139 implements RuleError, LineRuleError, TipRuleError, Fixa
     public string $message;
     public int $line;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68115,21 +72559,18 @@ final class RuleError139 implements RuleError, LineRuleError, TipRuleError, Fixa
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68141,9 +72582,8 @@ final class RuleError141 implements RuleError, FileRuleError, TipRuleError, Fixa
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68156,22 +72596,19 @@ final class RuleError141 implements RuleError, FileRuleError, TipRuleError, Fixa
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68184,9 +72621,8 @@ final class RuleError143 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68202,21 +72638,18 @@ final class RuleError143 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68225,31 +72658,27 @@ final class RuleError145 implements RuleError, IdentifierRuleError, FixableNodeR
 {
     public string $message;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68259,9 +72688,8 @@ final class RuleError147 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $message;
     public int $line;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68271,22 +72699,19 @@ final class RuleError147 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68297,9 +72722,8 @@ final class RuleError149 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68312,13 +72736,10 @@ final class RuleError149 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -68356,11 +72777,11 @@ final class RuleError15 implements RuleError, LineRuleError, FileRuleError, TipR
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68372,9 +72793,8 @@ final class RuleError151 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68390,21 +72810,18 @@ final class RuleError151 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68415,9 +72832,8 @@ final class RuleError153 implements RuleError, TipRuleError, IdentifierRuleError
     public string $message;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68427,22 +72843,19 @@ final class RuleError153 implements RuleError, TipRuleError, IdentifierRuleError
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68454,9 +72867,8 @@ final class RuleError155 implements RuleError, LineRuleError, TipRuleError, Iden
     public int $line;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68469,22 +72881,19 @@ final class RuleError155 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68497,9 +72906,8 @@ final class RuleError157 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68515,23 +72923,20 @@ final class RuleError157 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68545,9 +72950,8 @@ final class RuleError159 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68566,21 +72970,18 @@ final class RuleError159 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68590,9 +72991,8 @@ final class RuleError161 implements RuleError, MetadataRuleError, FixableNodeRul
     public string $message;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68602,22 +73002,19 @@ final class RuleError161 implements RuleError, MetadataRuleError, FixableNodeRul
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68628,9 +73025,8 @@ final class RuleError163 implements RuleError, LineRuleError, MetadataRuleError,
     public int $line;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68643,22 +73039,19 @@ final class RuleError163 implements RuleError, LineRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68670,9 +73063,8 @@ final class RuleError165 implements RuleError, FileRuleError, MetadataRuleError,
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68688,23 +73080,20 @@ final class RuleError165 implements RuleError, FileRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68717,9 +73106,8 @@ final class RuleError167 implements RuleError, LineRuleError, FileRuleError, Met
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68738,21 +73126,18 @@ final class RuleError167 implements RuleError, LineRuleError, FileRuleError, Met
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68764,9 +73149,8 @@ final class RuleError169 implements RuleError, TipRuleError, MetadataRuleError, 
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68779,13 +73163,10 @@ final class RuleError169 implements RuleError, TipRuleError, MetadataRuleError, 
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -68809,10 +73190,10 @@ final class RuleError17 implements RuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68825,9 +73206,8 @@ final class RuleError171 implements RuleError, LineRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68843,22 +73223,19 @@ final class RuleError171 implements RuleError, LineRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68872,9 +73249,8 @@ final class RuleError173 implements RuleError, FileRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68893,23 +73269,20 @@ final class RuleError173 implements RuleError, FileRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -68924,9 +73297,8 @@ final class RuleError175 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68948,22 +73320,19 @@ final class RuleError175 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -68974,9 +73343,8 @@ final class RuleError177 implements RuleError, IdentifierRuleError, MetadataRule
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -68989,23 +73357,20 @@ final class RuleError177 implements RuleError, IdentifierRuleError, MetadataRule
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -69017,9 +73382,8 @@ final class RuleError179 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69035,23 +73399,20 @@ final class RuleError179 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -69064,9 +73425,8 @@ final class RuleError181 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69085,24 +73445,21 @@ final class RuleError181 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -69116,9 +73473,8 @@ final class RuleError183 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69140,22 +73496,19 @@ final class RuleError183 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -69168,9 +73521,8 @@ final class RuleError185 implements RuleError, TipRuleError, IdentifierRuleError
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69186,23 +73538,20 @@ final class RuleError185 implements RuleError, TipRuleError, IdentifierRuleError
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -69216,9 +73565,8 @@ final class RuleError187 implements RuleError, LineRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69237,23 +73585,20 @@ final class RuleError187 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -69268,9 +73613,8 @@ final class RuleError189 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69292,13 +73636,10 @@ final class RuleError189 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -69327,12 +73668,12 @@ final class RuleError19 implements RuleError, LineRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -69348,9 +73689,8 @@ final class RuleError191 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69375,20 +73715,17 @@ final class RuleError191 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69397,27 +73734,23 @@ use PHPStan\Rules\RuleError;
 final class RuleError193 implements RuleError, NonIgnorableRuleError, FixableNodeRuleError
 {
     public string $message;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69427,30 +73760,26 @@ final class RuleError195 implements RuleError, LineRuleError, NonIgnorableRuleEr
 {
     public string $message;
     public int $line;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getLine(): int
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69461,9 +73790,8 @@ final class RuleError197 implements RuleError, FileRuleError, NonIgnorableRuleEr
     public string $message;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69473,22 +73801,19 @@ final class RuleError197 implements RuleError, FileRuleError, NonIgnorableRuleEr
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69500,9 +73825,8 @@ final class RuleError199 implements RuleError, LineRuleError, FileRuleError, Non
     public int $line;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69515,20 +73839,17 @@ final class RuleError199 implements RuleError, LineRuleError, FileRuleError, Non
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69539,30 +73860,26 @@ final class RuleError201 implements RuleError, TipRuleError, NonIgnorableRuleErr
 {
     public string $message;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69574,9 +73891,8 @@ final class RuleError203 implements RuleError, LineRuleError, TipRuleError, NonI
     public string $message;
     public int $line;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69586,21 +73902,18 @@ final class RuleError203 implements RuleError, LineRuleError, TipRuleError, NonI
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69613,9 +73926,8 @@ final class RuleError205 implements RuleError, FileRuleError, TipRuleError, NonI
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69628,22 +73940,19 @@ final class RuleError205 implements RuleError, FileRuleError, TipRuleError, NonI
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69657,9 +73966,8 @@ final class RuleError207 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69675,21 +73983,18 @@ final class RuleError207 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69699,22 +74004,18 @@ final class RuleError209 implements RuleError, IdentifierRuleError, NonIgnorable
 {
     public string $message;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -69747,10 +74048,10 @@ final class RuleError21 implements RuleError, FileRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69761,9 +74062,8 @@ final class RuleError211 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $message;
     public int $line;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69773,22 +74073,19 @@ final class RuleError211 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69800,9 +74097,8 @@ final class RuleError213 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69815,23 +74111,20 @@ final class RuleError213 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -69844,9 +74137,8 @@ final class RuleError215 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69862,21 +74154,18 @@ final class RuleError215 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69888,9 +74177,8 @@ final class RuleError217 implements RuleError, TipRuleError, IdentifierRuleError
     public string $message;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69900,22 +74188,19 @@ final class RuleError217 implements RuleError, TipRuleError, IdentifierRuleError
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69928,9 +74213,8 @@ final class RuleError219 implements RuleError, LineRuleError, TipRuleError, Iden
     public int $line;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69943,22 +74227,19 @@ final class RuleError219 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -69972,9 +74253,8 @@ final class RuleError221 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -69990,23 +74270,20 @@ final class RuleError221 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70021,9 +74298,8 @@ final class RuleError223 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70042,21 +74318,18 @@ final class RuleError223 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70067,9 +74340,8 @@ final class RuleError225 implements RuleError, MetadataRuleError, NonIgnorableRu
     public string $message;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70079,22 +74351,19 @@ final class RuleError225 implements RuleError, MetadataRuleError, NonIgnorableRu
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70106,9 +74375,8 @@ final class RuleError227 implements RuleError, LineRuleError, MetadataRuleError,
     public int $line;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70121,22 +74389,19 @@ final class RuleError227 implements RuleError, LineRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70149,9 +74414,8 @@ final class RuleError229 implements RuleError, FileRuleError, MetadataRuleError,
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70167,13 +74431,10 @@ final class RuleError229 implements RuleError, FileRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -70211,11 +74472,11 @@ final class RuleError23 implements RuleError, LineRuleError, FileRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70229,9 +74490,8 @@ final class RuleError231 implements RuleError, LineRuleError, FileRuleError, Met
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70250,21 +74510,18 @@ final class RuleError231 implements RuleError, LineRuleError, FileRuleError, Met
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70277,9 +74534,8 @@ final class RuleError233 implements RuleError, TipRuleError, MetadataRuleError, 
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70292,22 +74548,19 @@ final class RuleError233 implements RuleError, TipRuleError, MetadataRuleError, 
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70321,9 +74574,8 @@ final class RuleError235 implements RuleError, LineRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70339,22 +74591,19 @@ final class RuleError235 implements RuleError, LineRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70369,9 +74618,8 @@ final class RuleError237 implements RuleError, FileRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70390,23 +74638,20 @@ final class RuleError237 implements RuleError, FileRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70422,9 +74667,8 @@ final class RuleError239 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70446,22 +74690,19 @@ final class RuleError239 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70473,9 +74714,8 @@ final class RuleError241 implements RuleError, IdentifierRuleError, MetadataRule
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70488,23 +74728,20 @@ final class RuleError241 implements RuleError, IdentifierRuleError, MetadataRule
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70517,9 +74754,8 @@ final class RuleError243 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70535,23 +74771,20 @@ final class RuleError243 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70565,9 +74798,8 @@ final class RuleError245 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70586,24 +74818,21 @@ final class RuleError245 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -70618,9 +74847,8 @@ final class RuleError247 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70642,22 +74870,19 @@ final class RuleError247 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70671,9 +74896,8 @@ final class RuleError249 implements RuleError, TipRuleError, IdentifierRuleError
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70689,13 +74913,10 @@ final class RuleError249 implements RuleError, TipRuleError, IdentifierRuleError
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -70724,11 +74945,11 @@ final class RuleError25 implements RuleError, TipRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70743,9 +74964,8 @@ final class RuleError251 implements RuleError, LineRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70764,23 +74984,20 @@ final class RuleError251 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70796,9 +75013,8 @@ final class RuleError253 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70820,24 +75036,21 @@ final class RuleError253 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -70854,9 +75067,8 @@ final class RuleError255 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     public function getMessage(): string
     {
     }
@@ -70881,13 +75093,10 @@ final class RuleError255 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
 }
@@ -73584,9 +77793,9 @@ final class RuleError383 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -73594,21 +77803,17 @@ use PHPStan\Rules\RuleError;
 final class RuleError385 implements RuleError, FixableNodeRuleError, FileDependenciesRuleError
 {
     public string $message;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73620,10 +77825,10 @@ final class RuleError385 implements RuleError, FixableNodeRuleError, FileDepende
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -73632,9 +77837,8 @@ final class RuleError387 implements RuleError, LineRuleError, FixableNodeRuleErr
 {
     public string $message;
     public int $line;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73643,13 +77847,10 @@ final class RuleError387 implements RuleError, LineRuleError, FixableNodeRuleErr
     public function getLine(): int
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73661,10 +77862,10 @@ final class RuleError387 implements RuleError, LineRuleError, FixableNodeRuleErr
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -73674,9 +77875,8 @@ final class RuleError389 implements RuleError, FileRuleError, FixableNodeRuleErr
     public string $message;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73688,13 +77888,10 @@ final class RuleError389 implements RuleError, FileRuleError, FixableNodeRuleErr
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73742,11 +77939,11 @@ final class RuleError39 implements RuleError, LineRuleError, FileRuleError, Meta
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -73757,9 +77954,8 @@ final class RuleError391 implements RuleError, LineRuleError, FileRuleError, Fix
     public int $line;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73774,13 +77970,10 @@ final class RuleError391 implements RuleError, LineRuleError, FileRuleError, Fix
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73792,9 +77985,9 @@ final class RuleError391 implements RuleError, LineRuleError, FileRuleError, Fix
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -73804,9 +77997,8 @@ final class RuleError393 implements RuleError, TipRuleError, FixableNodeRuleErro
 {
     public string $message;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73815,13 +78007,10 @@ final class RuleError393 implements RuleError, TipRuleError, FixableNodeRuleErro
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73833,10 +78022,10 @@ final class RuleError393 implements RuleError, TipRuleError, FixableNodeRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -73847,9 +78036,8 @@ final class RuleError395 implements RuleError, LineRuleError, TipRuleError, Fixa
     public string $message;
     public int $line;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73861,13 +78049,10 @@ final class RuleError395 implements RuleError, LineRuleError, TipRuleError, Fixa
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73879,10 +78064,10 @@ final class RuleError395 implements RuleError, LineRuleError, TipRuleError, Fixa
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -73894,9 +78079,8 @@ final class RuleError397 implements RuleError, FileRuleError, TipRuleError, Fixa
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73911,13 +78095,10 @@ final class RuleError397 implements RuleError, FileRuleError, TipRuleError, Fixa
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73929,11 +78110,11 @@ final class RuleError397 implements RuleError, FileRuleError, TipRuleError, Fixa
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -73946,9 +78127,8 @@ final class RuleError399 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -73966,13 +78146,10 @@ final class RuleError399 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -73984,10 +78161,10 @@ final class RuleError399 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -73996,9 +78173,8 @@ final class RuleError401 implements RuleError, IdentifierRuleError, FixableNodeR
 {
     public string $message;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74007,13 +78183,10 @@ final class RuleError401 implements RuleError, IdentifierRuleError, FixableNodeR
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74025,11 +78198,11 @@ final class RuleError401 implements RuleError, IdentifierRuleError, FixableNodeR
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74039,9 +78212,8 @@ final class RuleError403 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $message;
     public int $line;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74053,13 +78225,10 @@ final class RuleError403 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74071,11 +78240,11 @@ final class RuleError403 implements RuleError, LineRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74086,9 +78255,8 @@ final class RuleError405 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74103,13 +78271,10 @@ final class RuleError405 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74121,12 +78286,12 @@ final class RuleError405 implements RuleError, FileRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74138,9 +78303,8 @@ final class RuleError407 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74158,13 +78322,10 @@ final class RuleError407 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74176,10 +78337,10 @@ final class RuleError407 implements RuleError, LineRuleError, FileRuleError, Ide
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74190,9 +78351,8 @@ final class RuleError409 implements RuleError, TipRuleError, IdentifierRuleError
     public string $message;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74204,13 +78364,10 @@ final class RuleError409 implements RuleError, TipRuleError, IdentifierRuleError
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74249,11 +78406,11 @@ final class RuleError41 implements RuleError, TipRuleError, MetadataRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74265,9 +78422,8 @@ final class RuleError411 implements RuleError, LineRuleError, TipRuleError, Iden
     public int $line;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74282,13 +78438,10 @@ final class RuleError411 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74300,11 +78453,11 @@ final class RuleError411 implements RuleError, LineRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74317,9 +78470,8 @@ final class RuleError413 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74337,13 +78489,10 @@ final class RuleError413 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74355,12 +78504,12 @@ final class RuleError413 implements RuleError, FileRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74374,9 +78523,8 @@ final class RuleError415 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74397,13 +78545,10 @@ final class RuleError415 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74415,10 +78560,10 @@ final class RuleError415 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74428,9 +78573,8 @@ final class RuleError417 implements RuleError, MetadataRuleError, FixableNodeRul
     public string $message;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74442,13 +78586,10 @@ final class RuleError417 implements RuleError, MetadataRuleError, FixableNodeRul
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74460,11 +78601,11 @@ final class RuleError417 implements RuleError, MetadataRuleError, FixableNodeRul
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74475,9 +78616,8 @@ final class RuleError419 implements RuleError, LineRuleError, MetadataRuleError,
     public int $line;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74492,13 +78632,10 @@ final class RuleError419 implements RuleError, LineRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74510,11 +78647,11 @@ final class RuleError419 implements RuleError, LineRuleError, MetadataRuleError,
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74526,9 +78663,8 @@ final class RuleError421 implements RuleError, FileRuleError, MetadataRuleError,
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74546,13 +78682,10 @@ final class RuleError421 implements RuleError, FileRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74564,12 +78697,12 @@ final class RuleError421 implements RuleError, FileRuleError, MetadataRuleError,
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74582,9 +78715,8 @@ final class RuleError423 implements RuleError, LineRuleError, FileRuleError, Met
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74605,13 +78737,10 @@ final class RuleError423 implements RuleError, LineRuleError, FileRuleError, Met
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74623,10 +78752,10 @@ final class RuleError423 implements RuleError, LineRuleError, FileRuleError, Met
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74638,9 +78767,8 @@ final class RuleError425 implements RuleError, TipRuleError, MetadataRuleError, 
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74655,13 +78783,10 @@ final class RuleError425 implements RuleError, TipRuleError, MetadataRuleError, 
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74673,11 +78798,11 @@ final class RuleError425 implements RuleError, TipRuleError, MetadataRuleError, 
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74690,9 +78815,8 @@ final class RuleError427 implements RuleError, LineRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74710,13 +78834,10 @@ final class RuleError427 implements RuleError, LineRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74728,11 +78849,11 @@ final class RuleError427 implements RuleError, LineRuleError, TipRuleError, Meta
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74746,9 +78867,8 @@ final class RuleError429 implements RuleError, FileRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74769,13 +78889,10 @@ final class RuleError429 implements RuleError, FileRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74819,12 +78936,12 @@ final class RuleError43 implements RuleError, LineRuleError, TipRuleError, Metad
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -74839,9 +78956,8 @@ final class RuleError431 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74865,13 +78981,10 @@ final class RuleError431 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74883,11 +78996,11 @@ final class RuleError431 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74898,9 +79011,8 @@ final class RuleError433 implements RuleError, IdentifierRuleError, MetadataRule
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74915,13 +79027,10 @@ final class RuleError433 implements RuleError, IdentifierRuleError, MetadataRule
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74933,12 +79042,12 @@ final class RuleError433 implements RuleError, IdentifierRuleError, MetadataRule
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -74950,9 +79059,8 @@ final class RuleError435 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -74970,13 +79078,10 @@ final class RuleError435 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -74988,12 +79093,12 @@ final class RuleError435 implements RuleError, LineRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -75006,9 +79111,8 @@ final class RuleError437 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75029,13 +79133,10 @@ final class RuleError437 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75047,13 +79148,13 @@ final class RuleError437 implements RuleError, FileRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 /**
  * @internal Use PHPStan\Rules\RuleErrorBuilder instead.
@@ -75067,9 +79168,8 @@ final class RuleError439 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75093,13 +79193,10 @@ final class RuleError439 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75111,11 +79208,11 @@ final class RuleError439 implements RuleError, LineRuleError, FileRuleError, Ide
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -75128,9 +79225,8 @@ final class RuleError441 implements RuleError, TipRuleError, IdentifierRuleError
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75148,13 +79244,10 @@ final class RuleError441 implements RuleError, TipRuleError, IdentifierRuleError
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75166,12 +79259,12 @@ final class RuleError441 implements RuleError, TipRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -75185,9 +79278,8 @@ final class RuleError443 implements RuleError, LineRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75208,13 +79300,10 @@ final class RuleError443 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75226,12 +79315,12 @@ final class RuleError443 implements RuleError, LineRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -75246,9 +79335,8 @@ final class RuleError445 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75272,13 +79360,10 @@ final class RuleError445 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75290,13 +79375,13 @@ final class RuleError445 implements RuleError, FileRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 /**
@@ -75312,9 +79397,8 @@ final class RuleError447 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75341,13 +79425,10 @@ final class RuleError447 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75359,9 +79440,9 @@ final class RuleError447 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75370,21 +79451,17 @@ use PHPStan\Rules\RuleError;
 final class RuleError449 implements RuleError, NonIgnorableRuleError, FixableNodeRuleError, FileDependenciesRuleError
 {
     public string $message;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75432,10 +79509,10 @@ final class RuleError45 implements RuleError, FileRuleError, TipRuleError, Metad
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75445,9 +79522,8 @@ final class RuleError451 implements RuleError, LineRuleError, NonIgnorableRuleEr
 {
     public string $message;
     public int $line;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75456,13 +79532,10 @@ final class RuleError451 implements RuleError, LineRuleError, NonIgnorableRuleEr
     public function getLine(): int
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75474,10 +79547,10 @@ final class RuleError451 implements RuleError, LineRuleError, NonIgnorableRuleEr
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75488,9 +79561,8 @@ final class RuleError453 implements RuleError, FileRuleError, NonIgnorableRuleEr
     public string $message;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75502,13 +79574,10 @@ final class RuleError453 implements RuleError, FileRuleError, NonIgnorableRuleEr
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75520,11 +79589,11 @@ final class RuleError453 implements RuleError, FileRuleError, NonIgnorableRuleEr
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75536,9 +79605,8 @@ final class RuleError455 implements RuleError, LineRuleError, FileRuleError, Non
     public int $line;
     public string $file;
     public string $fileDescription;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75553,13 +79621,10 @@ final class RuleError455 implements RuleError, LineRuleError, FileRuleError, Non
     public function getFileDescription(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75571,9 +79636,9 @@ final class RuleError455 implements RuleError, LineRuleError, FileRuleError, Non
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -75584,9 +79649,8 @@ final class RuleError457 implements RuleError, TipRuleError, NonIgnorableRuleErr
 {
     public string $message;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75595,13 +79659,10 @@ final class RuleError457 implements RuleError, TipRuleError, NonIgnorableRuleErr
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75613,10 +79674,10 @@ final class RuleError457 implements RuleError, TipRuleError, NonIgnorableRuleErr
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -75628,9 +79689,8 @@ final class RuleError459 implements RuleError, LineRuleError, TipRuleError, NonI
     public string $message;
     public int $line;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75642,13 +79702,10 @@ final class RuleError459 implements RuleError, LineRuleError, TipRuleError, NonI
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75660,10 +79717,10 @@ final class RuleError459 implements RuleError, LineRuleError, TipRuleError, NonI
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -75676,9 +79733,8 @@ final class RuleError461 implements RuleError, FileRuleError, TipRuleError, NonI
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75693,13 +79749,10 @@ final class RuleError461 implements RuleError, FileRuleError, TipRuleError, NonI
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75711,11 +79764,11 @@ final class RuleError461 implements RuleError, FileRuleError, TipRuleError, NonI
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -75729,9 +79782,8 @@ final class RuleError463 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $file;
     public string $fileDescription;
     public string $tip;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75749,13 +79801,10 @@ final class RuleError463 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getTip(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75767,10 +79816,10 @@ final class RuleError463 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75780,9 +79829,8 @@ final class RuleError465 implements RuleError, IdentifierRuleError, NonIgnorable
 {
     public string $message;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75791,13 +79839,10 @@ final class RuleError465 implements RuleError, IdentifierRuleError, NonIgnorable
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75809,11 +79854,11 @@ final class RuleError465 implements RuleError, IdentifierRuleError, NonIgnorable
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75824,9 +79869,8 @@ final class RuleError467 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $message;
     public int $line;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75838,13 +79882,10 @@ final class RuleError467 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75856,11 +79897,11 @@ final class RuleError467 implements RuleError, LineRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75872,9 +79913,8 @@ final class RuleError469 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75889,13 +79929,10 @@ final class RuleError469 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -75948,12 +79985,12 @@ final class RuleError47 implements RuleError, LineRuleError, FileRuleError, TipR
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -75966,9 +80003,8 @@ final class RuleError471 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $file;
     public string $fileDescription;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -75986,13 +80022,10 @@ final class RuleError471 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76004,10 +80037,10 @@ final class RuleError471 implements RuleError, LineRuleError, FileRuleError, Ide
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76019,9 +80052,8 @@ final class RuleError473 implements RuleError, TipRuleError, IdentifierRuleError
     public string $message;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76033,13 +80065,10 @@ final class RuleError473 implements RuleError, TipRuleError, IdentifierRuleError
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76051,11 +80080,11 @@ final class RuleError473 implements RuleError, TipRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76068,9 +80097,8 @@ final class RuleError475 implements RuleError, LineRuleError, TipRuleError, Iden
     public int $line;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76085,13 +80113,10 @@ final class RuleError475 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76103,11 +80128,11 @@ final class RuleError475 implements RuleError, LineRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76121,9 +80146,8 @@ final class RuleError477 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76141,13 +80165,10 @@ final class RuleError477 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76159,12 +80180,12 @@ final class RuleError477 implements RuleError, FileRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76179,9 +80200,8 @@ final class RuleError479 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $fileDescription;
     public string $tip;
     public string $identifier;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76202,13 +80222,10 @@ final class RuleError479 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getIdentifier(): string
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76220,10 +80237,10 @@ final class RuleError479 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76234,9 +80251,8 @@ final class RuleError481 implements RuleError, MetadataRuleError, NonIgnorableRu
     public string $message;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76248,13 +80264,10 @@ final class RuleError481 implements RuleError, MetadataRuleError, NonIgnorableRu
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76266,11 +80279,11 @@ final class RuleError481 implements RuleError, MetadataRuleError, NonIgnorableRu
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76282,9 +80295,8 @@ final class RuleError483 implements RuleError, LineRuleError, MetadataRuleError,
     public int $line;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76299,13 +80311,10 @@ final class RuleError483 implements RuleError, LineRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76317,11 +80326,11 @@ final class RuleError483 implements RuleError, LineRuleError, MetadataRuleError,
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76334,9 +80343,8 @@ final class RuleError485 implements RuleError, FileRuleError, MetadataRuleError,
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76354,13 +80362,10 @@ final class RuleError485 implements RuleError, FileRuleError, MetadataRuleError,
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76372,12 +80377,12 @@ final class RuleError485 implements RuleError, FileRuleError, MetadataRuleError,
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76391,9 +80396,8 @@ final class RuleError487 implements RuleError, LineRuleError, FileRuleError, Met
     public string $fileDescription;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76414,13 +80418,10 @@ final class RuleError487 implements RuleError, LineRuleError, FileRuleError, Met
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76432,10 +80433,10 @@ final class RuleError487 implements RuleError, LineRuleError, FileRuleError, Met
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76448,9 +80449,8 @@ final class RuleError489 implements RuleError, TipRuleError, MetadataRuleError, 
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76465,13 +80465,10 @@ final class RuleError489 implements RuleError, TipRuleError, MetadataRuleError, 
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76510,11 +80507,11 @@ final class RuleError49 implements RuleError, IdentifierRuleError, MetadataRuleE
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76528,9 +80525,8 @@ final class RuleError491 implements RuleError, LineRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76548,13 +80544,10 @@ final class RuleError491 implements RuleError, LineRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76566,11 +80559,11 @@ final class RuleError491 implements RuleError, LineRuleError, TipRuleError, Meta
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76585,9 +80578,8 @@ final class RuleError493 implements RuleError, FileRuleError, TipRuleError, Meta
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76608,13 +80600,10 @@ final class RuleError493 implements RuleError, FileRuleError, TipRuleError, Meta
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76626,12 +80615,12 @@ final class RuleError493 implements RuleError, FileRuleError, TipRuleError, Meta
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76647,9 +80636,8 @@ final class RuleError495 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $tip;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76673,13 +80661,10 @@ final class RuleError495 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76691,11 +80676,11 @@ final class RuleError495 implements RuleError, LineRuleError, FileRuleError, Tip
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76707,9 +80692,8 @@ final class RuleError497 implements RuleError, IdentifierRuleError, MetadataRule
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76724,13 +80708,10 @@ final class RuleError497 implements RuleError, IdentifierRuleError, MetadataRule
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76742,12 +80723,12 @@ final class RuleError497 implements RuleError, IdentifierRuleError, MetadataRule
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76760,9 +80741,8 @@ final class RuleError499 implements RuleError, LineRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76780,13 +80760,10 @@ final class RuleError499 implements RuleError, LineRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76820,12 +80797,12 @@ final class RuleError5 implements RuleError, FileRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76839,9 +80816,8 @@ final class RuleError501 implements RuleError, FileRuleError, IdentifierRuleErro
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76862,13 +80838,10 @@ final class RuleError501 implements RuleError, FileRuleError, IdentifierRuleErro
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76880,13 +80853,13 @@ final class RuleError501 implements RuleError, FileRuleError, IdentifierRuleErro
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 /**
@@ -76901,9 +80874,8 @@ final class RuleError503 implements RuleError, LineRuleError, FileRuleError, Ide
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76927,13 +80899,10 @@ final class RuleError503 implements RuleError, LineRuleError, FileRuleError, Ide
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -76945,11 +80914,11 @@ final class RuleError503 implements RuleError, LineRuleError, FileRuleError, Ide
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -76963,9 +80932,8 @@ final class RuleError505 implements RuleError, TipRuleError, IdentifierRuleError
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -76983,13 +80951,10 @@ final class RuleError505 implements RuleError, TipRuleError, IdentifierRuleError
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -77001,12 +80966,12 @@ final class RuleError505 implements RuleError, TipRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -77021,9 +80986,8 @@ final class RuleError507 implements RuleError, LineRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -77044,13 +81008,10 @@ final class RuleError507 implements RuleError, LineRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -77062,12 +81023,12 @@ final class RuleError507 implements RuleError, LineRuleError, TipRuleError, Iden
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -77083,9 +81044,8 @@ final class RuleError509 implements RuleError, FileRuleError, TipRuleError, Iden
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -77109,13 +81069,10 @@ final class RuleError509 implements RuleError, FileRuleError, TipRuleError, Iden
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -77159,13 +81116,13 @@ final class RuleError51 implements RuleError, LineRuleError, IdentifierRuleError
 }
 namespace PHPStan\Rules\RuleErrors;
 
-use PhpParser\Node;
 use PHPStan\Rules\FileDependenciesRuleError;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
+use PHPStan\Rules\NodeFix;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
@@ -77182,9 +81139,8 @@ final class RuleError511 implements RuleError, LineRuleError, FileRuleError, Tip
     public string $identifier;
     /** @var mixed[] */
     public array $metadata;
-    public Node $originalNode;
-    /** @var callable(Node): Node */
-    public $newNodeCallable;
+    /** @var non-empty-list<NodeFix> */
+    public array $nodeFixes;
     /** @var list<string> */
     public array $fileDependencies;
     public function getMessage(): string
@@ -77211,13 +81167,10 @@ final class RuleError511 implements RuleError, LineRuleError, FileRuleError, Tip
     public function getMetadata(): array
     {
     }
-    public function getOriginalNode(): Node
-    {
-    }
     /**
-     * @return callable(Node): Node
+     * @return non-empty-list<NodeFix>
      */
-    public function getNewNodeCallable(): callable
+    public function getNodeFixes(): array
     {
     }
     /**
@@ -78014,6 +81967,8 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateMixedType;
+use PHPStan\Type\Generic\TemplateType;
+use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
@@ -78067,6 +82022,20 @@ final class RuleLevelHelper
     {
     }
     private function transformCommonType(Type $type): Type
+    {
+    }
+    private function transformMixedType(Type $type): ?Type
+    {
+    }
+    /**
+     * Invariant type arguments are compared with equals(), so mapping mixed nested in them
+     * only changes the outcome when one side is mapped and the other is not - like the
+     * type arguments an accepted object type inherits through @extends, which a traversal
+     * does not reach. A top-level mixed is still mapped, as variance checks treat it leniently.
+     *
+     * @param callable(Type): Type $traverse
+     */
+    private function transformGenericObjectTypeArguments(GenericObjectType $type, callable $traverse): Type
     {
     }
     /**
@@ -78682,6 +82651,7 @@ use PHPStan\Type\TypeTraverser;
 use function is_string;
 use function ltrim;
 use function sprintf;
+use function str_starts_with;
 /**
  * The per-parameter half of the unused-parameter rules, on top of the
  * variable-writes engine: a parameter binds a value, so it is unused unless
@@ -78731,6 +82701,8 @@ namespace PHPStan\Rules\Variables;
 use PhpParser\Node;
 use PhpParser\NodeAbstract;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Conditional;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\Expr\ForeachValueByRefExpr;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\PropertyAssignNode;
@@ -78741,6 +82713,7 @@ use function sprintf;
 /**
  * @implements MultipleNodeTypesRule<NodeAbstract>
  */
+#[Conditional(['olvlvl\ComposerAttributeCollector\NewExpression' => [RegisteredRule::class, [1]]], '%featureToggles.assignToByRefForeachExpr%')]
 final class AssignToByRefExprFromForeachRule implements MultipleNodeTypesRule
 {
     private ExprPrinter $printer;
@@ -79210,7 +83183,7 @@ final class VariableCloningRule implements Rule
 }
 namespace PHPStan\Rules\Whitespace;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use Override;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -79339,8 +83312,8 @@ use PHPStan\Command\Output;
 use PHPStan\Command\Symfony\SymfonyOutput;
 use PHPStan\Command\Symfony\SymfonyStyle;
 use PHPStan\ShouldNotHappenException;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Input\StringInput;
-use _PHPStan_cb3b7e994\Symfony\Component\Console\Output\StreamOutput;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Input\StringInput;
+use _PHPStan_95d9e8b05\Symfony\Component\Console\Output\StreamOutput;
 use function array_map;
 use function array_slice;
 use function explode;
@@ -79384,8 +83357,8 @@ abstract class ErrorFormatterTestCase extends \PHPStan\Testing\PHPStanTestCase
 }
 namespace PHPStan\Testing;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Json;
-use _PHPStan_cb3b7e994\Nette\Utils\JsonException;
+use _PHPStan_95d9e8b05\Nette\Utils\Json;
+use _PHPStan_95d9e8b05\Nette\Utils\JsonException;
 use PHPStan\File\FileHelper;
 use PHPStan\File\FileWriter;
 use PHPStan\ShouldNotHappenException;
@@ -79704,13 +83677,17 @@ final class PHPStanPHPUnitExtension implements Extension
 }
 namespace PHPStan\Testing;
 
+use _PHPStan_95d9e8b05\Nette\Utils\FileSystem;
 use PhpParser\Node;
 use PHPStan\Analyser\Analyser;
 use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\ExpressionResultFactory;
 use PHPStan\Analyser\FileAnalyser;
+use PHPStan\Analyser\FixedErrorDiff;
 use PHPStan\Analyser\Generics\TemplateArgumentObserver;
+use PHPStan\Analyser\Ignore\LineIgnoreFixer;
+use PHPStan\Analyser\Ignore\UnmatchedIgnoreFixer;
 use PHPStan\Analyser\IgnoreErrorExtension;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Analyser\LocalIgnoresProcessor;
@@ -79731,13 +83708,22 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
+use function array_combine;
+use function array_flip;
+use function array_intersect_key;
+use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function array_unique;
+use function array_values;
+use function basename;
 use function count;
 use function implode;
 use function sprintf;
 use function str_replace;
 use function strcmp;
+use function sys_get_temp_dir;
+use function uniqid;
 use function usort;
 /**
  * @api
@@ -79745,6 +83731,7 @@ use function usort;
  */
 abstract class RuleTestCase extends \PHPStan\Testing\PHPStanTestCase
 {
+    private const FIX_ROUNDS_LIMIT = 10;
     private ?Analyser $analyser = null;
     /**
      * @return TRule
@@ -79782,7 +83769,22 @@ abstract class RuleTestCase extends \PHPStan\Testing\PHPStanTestCase
     public function analyse(array $files, array $expectedErrors): void
     {
     }
+    /**
+     * Like `phpstan analyse --fix`, the fixed code is analysed again until nothing is left to fix,
+     * so fixes that overlap with other fixes and fixes of errors caused by other fixes are applied too.
+     * A fix that is fixable again fails the test, it would not finish with --fix either.
+     */
     public function fix(string $file, string $expectedFile): void
+    {
+    }
+    /**
+     * Analyses $file and $fixedFile together and asserts the fixes of $fixedFile,
+     * like a trait file or a file the rule points to with RuleErrorBuilder::file().
+     *
+     * Fixes in rounds like fix(). Later rounds analyse copies of the files in a temporary directory,
+     * so they do not fix traits, which are always read from their original file.
+     */
+    public function fixOtherFile(string $file, string $fixedFile, string $expectedFile): void
     {
     }
     private function normalizeLineEndings(string $string): string
@@ -79847,6 +83849,7 @@ use ReflectionClass;
 use function dirname;
 use function hash;
 use function is_file;
+use function is_string;
 use function serialize;
 use const PHP_VERSION_ID;
 final class TestCaseSourceLocatorFactory
@@ -79904,7 +83907,7 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
-use _PHPStan_cb3b7e994\Symfony\Component\Finder\Finder;
+use _PHPStan_95d9e8b05\Symfony\Component\Finder\Finder;
 use function array_map;
 use function array_merge;
 use function count;
@@ -80065,15 +84068,17 @@ use function min;
  * depend on runtime values that can't be known statically. Extension developers
  * encounter TrinaryLogic extensively when querying type properties:
  *
- *     if ($type->isString()->yes()) {
- *         // Definitely a string
- *     }
- *     if ($type->isString()->maybe()) {
- *         // Could be a string (e.g. mixed)
- *     }
- *     if ($type->isString()->no()) {
- *         // Definitely not a string
- *     }
+ * ```php
+ * if ($type->isString()->yes()) {
+ *     // Definitely a string
+ * }
+ * if ($type->isString()->maybe()) {
+ *     // Could be a string (e.g. mixed)
+ * }
+ * if ($type->isString()->no()) {
+ *     // Definitely not a string
+ * }
+ * ```
  *
  * TrinaryLogic supports logical operations (and, or, negate) that propagate
  * uncertainty correctly. It is used as a flyweight — instances are cached and
@@ -80209,6 +84214,31 @@ final class TrinaryLogic
 }
 namespace PHPStan\Turbo;
 
+/**
+ * What a pcntl_fork()ed child needs from the turbo extension. With the
+ * extension active (TurboExtensionEnabler::isActive()), the native class
+ * replaces this one.
+ *
+ * @api
+ */
+#[\PHPStan\Turbo\ShadowedByTurboExtension(__DIR__ . '/../../turbo-ext/src/ForkedChild.cpp')]
+final class ForkedChild
+{
+    /**
+     * Ends the child with _exit() and the engine's exit status, skipping
+     * destructors and the module shutdown of every extension the child
+     * inherited - one waiting for threads the child never had wedges there.
+     * Register it as the child's last shutdown function.
+     *
+     * @return never
+     * @throws TurboNotActiveException
+     */
+    public static function exitImmediately()
+    {
+    }
+}
+namespace PHPStan\Turbo;
+
 use Attribute;
 /**
  * Marks a class the phpstan_turbo extension's native code references at run
@@ -80239,7 +84269,7 @@ use Attribute;
  * Marks a class the phpstan_turbo extension replaces with the named native
  * implementation (found in the .cpp file $implementation points at), so
  * every method must behave exactly like its native counterpart (see
- * turbo-ext/README.md for the sync machinery).
+ * turbo-ext/CLAUDE.md for the sync machinery).
  *
  * With the extension active, TurboExtensionEnabler::activateIfCompatible()
  * declares the native implementation under this very class name right
@@ -80269,6 +84299,7 @@ use PHPStan\Command\Output;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Diagnose\DiagnoseExtension;
 use PHPStan\Php\PhpVersion;
+use PHPStan\Process\Restart\RestartExtensionRegistry;
 use function php_uname;
 use function phpversion;
 use function sprintf;
@@ -80303,29 +84334,41 @@ use function in_array;
 use function is_file;
 use function json_decode;
 use function phpversion;
+use function realpath;
 /**
  * Activates the phpstan_turbo extension's shadowing classes.
  *
  * The extension registers nothing under PHPStan's class names at module
  * startup. Once the Composer autoloader is registered, activateIfCompatible()
- * checks the loaded extension's version against EXPECTED_EXTENSION_VERSION
- * and, when it matches, asks Runtime::activateShadowing() to declare the
+ * checks the loaded extension's version against getExpectedVersion() and,
+ * when it matches, asks Runtime::activateShadowing() to declare the
  * native classes under the PHP twins' real names — PHPStan\TrinaryLogic then
  * is the native class, linked like a PHP declaration (parents and interfaces
  * resolved through the autoloader). A mismatched or absent extension never
  * gets the call, and the PHP implementations load as usual.
  *
  * The version is the short SHA of the last commit touching turbo-ext/src/,
- * enforced by the phar.yml turbo-version job; the native classes must
- * behave exactly like the PHP implementations, hence the gate.
+ * which the extension's build bakes into the binary and
+ * build/generate-turbo-manifest.php writes into
+ * vendor/turbo-extension-version.php on every autoloader dump — the phar
+ * carries the file from its compilation. The native classes must behave
+ * exactly like the PHP implementations, hence the gate.
  */
 #[\PHPStan\Turbo\ReferencedByTurboExtension('turboExtensionEnabler')]
 final class TurboExtensionEnabler
 {
-    public const EXPECTED_EXTENSION_VERSION = '28c29b8';
     private static bool $active = \false;
+    private static bool $expectedVersionResolved = \false;
+    private static ?string $expectedVersion = null;
     private static bool $trustingOwnTypes = \false;
     public static function isLoaded(): bool
+    {
+    }
+    /**
+     * Null when the autoloader dump could not read it from git, or skipped
+     * scripts — no extension version is compatible then.
+     */
+    public static function getExpectedVersion(): ?string
     {
     }
     /**
@@ -80335,12 +84378,24 @@ final class TurboExtensionEnabler
     public static function getIncompatibleLoadedVersion(): ?string
     {
     }
+    /**
+     * The phar the running code is compiled from. Code compiled out of a phar
+     * carries the phar:// prefix of the path the phar was opened with, and
+     * Composer's bootstrap.php opens it through __DIR__, a resolved path. A
+     * path another program passes in, such as one with '..' in it, is
+     * resolved the same way, so that it matches that prefix.
+     */
+    private static function resolvePharPath(?string $pharPath): string
+    {
+    }
     private static function isCompatible(): bool
     {
     }
     /**
      * Whether activateIfCompatible() declared the native classes — the
      * shadowed class names resolve to them only in that case.
+     *
+     * @api
      */
     public static function isActive(): bool
     {
@@ -80357,8 +84412,13 @@ final class TurboExtensionEnabler
      * implement userland interfaces and may extend userland classes, resolved
      * through it) and before anything could autoload one of the shadowed
      * classes — a twin already declared cannot be shadowed.
+     *
+     * Another program that loads PHPStan's phar, Rector for example, passes
+     * the path to that phar: Phar::running() only knows the phar that runs.
+     *
+     * @api
      */
-    public static function activateIfCompatible(): void
+    public static function activateIfCompatible(?string $pharPath = null): void
     {
     }
     /**
@@ -80392,9 +84452,13 @@ final class TurboExtensionEnabler
      * compiled earlier keeps its checks. Independent of activateIfCompatible()
      * — only the version gate matters here.
      *
+     * Another program that loads PHPStan's phar, Rector for example, passes
+     * the path to that phar: Phar::running() only knows the phar that runs.
+     *
+     * @api
      * @param list<string> $argv
      */
-    public static function trustOwnTypesIfSuitable(array $argv): void
+    public static function trustOwnTypesIfSuitable(array $argv, ?string $pharPath = null): void
     {
     }
 }
@@ -80403,7 +84467,10 @@ namespace PHPStan\Turbo;
 use Phar;
 use function dirname;
 use function file_get_contents;
+use function get_cfg_var;
+use function is_dir;
 use function is_file;
+use function is_string;
 use function php_uname;
 use function sprintf;
 use function strpos;
@@ -80416,8 +84483,9 @@ use const PHP_ZTS;
 /**
  * Locates the distributed turbo extension binary matching the current runtime
  * so it can be loaded via `-d extension=` — into spawned worker processes
- * (ProcessHelper), or into the restarted main process (TurboProcessRestarter)
- * whose pcntl_fork()ed workers then inherit it.
+ * (ProcessHelper), or into the restarted main process (the turbo row of
+ * PHPStan\Process\Restart\ExtensionRegistry) whose pcntl_fork()ed workers then
+ * inherit it.
  *
  * The binaries are committed to the phpstan/phpstan repository next to
  * phpstan.phar (turbo-ext/<platform>/phpstan_turbo-<minor>.so, .dll on
@@ -80448,15 +84516,53 @@ final class TurboExtensionSelector
      * matrix. Older runtimes have no binary to find, so they skip the lookup
      * (and with it the process restart) entirely.
      */
-    public const MINIMUM_PHP_VERSION_ID = 80300;
-    public static function findExtensionForWorkers(): ?string
+    public const MINIMUM_PHP_VERSION_ID = 80200;
+    /** @api */
+    public const EXTENSION_PATH_INI = 'phpstan.turboExtensionPath';
+    /**
+     * The extension path this process was given through -d — by the restart,
+     * or by ProcessHelper when spawned as a worker. Null when the extension
+     * came from the php.ini or is not loaded at all.
+     */
+    public static function getRestartExtensionPath(): ?string
+    {
+    }
+    /**
+     * The extension path a spawned worker needs as `-d extension=`, along with
+     * `-d` EXTENSION_PATH_INI with the same path. Null when the worker gets the
+     * extension from the php.ini it inherits, or when there is no extension.
+     *
+     * @api
+     */
+    public static function findExtensionForWorkers(?string $pharPath = null): ?string
+    {
+    }
+    /**
+     * Whether PHPStan runs from a bare copy of phpstan.phar, without the
+     * turbo-ext/ directory the phpstan/phpstan Composer package ships next to
+     * it, on a runtime the extension is built for, and no php.ini loads the
+     * extension either.
+     */
+    public static function isMissingNextToPhar(): bool
     {
     }
     /**
      * Locates the distributed extension binary for the current platform —
      * present only next to a phar-based installation.
+     *
+     * Another program that loads PHPStan's phar, Rector for example, passes
+     * the path to that phar: Phar::running() only knows the phar that runs.
      */
-    public static function findExtension(): ?string
+    public static function findExtension(?string $pharPath = null): ?string
+    {
+    }
+    /**
+     * The directory of turbo-ext/ next to the running phar that holds the
+     * binaries for this platform, whether it exists or not. Null when no
+     * binary is built for this runtime: PHP older than the minimum, a debug
+     * build, a run from source, or a platform without binaries.
+     */
+    private static function getPlatformDirectoryNextToPhar(?string $pharPath = null): ?string
     {
     }
     /**
@@ -80486,220 +84592,44 @@ final class TurboExtensionSelector
 }
 namespace PHPStan\Turbo;
 
-use function explode;
-use function extension_loaded;
-use function function_exists;
-use function get_cfg_var;
-use function in_array;
-use function ini_get;
-use function is_string;
-use function max;
-use function pcntl_exec;
-use function php_ini_loaded_file;
-use function strtolower;
-use function trim;
-use const PHP_BINARY;
+use Exception;
 /**
- * Restarts the main PHPStan process via pcntl_exec() when the process it
- * was started as is not the one PHPStan wants to run — for either of two
- * reasons, checked independently.
+ * Thrown by a method only the active turbo extension implements.
  *
- * The distributed turbo extension is available but not loaded. Parallel
- * analysis prefers pcntl_fork()ed workers over spawned ones (see
- * ForkParallelChecker) — a forked worker inherits the booted process instead
- * of paying a full re-boot. But a forked worker also inherits the parent's
- * loaded extensions: the spawn-time `-d extension=` injection
- * (ProcessHelper) cannot reach it, and dl() cannot load a binary from next
- * to the phar. So the whole process is re-executed with the extension
- * before anything else runs — forked workers then inherit the extension,
- * its shadowing classes, and (when running from a phar) the phar-fork-guard
- * that keeps phar:// reads safe across fork.
- *
- * The OPcache configuration in effect is not the one PHPStan wants (see
- * resolveOpcacheArgs()) — usually because OPcache is dormant on CLI, or has
- * JIT on. The restarted process runs with it activated, JIT pinned off, and
- * forked workers share the parent's warm opcode cache. This reason stands
- * on its own so that a php.ini which already loads turbo (a source checkout
- * with a locally built extension, say) does not leave OPcache dormant just
- * because there is no extension left to restart for.
- *
- * The restart carries two marker ini entries: RESTARTED_INI is the retry
- * stop (a binary that failed to load, or an OPcache that could not start,
- * would otherwise restart forever), and EXTENSION_PATH_INI tells
- * TurboExtensionSelector that spawned workers still need the -d flag
- * (command-line -d flags, unlike php.ini, are not inherited). ProcessHelper
- * sets both on the workers it spawns, along with the OPcache entries: a
- * worker's configuration is decided by the process spawning it, so it never
- * restarts itself — before that, every spawned worker on a pcntl host
- * re-executed itself once to activate OPcache, rebuilding its command line
- * without the sys_temp_dir and extension entries of the spawn.
+ * @api
+ */
+final class TurboNotActiveException extends Exception
+{
+    public function __construct()
+    {
+    }
+}
+namespace PHPStan\Turbo;
+
+use PHPStan\Process\Restart\RestartManager;
+/**
+ * Kept for programs that load PHPStan's phar and restart into PHPStan Turbo
+ * themselves, Rector for example. PHPStan's own bin/phpstan calls
+ * RestartManager directly.
  */
 final class TurboProcessRestarter
 {
-    public const EXTENSION_PATH_INI = 'phpstan.turboExtensionPath';
-    /** Set by the restart, and by ProcessHelper on spawned workers, so the process never restarts itself */
-    public const RESTARTED_INI = 'phpstan.restarted';
-    /** Shared memory reserved (not touched) for the opcode cache, in MB — see resolveOpcacheArgs() for the sizing */
-    private const OPCACHE_MEMORY_CONSUMPTION_MB_LIMIT = 256;
-    /** Carved out of the memory above for interned strings, in MB */
-    private const OPCACHE_INTERNED_STRINGS_BUFFER_MB_LIMIT = 64;
-    private const OPCACHE_MAX_ACCELERATED_FILES_LIMIT = 20000;
-    /** PHP's default opcache.optimization_level, pinned so the optimizer (and the extension's pass in it) always runs */
-    private const OPCACHE_OPTIMIZATION_LEVEL = '0x7FFEBFFF';
-    /** The php.ini directives resolveOpcacheArgs() reacts to */
-    private const OPCACHE_INI_INPUTS = ['opcache.file_cache_only', 'opcache.preload', 'opcache.memory_consumption', 'opcache.interned_strings_buffer', 'opcache.max_accelerated_files'];
-    /**
-     * The extension path this process was given through -d — by the restart,
-     * or by ProcessHelper when spawned as a worker. Null when the extension
-     * came from the php.ini or is not loaded at all.
-     */
-    public static function getRestartExtensionPath(): ?string
-    {
-    }
     /**
      * On success the call never returns — the process image is replaced.
      *
+     * Another program that loads PHPStan's phar, Rector for example, passes
+     * the path to that phar: Phar::running() only knows the phar that runs.
+     *
+     * Without $appName only what the turbo extension needs is restarted for,
+     * as before. With it, the same single restart also neutralizes xdebug,
+     * pcov and the other hooks PHPStan's own restart does, unless --xdebug is
+     * in $argv or <APP>_ALLOW_XDEBUG is set - the variable composer/xdebug-handler
+     * reads for that application, so a caller can drop its own xdebug restart.
+     *
+     * @api
      * @param list<string> $argv
      */
-    public static function restartIfSuitable(array $argv): void
-    {
-    }
-    /**
-     * Whether the OPcache configuration the restart would set differs from
-     * the one in effect — the second reason to restart, independent of turbo:
-     * with the extension already loaded through php.ini there would be
-     * nothing else to restart for, and OPcache would stay dormant.
-     *
-     * @param list<string> $opcacheArgs `name=value` entries, see resolveOpcacheArgs()
-     * @param array<string, string|false> $currentIniValues ini_get() of each of those names
-     */
-    public static function resolveOpcacheRestartNeeded(array $opcacheArgs, array $currentIniValues): bool
-    {
-    }
-    /**
-     * @param list<string> $opcacheArgs
-     * @return array<string, string|false>
-     */
-    private static function getCurrentIniValues(array $opcacheArgs): array
-    {
-    }
-    /**
-     * The ini parser stores booleans as "1" / "" for php.ini and -d values
-     * alike; ini_set()-style spellings are folded the same way.
-     */
-    private static function normalizeIniValue(string $value): string
-    {
-    }
-    /**
-     * `-d` entries activating OPcache for the restarted process, and for the
-     * workers ProcessHelper spawns — see resolveOpcacheArgs() for the
-     * reasoning behind each of them.
-     *
-     * Nothing is added when OPcache is not loaded at all — real on PHP <= 8.4,
-     * gone on 8.5+ (always built in and loaded). Loading it from here is not
-     * worth it: -d zend_extension=opcache emits a startup warning on builds
-     * without the shared object, and on 8.5+ always.
-     *
-     * @return list<string>
-     */
-    public static function getOpcacheArgs(): array
-    {
-    }
-    /**
-     * OPcache directives for the restarted process, as `name=value` ini
-     * entries, given the current values of the OPCACHE_INI_INPUTS directives
-     * (the restarted process loads the same php.ini, so they are what it
-     * would otherwise run with).
-     *
-     * The exec is paid for anyway, so it doubles as the chance to activate
-     * OPcache, usually dormant on CLI (opcache.enable_cli defaults to off):
-     * optimized opcodes and the inheritance cache speed up the whole run, and
-     * the pcntl_fork()ed workers inherit the parent's warm shared memory
-     * instead of each compiling lazily-loaded classes for itself. Concurrent
-     * population of that inherited cache is safe — it is php-fpm's normal
-     * operating model (see ForkParallelChecker).
-     *
-     * JIT is always pinned off, even when the user's ini enables it — it is a
-     * measured slowdown for PHPStan's workload and its shared code buffer is
-     * not fork-safe, so honoring it would cost twice (the same treatment the
-     * xdebug-handler restart gives xdebug). Merely flipping
-     * opcache.enable_cli=1 could also activate it behind the user's back: on
-     * PHP <= 8.3 opcache.jit defaults to `tracing`, so an ini setting just a
-     * non-zero opcache.jit_buffer_size (common web-tuning advice) suddenly
-     * JITs; on PHP >= 8.4 the buffer defaults to 64M, so an ini setting just
-     * opcache.jit does
-     * (https://php.watch/versions/8.4/opcache-jit-ini-default-changes).
-     * Pinning both directives covers both generations of defaults.
-     *
-     * Timestamp checks are switched off, or nothing of PHPStan itself would be
-     * cached: opcache_compile_file() refuses any file whose mtime it reads as
-     * 0, which is what every member of the distributed phar carried until the
-     * build started stamping them (phar.yml). It reads the mtime whenever
-     * opcache.validate_timestamps, opcache.file_update_protection or
-     * opcache.max_file_size is on, so all three go — for a private cache that
-     * dies with the process they revalidate nothing anyway, and skipping them
-     * also drops a stat() per include. The uncached state is what made
-     * OPcache *slower* than no OPcache for phar runs: code compiled under an
-     * active OPcache but not persisted never gets its strings interned into
-     * SHM, so its type names have no class-entry cache slot and every
-     * class-typed parameter, return and property check falls back to a
-     * lowercased-copy class-table lookup (measured at +27% CPU on slevomat).
-     *
-     * The buffers are raised above the stock 128M/8M/10000 for the same
-     * reason: once any of them is exhausted, everything compiled afterwards
-     * lands in that same uncached, uninterned state — the stock 8M of interned
-     * strings run out during PHPStan's own boot already, which alone costs the
-     * whole gain. PHPStan's phar needs about 35M of code; project bootstraps
-     * loaded by extensions (a Doctrine objectManagerLoader booting the whole
-     * app, say) add hundreds of MB, and the shared memory is only reserved,
-     * not touched, until used. It is not sized for the largest possible
-     * project, though — an SHM reservation that cannot be satisfied is fatal
-     * (exit code 254) in the restarted process, with no parent left to fall
-     * back to. Sizes the php.ini already grants are never lowered, and the
-     * interned strings buffer is kept below the memory it is carved out of
-     * (another fatal startup error otherwise).
-     *
-     * That private cache must neither outlive the process nor reach outside
-     * it, which is what the remaining entries guard against in a php.ini tuned
-     * for the web server rather than for us:
-     * - opcache.file_cache is blanked. A file cache is validated by the PHP
-     *   build id and (only with opcache.validate_timestamps) the mtime — so
-     *   with the checks off it would keep serving the previous PHPStan's
-     *   opcodes after an update, the phar path being the same, and it would
-     *   fill the web server's cache directory with this run's scripts.
-     * - opcache.save_comments is pinned on: stripping doc comments (a common
-     *   web tuning) breaks annotation readers in the project code the
-     *   extensions bootstrap, which worked with OPcache dormant.
-     * - opcache.optimization_level is pinned to PHP's default: the
-     *   extension's pass dropping PHPStan's own type checks
-     *   (TurboExtensionEnabler::trustOwnTypesIfSuitable()) runs inside the
-     *   optimizer, which a php.ini can switch off entirely.
-     *
-     * Two configurations are left alone entirely — no OPcache entries at all,
-     * so the restarted process runs with what the php.ini says, as before:
-     * - opcache.file_cache_only: blanking the file cache would be a fatal
-     *   startup error, and it usually means shared memory is unavailable on
-     *   that host on purpose.
-     * - opcache.preload: the application's preload script would run inside
-     *   PHPStan (there is no CLI exemption), and it cannot be blanked with -d
-     *   (the directive rejects an empty value).
-     *
-     * @param array<string, string|false> $ini
-     * @return list<string>
-     */
-    public static function resolveOpcacheArgs(array $ini): array
-    {
-    }
-    /**
-     * @param string|false $value
-     */
-    private static function isIniOn($value): bool
-    {
-    }
-    /**
-     * @param string|false $value
-     */
-    private static function iniInt($value): int
+    public static function restartIfSuitable(array $argv, ?string $pharPath = null, ?string $appName = null): void
     {
     }
 }
@@ -80813,6 +84743,7 @@ final class AcceptsResult
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -80830,6 +84761,7 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
@@ -81132,12 +85064,16 @@ class AccessoryArrayListType implements CompoundType, \PHPStan\Type\Accessory\Ac
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -81160,6 +85096,7 @@ use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
@@ -81379,12 +85316,16 @@ class AccessoryDecimalIntegerStringType implements CompoundType, \PHPStan\Type\A
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -81404,6 +85345,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
@@ -81609,12 +85551,16 @@ class AccessoryLiteralStringType implements CompoundType, \PHPStan\Type\Accessor
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -81634,6 +85580,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
@@ -81839,12 +85786,16 @@ class AccessoryLowercaseStringType implements CompoundType, \PHPStan\Type\Access
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -81865,6 +85816,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
@@ -82067,12 +86019,16 @@ class AccessoryNonEmptyStringType implements CompoundType, \PHPStan\Type\Accesso
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -82093,6 +86049,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
@@ -82295,12 +86252,16 @@ class AccessoryNonFalsyStringType implements CompoundType, \PHPStan\Type\Accesso
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\DependencyInjection\ReportUnsafeArrayStringKeyCastingToggle;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -82322,6 +86283,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\NonArrayTypeTrait;
 use PHPStan\Type\Traits\NonCallableTypeTrait;
@@ -82523,6 +86485,9 @@ class AccessoryNumericStringType implements CompoundType, \PHPStan\Type\Accessor
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -82541,11 +86506,15 @@ use PHPStan\Type\Type;
  *
  * For example, `non-empty-string` is represented as:
  *
- *     IntersectionType([StringType, AccessoryNonEmptyStringType])
+ * ```
+ * IntersectionType([StringType, AccessoryNonEmptyStringType])
+ * ```
  *
  * And `non-empty-list<int>` is represented as:
  *
- *     IntersectionType([ArrayType(int, int), NonEmptyArrayType, AccessoryArrayListType])
+ * ```
+ * IntersectionType([ArrayType(int, int), NonEmptyArrayType, AccessoryArrayListType])
+ * ```
  *
  * Each AccessoryType implementation has a corresponding query method on the `Type` interface
  * that returns `TrinaryLogic`. This lets any code query the refinement without knowing
@@ -82596,6 +86565,7 @@ interface AccessoryType extends Type
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -82615,6 +86585,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
@@ -82820,6 +86791,9 @@ class AccessoryUppercaseStringType implements CompoundType, \PHPStan\Type\Access
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -82847,6 +86821,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
@@ -83025,6 +87000,9 @@ class HasMethodType implements \PHPStan\Type\Accessory\AccessoryType, CompoundTy
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -83032,6 +87010,7 @@ class HasMethodType implements \PHPStan\Type\Accessory\AccessoryType, CompoundTy
 namespace PHPStan\Type\Accessory;
 
 use ArrayAccess;
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -83050,6 +87029,7 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\Traits\MaybeArrayTypeTrait;
@@ -83300,6 +87280,9 @@ class HasOffsetType implements CompoundType, \PHPStan\Type\Accessory\AccessoryTy
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -83307,6 +87290,7 @@ class HasOffsetType implements CompoundType, \PHPStan\Type\Accessory\AccessoryTy
 namespace PHPStan\Type\Accessory;
 
 use ArrayAccess;
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -83327,6 +87311,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StaticTypeFactory;
@@ -83588,6 +87573,9 @@ class HasOffsetValueType implements CompoundType, \PHPStan\Type\Accessory\Access
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -83609,6 +87597,7 @@ use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\MaybeIterableTypeTrait;
@@ -83781,12 +87770,16 @@ class HasPropertyType implements \PHPStan\Type\Accessory\AccessoryType, Compound
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -83805,6 +87798,7 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
@@ -84106,12 +88100,16 @@ class NonEmptyArrayType implements CompoundType, \PHPStan\Type\Accessory\Accesso
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type\Accessory;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -84129,6 +88127,7 @@ use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\Traits\MaybeCallableTypeTrait;
 use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
 use PHPStan\Type\Traits\NonGenericTypeTrait;
@@ -84430,12 +88429,16 @@ class OversizedArrayType implements CompoundType, \PHPStan\Type\Accessory\Access
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -84693,6 +88696,9 @@ class ArrayType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function traverseSimultaneously(\PHPStan\Type\Type $right, callable $cb): \PHPStan\Type\Type
     {
     }
@@ -84835,6 +88841,7 @@ final class BitwiseFlagHelper
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -84945,6 +88952,9 @@ class BooleanType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function toTrinaryLogic(): TrinaryLogic
     {
     }
@@ -85033,6 +89043,7 @@ final class CallableAssertionsHelper
 namespace PHPStan\Type;
 
 use Closure;
+use PhpParser\Node\Identifier;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\Tag\TemplateTag;
@@ -85041,7 +89052,6 @@ use PHPStan\PhpDocParser\Ast\Type\CallableTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\CallableTypeParameterNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
-use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
@@ -85338,6 +89348,9 @@ class CallableType implements \PHPStan\Type\CompoundType, CallableParametersAcce
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -85447,7 +89460,7 @@ final class ClassConstantAccessType implements \PHPStan\Type\CompoundType, \PHPS
 }
 namespace PHPStan\Type;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Turbo\ReferencedByTurboExtension;
 use PHPStan\Type\Enum\EnumCaseObjectType;
@@ -85585,6 +89598,7 @@ class ClassStringType extends \PHPStan\Type\StringType
 namespace PHPStan\Type;
 
 use Closure;
+use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Node\InvalidateExprNode;
 use PHPStan\Php\PhpVersion;
@@ -85592,9 +89606,9 @@ use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
 use PHPStan\PhpDocParser\Ast\Type\CallableTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\CallableTypeParameterNode;
+use PHPStan\PhpDocParser\Ast\Type\FullyQualifiedNameNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
-use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
@@ -86033,6 +90047,9 @@ class ClosureType implements \PHPStan\Type\TypeWithClassName, CallableParameters
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -86399,7 +90416,8 @@ final class ConditionalTypeForParameter implements \PHPStan\Type\CompoundType, \
 }
 namespace PHPStan\Type\Constant;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use PhpParser\Node\Identifier;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\DependencyInjection\BleedingEdgeToggle;
 use PHPStan\Php\PhpVersion;
@@ -86443,6 +90461,7 @@ use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateStrictMixedType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeMap;
+use PHPStan\Type\Generic\TemplateTypeReference;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\IntegerRangeType;
@@ -86450,7 +90469,9 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\NeverType;
+use PHPStan\Type\NonAcceptingNeverType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\RecursionGuard;
@@ -86538,6 +90559,11 @@ class ConstantArrayType implements Type
     private ?array $keyIndexMap = null;
     /** @var array<int, int>|null */
     private ?array $optionalKeySet = null;
+    private ?bool $hasTemplateOrLateResolvableType = null;
+    /** @var list<non-empty-string>|null */
+    private ?array $referencedClasses = null;
+    /** @var array{TemplateTypeVariance, list<TemplateTypeReference>}|null */
+    private ?array $referencedTemplateTypes = null;
     /**
      * @api
      * @param list<ConstantIntegerType|ConstantStringType> $keyTypes
@@ -86857,6 +90883,15 @@ class ConstantArrayType implements Type
     public function tryRemove(Type $typeToRemove): ?Type
     {
     }
+    /**
+     * The values of this shape lacking the offset. Unlike unsetOffset(), an
+     * explicit key the unsealed extras can also hold becomes an optional never
+     * key - dropping it would let the extras supply it again, widening the
+     * shape instead of subtracting from it.
+     */
+    private function removeOffset(Type $offsetType): Type
+    {
+    }
     public function traverse(callable $cb): Type
     {
     }
@@ -86926,6 +90961,9 @@ class ConstantArrayType implements Type
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
     {
     }
     public static function isValidIdentifier(string $value): bool
@@ -87102,6 +91140,7 @@ final class ConstantArrayTypeBuilder
 }
 namespace PHPStan\Type\Constant;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -87113,6 +91152,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\InstanceofDeprecated;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\StaticTypeFactory;
 use PHPStan\Type\Traits\ConstantScalarTypeTrait;
@@ -87187,6 +91227,9 @@ class ConstantBooleanType extends BooleanType implements ConstantScalarType
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
     {
     }
     public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
@@ -87345,8 +91388,8 @@ trait ConstantScalarToBooleanTrait
 }
 namespace PHPStan\Type\Constant;
 
-use _PHPStan_cb3b7e994\Nette\Utils\RegexpException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\RegexpException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Php\PhpVersion;
@@ -87549,12 +91592,9 @@ class ConstantStringType extends StringType implements ConstantScalarType
 }
 namespace PHPStan\Type\Constant;
 
-use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\Node\Expr\TypeExpr;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\Accessory\OversizedArrayType;
@@ -87564,9 +91604,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
-use function array_splice;
 use function array_values;
-use function count;
 use const PHP_INT_MAX;
 #[AutowiredService]
 final class OversizedArrayBuilder
@@ -88093,6 +92131,9 @@ class ErrorType extends \PHPStan\Type\MixedType
     public function equals(\PHPStan\Type\Type $type): bool
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
 }
 namespace PHPStan\Type;
 
@@ -88200,6 +92241,7 @@ use PHPStan\File\FileHelper;
 use PHPStan\Internal\ComposerHelper;
 use PHPStan\Internal\LruCache;
 use PHPStan\Parser\Parser;
+use PHPStan\Parser\PathRoutingParser;
 use PHPStan\PhpDoc\NameScopeAlreadyBeingCreatedException;
 use PHPStan\PhpDoc\PhpDocNodeResolver;
 use PHPStan\PhpDoc\PhpDocStringResolver;
@@ -88253,6 +92295,8 @@ final class FileTypeMapper
     private array $inProcess = [];
     /** @var array<string, NameScope> */
     private array $inProcessNameScopes = [];
+    /** @var array<string, int> */
+    private array $classNameScopesBeingCreated = [];
     /** @var array<string, ResolvedPhpDocBlock> */
     private array $resolvedPhpDocBlockCache = [];
     private int $resolvedPhpDocBlockCacheCount = 0;
@@ -88275,6 +92319,13 @@ final class FileTypeMapper
     }
     /** @api */
     public function getResolvedPhpDoc(?string $fileName, ?string $className, ?string $traitName, ?string $functionName, ?string $docComment): ResolvedPhpDocBlock
+    {
+    }
+    /**
+     * While a class's name scope is being created, the PHPDoc resolved for that class
+     * does not have its template tags yet.
+     */
+    public function isClassNameScopeBeingCreated(string $className): bool
     {
     }
     private function createResolvedPhpDocBlock(PhpDocNode $phpDocNode, NameScope $nameScope, string $phpDocString, ?string $fileName): ResolvedPhpDocBlock
@@ -88306,6 +92357,9 @@ final class FileTypeMapper
      * @return array{array<string, IntermediaryNameScope>, list<string>}|null
      */
     private function loadCachedPhpDocNodeMap(string $cacheKey, string $variableCacheKey): ?array
+    {
+    }
+    private function returnsSimplifiedAst(string $fileName): bool
     {
     }
     /**
@@ -88505,6 +92559,7 @@ final class FiniteTypeSet
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -88682,6 +92737,9 @@ class FloatType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function getFiniteTypes(): array
     {
     }
@@ -88843,7 +92901,9 @@ use PHPStan\Turbo\ReferencedByTurboExtension;
  *
  * Used as a parameter to Type::generalize():
  *
- *     $type->generalize(GeneralizePrecision::lessSpecific())
+ * ```php
+ * $type->generalize(GeneralizePrecision::lessSpecific())
+ * ```
  */
 #[ReferencedByTurboExtension('generalizePrecision')]
 final class GeneralizePrecision
@@ -88992,8 +93052,8 @@ class GenericClassStringType extends ClassStringType
 }
 namespace PHPStan\Type\Generic;
 
+use PHPStan\PhpDocParser\Ast\Type\FullyQualifiedNameNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
-use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\ClassReflection;
@@ -89168,6 +93228,7 @@ class GenericStaticType extends StaticType
      */
     private array $variances;
     private ?ObjectType $staticObjectType = null;
+    private ?ClassReflection $resolvedClassReflection = null;
     /**
      * @api
      * @param array<int, Type> $types
@@ -89186,7 +93247,18 @@ class GenericStaticType extends StaticType
     public function getVariances(): array
     {
     }
+    /** The class reflection with the type arguments of this type. */
+    public function getClassReflection(): ClassReflection
+    {
+    }
     public function getStaticObjectType(): ObjectType
+    {
+    }
+    /**
+     * The ancestor keeps the type arguments the static object type has for
+     * that class - changeBaseClass() can only carry them down to a subclass.
+     */
+    public function getAncestorWithClassName(string $className): ?TypeWithClassName
     {
     }
     public function changeBaseClass(ClassReflection $classReflection): StaticType
@@ -90311,6 +94383,7 @@ use PHPStan\Type\CompoundType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\UnionType;
@@ -90450,6 +94523,9 @@ final class UnresolvedTemplateArgumentType implements CompoundType
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(NativeTypePosition $position)
     {
     }
     public function getReferencedClasses(): array
@@ -90817,6 +94893,7 @@ namespace PHPStan\Type\Helper;
 
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\FullyQualifiedNameNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -91084,6 +95161,7 @@ class IntegerRangeType extends \PHPStan\Type\IntegerType implements \PHPStan\Typ
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -91191,6 +95269,9 @@ class IntegerType implements \PHPStan\Type\Type
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
     {
     }
     public function hasTemplateOrLateResolvableType(): bool
@@ -91799,6 +95880,9 @@ class IntersectionType implements \PHPStan\Type\CompoundType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -91911,6 +95995,21 @@ final class IsSuperTypeOfResult
     public static function createFromBoolean(bool $value): self
     {
     }
+    /**
+     * The result without reasons - the shared instance of createYes(), createNo() or createMaybe().
+     *
+     * @api
+     */
+    public static function createFromTrinaryLogic(TrinaryLogic $result): self
+    {
+    }
+    /**
+     * @param list<string> $reasons
+     * @param list<Closure(): string> $lazyReasons
+     */
+    private static function create(TrinaryLogic $result, array $reasons, array $lazyReasons): self
+    {
+    }
     public function toAcceptsResult(): \PHPStan\Type\AcceptsResult
     {
     }
@@ -91949,6 +96048,7 @@ final class IsSuperTypeOfResult
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -92193,6 +96293,9 @@ class IterableType implements \PHPStan\Type\CompoundType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -92359,7 +96462,6 @@ use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
-use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Turbo\ShadowedByTurboExtension;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
@@ -92475,6 +96577,90 @@ final class LateResolvableArrayShapeType implements \PHPStan\Type\CompoundType, 
     }
     /**
      * @return ConstExprIntegerNode|ConstExprStringNode|ConstFetchNode|IdentifierTypeNode
+     */
+    private static function keyNameNode(\PHPStan\Type\Type $keyType)
+    {
+    }
+}
+namespace PHPStan\Type;
+
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\ObjectShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ObjectShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Generic\TemplateTypeHelper;
+use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPStan\Type\Traits\LateResolvableTypeTrait;
+use PHPStan\Type\Traits\NonGeneralizableTypeTrait;
+use function array_keys;
+use function array_merge;
+use function count;
+use function sprintf;
+/**
+ * Object shape whose property names are not known yet because at least one of
+ * them is a template type: `object{TKey: int}`. Once the template types are
+ * resolved the shape collapses into an ObjectShapeType (or an ErrorType when
+ * the resolved key cannot be a property name at all). Written shapes without
+ * template keys go through it too and resolve right away.
+ */
+final class LateResolvableObjectShapeType implements \PHPStan\Type\CompoundType, \PHPStan\Type\LateResolvableType
+{
+    /**
+     * @var list<array{Type, Type, bool}>
+     */
+    private array $items;
+    use LateResolvableTypeTrait;
+    use NonGeneralizableTypeTrait;
+    /**
+     * @param list<array{Type, Type, bool}> $items keyType, valueType, optional
+     */
+    private function __construct(array $items)
+    {
+    }
+    /**
+     * Builds the object shape type, keeping it late-resolvable only for as long
+     * as some of its keys still contain template types.
+     *
+     * @param list<array{Type, Type, bool}> $items keyType, valueType, optional
+     */
+    public static function create(array $items): \PHPStan\Type\Type
+    {
+    }
+    public function getReferencedClasses(): array
+    {
+    }
+    public function getReferencedTemplateTypes(TemplateTypeVariance $positionVariance): array
+    {
+    }
+    public function equals(\PHPStan\Type\Type $type): bool
+    {
+    }
+    public function describe(\PHPStan\Type\VerbosityLevel $level): string
+    {
+    }
+    public function isResolvable(): bool
+    {
+    }
+    protected function getResult(): \PHPStan\Type\Type
+    {
+    }
+    /**
+     * @param callable(Type): Type $cb
+     */
+    public function traverse(callable $cb): \PHPStan\Type\Type
+    {
+    }
+    public function traverseSimultaneously(\PHPStan\Type\Type $right, callable $cb): \PHPStan\Type\Type
+    {
+    }
+    public function toPhpDocNode(): TypeNode
+    {
+    }
+    /**
+     * @return ConstExprStringNode|IdentifierTypeNode
      */
     private static function keyNameNode(\PHPStan\Type\Type $keyType)
     {
@@ -92665,6 +96851,7 @@ interface MethodTypeSpecifyingExtension
 namespace PHPStan\Type;
 
 use ArrayAccess;
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -93107,6 +97294,9 @@ class MixedType implements \PHPStan\Type\CompoundType, \PHPStan\Type\Subtractabl
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -93229,6 +97419,180 @@ final class NarrowedSubjectType implements TemplateType, \PHPStan\Type\LateResol
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node;
+use PhpParser\Node\ComplexType;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
+use PhpParser\Node\NullableType;
+use PHPStan\Turbo\ReferencedByTurboExtension;
+use function array_map;
+use function array_values;
+use function count;
+use function explode;
+use function implode;
+use function in_array;
+use function sort;
+use function strtolower;
+/**
+ * The compound halves of Type::toNativePhpTypeNode(), shared by the PHP
+ * implementations and the turbo extension.
+ */
+#[ReferencedByTurboExtension('nativePhpTypeNodeHelper')]
+final class NativePhpTypeNodeHelper
+{
+    /** @return Identifier|Name|ComplexType|null */
+    public static function union(\PHPStan\Type\UnionType $unionType, \PHPStan\Type\NativeTypePosition $position)
+    {
+    }
+    /** @return Identifier|Name|ComplexType|null */
+    public static function intersection(\PHPStan\Type\IntersectionType $intersectionType, \PHPStan\Type\NativeTypePosition $position)
+    {
+    }
+}
+namespace PHPStan\Type;
+
+use PHPStan\Php\PhpVersion;
+/**
+ * Where a native PHP type declaration is written, and for which PHP version.
+ *
+ * Passed to Type::toNativePhpTypeNode(). Instead of exposing the position itself,
+ * it answers what the position allows, e.g. isCallableAllowed() is false for
+ * properties and class constants, and isNullAllowed() is false for a standalone
+ * type before PHP 8.2.
+ *
+ * Compound types pass a derived position to their members: toUnionMember() for each
+ * member of `A|B`, toNullableInner() for `A` in `?A`, toIntersectionMember() for each
+ * member of `A&B`. That is how e.g. an intersection type knows it can only be part
+ * of a union (DNF) since PHP 8.2.
+ *
+ * ```php
+ * $type->toNativePhpTypeNode(NativeTypePosition::returnType(new PhpVersion(80100)));
+ * ```
+ *
+ * @api
+ */
+final class NativeTypePosition
+{
+    /**
+     * @var self::PARAMETER|self::RETURN|self::PROPERTY|self::CLASS_CONSTANT
+     */
+    private int $declaration;
+    /**
+     * @var self::STANDALONE|self::UNION_MEMBER|self::NULLABLE_INNER|self::INTERSECTION_MEMBER
+     */
+    private int $context;
+    private PhpVersion $phpVersion;
+    private const PARAMETER = 1;
+    private const RETURN = 2;
+    private const PROPERTY = 3;
+    private const CLASS_CONSTANT = 4;
+    private const STANDALONE = 1;
+    private const UNION_MEMBER = 2;
+    private const NULLABLE_INNER = 3;
+    private const INTERSECTION_MEMBER = 4;
+    /**
+     * @param self::PARAMETER|self::RETURN|self::PROPERTY|self::CLASS_CONSTANT $declaration
+     * @param self::STANDALONE|self::UNION_MEMBER|self::NULLABLE_INNER|self::INTERSECTION_MEMBER $context
+     */
+    private function __construct(int $declaration, int $context, PhpVersion $phpVersion)
+    {
+    }
+    /** @api */
+    public static function parameter(PhpVersion $phpVersion): self
+    {
+    }
+    /** @api */
+    public static function returnType(PhpVersion $phpVersion): self
+    {
+    }
+    /** @api */
+    public static function property(PhpVersion $phpVersion): self
+    {
+    }
+    /** @api */
+    public static function classConstant(PhpVersion $phpVersion): self
+    {
+    }
+    /** A member of a union type, e.g. `A` in `A|B`. */
+    public function toUnionMember(): self
+    {
+    }
+    /** The inner type of a nullable type, e.g. `A` in `?A`. */
+    public function toNullableInner(): self
+    {
+    }
+    /** A member of an intersection type, e.g. `A` in `A&B`. */
+    public function toIntersectionMember(): self
+    {
+    }
+    /** Class names, also `self`, `parent`, and `Closure`. */
+    public function isClassNameAllowed(): bool
+    {
+    }
+    /** `int`, `float`, `string` and `bool`. */
+    public function isScalarAllowed(): bool
+    {
+    }
+    public function isArrayAllowed(): bool
+    {
+    }
+    public function isIterableAllowed(): bool
+    {
+    }
+    public function isCallableAllowed(): bool
+    {
+    }
+    public function isObjectAllowed(): bool
+    {
+    }
+    public function isStaticAllowed(): bool
+    {
+    }
+    public function isVoidAllowed(): bool
+    {
+    }
+    public function isNeverAllowed(): bool
+    {
+    }
+    public function isMixedAllowed(): bool
+    {
+    }
+    public function isNullAllowed(): bool
+    {
+    }
+    /** `false` in a union with another non-null type since PHP 8.0, otherwise since PHP 8.2. */
+    public function isFalseAllowed(): bool
+    {
+    }
+    public function isTrueAllowed(): bool
+    {
+    }
+    /** `?A` */
+    public function isNullableAllowed(): bool
+    {
+    }
+    /** `A|B` */
+    public function isUnionAllowed(): bool
+    {
+    }
+    /** `A&B`, also as a member of a union, `(A&B)|C`, since PHP 8.2 */
+    public function isIntersectionAllowed(): bool
+    {
+    }
+    private function isTypeDeclarationAllowed(): bool
+    {
+    }
+    /** members of an intersection can only be class names */
+    private function isKeywordAllowed(): bool
+    {
+    }
+    private function isAtLeast(int $versionId): bool
+    {
+    }
+}
+namespace PHPStan\Type;
+
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -93633,6 +97997,9 @@ class NeverType implements \PHPStan\Type\CompoundType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -93715,6 +98082,7 @@ class NonAcceptingNeverType extends \PHPStan\Type\NeverType
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Name;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -93887,12 +98255,16 @@ class NonexistentParentClassType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -94116,6 +98488,9 @@ class NullType implements \PHPStan\Type\ConstantScalarType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -94225,6 +98600,7 @@ final class ObjectShapePropertyReflection implements ExtendedPropertyReflection
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
@@ -94379,6 +98755,9 @@ class ObjectShapeType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -94392,11 +98771,12 @@ use Countable;
 use DateTimeInterface;
 use Iterator;
 use IteratorAggregate;
+use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\Internal\LruCache;
 use PHPStan\Php\PhpVersion;
-use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\FullyQualifiedNameNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\FunctionCallableVariant;
@@ -94902,12 +99282,16 @@ class ObjectType implements \PHPStan\Type\TypeWithClassName, \PHPStan\Type\Subtr
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\Turbo\ShadowedByTurboExtension;
@@ -94992,6 +99376,9 @@ class ObjectWithoutClassType implements \PHPStan\Type\SubtractableType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -95000,7 +99387,6 @@ namespace PHPStan\Type;
 
 use PHPStan\PhpDocParser\Ast\Type\OffsetAccessTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
-use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Turbo\ShadowedByTurboExtension;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
@@ -96505,13 +100891,15 @@ use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\Constant\ConstantBooleanType;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
-use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
+use function base64_decode;
 #[AutowiredService]
 final class Base64DecodeDynamicFunctionReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
@@ -96625,6 +101013,28 @@ final class BcMathStringOrNullReturnTypeExtension implements DynamicFunctionRetu
      * @param mixed $value
      */
     private function isZero($value): bool
+    {
+    }
+}
+namespace PHPStan\Type\Php;
+
+use PhpParser\Node\Expr\BinaryOp\Smaller;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\Ternary;
+use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Node\Expr\AlwaysRememberedExpr;
+use PHPStan\Reflection\FunctionReflection;
+use PHPStan\Type\DynamicFunctionReturnTypeExtension;
+use PHPStan\Type\Type;
+use function count;
+#[AutowiredService]
+final class ClampFunctionReturnTypeExtension implements DynamicFunctionReturnTypeExtension
+{
+    public function isFunctionSupported(FunctionReflection $functionReflection): bool
+    {
+    }
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): ?Type
     {
     }
 }
@@ -97154,6 +101564,12 @@ final class DateFunctionReturnTypeHelper
     {
     }
     private function buildNumericRangeType(int $min, int $max, bool $zeroPad): Type
+    {
+    }
+    /**
+     * @param list<string> $values
+     */
+    private function buildConstantStringsType(array $values): Type
     {
     }
 }
@@ -97952,7 +102368,7 @@ final class FilterFunctionReturnTypeHelper
     public function hasFlag(string $flagName, ?Type $flagsType): TrinaryLogic
     {
     }
-    private function hasThrowOnFailureFlag(?Type $flagsType, PhpVersions $phpVersions): TrinaryLogic
+    public function hasThrowOnFailureFlag(?Type $flagsType, PhpVersions $phpVersions): TrinaryLogic
     {
     }
     private function getFlagsValue(Type $exprType): Type
@@ -99886,8 +104302,8 @@ final class PregReplaceCallbackClosureTypeExtension implements FunctionParameter
 }
 namespace PHPStan\Type\Php;
 
-use _PHPStan_cb3b7e994\Nette\Utils\RegexpException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\RegexpException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -100223,6 +104639,7 @@ use ValueError;
 use function abs;
 use function count;
 use function floor;
+use function intdiv;
 use function is_array;
 use function is_finite;
 use function is_numeric;
@@ -100230,6 +104647,7 @@ use function is_string;
 use function max;
 use function min;
 use function range;
+use const PHP_INT_MAX;
 #[AutowiredService]
 final class RangeFunctionReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
@@ -100259,7 +104677,7 @@ final class RangeFunctionReturnTypeExtension implements DynamicFunctionReturnTyp
     private static function getLongRangeType($startConstant, $endConstant, $stepConstant, Type $stepType): Type
     {
     }
-    private static function getNonEmptyListOfType(Type $type): IntersectionType
+    private static function getNonEmptyListOfType(Type $type, ?int $maxKey = null): IntersectionType
     {
     }
 }
@@ -101120,7 +105538,7 @@ final class StrPadFunctionReturnTypeExtension implements DynamicFunctionReturnTy
 }
 namespace PHPStan\Type\Php;
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -101795,6 +106213,283 @@ final class RecursionGuard
     {
     }
 }
+namespace PHPStan\Type\Regex\Parser;
+
+use PHPStan\ShouldNotHappenException;
+/**
+ * Node of the regex AST built by RegexParser.
+ *
+ * Rule nodes have an id starting with "#" (like "#capturing" or "#alternation")
+ * and children. Token nodes have the id "token", the token name (like "literal")
+ * and the matched value. Rule nodes have an empty token name and value.
+ */
+final class RegexNode
+{
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public string $id;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public string $valueToken;
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public string $valueValue;
+    /**
+     * @var list<RegexNode>
+     */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public array $children;
+    /**
+     * @param list<RegexNode> $children
+     */
+    public function __construct(
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        string $id,
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        string $valueToken = '',
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        string $valueValue = '',
+        #[\PHPStan\Reflection\Attribute\PrivateProperty]
+        array $children = []
+    )
+    {
+    }
+    public function getId(): string
+    {
+    }
+    public function getValueToken(): string
+    {
+    }
+    public function getValueValue(): string
+    {
+    }
+    /** @return list<RegexNode> */
+    public function getChildren(): array
+    {
+    }
+    public function getChild(int $i): self
+    {
+    }
+    /** @param list<RegexNode> $children */
+    public function setChildren(array $children): void
+    {
+    }
+}
+namespace PHPStan\Type\Regex\Parser;
+
+use _PHPStan_95d9e8b05\Phplrt\Contracts\Lexer\TokenInterface;
+/**
+ * @template TResult of mixed = mixed
+ *
+ * @template-implements \Phplrt\Contracts\Parser\ParserInterface<TResult>
+ *
+ * @readonly
+ */
+final class RegexParser implements \_PHPStan_95d9e8b05\Phplrt\Contracts\Parser\ParserInterface
+{
+    /** @var int */
+    public const T_NEGATIVE_CLASS_FC = 0;
+    /** @var int */
+    public const T_CLASS_FC = 1;
+    /** @var int */
+    public const T_NEGATIVE_CLASS = 2;
+    /** @var int */
+    public const T_CLASS = 3;
+    /** @var int */
+    public const T_INTERNAL_OPTION = 4;
+    /** @var int */
+    public const T_LOOKAHEAD = 5;
+    /** @var int */
+    public const T_NEGATIVE_LOOKAHEAD = 6;
+    /** @var int */
+    public const T_LOOKBEHIND = 7;
+    /** @var int */
+    public const T_NEGATIVE_LOOKBEHIND = 8;
+    /** @var int */
+    public const T_NAMED_REFERENCE = 9;
+    /** @var int */
+    public const T_ABSOLUTE_REFERENCE = 10;
+    /** @var int */
+    public const T_RELATIVE_REFERENCE = 11;
+    /** @var int */
+    public const T_ASSERTION_REFERENCE = 12;
+    /** @var int */
+    public const T_COMMENT = 13;
+    /** @var int */
+    public const T_MARKER = 14;
+    /** @var int */
+    public const T_NAMED_BACKREFERENCE = 15;
+    /** @var int */
+    public const T_SUBROUTINE = 16;
+    /** @var int */
+    public const T_NAMED_CAPTURING = 17;
+    /** @var int */
+    public const T_NON_CAPTURING = 18;
+    /** @var int */
+    public const T_NON_CAPTURING_INTERNAL_OPTION = 19;
+    /** @var int */
+    public const T_NON_CAPTURING_RESET = 20;
+    /** @var int */
+    public const T_ATOMIC_GROUP = 21;
+    /** @var int */
+    public const T_CAPTURING = 22;
+    /** @var int */
+    public const T_CAPTURING_CLOSE = 23;
+    /** @var int */
+    public const T_ZERO_OR_ONE_POSSESSIVE = 24;
+    /** @var int */
+    public const T_ZERO_OR_ONE_LAZY = 25;
+    /** @var int */
+    public const T_ZERO_OR_ONE = 26;
+    /** @var int */
+    public const T_ZERO_OR_MORE_POSSESSIVE = 27;
+    /** @var int */
+    public const T_ZERO_OR_MORE_LAZY = 28;
+    /** @var int */
+    public const T_ZERO_OR_MORE = 29;
+    /** @var int */
+    public const T_ONE_OR_MORE_POSSESSIVE = 30;
+    /** @var int */
+    public const T_ONE_OR_MORE_LAZY = 31;
+    /** @var int */
+    public const T_ONE_OR_MORE = 32;
+    /** @var int */
+    public const T_EXACTLY_N = 33;
+    /** @var int */
+    public const T_N_TO_M_POSSESSIVE = 34;
+    /** @var int */
+    public const T_N_TO_M_LAZY = 35;
+    /** @var int */
+    public const T_N_TO_M = 36;
+    /** @var int */
+    public const T_N_OR_MORE_POSSESSIVE = 37;
+    /** @var int */
+    public const T_N_OR_MORE_LAZY = 38;
+    /** @var int */
+    public const T_N_OR_MORE = 39;
+    /** @var int */
+    public const T_ALTERNATION = 40;
+    /** @var int */
+    public const T_CHARACTER = 41;
+    /** @var int */
+    public const T_DYNAMIC_CHARACTER = 42;
+    /** @var int */
+    public const T_CHARACTER_TYPE = 43;
+    /** @var int */
+    public const T_ANCHOR = 44;
+    /** @var int */
+    public const T_MATCH_POINT_RESET = 45;
+    /** @var int */
+    public const T_SUBROUTINE_G = 46;
+    /** @var int */
+    public const T_BACKREFERENCE = 47;
+    /** @var int */
+    public const T_LITERAL = 48;
+    /** @var array<int, non-empty-string> */
+    private const PARSER_EXPECTATIONS = ['T_NEGATIVE_CLASS_FC', 'T_CLASS_FC', 'T_NEGATIVE_CLASS', 'T_CLASS', 'T_INTERNAL_OPTION', 'T_LOOKAHEAD', 'T_NEGATIVE_LOOKAHEAD', 'T_LOOKBEHIND', 'T_NEGATIVE_LOOKBEHIND', 'T_NAMED_REFERENCE', 'T_ABSOLUTE_REFERENCE', 'T_RELATIVE_REFERENCE', 'T_ASSERTION_REFERENCE', 'T_COMMENT', 'T_MARKER', 'T_NAMED_BACKREFERENCE', 'T_SUBROUTINE', 'T_NAMED_CAPTURING', 'T_NON_CAPTURING', 'T_NON_CAPTURING_INTERNAL_OPTION', 'T_NON_CAPTURING_RESET', 'T_ATOMIC_GROUP', 'T_CAPTURING', 'T_CAPTURING_CLOSE', 'T_ZERO_OR_ONE_POSSESSIVE', 'T_ZERO_OR_ONE_LAZY', 'T_ZERO_OR_ONE', 'T_ZERO_OR_MORE_POSSESSIVE', 'T_ZERO_OR_MORE_LAZY', 'T_ZERO_OR_MORE', 'T_ONE_OR_MORE_POSSESSIVE', 'T_ONE_OR_MORE_LAZY', 'T_ONE_OR_MORE', 'T_EXACTLY_N', 'T_N_TO_M_POSSESSIVE', 'T_N_TO_M_LAZY', 'T_N_TO_M', 'T_N_OR_MORE_POSSESSIVE', 'T_N_OR_MORE_LAZY', 'T_N_OR_MORE', 'T_ALTERNATION', 'T_CHARACTER', 'T_DYNAMIC_CHARACTER', 'T_CHARACTER_TYPE', 'T_ANCHOR', 'T_MATCH_POINT_RESET', 'T_SUBROUTINE_G', 'T_BACKREFERENCE', 'T_LITERAL', '/[^\s]++/'];
+    /** @var array<int, bool> */
+    private const PARSER_KEPT_TABLE = [\true, \true, \false, \true, \false, \true, \true, \false, \false, \false, \false, \false, \false, \true, \false, \true, \false, \false, \false, \false, \true, \false, \false, \true, \false, \false, \false, \false, \false, \false, \false, \true, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false, \true, \false, \false, \false, \false, \false, \false, \false, \false, \false, \false];
+    /** @var array<int, array<int, true>|null> */
+    private const PARSER_START_PREDICTION_TABLE = [null, null, null, [\true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, 41 => \true, \true, \true, \true, \true, \true, \true, \true], [\true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, 41 => \true, \true, \true, \true, \true, \true, \true, \true], [4 => \true], [5 => \true, \true, \true, \true], [5 => \true, \true, \true, \true], [5 => \true], [6 => \true], [7 => \true], [8 => \true], [23 => \true], [\true, \true, \true, \true, 13 => \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, 41 => \true, \true, \true, \true, \true, \true, \true, \true], [\true, \true, \true, \true, 13 => \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, 41 => \true, \true, \true, \true, \true, \true, \true, \true], [\true, \true, \true, \true], [\true], [1 => \true], [2 => \true], [3 => \true], [13 => \true, \true, 17 => \true, \true, \true, \true, \true, \true], [14 => \true], [13 => \true], [17 => \true, \true, \true, \true, \true, \true], [17 => \true, \true, \true, \true, \true, \true], [17 => \true], [18 => \true], [19 => \true], [20 => \true], [21 => \true], [22 => \true], [15 => \true, \true, 41 => \true, \true, \true, \true, \true, \true, \true, \true], [41 => \true], [42 => \true], [43 => \true], [44 => \true], [45 => \true], [46 => \true], [47 => \true], [15 => \true], [16 => \true], [48 => \true], null, [24 => \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true, \true], [24 => \true], [25 => \true], [26 => \true], [27 => \true], [28 => \true], [29 => \true], [30 => \true], [31 => \true], [32 => \true], [33 => \true], [34 => \true], [35 => \true], [36 => \true], [37 => \true], [38 => \true], [39 => \true], [9 => \true, \true, \true, \true], [9 => \true, \true, \true, \true], [9 => \true], [10 => \true], [11 => \true], [12 => \true], [12 => \true], null, [40 => \true], [40 => \true], [40 => \true]];
+    /** @var array<int, array<int, list<int>>> */
+    private const PARSER_CHOICE_PREDICTION_TABLE = [4 => [4 => [-6], [6], [6], [6], [6], 0 => [13], 1 => [13], 2 => [13], 3 => [13], 13 => [13], [13], [13], [13], [13], [13], [13], [13], [13], [13], 41 => [13], [13], [13], [13], [13], [13], [13], [13], 9 => [60], 10 => [60], 11 => [60], 12 => [60]], 7 => [5 => [-9], [-10], [-11], [-12]], 14 => [[15], [15], [15], [15], 13 => [20], [20], 17 => [20], [20], [20], [20], [20], [20], 15 => [31], 16 => [31], 41 => [31], [31], [31], [31], [31], [31], [31], [31]], [[-17], [-18], [-19], [-20]], 20 => [14 => [-22], 13 => [-23], 17 => [23], [23], [23], [23], [23], [23]], 24 => [17 => [-26], [-27], [-28], [-29], [-30], [-31]], 31 => [41 => [-33], [-34], [-35], [-36], [-37], [-38], [-39], 15 => [-40], 16 => [-41], [-42]], 43 => [24 => [-45], [-46], [-47], [-48], [-49], [-50], [-51], [-52], [-53], [-54], [-55], [-56], [-57], [-58], [-59], [-60]], 61 => [9 => [-63], [-64], [-65], [65]]];
+    /** @var array<int, list<int>> */
+    private const PARSER_SEQUENCE_PREDICTION_TABLE = [1 => [-4, -69], 13 => [14, -44], 69 => [70, -4]];
+    /**
+     * @var \Phplrt\Parser\Parser<TResult>
+     */
+    #[\PHPStan\Reflection\Attribute\ProtectedProperty]
+    public \_PHPStan_95d9e8b05\Phplrt\Parser\Parser $parser;
+    /**
+     * @readonly
+     */
+    protected \_PHPStan_95d9e8b05\Phplrt\Contracts\Lexer\LexerInterface $lexer;
+    public function __construct()
+    {
+    }
+    /**
+     * @throws \Phplrt\Contracts\Parser\Exception\ParserExceptionInterface
+     * @throws RegexSyntaxException
+     * @return mixed
+     */
+    public function parse(\_PHPStan_95d9e8b05\Phplrt\Contracts\Source\ReadableInterface $source)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceExpression(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceAlternation(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceConcatenation(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceInternalOptions(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceAssertion(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceQuantification(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceCharacterClass(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceCapturing(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceLiteral(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+    /**
+     * @param mixed $children
+     * @return mixed
+     */
+    private static function reduceCondition(\_PHPStan_95d9e8b05\Phplrt\Parser\Context $ctx, $children)
+    {
+    }
+}
+namespace PHPStan\Type\Regex\Parser;
+
+use Exception;
+/** Thrown by RegexParser reducers when the token stream does not form a valid regex. */
+final class RegexSyntaxException extends Exception
+{
+}
 namespace PHPStan\Type\Regex;
 
 use function array_key_exists;
@@ -102120,6 +106815,7 @@ use IteratorAggregate;
 use Override;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
+use function array_key_exists;
 use function array_reverse;
 use function count;
 /**
@@ -102159,6 +106855,16 @@ final class RegexGroupList implements Countable, IteratorAggregate
     public function getOnlyOptionalTopLevelGroup(): ?\PHPStan\Type\Regex\RegexCapturingGroup
     {
     }
+    /**
+     * Groups sharing a name (allowed by (?J)) are only understood
+     * when each of them is in a different branch of the given alternation.
+     */
+    public function hasDuplicateNamesOutsideOfAlternationBranches(?\PHPStan\Type\Regex\RegexAlternation $alternation): bool
+    {
+    }
+    public function hasGroupResettingGroupCounter(): bool
+    {
+    }
     public function getOnlyTopLevelAlternation(): ?\PHPStan\Type\Regex\RegexAlternation
     {
     }
@@ -102176,13 +106882,10 @@ final class RegexGroupList implements Countable, IteratorAggregate
 }
 namespace PHPStan\Type\Regex;
 
-use Hoa\Compiler\Llk\Llk;
-use Hoa\Compiler\Llk\Parser;
-use Hoa\Compiler\Llk\TreeNode;
-use Hoa\Exception\Exception;
-use Hoa\File\Read;
-use _PHPStan_cb3b7e994\Nette\Utils\RegexpException;
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\RegexpException;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
+use _PHPStan_95d9e8b05\Phplrt\Source\StringSource;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Php\PhpVersion;
 use PHPStan\ShouldNotHappenException;
@@ -102192,6 +106895,9 @@ use PHPStan\Type\Accessory\AccessoryNonFalsyStringType;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\IntersectionType;
+use PHPStan\Type\Regex\Parser\RegexNode;
+use PHPStan\Type\Regex\Parser\RegexParser;
+use PHPStan\Type\Regex\Parser\RegexSyntaxException;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -102219,8 +106925,11 @@ final class RegexGroupParser
     // upper bound on the number of constant string literals enumerated from a group,
     // to avoid combinatorial explosion from nested optional/bounded quantifications
     private const LITERALS_LIMIT = 100;
-    private static ?Parser $parser = null;
-    /** @var array<string, ?TreeNode> */
+    private const NEGATIVE_ASSERTIONS = ['#negativelookahead', '#negativelookbehind'];
+    private const ASSERTIONS = ['#lookahead', '#lookbehind', '#negativelookahead', '#negativelookbehind'];
+    private const CONDITIONS = ['#namedcondition', '#absolutecondition', '#relativecondition', '#assertioncondition'];
+    private static ?RegexParser $parser = null;
+    /** @var array<string, ?RegexNode> */
     private static array $parsedAst = [];
     public function __construct(PhpVersion $phpVersion, \PHPStan\Type\Regex\RegexExpressionHelper $regexExpressionHelper)
     {
@@ -102228,22 +106937,25 @@ final class RegexGroupParser
     public function parseGroups(string $regex): ?\PHPStan\Type\Regex\RegexAstWalkResult
     {
     }
-    private function createEmptyTokenTreeNode(TreeNode $parentAst): TreeNode
+    private function createEmptyTokenRegexNode(): RegexNode
     {
     }
-    private function updateAlternationAstRemoveVerticalBarsAndAddEmptyToken(TreeNode $ast): void
+    private function containsSubroutineCall(RegexNode $ast): bool
     {
     }
-    private function updateCapturingAstAddEmptyToken(TreeNode $ast): void
+    private function updateAlternationAstRemoveVerticalBarsAndAddEmptyToken(RegexNode $ast): void
     {
     }
-    private function containsEscapeK(TreeNode $ast): bool
+    private function updateCapturingAstAddEmptyToken(RegexNode $ast): void
+    {
+    }
+    private function containsEscapeK(RegexNode $ast): bool
     {
     }
     /**
      * @param \PHPStan\Type\Regex\RegexCapturingGroup|\PHPStan\Type\Regex\RegexNonCapturingGroup|null $parentGroup
      */
-    private function walkRegexAst(TreeNode $ast, ?\PHPStan\Type\Regex\RegexAlternation $alternation, int $combinationIndex, bool $inOptionalQuantification, $parentGroup, bool $captureOnlyNamed, bool $repeatedMoreThanOnce, string $patternModifiers, \PHPStan\Type\Regex\RegexAstWalkResult $astWalkResult): \PHPStan\Type\Regex\RegexAstWalkResult
+    private function walkRegexAst(RegexNode $ast, ?\PHPStan\Type\Regex\RegexAlternation $alternation, int $combinationIndex, bool $inOptionalQuantification, $parentGroup, bool $captureOnlyNamed, bool $repeatedMoreThanOnce, string $patternModifiers, \PHPStan\Type\Regex\RegexAstWalkResult $astWalkResult): \PHPStan\Type\Regex\RegexAstWalkResult
     {
     }
     /**
@@ -102253,16 +106965,16 @@ final class RegexGroupParser
     {
     }
     /** @return array{?int, ?int} */
-    private function getQuantificationRange(TreeNode $node): array
+    private function getQuantificationRange(RegexNode $node): array
     {
     }
-    private function createGroupType(TreeNode $group, bool $maybeConstant, string $patternModifiers): Type
+    private function createGroupType(RegexNode $group, bool $maybeConstant, string $patternModifiers): Type
     {
     }
-    private function getRootAlternation(TreeNode $group): ?TreeNode
+    private function getRootAlternation(RegexNode $group): ?RegexNode
     {
     }
-    private function walkGroupAst(TreeNode $ast, bool $inClass, string $patternModifiers, \PHPStan\Type\Regex\RegexGroupWalkResult $walkResult): \PHPStan\Type\Regex\RegexGroupWalkResult
+    private function walkGroupAst(RegexNode $ast, bool $inClass, string $patternModifiers, \PHPStan\Type\Regex\RegexGroupWalkResult $walkResult): \PHPStan\Type\Regex\RegexGroupWalkResult
     {
     }
     /**
@@ -102272,7 +106984,7 @@ final class RegexGroupParser
      *
      * @return array<string>|null
      */
-    private function getQuantifiedLiterals(TreeNode $ast, ?int $min, ?int $max, bool $inClass, string $patternModifiers, \PHPStan\Type\Regex\RegexGroupWalkResult $walkResult): ?array
+    private function getQuantifiedLiterals(RegexNode $ast, ?int $min, ?int $max, bool $inClass, string $patternModifiers, \PHPStan\Type\Regex\RegexGroupWalkResult $walkResult): ?array
     {
     }
     /**
@@ -102282,13 +106994,13 @@ final class RegexGroupParser
     private function repeatLiterals(array $literals, int $min, int $max): ?array
     {
     }
-    private function isMaybeEmptyNode(TreeNode $node, string $patternModifiers, bool &$isNonFalsy): bool
+    private function isMaybeEmptyNode(RegexNode $node, string $patternModifiers, bool &$isNonFalsy): bool
     {
     }
     /**
      * @param array<string>|null $onlyLiterals
      */
-    private function getLiteralValue(TreeNode $node, ?array &$onlyLiterals, bool $appendLiterals, string $patternModifiers, bool $inCharacterClass): ?string
+    private function getLiteralValue(RegexNode $node, ?array &$onlyLiterals, bool $appendLiterals, string $patternModifiers, bool $inCharacterClass): ?string
     {
     }
 }
@@ -102522,6 +107234,9 @@ class ResourceType implements \PHPStan\Type\Type
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -102691,6 +107406,7 @@ interface StaticMethodTypeSpecifyingExtension
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Name;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -103128,6 +107844,9 @@ class StaticType implements \PHPStan\Type\TypeWithClassName, \PHPStan\Type\Subtr
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -103167,6 +107886,7 @@ final class StaticTypeFactory
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -103474,6 +108194,9 @@ class StrictMixedType implements \PHPStan\Type\CompoundType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -103507,6 +108230,7 @@ class StringNeverAcceptingObjectWithToStringType extends \PHPStan\Type\StringTyp
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\DependencyInjection\ReportUnsafeArrayStringKeyCastingToggle;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -103675,6 +108399,9 @@ class StringType implements \PHPStan\Type\Type
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
     {
     }
     public function hasTemplateOrLateResolvableType(): bool
@@ -103969,8 +108696,10 @@ use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\LateResolvableType;
+use PHPStan\Type\NativeTypePosition;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
+/** @api */
 trait LateResolvableTypeTrait
 {
     private ?Type $result = null;
@@ -104359,6 +109088,9 @@ trait LateResolvableTypeTrait
     {
     }
     abstract protected function getResult(): Type;
+    public function toNativePhpTypeNode(NativeTypePosition $position)
+    {
+    }
     public function hasTemplateOrLateResolvableType(): bool
     {
     }
@@ -105332,6 +110064,9 @@ final class UnsafeArrayStringKeyCastingTraverser implements TypeTraverserCallabl
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\ComplexType;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
@@ -105365,11 +110100,13 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
  * will miss union types, intersection types with accessory types, and other composite forms.
  * Always use the `is*()` methods or `isSuperTypeOf()` instead:
  *
- *     // Wrong:
- *     if ($type instanceof StringType) { ... }
+ * ```php
+ * // Wrong:
+ * if ($type instanceof StringType) { ... }
  *
- *     // Correct:
- *     if ($type->isString()->yes()) { ... }
+ * // Correct:
+ * if ($type->isString()->yes()) { ... }
+ * ```
  *
  * @api
  * @api-do-not-implement
@@ -105770,14 +110507,13 @@ interface Type
     /**
      * Returns actual template type for a given object.
      *
-     * Example:
+     * For example, with a class `Foo` that declares `@template T`:
      *
-     * @-template T
-     * class Foo {}
-     *
+     * ```php
      * // $fooType is Foo<int>
      * $t = $fooType->getTemplateType(Foo::class, 'T');
      * $t->isInteger(); // yes
+     * ```
      *
      * Returns ErrorType in case of a missing type.
      *
@@ -105827,6 +110563,14 @@ interface Type
      */
     public function traverseSimultaneously(\PHPStan\Type\Type $right, callable $cb): \PHPStan\Type\Type;
     public function toPhpDocNode(): TypeNode;
+    /**
+     * The native PHP type declaration for this type at the given position,
+     * widened to what the position allows, e.g. non-empty-string to string.
+     * Returns null when the type cannot be declared natively there.
+     *
+     * @return Identifier|Name|ComplexType|null
+     */
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position);
     /** @see TypeCombinator::remove() */
     public function tryRemove(\PHPStan\Type\Type $typeToRemove): ?\PHPStan\Type\Type;
     /**
@@ -106002,6 +110746,20 @@ final class TypeCombinator
      * @param array<int, Type[]> $alreadyNormalized
      */
     private static function isAlreadyNormalized(array $alreadyNormalized, \PHPStan\Type\Type $a, \PHPStan\Type\Type $b): bool
+    {
+    }
+    /**
+     * Scalar buckets are compared only against the non-scalar union members, which
+     * is correct for plain constants (distinct values are disjoint) but not for
+     * constants refined by another type ('Foo'&hasMethod(bar)). Those are absorbed
+     * here by the plain constant of the same value, or by a less refined
+     * intersection of the same value. Values never need to be compared across.
+     *
+     * @param array<string, Type> $intersections
+     * @param array<string, array<string, Type>> $scalarTypes
+     * @return array<string, Type>
+     */
+    private static function reduceRefinedConstantScalars(array $intersections, array $scalarTypes): array
     {
     }
     /**
@@ -106190,6 +110948,30 @@ final class TypeCombinatorCache
 }
 namespace PHPStan\Type;
 
+use Override;
+use PHPStan\PhpDocParser\Ast\AbstractNodeVisitor;
+use PHPStan\PhpDocParser\Ast\Node;
+use PHPStan\PhpDocParser\Ast\NodeTraverser;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\NameNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Turbo\ReferencedByTurboExtension;
+/**
+ * Prints a PHPDoc type node for describe(): class names without the leading
+ * backslash, as everywhere else in PHPStan's type descriptions.
+ */
+#[ReferencedByTurboExtension('typeNodeDescriber')]
+final class TypeNodeDescriber
+{
+    private static ?NodeTraverser $traverser = null;
+    private static ?Printer $printer = null;
+    public static function describe(TypeNode $typeNode): string
+    {
+    }
+}
+namespace PHPStan\Type;
+
 use PHPStan\Turbo\ShadowedByTurboExtension;
 /**
  * @template-covariant T of Type
@@ -106238,6 +111020,7 @@ final class TypeTraverser
      * The following example converts constant strings to objects, while
      * preserving unions and intersections:
      *
+     * ```php
      * TypeTraverser::map($type, function (Type $type, callable $traverse): Type {
      *     if ($type instanceof UnionType || $type instanceof IntersectionType) {
      *         // Traverse inner types
@@ -106250,6 +111033,7 @@ final class TypeTraverser
      *     // Replaces the current type, and don't traverse
      *     return new MixedType();
      * });
+     * ```
      *
      * @api
      * @param TypeTraverserCallable|callable(Type $type, callable(Type): Type $traverse): Type $cb
@@ -107084,6 +111868,9 @@ class UnionType implements \PHPStan\Type\CompoundType
     public function toPhpDocNode(): TypeNode
     {
     }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
+    {
+    }
     /**
      * @template T
      * @param callable(Type $type): list<T> $getValues
@@ -107265,9 +112052,11 @@ use PHPStan\Type\Generic\TemplateType;
  *
  * Used as a parameter to Type::describe() to control output detail:
  *
- *     $type->describe(VerbosityLevel::typeOnly())  // "string"
- *     $type->describe(VerbosityLevel::value())      // "'hello'"
- *     $type->describe(VerbosityLevel::precise())    // "non-empty-lowercase-string"
+ * ```php
+ * $type->describe(VerbosityLevel::typeOnly())  // "string"
+ * $type->describe(VerbosityLevel::value())      // "'hello'"
+ * $type->describe(VerbosityLevel::precise())    // "non-empty-lowercase-string"
+ * ```
  *
  * The getRecommendedLevelByType() factory method automatically chooses the right level
  * for error messages based on what types are involved — it picks the minimum verbosity
@@ -107352,6 +112141,7 @@ final class VerbosityLevel
 }
 namespace PHPStan\Type;
 
+use PhpParser\Node\Identifier;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -107522,6 +112312,9 @@ class VoidType implements \PHPStan\Type\Type
     {
     }
     public function toPhpDocNode(): TypeNode
+    {
+    }
+    public function toNativePhpTypeNode(\PHPStan\Type\NativeTypePosition $position)
     {
     }
     public function hasTemplateOrLateResolvableType(): bool
@@ -118567,13 +123360,9 @@ final class BetterReflection
      * @var \PHPStan\BetterReflection\SourceLocator\SourceStubber\SourceStubber|null
      */
     private static $sharedSourceStubber = null;
-    /**
-     * @var Standard|null
-     */
+    /** @var Standard|null */
     private static $sharedPrinter = null;
-    /**
-     * @var Standard|null
-     */
+    /** @var Standard|null */
     private $printer = null;
     public static function populate(int $phpVersion, SourceLocator $sourceLocator, Reflector $classReflector, Parser $phpParser, SourceStubber $sourceStubber, Standard $printer): void
     {
@@ -118712,7 +123501,6 @@ use PHPStan\BetterReflection\Reflection\ReflectionClassConstant;
 use PHPStan\BetterReflection\Reflection\ReflectionEnum;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use function array_map;
 use function assert;
 use function class_exists;
 use function constant;
@@ -118947,9 +123735,7 @@ final class FakeReflectionAttribute
     public function isRepeated(): bool
     {
     }
-    /**
-     * @return array<int|string, mixed>
-     */
+    /** @return array<int|string, mixed> */
     public function getArguments(): array
     {
     }
@@ -118988,6 +123774,18 @@ final class ReflectionAttribute extends CoreReflectionAttribute
     public function getName(): string
     {
     }
+    /** @psalm-mutation-free */
+    public function getShortName(): string
+    {
+    }
+    /** @psalm-mutation-free */
+    public function getNamespaceName(): string
+    {
+    }
+    /** @psalm-mutation-free */
+    public function inNamespace(): bool
+    {
+    }
     /**
      * @return int-mask-of<Attribute::TARGET_*>|self::TARGET_CONSTANT_COMPATIBILITY
      *
@@ -119001,9 +123799,7 @@ final class ReflectionAttribute extends CoreReflectionAttribute
     public function isRepeated(): bool
     {
     }
-    /**
-     * @return array<int|string, mixed>
-     */
+    /** @return array<int|string, mixed> */
     public function getArguments(): array
     {
     }
@@ -119059,7 +123855,6 @@ use ValueError;
 use function array_combine;
 use function array_map;
 use function array_values;
-use function constant;
 use function func_get_args;
 use function func_num_args;
 use function sprintf;
@@ -119112,8 +123907,9 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
-     * @psalm-mutation-free
      * @return class-string
+     *
+     * @psalm-mutation-free
      */
     public function getName(): string
     {
@@ -119140,6 +123936,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * {@inheritDoc}
+     *
      * @return non-empty-string|false
      */
     #[ReturnTypeWillChange]
@@ -119148,6 +123945,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -119156,6 +123954,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -119170,8 +123969,9 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
-     * @psalm-mutation-free
      * @return ReflectionMethod|null
+     *
+     * @psalm-mutation-free
      */
     public function getConstructor(): ?CoreReflectionMethod
     {
@@ -119184,6 +123984,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * @param string $name
+     *
      * @return ReflectionMethod
      */
     public function getMethod($name): CoreReflectionMethod
@@ -119191,6 +123992,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * @param int-mask-of<ReflectionMethod::IS_*>|null $filter
+     *
      * @return list<ReflectionMethod>
      */
     public function getMethods($filter = null): array
@@ -119204,6 +124006,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * @param string $name
+     *
      * @return ReflectionProperty
      */
     public function getProperty($name): \ReflectionProperty
@@ -119211,6 +124014,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * @param int-mask-of<ReflectionProperty::IS_*>|null $filter
+     *
      * @return list<ReflectionProperty>
      */
     public function getProperties($filter = null): array
@@ -119233,6 +124037,8 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
+     * @param string $name
+     *
      * @return mixed
      */
     #[ReturnTypeWillChange]
@@ -119247,6 +124053,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * @param string $name
+     *
      * @return ReflectionClassConstant|false
      */
     #[ReturnTypeWillChange]
@@ -119278,8 +124085,9 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
-     * @psalm-mutation-free
      * @return array<class-string, self>
+     *
+     * @psalm-mutation-free
      */
     public function getInterfaces(): array
     {
@@ -119301,8 +124109,9 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
-     * @psalm-mutation-free
      * @return array<trait-string, self>
+     *
+     * @psalm-mutation-free
      */
     public function getTraits(): array
     {
@@ -119350,9 +124159,10 @@ final class ReflectionClass extends CoreReflectionClass
     {
     }
     /**
-     * @return object
      * @param mixed $arg
      * @param mixed $args
+     *
+     * @return object
      */
     #[ReturnTypeWillChange]
     public function newInstance($arg = null, ...$args)
@@ -119409,8 +124219,10 @@ final class ReflectionClass extends CoreReflectionClass
     }
     /**
      * {@inheritDoc}
-     * @psalm-mutation-free
+     *
      * @return self|false
+     *
+     * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
     public function getParentClass()
@@ -119459,9 +124271,7 @@ final class ReflectionClass extends CoreReflectionClass
     public function isIterable(): bool
     {
     }
-    /**
-     * @param \ReflectionClass|string $interface
-     */
+    /** @param CoreReflectionClass|string $interface */
     public function implementsInterface($interface): bool
     {
     }
@@ -119553,8 +124363,9 @@ final class ReflectionClassConstant extends CoreReflectionClassConstant
     {
     }
     /**
-     * @psalm-mutation-free
      * @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null
+     *
+     * @psalm-mutation-free
      */
     public function getType(): ?CoreReflectionType
     {
@@ -119646,7 +124457,6 @@ use ValueError;
 use function array_combine;
 use function array_map;
 use function array_values;
-use function constant;
 use function sprintf;
 use function strtolower;
 /**
@@ -120197,6 +125007,7 @@ final class ReflectionFunction extends CoreReflectionFunction
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -120205,6 +125016,7 @@ final class ReflectionFunction extends CoreReflectionFunction
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -120283,9 +125095,7 @@ final class ReflectionFunction extends CoreReflectionFunction
     public function invoke($arg = null, ...$args)
     {
     }
-    /**
-     * @param mixed[] $args
-     */
+    /** @param mixed[] $args */
     #[ReturnTypeWillChange]
     public function invokeArgs(array $args)
     {
@@ -120564,6 +125374,7 @@ final class ReflectionMethod extends CoreReflectionMethod
     }
     /**
      * {@inheritDoc}
+     *
      * @codeCoverageIgnore
      * @infection-ignore-all
      * @psalm-pure
@@ -120609,6 +125420,7 @@ namespace PHPStan\BetterReflection\Reflection\Adapter;
 
 use ReflectionNamedType as CoreReflectionNamedType;
 use PHPStan\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNamedType;
+use function is_string;
 use function strtolower;
 /** @psalm-immutable */
 final class ReflectionNamedType extends CoreReflectionNamedType
@@ -120703,6 +125515,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * {@inheritDoc}
+     *
      * @return non-empty-string|false
      */
     #[ReturnTypeWillChange]
@@ -120711,6 +125524,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -120719,6 +125533,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * {@inheritDoc}
+     *
      * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
@@ -120757,6 +125572,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * @param int-mask-of<ReflectionMethod::IS_*>|null $filter
+     *
      * @return list<ReflectionMethod>
      */
     public function getMethods($filter = null): array
@@ -120770,6 +125586,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * @param string $name
+     *
      * @return ReflectionProperty
      */
     public function getProperty($name): \ReflectionProperty
@@ -120777,6 +125594,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * @param int-mask-of<ReflectionProperty::IS_*>|null $filter
+     *
      * @return list<ReflectionProperty>
      */
     public function getProperties($filter = null): array
@@ -120805,6 +125623,7 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * @param string $name
+     *
      * @return ReflectionClassConstant|false
      */
     #[ReturnTypeWillChange]
@@ -120928,8 +125747,10 @@ final class ReflectionObject extends CoreReflectionObject
     }
     /**
      * {@inheritDoc}
-     * @psalm-mutation-free
+     *
      * @return ReflectionClass|false
+     *
+     * @psalm-mutation-free
      */
     #[ReturnTypeWillChange]
     public function getParentClass()
@@ -120972,9 +125793,7 @@ final class ReflectionObject extends CoreReflectionObject
     public function isIterable(): bool
     {
     }
-    /**
-     * @param \ReflectionClass|string $interface
-     */
+    /** @param CoreReflectionClass|string $interface */
     public function implementsInterface($interface): bool
     {
     }
@@ -121043,7 +125862,7 @@ use function strtolower;
  * @psalm-suppress PropertyNotSetInConstructor
  * @psalm-immutable
  */
-final class ReflectionParameter extends CoreReflectionParameter
+class ReflectionParameter extends CoreReflectionParameter
 {
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public BetterReflectionParameter $betterReflectionParameter;
@@ -121066,9 +125885,7 @@ final class ReflectionParameter extends CoreReflectionParameter
     public function canBePassedByValue(): bool
     {
     }
-    /**
-     * @return ReflectionFunction|ReflectionMethod
-     */
+    /** @return ReflectionFunction|ReflectionMethod */
     public function getDeclaringFunction(): CoreReflectionFunctionAbstract
     {
     }
@@ -121125,8 +125942,9 @@ final class ReflectionParameter extends CoreReflectionParameter
     {
     }
     /**
-     * @phpstan-ignore return.unusedType
      * @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null
+     *
+     * @phpstan-ignore return.unusedType
      */
     public function getType(): ?\ReflectionType
     {
@@ -121151,6 +125969,31 @@ final class ReflectionParameter extends CoreReflectionParameter
 }
 namespace PHPStan\BetterReflection\Reflection\Adapter;
 
+use PHPStan\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
+use const PHP_VERSION_ID;
+final class ReflectionParameterFactory
+{
+    public static function create(BetterReflectionParameter $betterReflectionParameter): \PHPStan\BetterReflection\Reflection\Adapter\ReflectionParameter
+    {
+    }
+}
+namespace PHPStan\BetterReflection\Reflection\Adapter;
+
+/**
+ * ReflectionParameter::getDocComment() exists since PHP 8.6.
+ * This class is not downgraded so the native return type stays compatible with the parent.
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ * @psalm-immutable
+ */
+final class ReflectionParameterWithDocComment extends \PHPStan\BetterReflection\Reflection\Adapter\ReflectionParameter
+{
+    public function getDocComment(): string|false
+    {
+    }
+}
+namespace PHPStan\BetterReflection\Reflection\Adapter;
+
 use ArgumentCountError;
 use OutOfBoundsException;
 use PhpParser\Node\Expr;
@@ -121160,12 +126003,15 @@ use ReflectionMethod as CoreReflectionMethod;
 use ReflectionProperty as CoreReflectionProperty;
 use ReflectionType as CoreReflectionType;
 use ReturnTypeWillChange;
+use PHPStan\BetterReflection\Reflection\Exception\ClassDoesNotExist;
 use PHPStan\BetterReflection\Reflection\Exception\NoObjectProvided;
 use PHPStan\BetterReflection\Reflection\Exception\NotAnObject;
+use PHPStan\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
 use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
 use PHPStan\BetterReflection\Reflection\ReflectionProperty as BetterReflectionProperty;
 use PHPStan\BetterReflection\Reflection\ReflectionPropertyHookType as BetterReflectionPropertyHookType;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use Throwable;
 use TypeError;
 use ValueError;
@@ -121250,10 +126096,8 @@ final class ReflectionProperty extends CoreReflectionProperty
     public function hasType(): bool
     {
     }
-    /**
-     * @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null
-     */
-    public function getType(): ?\ReflectionType
+    /** @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null */
+    public function getType(): ?CoreReflectionType
     {
     }
     public function isPublic(): bool
@@ -121294,6 +126138,12 @@ final class ReflectionProperty extends CoreReflectionProperty
     public function isDynamic(): bool
     {
     }
+    public function isReadable(?string $scope, ?object $object = null): bool
+    {
+    }
+    public function isWritable(?string $scope, ?object $object = null): bool
+    {
+    }
     /**
      * @return int-mask-of<self::IS_*>
      *
@@ -121314,6 +126164,7 @@ final class ReflectionProperty extends CoreReflectionProperty
     }
     /**
      * {@inheritDoc}
+     *
      * @codeCoverageIgnore
      * @infection-ignore-all
      */
@@ -121323,9 +126174,7 @@ final class ReflectionProperty extends CoreReflectionProperty
     public function hasDefaultValue(): bool
     {
     }
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function getDefaultValue()
     {
@@ -121377,16 +126226,10 @@ final class ReflectionProperty extends CoreReflectionProperty
     public function getHooks(): array
     {
     }
-    /**
-     * @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null
-     */
-    public function getSettableType(): ?\ReflectionType
+    /** @return ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null */
+    public function getSettableType(): ?CoreReflectionType
     {
     }
-    /* @return never public function getRawValue(object $object): mixed
-       {
-           throw Exception\NotImplementedBecauseItTriggersAutoloading::create();
-       }*/
     /**
      * @param mixed $value
      */
@@ -121704,12 +126547,11 @@ final class ExprCacheHelper
     private static function betterReflection(): BetterReflection
     {
     }
-    /**
-     * @return array<string, mixed
-     */
+    /** @return array<string, mixed> */
     public static function export(Expr $expr): array
     {
     }
+    /** @param array<string, mixed> $data */
     public static function import(array $data): Expr
     {
     }
@@ -121745,7 +126587,10 @@ use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as Reflectio
 use PHPStan\BetterReflection\Reflection\StringCast\ReflectionAttributeStringCast;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use function array_map;
+use function assert;
 use function is_array;
+use function strrpos;
+use function substr;
 /** @psalm-immutable */
 class ReflectionAttribute
 {
@@ -121776,14 +126621,12 @@ class ReflectionAttribute
     public function __construct(Reflector $reflector, Node\Attribute $node, $owner, bool $isRepeated)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>                                                                                                                                     $data
      * @param ReflectionClass|ReflectionMethod|ReflectionFunction|ReflectionConstant|ReflectionClassConstant|ReflectionEnumCase|ReflectionProperty|ReflectionParameter $owner
      */
     public static function importFromCache(Reflector $reflector, array $data, $owner): self
@@ -121798,6 +126641,16 @@ class ReflectionAttribute
     public function getName(): string
     {
     }
+    /** @return non-empty-string */
+    public function getShortName(): string
+    {
+    }
+    public function getNamespaceName(): ?string
+    {
+    }
+    public function inNamespace(): bool
+    {
+    }
     public function getClass(): \PHPStan\BetterReflection\Reflection\ReflectionClass
     {
     }
@@ -121805,9 +126658,7 @@ class ReflectionAttribute
     public function getArgumentsExpressions(): array
     {
     }
-    /**
-     * @return array<int|string, mixed>
-     */
+    /** @return array<int|string, mixed> */
     public function getArguments(): array
     {
     }
@@ -121993,14 +126844,13 @@ class ReflectionClass implements \PHPStan\BetterReflection\Reflection\Reflection
     protected function __construct(Reflector $reflector, $node, LocatedSource $locatedSource, ?string $namespace = null)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
      * @param array<string, mixed> $data
+     *
      * @return static
      */
     public static function importFromCache(Reflector $reflector, array $data): self
@@ -122743,7 +127593,6 @@ namespace PHPStan\BetterReflection\Reflection;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassConst;
 use ReflectionClass as CoreReflectionClass;
-use ReflectionClassConstant as CoreReflectionClassConstant;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\NodeCompiler\CompiledValue;
 use PHPStan\BetterReflection\NodeCompiler\CompileNodeToValue;
@@ -122757,6 +127606,7 @@ use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
 use function array_map;
 use function assert;
+use function get_class;
 use function is_array;
 /** @psalm-immutable */
 class ReflectionClassConstant
@@ -122804,15 +127654,11 @@ class ReflectionClassConstant
     private function __construct(Reflector $reflector, ClassConst $node, int $positionInNode, \PHPStan\BetterReflection\Reflection\ReflectionClass $declaringClass, \PHPStan\BetterReflection\Reflection\ReflectionClass $implementingClass)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data): self
     {
     }
@@ -122970,12 +127816,12 @@ use PHPStan\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
 use PHPStan\BetterReflection\Reflection\Deprecated\DeprecatedHelper;
 use PHPStan\BetterReflection\Reflection\Exception\InvalidConstantNode;
 use PHPStan\BetterReflection\Reflection\StringCast\ReflectionConstantStringCast;
-use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
 use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 use PHPStan\BetterReflection\Util\ConstantNodeChecker;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
+use function array_map;
 use function array_slice;
 use function assert;
 use function count;
@@ -123036,15 +127882,11 @@ class ReflectionConstant implements \PHPStan\BetterReflection\Reflection\Reflect
     private function __construct(Reflector $reflector, $node, LocatedSource $locatedSource, ?string $namespace = null, ?int $positionInNode = null)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data): self
     {
     }
@@ -123210,6 +128052,7 @@ use function array_combine;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
+use function array_merge;
 use function assert;
 /** @psalm-immutable */
 class ReflectionEnum extends \PHPStan\BetterReflection\Reflection\ReflectionClass
@@ -123231,14 +128074,13 @@ class ReflectionEnum extends \PHPStan\BetterReflection\Reflection\ReflectionClas
     private function __construct(Reflector $reflector, EnumNode $node, LocatedSource $locatedSource, ?string $namespace = null)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
      * @param array<string, mixed> $data
+     *
      * @return static
      */
     public static function importFromCache(Reflector $reflector, array $data): self
@@ -123294,6 +128136,7 @@ use PHPStan\BetterReflection\Reflection\StringCast\ReflectionEnumCaseStringCast;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
+use function array_map;
 use function assert;
 use function is_array;
 use function is_int;
@@ -123335,15 +128178,11 @@ class ReflectionEnumCase
     private function __construct(Reflector $reflector, EnumCase $node, \PHPStan\BetterReflection\Reflection\ReflectionEnum $enum)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data, \PHPStan\BetterReflection\Reflection\ReflectionEnum $enum): self
     {
     }
@@ -123449,6 +128288,7 @@ use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
 use PHPStan\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
 use PHPStan\BetterReflection\SourceLocator\Type\ClosureSourceLocator;
+use function array_merge;
 use function assert;
 use function function_exists;
 /** @psalm-immutable */
@@ -123471,15 +128311,11 @@ class ReflectionFunction implements \PHPStan\BetterReflection\Reflection\Reflect
     {
     }
     // In ReflectionFunction:
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data): self
     {
     }
@@ -123587,9 +128423,12 @@ use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
 use function array_filter;
+use function array_map;
 use function array_values;
 use function assert;
 use function count;
+use function get_class;
+use function in_array;
 use function is_array;
 /** @psalm-immutable */
 trait ReflectionFunctionAbstract
@@ -123653,14 +128492,12 @@ trait ReflectionFunctionAbstract
      * @psalm-allow-private-mutation
      */
     private $cachedName = null;
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     protected function exportFunctionAbstractToCache(): array
     {
     }
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>                $data
      * @param ReflectionMethod|ReflectionFunction $owner
      */
     protected static function importFunctionAbstractFromCache(self $ref, Reflector $reflector, array $data): void
@@ -123800,9 +128637,7 @@ trait ReflectionFunctionAbstract
     private function nodeIsOrContainsYield(Node $node): bool
     {
     }
-    /**
-     * @param list<Node\Param> $params
-     */
+    /** @param list<Node\Param> $params */
     private function computeVariadic(array $params, Node $node): bool
     {
     }
@@ -123924,14 +128759,12 @@ class ReflectionIntersectionType extends \PHPStan\BetterReflection\Reflection\Re
     public function __construct(Reflector $reflector, $owner, IntersectionType $type)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>                                                                                              $data
      * @param ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty|ReflectionClassConstant $owner
      */
     public static function importFromCache(Reflector $reflector, array $data, $owner): self
@@ -123977,6 +128810,7 @@ use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
 use PHPStan\BetterReflection\Util\ClassExistenceChecker;
 use function array_map;
+use function array_merge;
 use function assert;
 use function sprintf;
 use function strtolower;
@@ -124021,12 +128855,11 @@ class ReflectionMethod
     private function __construct(Reflector $reflector, $node, LocatedSource $locatedSource, string $name, ?string $namespace, \PHPStan\BetterReflection\Reflection\ReflectionClass $declaringClass, \PHPStan\BetterReflection\Reflection\ReflectionClass $implementingClass, \PHPStan\BetterReflection\Reflection\ReflectionClass $currentClass, ?string $aliasName, ?\PHPStan\BetterReflection\Reflection\ReflectionProperty $hookProperty = null)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data, LocatedSource $locatedSource, ?\PHPStan\BetterReflection\Reflection\ReflectionProperty $hookProperty): self
     {
     }
@@ -124096,7 +128929,7 @@ class ReflectionMethod
     public function getPrototype(): self
     {
     }
-    private function findPrototype(): ?self
+    private function findPrototype()
     {
     }
     /**
@@ -124285,14 +129118,12 @@ class ReflectionNamedType extends \PHPStan\BetterReflection\Reflection\Reflectio
     public function __construct(Reflector $reflector, $owner, $type)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>                                                                                              $data
      * @param ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty|ReflectionClassConstant $owner
      */
     public static function importFromCache(Reflector $reflector, array $data, $owner): self
@@ -124644,10 +129475,9 @@ class ReflectionObject extends \PHPStan\BetterReflection\Reflection\ReflectionCl
 namespace PHPStan\BetterReflection\Reflection;
 
 use Closure;
-use Exception;
-use InvalidArgumentException;
 use LogicException;
 use OutOfBoundsException;
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Param as ParamNode;
 use ReflectionClass as CoreReflectionClass;
@@ -124661,15 +129491,18 @@ use PHPStan\BetterReflection\Reflection\StringCast\ReflectionParameterStringCast
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\GetLastDocComment;
 use function array_map;
 use function assert;
-use function count;
+use function get_class;
 use function is_array;
-use function is_object;
 use function is_string;
 use function ltrim;
+use function preg_match;
 use function sprintf;
+use function strlen;
 use function strtolower;
+use const PREG_UNMATCHED_AS_NULL;
 /** @psalm-immutable */
 class ReflectionParameter
 {
@@ -124705,6 +129538,9 @@ class ReflectionParameter
     public bool $byRef;
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public bool $isPromoted;
+    /** @var non-empty-string|null */
+    #[\PHPStan\Reflection\Attribute\PrivateProperty]
+    public $docComment;
     /** @var list<ReflectionAttribute> */
     #[\PHPStan\Reflection\Attribute\PrivateProperty]
     public array $attributes;
@@ -124725,16 +129561,12 @@ class ReflectionParameter
     private function __construct(Reflector $reflector, ParamNode $node, $function, int $parameterIndex, bool $isOptional)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     * @param \PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionFunction $function
-     */
+    /** @param array<string, mixed> $data
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionFunction $function */
     public static function importFromCache(Reflector $reflector, array $data, $function): self
     {
     }
@@ -124787,6 +129619,18 @@ class ReflectionParameter
      * @return non-empty-string
      */
     public function getName(): string
+    {
+    }
+    /** @return non-empty-string|null */
+    public function getDocComment(): ?string
+    {
+    }
+    /**
+     * @return non-empty-string|null
+     *
+     * @psalm-pure
+     */
+    private static function getTrailingDocComment(ParamNode $node, string $source): ?string
     {
     }
     /**
@@ -124990,11 +129834,16 @@ use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
 use function array_map;
 use function assert;
+use function class_exists;
 use function func_num_args;
+use function get_class;
 use function is_array;
 use function is_object;
+use function method_exists;
+use function property_exists;
 use function sprintf;
 use function str_contains;
+use function strcasecmp;
 /** @psalm-immutable */
 class ReflectionProperty
 {
@@ -125059,15 +129908,11 @@ class ReflectionProperty
     private function __construct(Reflector $reflector, PropertyNode $node, Node\PropertyItem $propertyNode, \PHPStan\BetterReflection\Reflection\ReflectionClass $declaringClass, \PHPStan\BetterReflection\Reflection\ReflectionClass $implementingClass, bool $isPromoted, bool $declaredAtCompileTime)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(Reflector $reflector, array $data, LocatedSource $locatedSource): self
     {
     }
@@ -125168,6 +130013,12 @@ class ReflectionProperty
     {
     }
     public function isInitialized(?object $object = null): bool
+    {
+    }
+    public function isReadable(?string $scope, ?object $object = null): bool
+    {
+    }
+    public function isWritable(?string $scope, ?object $object = null): bool
     {
     }
     public function isReadOnly(): bool
@@ -125308,20 +130159,54 @@ class ReflectionProperty
     public function hasHooks(): bool
     {
     }
-    /**
-     * @param ReflectionPropertyHookType::* $hookType
-     */
+    /** @param ReflectionPropertyHookType::* $hookType */
     public function hasHook(string $hookType): bool
     {
     }
-    /**
-     * @param ReflectionPropertyHookType::* $hookType
-     */
+    /** @param ReflectionPropertyHookType::* $hookType */
     public function getHook(string $hookType): ?\PHPStan\BetterReflection\Reflection\ReflectionMethod
     {
     }
     /** @return array{get?: ReflectionMethod, set?: ReflectionMethod} */
     public function getHooks(): array
+    {
+    }
+    /**
+     * @return array{0: self, 1: ReflectionClass}
+     *
+     * @throws ObjectNotInstanceOfClass
+     */
+    private function getEffectivePropertyAndObjectClass(object $object): array
+    {
+    }
+    private function isDynamicPropertyReadable(?object $object): bool
+    {
+    }
+    private function isDynamicPropertyWritable(?object $object): bool
+    {
+    }
+    private function isReadableThroughMagic(\PHPStan\BetterReflection\Reflection\ReflectionClass $class, ?object $object): bool
+    {
+    }
+    private function isInitializedOnObject(object $object): bool
+    {
+    }
+    private function isStaticInitialized(): bool
+    {
+    }
+    private function reflectScope(?string $scope): ?\PHPStan\BetterReflection\Reflection\ReflectionClass
+    {
+    }
+    /** @psalm-mutation-free */
+    private static function isVisibleFromScope(\PHPStan\BetterReflection\Reflection\ReflectionClass $propertyClass, ?\PHPStan\BetterReflection\Reflection\ReflectionClass $scopeClass, int $visibility): bool
+    {
+    }
+    /** @psalm-mutation-free */
+    private function getVisibility(): int
+    {
+    }
+    /** @psalm-mutation-free */
+    private function getSetVisibility(): int
     {
     }
     /**
@@ -125370,6 +130255,7 @@ class ReflectionProperty
 }
 namespace PHPStan\BetterReflection\Reflection;
 
+use LogicException;
 use PropertyHookType as CoreReflectionPropertyHookType;
 /**
  * It's a copy of native PropertyHookType enum.
@@ -125381,8 +130267,11 @@ use PropertyHookType as CoreReflectionPropertyHookType;
  */
 class ReflectionPropertyHookType
 {
-    const Get = 'get';
-    const Set = 'set';
+    // the names match the cases of the native PropertyHookType enum
+    // phpcs:disable Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase
+    public const Get = 'get';
+    public const Set = 'set';
+    // phpcs:enable
     /**
      * @param \PropertyHookType::* $hookType
      */
@@ -125433,6 +130322,7 @@ use ReflectionClass as CoreReflectionClass;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use function array_map;
 use function assert;
+use function get_class;
 use function implode;
 use function sprintf;
 /** @psalm-immutable */
@@ -125446,14 +130336,12 @@ class ReflectionUnionType extends \PHPStan\BetterReflection\Reflection\Reflectio
     public function __construct(Reflector $reflector, $owner, UnionType $type)
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>                                                                                              $data
      * @param ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty|ReflectionClassConstant $owner
      */
     public static function importFromCache(Reflector $reflector, array $data, $owner): self
@@ -126343,6 +131231,8 @@ class FileChecker
 namespace PHPStan\BetterReflection\SourceLocator\Located;
 
 use PHPStan\BetterReflection\SourceLocator\FileChecker;
+use function assert;
+use function file_get_contents;
 /**
  * @internal
  *
@@ -126357,15 +131247,11 @@ class AliasLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Located
     public function getAliasName(): ?string
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(array $data): self
     {
     }
@@ -126373,6 +131259,8 @@ class AliasLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Located
 namespace PHPStan\BetterReflection\SourceLocator\Located;
 
 use PHPStan\BetterReflection\SourceLocator\FileChecker;
+use function assert;
+use function file_get_contents;
 /**
  * @internal
  *
@@ -126383,9 +131271,7 @@ class AnonymousLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Loc
     public function __construct(string $source, string $filename)
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(array $data): self
     {
     }
@@ -126393,6 +131279,8 @@ class AnonymousLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Loc
 namespace PHPStan\BetterReflection\SourceLocator\Located;
 
 use PHPStan\BetterReflection\SourceLocator\FileChecker;
+use function assert;
+use function file_get_contents;
 /**
  * @internal
  *
@@ -126403,9 +131291,7 @@ class EvaledLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Locate
     public function isEvaled(): bool
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(array $data): self
     {
     }
@@ -126439,15 +131325,11 @@ class InternalLocatedSource extends \PHPStan\BetterReflection\SourceLocator\Loca
     public function getAliasName(): ?string
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(array $data): self
     {
     }
@@ -126459,7 +131341,7 @@ use PHPStan\BetterReflection\SourceLocator\Exception\InvalidFileLocation;
 use PHPStan\BetterReflection\SourceLocator\FileChecker;
 use PHPStan\BetterReflection\Util\FileHelper;
 use function assert;
-use function get_class;
+use function file_get_contents;
 /**
  * Value object containing source code that has been located.
  *
@@ -126517,15 +131399,11 @@ class LocatedSource
     public function getAliasName(): ?string
     {
     }
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function exportToCache(): array
     {
     }
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function importFromCache(array $data): self
     {
     }
@@ -126648,7 +131526,7 @@ use Error;
 use Generator;
 use Iterator;
 use IteratorAggregate;
-use _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap;
+use _PHPStan_95d9e8b05\JetBrains\PHPStormStub\PhpStormStubsMap;
 use JsonSerializable;
 use ParseError;
 use PDOStatement;
@@ -126792,9 +131670,7 @@ final class PhpStormStubsSourceStubber implements \PHPStan\BetterReflection\Sour
     private function getClassNodeData(string $className): ?array
     {
     }
-    /**
-     * @return array{0: Node\Stmt\Function_, 1: Node\Stmt\Namespace_|null}|null
-     */
+    /** @return array{0: Node\Stmt\Function_, 1: Node\Stmt\Namespace_|null}|null */
     private function getFunctionNodeData(string $functionName): ?array
     {
     }
@@ -126983,7 +131859,6 @@ final class PhpStormStubsSourceStubber implements \PHPStan\BetterReflection\Sour
 namespace PHPStan\BetterReflection\SourceLocator\SourceStubber;
 
 use BackedEnum;
-use _PHPStan_cb3b7e994\c;
 use LogicException;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\ClassConst;
@@ -127026,16 +131901,18 @@ use function array_diff;
 use function array_key_exists;
 use function array_map;
 use function assert;
+use function count;
+use function enum_exists;
 use function explode;
 use function function_exists;
 use function get_class;
 use function get_defined_constants;
 use function implode;
 use function in_array;
-use function is_file;
 use function is_object;
 use function is_resource;
 use function is_string;
+use function method_exists;
 use function preg_replace;
 use function sprintf;
 use const PHP_VERSION_ID;
@@ -127984,7 +132861,7 @@ use function array_unique;
 use function array_values;
 use function rtrim;
 use function str_replace;
-use function str_starts_with;
+use function strpos;
 final class Psr0Mapping implements \PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\PsrAutoloaderMapping
 {
     /** @var array<string, list<string>> */
@@ -128017,8 +132894,8 @@ use function array_values;
 use function ltrim;
 use function rtrim;
 use function str_replace;
-use function str_starts_with;
 use function strlen;
+use function strpos;
 use function substr;
 use const ARRAY_FILTER_USE_KEY;
 final class Psr4Mapping implements \PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\PsrAutoloaderMapping
@@ -130282,14 +135159,20 @@ namespace PHPStan\PhpDocParser\Ast\PhpDoc;
 
 use PHPStan\PhpDocParser\Ast\NodeAttributes;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\NameNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use function trim;
 class TypeAliasImportTagValueNode implements \PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode
 {
     use NodeAttributes;
     public string $importedAlias;
-    public IdentifierTypeNode $importedFrom;
+    /** @var IdentifierTypeNode|NameNode */
+    public TypeNode $importedFrom;
     public ?string $importedAs = null;
-    public function __construct(string $importedAlias, IdentifierTypeNode $importedFrom, ?string $importedAs)
+    /**
+     * @param IdentifierTypeNode|NameNode $importedFrom
+     */
+    public function __construct(string $importedAlias, TypeNode $importedFrom, ?string $importedAs)
     {
     }
     public function __toString(): string
@@ -130530,17 +135413,19 @@ use function implode;
 class CallableTypeNode implements \PHPStan\PhpDocParser\Ast\Type\TypeNode
 {
     use NodeAttributes;
-    public \PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode $identifier;
+    /** @var IdentifierTypeNode|NameNode */
+    public \PHPStan\PhpDocParser\Ast\Type\TypeNode $identifier;
     /** @var TemplateTagValueNode[] */
     public array $templateTypes;
     /** @var CallableTypeParameterNode[] */
     public array $parameters;
     public \PHPStan\PhpDocParser\Ast\Type\TypeNode $returnType;
     /**
+     * @param IdentifierTypeNode|NameNode $identifier
      * @param CallableTypeParameterNode[] $parameters
      * @param TemplateTagValueNode[]  $templateTypes
      */
-    public function __construct(\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode $identifier, array $parameters, \PHPStan\PhpDocParser\Ast\Type\TypeNode $returnType, array $templateTypes)
+    public function __construct(\PHPStan\PhpDocParser\Ast\Type\TypeNode $identifier, array $parameters, \PHPStan\PhpDocParser\Ast\Type\TypeNode $returnType, array $templateTypes)
     {
     }
     public function __toString(): string
@@ -130653,6 +135538,29 @@ class ConstTypeNode implements \PHPStan\PhpDocParser\Ast\Type\TypeNode
 }
 namespace PHPStan\PhpDocParser\Ast\Type;
 
+use function ltrim;
+/**
+ * A fully qualified class-like name like \Foo\Bar.
+ * It means the same class in every namespace.
+ */
+class FullyQualifiedNameNode implements \PHPStan\PhpDocParser\Ast\Type\NameNode
+{
+    use \PHPStan\PhpDocParser\Ast\Type\NameNodeTrait;
+    /**
+     * @param string $name with or without a leading backslash
+     */
+    public function __construct(string $name)
+    {
+    }
+    public function toCodeString(): string
+    {
+    }
+    public function isFullyQualified(): bool
+    {
+    }
+}
+namespace PHPStan\PhpDocParser\Ast\Type;
+
 use PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function implode;
 use function sprintf;
@@ -130663,16 +135571,18 @@ class GenericTypeNode implements \PHPStan\PhpDocParser\Ast\Type\TypeNode
     public const VARIANCE_CONTRAVARIANT = 'contravariant';
     public const VARIANCE_BIVARIANT = 'bivariant';
     use NodeAttributes;
-    public \PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode $type;
+    /** @var IdentifierTypeNode|NameNode */
+    public \PHPStan\PhpDocParser\Ast\Type\TypeNode $type;
     /** @var TypeNode[] */
     public array $genericTypes;
     /** @var (self::VARIANCE_*)[] */
     public array $variances;
     /**
+     * @param IdentifierTypeNode|NameNode $type
      * @param TypeNode[] $genericTypes
      * @param (self::VARIANCE_*)[] $variances
      */
-    public function __construct(\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode $type, array $genericTypes, array $variances = [])
+    public function __construct(\PHPStan\PhpDocParser\Ast\Type\TypeNode $type, array $genericTypes, array $variances = [])
     {
     }
     public function __toString(): string
@@ -130744,6 +135654,69 @@ class InvalidTypeNode implements \PHPStan\PhpDocParser\Ast\Type\TypeNode
     {
     }
     public function getException(): ParserException
+    {
+    }
+    public function __toString(): string
+    {
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties): self
+    {
+    }
+}
+namespace PHPStan\PhpDocParser\Ast\Type;
+
+/**
+ * A class-like name, as opposed to a keyword like `int`, `mixed` or
+ * `non-falsy-string`, which is an IdentifierTypeNode.
+ *
+ * The parser never produces name nodes, because it does not know which
+ * identifiers are keywords. They are created by tools that do, for example
+ * when turning a resolved type back into a PHPDoc node.
+ */
+interface NameNode extends \PHPStan\PhpDocParser\Ast\Type\TypeNode
+{
+    /**
+     * The name without a leading backslash, e.g. Foo\Bar.
+     */
+    public function toString(): string;
+    /**
+     * The name as written in PHPDoc, e.g. \Foo\Bar or Bar.
+     */
+    public function toCodeString(): string;
+    /**
+     * @return non-empty-list<string>
+     */
+    public function getParts(): array;
+    public function getFirst(): string;
+    public function getLast(): string;
+    public function isFullyQualified(): bool;
+}
+namespace PHPStan\PhpDocParser\Ast\Type;
+
+use PHPStan\PhpDocParser\Ast\NodeAttributes;
+use function count;
+use function explode;
+/**
+ * @internal
+ */
+trait NameNodeTrait
+{
+    use NodeAttributes;
+    /** The name without a leading backslash, e.g. Foo\Bar */
+    public string $name;
+    public function toString(): string
+    {
+    }
+    public function getParts(): array
+    {
+    }
+    public function getFirst(): string
+    {
+    }
+    public function getLast(): string
     {
     }
     public function __toString(): string
@@ -130848,6 +135821,28 @@ class OffsetAccessTypeNode implements \PHPStan\PhpDocParser\Ast\Type\TypeNode
      * @param array<string, mixed> $properties
      */
     public static function __set_state(array $properties): self
+    {
+    }
+}
+namespace PHPStan\PhpDocParser\Ast\Type;
+
+use InvalidArgumentException;
+use function sprintf;
+use function strpos;
+/**
+ * A class-like name like Bar or Foo\Bar that resolves against the namespace
+ * and uses of the place it is written in.
+ */
+class RelativeNameNode implements \PHPStan\PhpDocParser\Ast\Type\NameNode
+{
+    use \PHPStan\PhpDocParser\Ast\Type\NameNodeTrait;
+    public function __construct(string $name)
+    {
+    }
+    public function toCodeString(): string
+    {
+    }
+    public function isFullyQualified(): bool
     {
     }
 }
@@ -131270,7 +136265,9 @@ use function array_pop;
 use function assert;
 use function count;
 use function in_array;
+use function preg_match_all;
 use function strlen;
+use function strpos;
 use function substr;
 class TokenIterator
 {
@@ -131286,6 +136283,8 @@ class TokenIterator
     private ?string $newline = null;
     /** @var list<int>|null */
     private ?array $offsets = null;
+    /** @var array<string, int>|null the last index of a token containing "/name>", by the name */
+    private ?array $endTagIndexes = null;
     /**
      * @param list<array{string, int, int}> $tokens
      */
@@ -131421,6 +136420,18 @@ class TokenIterator
      * During this check TOKEN_HORIZONTAL_WS and TOKEN_PHPDOC_EOL are skipped
      */
     public function hasTokenImmediatelyAfter(int $pos, int $expectedTokenType): bool
+    {
+    }
+    /**
+     * Whether a token at the current index or after it contains "/$name>",
+     * which every end tag of an HTML tag of that name does.
+     *
+     * The tokens are searched once, so that asking about every "<" of a
+     * PHPDoc does not walk to its end every time.
+     *
+     * @internal
+     */
+    public function hasEndTagCandidateAhead(string $name): bool
     {
     }
     public function getDetectedNewline(): ?string
@@ -131794,6 +136805,7 @@ use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\InvalidTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\NameNode;
 use PHPStan\PhpDocParser\Ast\Type\NullableTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ObjectShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ObjectShapeNode;
@@ -131805,6 +136817,7 @@ use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use function array_keys;
 use function array_map;
+use function array_values;
 use function assert;
 use function count;
 use function get_class;
@@ -131812,11 +136825,14 @@ use function get_object_vars;
 use function implode;
 use function in_array;
 use function is_array;
+use function preg_match;
 use function preg_match_all;
+use function preg_replace_callback;
 use function sprintf;
 use function str_replace;
 use function strlen;
 use function strpos;
+use function substr;
 use function trim;
 use const PREG_SET_ORDER;
 /**
@@ -131829,6 +136845,11 @@ final class Printer
 {
     /** @var Differ<Node> */
     private \PHPStan\PhpDocParser\Printer\Differ $differ;
+    /**
+     * Newline, indentation and asterisk at the start of a PHPDoc line.
+     * Written after each newline in a printed text or description.
+     */
+    private string $lineStart = "\n *";
     /**
      * Map From "{$class}->{$subNode}" to string that should be inserted
      * between elements of this list subnode
@@ -131847,6 +136868,9 @@ final class Printer
     /** @var array<string, list<class-string<TypeNode>>> */
     private array $parenthesesListMap = [IntersectionTypeNode::class . '->types' => [IntersectionTypeNode::class, UnionTypeNode::class, NullableTypeNode::class], UnionTypeNode::class . '->types' => [IntersectionTypeNode::class, UnionTypeNode::class, NullableTypeNode::class]];
     public function printFormatPreserving(PhpDocNode $node, PhpDocNode $originalNode, TokenIterator $originalTokens): string
+    {
+    }
+    private function printFormatPreservingWithLineStart(PhpDocNode $node, PhpDocNode $originalNode, TokenIterator $originalTokens): string
     {
     }
     public function print(Node $node): string
@@ -131886,6 +136910,12 @@ final class Printer
     {
     }
     /**
+     * A new empty line in a docblock is " *", without the space after the asterisk
+     */
+    private function appendNode(string $result, string $printedNode, string $afterAsteriskIndent): string
+    {
+    }
+    /**
      * @param list<Comment> $comments
      */
     private function printComments(array $comments, string $beforeAsteriskIndent, string $afterAsteriskIndent): string
@@ -131898,7 +136928,39 @@ final class Printer
     private function isMultiline(int $initialIndex, array $nodes, TokenIterator $originalTokens): array
     {
     }
+    /**
+     * Indentation before and after the asterisk on the line where the last child of a PHPDoc starts.
+     * Other lines, e.g. the next lines of a multi-line description, can have a different indentation.
+     *
+     * @param Node[] $originalNodes
+     * @return array{string, string}|null
+     */
+    private function detectLastChildIndent(array $originalNodes, TokenIterator $originalTokens): ?array
+    {
+    }
     private function printNodeFormatPreserving(Node $node, TokenIterator $originalTokens): string
+    {
+    }
+    private function isRenamedTag(Node $node, string $subNodeName, TokenIterator $originalTokens, int $startPos): bool
+    {
+    }
+    /**
+     * Prints a node that replaces the tokens of the original node.
+     *
+     * The tokens of a Doctrine tag value do not contain the annotation name.
+     * The parent tag prints the name from its own tokens.
+     */
+    private function printReplacement(Node $node): string
+    {
+    }
+    /**
+     * The parser removes the asterisk at the start of each line of a text or description.
+     * This puts it back.
+     */
+    private function addLineStarts(string $s): string
+    {
+    }
+    private function detectLineStart(TokenIterator $originalTokens): string
     {
     }
 }

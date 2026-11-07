@@ -91,7 +91,8 @@
                 "message": "No error with identifier function.notFound is reported on line 5.",
                 "line": 5,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             },
             {
                 "message": "Function nope5b not found.",
@@ -104,13 +105,15 @@
                 "message": "No error with identifier function.notFound is reported on line 8.",
                 "line": 8,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             },
             {
                 "message": "No error with identifier function.notFound is reported on line 16.",
                 "line": 16,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             },
             {
                 "message": "Function nope9 not found.",
@@ -123,19 +126,22 @@
                 "message": "No error with identifier unused.id is reported on line 20.",
                 "line": 20,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             },
             {
                 "message": "No error with identifier unused.a is reported on line 21.",
                 "line": 21,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             },
             {
                 "message": "No error with identifier unused.b is reported on line 21.",
                 "line": 21,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedIdentifier"
+                "identifier": "ignore.unmatchedIdentifier",
+                "fixable": true
             }
         ],
         "reportedWithoutComments": [
@@ -324,13 +330,15 @@
                 "message": "No error to ignore is reported on line 10.",
                 "line": 10,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedLine"
+                "identifier": "ignore.unmatchedLine",
+                "fixable": true
             },
             {
                 "message": "No error to ignore is reported on line 20.",
                 "line": 20,
                 "ignorable": false,
-                "identifier": "ignore.unmatchedLine"
+                "identifier": "ignore.unmatchedLine",
+                "fixable": true
             }
         ],
         "reportedWithoutComments": [
@@ -346,7 +354,8 @@
                 "line": 3,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Function nope2 not found.",
@@ -360,7 +369,8 @@
                 "line": 4,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Function nope3 not found.",
@@ -374,7 +384,8 @@
                 "line": 7,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Ignoring all errors on a line is not allowed.",
@@ -402,7 +413,8 @@
                 "line": 13,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Function nope6 not found.",
@@ -416,7 +428,8 @@
                 "line": 18,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Ignoring all errors on a line is not allowed.",
@@ -508,7 +521,8 @@
                 "line": 7,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             },
             {
                 "message": "Function nope3 not found.",
@@ -614,7 +628,8 @@
                 "line": 5,
                 "ignorable": false,
                 "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
-                "identifier": "ignore.allLineErrors"
+                "identifier": "ignore.allLineErrors",
+                "fixable": true
             }
         ]
     },

@@ -217,20 +217,20 @@
     "receiver-conjunction": ["$this(Exception)&Exception",[["Exception",true]]]
   },
   "phpdoc": {
-    "broad": "Exception",
-    "exact": "Exception",
-    "child": "RuntimeException",
-    "broad-child": "RuntimeException",
-    "other": "LogicException",
+    "broad": "\\Exception",
+    "exact": "\\Exception",
+    "child": "\\RuntimeException",
+    "broad-child": "\\RuntimeException",
+    "other": "\\LogicException",
     "static": "static",
     "this": "$this",
-    "interface": "Throwable",
-    "generic-broad": "ArrayObject<int, Exception>",
-    "generic-exact": "ArrayObject<int, Exception>",
-    "generic-nested": "ArrayObject<int, Exception>",
-    "cased": "exception",
-    "cased-exact": "exception",
-    "final": "Closure"
+    "interface": "\\Throwable",
+    "generic-broad": "\\ArrayObject<int, \\Exception>",
+    "generic-exact": "\\ArrayObject<int, \\Exception>",
+    "generic-nested": "\\ArrayObject<int, \\Exception>",
+    "cased": "\\exception",
+    "cased-exact": "\\exception",
+    "final": "\\Closure"
   },
   "inferred": {
     "exact": ["Exception",[["Exception",false]]],

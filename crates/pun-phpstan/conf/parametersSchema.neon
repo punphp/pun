@@ -4,7 +4,7 @@ parametersSchema:
 	level: schema(anyOf(int(), string()), nullable())
 	paths: listOf(string())
 	exceptions: structure({implicitThrows: bool(), reportUncheckedExceptionDeadCatch: bool(), uncheckedExceptionRegexes: listOf(string()), uncheckedExceptionClasses: listOf(string()), checkedExceptionRegexes: listOf(string()), checkedExceptionClasses: listOf(string()), check: structure({missingCheckedExceptionInThrows: bool(), tooWideThrowType: bool(), throwTypeCovariance: bool(), tooWideImplicitThrowType: bool()})})
-	featureToggles: structure({bleedingEdge: bool(), checkNonStringableDynamicAccess: bool(), checkParameterCastableToNumberFunctions: bool(), skipCheckGenericClasses: listOf(string()), stricterFunctionMap: bool(), reportPreciseLineForUnusedFunctionParameter: bool(), checkPrintfParameterTypes: bool(), internalTag: bool(), newStaticInAbstractClassStaticMethod: bool(), checkExtensionsForComparisonOperators: bool(), checkGenericIterableClasses: bool(), reportTooWideBool: bool(), rawMessageInBaseline: bool(), reportNestedTooWideType: bool(), assignToByRefForeachExpr: bool(), curlSetOptArrayTypes: bool(), magicDirInInclude: bool(), checkDateIntervalConstructor: bool(), reportMethodPurityOverride: bool(), checkDynamicConstantNameValues: bool(), unusedLabel: bool(), newOnNonObject: bool(), unnecessaryNullCoalesce: bool(), finiteTypesInHaystack: bool(), switchConditionAlwaysFalse: bool(), checkImportedClassNameCase: bool(), sortWithoutEffect: bool(), unresolvedTemplateArguments: bool(), closureSignaturesFromUsages: bool(), staticVariablesFromUsages: bool(), unusedVariable: bool(), unusedParameters: bool()})
+	featureToggles: structure({bleedingEdge: bool(), checkNonStringableDynamicAccess: bool(), checkParameterCastableToNumberFunctions: bool(), skipCheckGenericClasses: listOf(string()), stricterFunctionMap: bool(), reportPreciseLineForUnusedFunctionParameter: bool(), checkPrintfParameterTypes: bool(), internalTag: bool(), newStaticInAbstractClassStaticMethod: bool(), checkExtensionsForComparisonOperators: bool(), checkGenericIterableClasses: bool(), reportTooWideBool: bool(), rawMessageInBaseline: bool(), reportNestedTooWideType: bool(), assignToByRefForeachExpr: bool(), curlSetOptArrayTypes: bool(), magicDirInInclude: bool(), checkDateIntervalConstructor: bool(), reportMethodPurityOverride: bool(), checkDynamicConstantNameValues: bool(), unusedLabel: bool(), newOnNonObject: bool(), unnecessaryNullCoalesce: bool(), finiteTypesInHaystack: bool(), switchConditionAlwaysFalse: bool(), checkImportedClassNameCase: bool(), sortWithoutEffect: bool(), unresolvedTemplateArguments: bool(), closureSignaturesFromUsages: bool(), staticVariablesFromUsages: bool(), backedEnumFromParameterType: bool(), unusedVariable: bool(), unusedParameters: bool(), reuseCollectedDataRuleErrors: bool()})
 	fileExtensions: listOf(string())
 	checkAdvancedIsset: bool()
 	reportAlwaysTrueInLastCondition: bool()
@@ -88,6 +88,7 @@ parametersSchema:
 	editorUrl: schema(string(), nullable())
 	editorUrlTitle: schema(string(), nullable())
 	errorFormat: schema(string(), nullable())
+	fixer: structure({importNames: bool(), preferSelf: bool()})
 	pro: structure({dnsServers: schema(listOf(string()), min(1)), tmpDir: string()})
 	env: arrayOf(string(), anyOf(int(), string()))
 	sysGetTempDir: string()
@@ -105,10 +106,13 @@ parametersSchema:
 	analysedPathsFromConfig: listOf(string())
 	usedLevel: string()
 	cliAutoloadFile: schema(string(), nullable())
+	attributeServicesDirectories: listOf(string())
+	attributeServicesClasses: listOf(string())
 	singleReflectionFile: schema(string(), nullable())
 	singleReflectionInsteadOfFile: schema(string(), nullable())
 
 expandRelativePaths:
+	- '[attributeServicesDirectories][]'
 	- '[parameters][paths][]'
 	- '[parameters][excludePaths][]'
 	- '[parameters][excludePaths][analyse][]'
