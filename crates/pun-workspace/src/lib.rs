@@ -199,7 +199,9 @@ impl Finder {
                 let is_dir = entry.path().is_dir();
                 if is_dir {
                     let fname = entry.file_name().to_string_lossy();
+                    // `dot` drops every file below a dot directory, so its walk is skipped
                     let pruned = self.excluded_names.iter().any(|n| *n == fname)
+                        || (fname.len() > 1 && fname.starts_with('.'))
                         || VCS.contains(&fname.as_ref())
                         || self
                             .excluded_pattern
