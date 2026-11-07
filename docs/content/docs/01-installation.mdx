@@ -1,7 +1,18 @@
 ---
 title: Installation
-description: Build Pun from source and check its runtime requirements.
+description: Install Pun with Composer or build it from source, and check its runtime requirements.
 ---
+
+## Composer
+
+Available from the first release.
+
+```bash
+composer require --dev punphp/pun
+vendor/bin/pun --version
+```
+
+The package is a small PHP script. On first run, it downloads the release binary for its version and platform (Linux or macOS, x86_64 or arm64) from GitHub Releases, checks its SHA-256 checksum, and keeps it in `vendor/bin`. Later runs start that binary directly. Windows is not supported.
 
 ## Build from source
 

@@ -1,0 +1,12 @@
+{
+    "name": "punphp/pun",
+    "description": "Pun formats, lints, and analyses PHP 8.4+ projects in one Rust binary. Downloads the native binary on first run.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["php", "formatter", "linter", "static analysis", "pint", "rector", "phpstan", "laravel", "dev"],
+    "homepage": "https://github.com/punphp/pun",
+    "require": {
+        "php": ">=8.1"
+    },
+    "bin": ["bin/pun"]
+}

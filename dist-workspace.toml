@@ -29,3 +29,5 @@ install-path = "CARGO_HOME"
 install-updater = false
 # .tar.gz rather than .tar.xz: the Composer shim extracts with plain `tar xzf` (xz is missing on slim images)
 unix-archive = ".tar.gz"
+# No source tarball: .gitattributes keeps the Rust source out of `git archive` (it is the Composer package's archive)
+source-tarball = false

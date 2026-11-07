@@ -14,6 +14,10 @@ Pun formats, lints, and analyses PHP 8.4+ projects. It is written in Rust and re
 Pint compatibility is checked against pinned upstream tools on a project corpus and with mutation fuzzing.
 PHPStan, Larastan, and Rector support is incomplete. See the [parity report](context/reports/scoreboard.md) and the rule reference under [docs](docs/content/docs/index.mdx).
 
+## Install with Composer
+
+From the first release, `composer require --dev punphp/pun` installs a PHP shim that downloads the native binary on first run (Linux and macOS).
+
 ## Build from source
 
 Requires Rust 1.99 or later. Release packages are not published yet.
