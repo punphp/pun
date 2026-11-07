@@ -42,7 +42,7 @@ use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_syntax::cst::{
     Access, BinaryOperator, Call, ClassLikeConstantSelector, ClassLikeMemberSelector, Expression,
-    FunctionCall, Node, TriviaKind, UnaryPrefixOperator, Variable,
+    FunctionCall, Node, Program, Sequence, Trivia, TriviaKind, UnaryPrefixOperator, Variable,
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
@@ -176,15 +176,33 @@ struct Scanned {
 }
 
 impl Scanned {
+    /// One parse serves both scans: the native one reads the docblocks as plain comments, as a parse of the file
+    /// with its docblocks blanked out does.
     fn new(path: &str, code: &str, kind: FileType, version: PHPVersion) -> Self {
-        let file = mago_file(path, &without_docblocks(code), kind);
-        let (native, names) = scan_symbols(&file, version);
-        let (documented, _) = scan_symbols(&mago_file(path, code, kind), version);
+        let file = mago_file(path, code, kind);
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let documented = scan_symbols(&arena, &file, program, &names, version);
+        let trivia: Vec<Trivia<'_>> = (program.trivia.iter())
+            .map(|t| match t.kind {
+                TriviaKind::DocBlockComment => Trivia {
+                    kind: TriviaKind::MultiLineComment,
+                    ..*t
+                },
+                _ => *t,
+            })
+            .collect();
+        let mut native_program = program.clone();
+        native_program.trivia = Sequence::from_slice(&trivia);
+        let native = scan_symbols(&arena, &file, &native_program, &names, version);
         Self {
             id: file.id,
             native,
             documented,
-            names,
+            names: (names.iter())
+                .map(|(_, _, name, _)| name.to_ascii_lowercase())
+                .collect(),
         }
     }
 
@@ -1213,14 +1231,17 @@ fn mago_file(path: &str, code: &str, file_type: FileType) -> File {
     )
 }
 
-/// The symbols of `file`, and the names the file resolves, ASCII-lowercased. Mago trips debug
-/// assertions on some code; a scan that panics has none.
-fn scan_symbols(file: &File, version: PHPVersion) -> (CodebaseMetadata, Vec<Vec<u8>>) {
-    let arena = LocalArena::new();
-    let program = parse_file(&arena, file);
-    let names = NameResolver::new(&arena).resolve(program);
+/// The symbols of `program`, the parse of `file`. Mago trips debug assertions on some code; a scan that panics has
+/// none.
+fn scan_symbols<'a>(
+    arena: &'a LocalArena,
+    file: &File,
+    program: &'a Program<'a>,
+    names: &ResolvedNames<'a>,
+    version: PHPVersion,
+) -> CodebaseMetadata {
     let mut scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        scan_program(&arena, file, program, &names, version)
+        scan_program(arena, file, program, names, version)
     }))
     .unwrap_or_default();
     mark_anonymous_classes_final(&mut scanned);
@@ -1229,10 +1250,7 @@ fn scan_symbols(file: &File, version: PHPVersion) -> (CodebaseMetadata, Vec<Vec<
             !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
         });
     }
-    let names = (names.iter())
-        .map(|(_, _, name, _)| name.to_ascii_lowercase())
-        .collect();
-    (scanned, names)
+    scanned
 }
 
 // PHPStan's ClassReflection::isFinalByKeyword treats anonymous classes as final, including their

@@ -410,6 +410,9 @@ fn project_codebase(cfg: &Config, files: Vec<PathBuf>) {
 fn scan_project(cfg: &Config, files: &[PathBuf]) -> Arc<pun_lint::rules::facts::ProjectCodebase> {
     use pun_lint::rules::facts;
     use pun_phpstan::{Array, Key, Value};
+    // The rules read PHPStan's built-in signatures right after the scan: they load beside it, on a core the scan's
+    // serial steps leave idle.
+    std::thread::spawn(|| pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php84));
     let read = || -> Vec<(String, String)> {
         (files.par_iter())
             .filter_map(|f| {
