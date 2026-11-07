@@ -2,7 +2,7 @@
     "fixer": "self_static_accessor",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/SelfStaticAccessorFixerTest.php",
-    "case_count": 18,
+    "case_count": 21,
     "tests": [
         {
             "method": "testFix",
@@ -136,6 +136,49 @@
                     "key": "do not fix inside lambda",
                     "args": [
                         "<?php\nfinal class Foo\n{\n    public function Bar()\n    {\n        return function() {\n            return static::class;\n        };\n    }\n}\n\n$a = static function() { return static::class; };\n$b = function() { return static::class; };\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix inside static lambda in class",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function Bar()\n    {\n        return static function() {\n            return static::class;\n        };\n    }\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "after method with static return type",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function bar(): static\n    {\n        return $this;\n    }\n\n    public function baz()\n    {\n        return new self();\n    }\n\n    public function qux()\n    {\n        return self::class;\n    }\n}\n",
+                        "<?php\nfinal class Foo\n{\n    public function bar(): static\n    {\n        return $this;\n    }\n\n    public function baz()\n    {\n        return new static();\n    }\n\n    public function qux()\n    {\n        return static::class;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "after method with nullable static return type",
+                    "args": [
+                        "<?php final class Foo { public function bar(): ?static { return $this; } public function baz() { return self::class; } }",
+                        "<?php final class Foo { public function bar(): ?static { return $this; } public function baz() { return static::class; } }"
                     ]
                 }
             ]

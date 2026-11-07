@@ -2,7 +2,7 @@
     "fixer": "is_null",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\IsNullFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/IsNullFixerTest.php",
-    "case_count": 63,
+    "case_count": 74,
     "tests": [
         {
             "method": "testFix",
@@ -494,6 +494,109 @@
                     "args": [
                         "<?php $a === (int) (null === $x) + (int) (null !== $y);",
                         "<?php $a === (int) is_null($x) + (int) !is_null($y);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php $a = is_null(...$args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $a = !is_null(...$args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php $a = \\is_null(...$args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php $a = null === strlen(...$args);",
+                        "<?php $a = is_null(strlen(...$args));"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\IsNullFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument matching the parameter name is fixed",
+                    "args": [
+                        "<?php $x = null === $y;",
+                        "<?php $x = is_null(value: $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "inverted named argument matching the parameter name is fixed",
+                    "args": [
+                        "<?php $x = null !== $y;",
+                        "<?php $x = !is_null(value: $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument with extra whitespace and trailing comma is fixed",
+                    "args": [
+                        "<?php $x = null === $y;",
+                        "<?php $x = is_null(  value:   $y ,  );"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument wrapping an expression is fixed",
+                    "args": [
+                        "<?php $x = null === ($y ?? $z);",
+                        "<?php $x = is_null(value: $y ?? $z);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument not matching the parameter name is left untouched",
+                    "args": [
+                        "<?php $x = is_null(notValue: $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument matching the parameter name only case-insensitively is left untouched",
+                    "args": [
+                        "<?php $x = is_null(Value: $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "named argument in a nested call is still fixed",
+                    "args": [
+                        "<?php $x = null === strlen(string: $y);",
+                        "<?php $x = is_null(strlen(string: $y));"
                     ]
                 }
             ]

@@ -56,6 +56,9 @@ impl Fixer for StaticLambdaFixer {
             if has_possible_reference_to_this(tokens, lambda_open_index, lambda_end_index) {
                 continue;
             }
+            if is_direct_subject_of_binding(tokens, i, lambda_end_index) {
+                continue; // "(function () {})->bindTo($foo)" would warn ("Cannot bind an instance to a static closure") once made static
+            }
             // make the lambda static
             tokens.insert_at(
                 i,
@@ -67,6 +70,35 @@ impl Fixer for StaticLambdaFixer {
             index -= 4; // fixed after a lambda, closes candidate is at least 4 tokens before that
         }
     }
+}
+
+/// `isDirectSubjectOfBinding`: the lambda itself, wrapped in parentheses, is the subject of `->bindTo(...)` or
+/// `->call(...)` (making it static would produce "Cannot bind an instance to a static closure", deprecated in PHP 8.5).
+fn is_direct_subject_of_binding(tokens: &Tokens, lambda_index: usize, lambda_end_index: usize) -> bool {
+    let Some(after_lambda_index) = tokens.get_next_meaningful_token(lambda_end_index) else {
+        return false;
+    };
+    if !tokens[after_lambda_index].equals(")", true) {
+        return false;
+    }
+    let wrap_start_index = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, after_lambda_index);
+    if tokens.get_next_meaningful_token(wrap_start_index) != Some(lambda_index) {
+        return false; // the parentheses contain more than the lambda
+    }
+    if let Some(before_wrap_index) = tokens.get_prev_meaningful_token(wrap_start_index)
+        && tokens[before_wrap_index].equals_any(
+            &[")".into(), "]".into(), T_STRING.into(), T_VARIABLE.into(), CT_ARRAY_INDEX_BRACE_CLOSE.into()],
+            true,
+        )
+    {
+        return false; // the lambda is an argument of a call, whose return value is the subject instead
+    }
+    let object_operator_index = tokens.get_next_meaningful_token(after_lambda_index).unwrap();
+    if !tokens[object_operator_index].is_object_operator() {
+        return false;
+    }
+    let method_index = tokens.get_next_meaningful_token(object_operator_index).unwrap();
+    tokens[method_index].equals_any(&[(T_STRING, "bindTo").into(), (T_STRING, "call").into()], false)
 }
 
 fn has_possible_reference_to_this(tokens: &Tokens, start_index: usize, end_index: usize) -> bool {

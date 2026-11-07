@@ -44,6 +44,7 @@ impl Fixer for SimplifiedIfReturnFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut slices = BTreeMap::new();
+        let mut next_if_index = None;
         for if_index in (0..tokens.count()).rev() {
             if !tokens[if_index].is_given_kind(&[T_IF, T_ELSEIF]) {
                 continue;
@@ -62,7 +63,7 @@ impl Fixer for SimplifiedIfReturnFixer {
                 .unwrap();
             for &(is_negative, sequence) in SEQUENCES {
                 let Some(mut indices_to_clear) =
-                    tokens.find_sequence(sequence, first_candidate_index, None, |_| true)
+                    tokens.find_sequence(sequence, first_candidate_index, next_if_index, |_| true)
                 else {
                     continue;
                 };
@@ -84,6 +85,8 @@ impl Fixer for SimplifiedIfReturnFixer {
                 }
                 slices.insert(if_index, new_tokens);
                 tokens.clear_at(if_index);
+                // Limit the search to this branch by stopping at the next if/elseif.
+                next_if_index = Some(if_index);
             }
         }
         if !slices.is_empty() {

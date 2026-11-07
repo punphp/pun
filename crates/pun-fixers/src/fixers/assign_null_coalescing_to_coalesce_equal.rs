@@ -17,10 +17,9 @@ impl ShortOperator for AssignNullCoalescingToCoalesceEqualFixer {
             return false;
         }
         // make sure after '??' does not contain '? :'
-        let next_index = tokens
+        tokens
             .get_next_token_of_kind(index, &["?".into(), ";".into(), T_CLOSE_TAG.into()], true)
-            .unwrap();
-        !tokens[next_index].equals("?", true)
+            .is_none_or(|next_index| !tokens[next_index].equals("?", true))
     }
     fn get_replacement_token(&self, _token: &Token) -> Token {
         Token::new(T_COALESCE_EQUAL, "??=")

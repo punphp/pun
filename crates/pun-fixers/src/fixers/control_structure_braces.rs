@@ -34,6 +34,10 @@ fn final_control_continuation_tokens(k: Kind) -> &'static [Kind] {
 
 impl ControlStructureBracesFixer {
     fn find_parenthesis_end(tokens: &Tokens, structure_token_index: usize) -> usize {
+        // CONDITIONLESS_CONTROL_TOKENS: a parenthesis after one of them opens the body, not a condition.
+        if tokens[structure_token_index].is_given_kind(&[T_DO, T_ELSE, T_FINALLY, T_TRY]) {
+            return structure_token_index;
+        }
         let next_index = tokens
             .get_next_meaningful_token(structure_token_index)
             .unwrap();

@@ -2,7 +2,7 @@
     "fixer": "binary_operator_spaces",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Operator/BinaryOperatorSpacesFixerTest.php",
-    "case_count": 234,
+    "case_count": 239,
     "tests": [
         {
             "method": "testInvalidConfiguration",
@@ -2657,6 +2657,58 @@
                 },
                 {
                     "provider": "provideFixCases",
+                    "key": "do not align separate nested arrays",
+                    "args": [
+                        "<?php\n                [\n                    [1 =>   \"foo\"],\n                    [2    => \"foo\"],\n                    [3 => \"foo\"],\n                ];\n                ",
+                        "<?php\n                [\n                    [1 =>   \"foo\"],\n                    [2    =>\"foo\"],\n                    [3=>\"foo\"],\n                ];\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align separate nested arrays with align_single_space_minimal",
+                    "args": [
+                        "<?php\n                $g = [\n                    [\"aa\" => \"a\"],\n                    [\"bbb\" => \"b\"],\n                    [\"cccc\" => \"c\"],\n                ];\n            ",
+                        "<?php\n                $g = [\n                    [\"aa\" =>     \"a\"],\n                    [\"bbb\" =>  \"b\"],\n                    [\"cccc\" => \"c\"],\n                ];\n            ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align separate nested arrays with non-array values in array",
+                    "args": [
+                        "<?php\n                [\n                    \"and\",\n                    [\"key\" => false],\n                    [\"long_key\" => false],\n                ];\n                ",
+                        "<?php\n                [\n                    \"and\",\n                    [\"key\"    => false],\n                    [\"long_key\" => false],\n                ];\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align separate nested arrays in function call",
+                    "args": [
+                        "<?php\n                $g = array_replace(\n                    [\"aa\" => \"a\"],\n                    [\"bbb\" => \"b\"],\n                    [\"cccc\" => \"c\"],\n                );\n            ",
+                        "<?php\n                $g = array_replace(\n                    [\"aa\" =>     \"a\"],\n                    [\"bbb\" =>  \"b\"],\n                    [\"cccc\" => \"c\"],\n                );\n            ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
                     "key": "do not align nested array in yield with following yields",
                     "args": [
                         "<?php\n\nfunction provide()\n{\n    yield 'aaa' => [\n        [\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n        ],\n    ];\n    yield 'bbbbbbbbbbbbbbbbbbbbbbbbbbbb' => [];\n    yield 'cccccccccccccccccccccccccccc' => [];\n}",
@@ -2719,6 +2771,19 @@
                     "args": [
                         "<?php\necho match ($foo) {\n    0, 1, 2, 3, 4                          => 'digit',\n    C1                                     => 'constant C1',\n    default                                => 'default or 0',\n    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' => 'letter',\n    C2                                     => 'constant C2',\n};",
                         "<?php\necho match ($foo) {\n    0, 1, 2, 3, 4 => 'digit',\n    C1 => 'constant C1',\n    default => 'default or 0',\n    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' => 'letter',\n    C2 => 'constant C2',\n};",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match on array literals",
+                    "args": [
+                        "<?php\necho match ($foo) {\n    [false, true]  => 'partial',\n    [false, false] => 'wrong',\n};",
+                        "<?php\necho match ($foo) {\n    [false, true] => 'partial',\n    [false, false] => 'wrong',\n};",
                         {
                             "operators": {
                                 "=>": "align_by_scope"

@@ -2,7 +2,7 @@
     "fixer": "class_definition",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/ClassDefinitionFixerTest.php",
-    "case_count": 120,
+    "case_count": 122,
     "tests": [
         {
             "method": "testInvalidConfiguration",
@@ -225,6 +225,28 @@
                     "args": [
                         "<?php $a = new class(\n\t$a,\n\t$b,\n\t$c,\n\t$d) implements A, B {};",
                         "<?php $a = new   class  (\n\t$a,\n\t$b,\n\t$c,\n\t$d)    implements  A, \t B{};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class with both extends and implements keeps multiline constructor arguments (#9539)",
+                    "args": [
+                        "<?php $a = new class(\n\t$a,\n\t$b,\n) extends Foo implements A, B {};",
+                        "<?php $a = new   class  (\n\t$a,\n\t$b,\n)    extends  Foo   implements  A, \t B{};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class with extends only keeps multiline constructor arguments",
+                    "args": [
+                        "<?php $a = new class(\n\t$a,\n\t$b,\n) extends Foo {};",
+                        "<?php $a = new   class  (\n\t$a,\n\t$b,\n)    extends  Foo  {};",
                         {
                             "inline_constructor_arguments": false
                         }

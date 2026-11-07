@@ -2,7 +2,7 @@
     "fixer": "new_with_parentheses",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Operator/NewWithParenthesesFixerTest.php",
-    "case_count": 119,
+    "case_count": 118,
     "tests": [
         {
             "method": "testFix",
@@ -935,21 +935,13 @@
                     "provider": "provideFixCases",
                     "key": 98,
                     "args": [
-                        "<?php\n                    $a = new Foo() <=> 1;\n                ",
-                        "<?php\n                    $a = new Foo <=> 1;\n                "
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": 99,
-                    "args": [
                         "<?php\n                    $a = new class() {use SomeTrait;};\n                    $a = new class() implements Foo{};\n                    $a = new class() /**/ extends Bar1{};\n                    $a = new class()  extends Bar2 implements Foo{};\n                    $a = new class()    extends Bar3 implements Foo, Foo2{};\n                    $a = new class() {}?>\n                ",
                         "<?php\n                    $a = new class {use SomeTrait;};\n                    $a = new class implements Foo{};\n                    $a = new class /**/ extends Bar1{};\n                    $a = new class  extends Bar2 implements Foo{};\n                    $a = new class    extends Bar3 implements Foo, Foo2{};\n                    $a = new class {}?>\n                "
                     ]
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 100,
+                    "key": 99,
                     "args": [
                         "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class(){});\n                        }\n                    }\n                ",
                         "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class{});\n                        }\n                    }\n                "
@@ -957,7 +949,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 101,
+                    "key": 100,
                     "args": [
                         "<?php $a = new class($a) {use SomeTrait;};",
                         null,
@@ -968,7 +960,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 102,
+                    "key": 101,
                     "args": [
                         "<?php $a = new class(foo(/**/)) implements Foo{};",
                         null,
@@ -979,7 +971,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 103,
+                    "key": 102,
                     "args": [
                         "<?php $a = new class($c[\"d\"]) /**/ extends Bar1{};",
                         null,
@@ -990,7 +982,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 104,
+                    "key": 103,
                     "args": [
                         "<?php $a = new class($e->f  )  extends Bar2 implements Foo{};",
                         null,
@@ -1001,7 +993,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 105,
+                    "key": 104,
                     "args": [
                         "<?php $a = new class( /**/ $g )    extends Bar3 implements Foo, Foo2{};",
                         null,
@@ -1012,7 +1004,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 106,
+                    "key": 105,
                     "args": [
                         "<?php $a = new class( $h  /**/) {}?>",
                         null,
@@ -1023,7 +1015,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 107,
+                    "key": 106,
                     "args": [
                         "<?php\n                    $a = new class {use SomeTrait;};\n                    $a = new class implements Foo{};\n                    $a = new class /**/ extends Bar1{};\n                    $a = new class  extends Bar2 implements Foo{};\n                    $a = new class    extends Bar3 implements Foo, Foo2{};\n                    $a = new class    {}?>\n                ",
                         "<?php\n                    $a = new class() {use SomeTrait;};\n                    $a = new class() implements Foo{};\n                    $a = new class() /**/ extends Bar1{};\n                    $a = new class()  extends Bar2 implements Foo{};\n                    $a = new class()    extends Bar3 implements Foo, Foo2{};\n                    $a = new class ( )  {}?>\n                ",
@@ -1034,7 +1026,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 108,
+                    "key": 107,
                     "args": [
                         "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class{});\n                        }\n                    }\n                ",
                         "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class(){});\n                        }\n                    }\n                ",

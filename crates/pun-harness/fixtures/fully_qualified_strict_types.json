@@ -2,7 +2,7 @@
     "fixer": "fully_qualified_strict_types",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Import/FullyQualifiedStrictTypesFixerTest.php",
-    "case_count": 153,
+    "case_count": 154,
     "tests": [
         {
             "method": "testFix",
@@ -1227,6 +1227,17 @@
                     "args": [
                         "<?php\nnamespace Foo;\nuse Lib\\Package\\Bar;\n$function = fn (): Bar => new Bar();",
                         "<?php\nnamespace Foo;\n$function = fn (): \\Lib\\Package\\Bar => new \\Lib\\Package\\Bar();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix closure return type when closure has a use clause",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Lib\\Package\\Bar;\n$bar = new Bar();\n$function = function () use ($bar): ?Bar { return $bar; };",
+                        "<?php\nnamespace Foo;\n$bar = new \\Lib\\Package\\Bar();\n$function = function () use ($bar): ?\\Lib\\Package\\Bar { return $bar; };",
                         {
                             "import_symbols": true
                         }

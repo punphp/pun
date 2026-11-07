@@ -261,6 +261,12 @@ fn upstream_fixtures() {
                     };
                     let file = match arg(&["file"]) {
                         Value::Object(o) => PathBuf::from(o["pathname"].as_str().unwrap()),
+                        // `$file ?? new \SplFileInfo(__FILE__)`: the test class's own file.
+                        _ if body.contains("new \\SplFileInfo(__FILE__)") => {
+                            Path::new(env!("CARGO_MANIFEST_DIR"))
+                                .join("../../.oracle")
+                                .join(doc["test_file"].as_str().unwrap())
+                        }
                         _ => PathBuf::from("test.php"),
                     };
                     let mut fixer = fresh(name);

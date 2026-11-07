@@ -2,7 +2,7 @@
     "fixer": "ordered_types",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/OrderedTypesFixerTest.php",
-    "case_count": 81,
+    "case_count": 82,
     "tests": [
         {
             "method": "testFix",
@@ -297,20 +297,28 @@
                     "provider": "provideFix80Cases",
                     "key": 14,
                     "args": [
-                        "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
-                        "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n"
+                        "<?php $foo = function () use ($bar): null|int {};",
+                        "<?php $foo = function () use ($bar): int|null {};"
                     ]
                 },
                 {
                     "provider": "provideFix80Cases",
                     "key": 15,
                     "args": [
-                        "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private null|array $baz = null;\n\n    public function baz(): null|string {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n"
+                        "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
+                        "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n"
                     ]
                 },
                 {
                     "provider": "provideFix80Cases",
                     "key": 16,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private null|array $baz = null;\n\n    public function baz(): null|string {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 17,
                     "args": [
                         "<?php\nclass Foo\n{\n    public int|string|null $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string|null|int $bar = null;\n}\n",
@@ -322,7 +330,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 17,
+                    "key": 18,
                     "args": [
                         "<?php\nclass Foo\n{\n    public A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public B|A|null $foo = null;\n}\n",
@@ -334,7 +342,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 18,
+                    "key": 19,
                     "args": [
                         "<?php\nclass Foo\n{\n    public \\A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public B|\\A|null $foo = null;\n}\n",
@@ -346,7 +354,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 19,
+                    "key": 20,
                     "args": [
                         "<?php\nclass Foo\n{\n    public \\A|\\B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public \\B|\\A|null $foo = null;\n}\n",
@@ -358,7 +366,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 20,
+                    "key": 21,
                     "args": [
                         "<?php\nclass Foo\n{\n    public int|string|null/* array */ $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string|null|int/* array */ $bar = null;\n}\n",
@@ -370,7 +378,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 21,
+                    "key": 22,
                     "args": [
                         "<?php\nclass Foo\n{\n    public /* int */A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public /* int */B|A|null $foo = null;\n}\n",
@@ -382,7 +390,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 22,
+                    "key": 23,
                     "args": [
                         "<?php\nclass Foo\n{\n    public     A|B|null     $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public     B|A|null     $foo = null;\n}\n",
@@ -394,7 +402,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 23,
+                    "key": 24,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar(array|callable|int|null $cb) {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar(array|int|callable|null $cb) {}\n}\n",
@@ -406,7 +414,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 24,
+                    "key": 25,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar($cb): array|callable|int|null {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar($cb): array|int|callable|null {}\n}\n",
@@ -418,7 +426,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 25,
+                    "key": 26,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar($cb): static|null {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
@@ -430,7 +438,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 26,
+                    "key": 27,
                     "args": [
                         "<?php\nclass Foo\n{\n    public function bar(string|null $str, array|int|null $arr) {}\n}\n",
                         "<?php\nclass Foo\n{\n    public function bar(string|null $str, int|array|null $arr) {}\n}\n",
@@ -442,7 +450,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 27,
+                    "key": 28,
                     "args": [
                         "<?php\nclass Foo\n{\n    public function bar(\\JsonSerializable|\\Stringable $obj): array|int {}\n}\n",
                         "<?php\nclass Foo\n{\n    public function bar(\\Stringable|\\JsonSerializable $obj): int|array {}\n}\n",
@@ -454,7 +462,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 28,
+                    "key": 29,
                     "args": [
                         "<?php function foo(int|string|null $bar): \\Stringable|null {}",
                         "<?php function foo(string|int|null $bar): \\Stringable|null {}",
@@ -466,7 +474,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 29,
+                    "key": 30,
                     "args": [
                         "<?php fn (\\Countable|int|null $number): int|null => $number;",
                         "<?php fn (int|\\Countable|null $number): int|null => $number;",
@@ -478,7 +486,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 30,
+                    "key": 31,
                     "args": [
                         "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
                         "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n",
@@ -490,7 +498,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 31,
+                    "key": 32,
                     "args": [
                         "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private array|null $baz = null;\n\n    public function baz(): string|null {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n",
                         null,
@@ -502,7 +510,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 32,
+                    "key": 33,
                     "args": [
                         "<?php\nclass Foo\n{\n    public int|null|string $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string|null|int $bar = null;\n}\n",
@@ -514,7 +522,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 33,
+                    "key": 34,
                     "args": [
                         "<?php\nclass Foo\n{\n    public A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public B|A|null $foo = null;\n}\n",
@@ -526,7 +534,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 34,
+                    "key": 35,
                     "args": [
                         "<?php\nclass Foo\n{\n    public \\A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public B|\\A|null $foo = null;\n}\n",
@@ -538,7 +546,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 35,
+                    "key": 36,
                     "args": [
                         "<?php\nclass Foo\n{\n    public \\A|\\B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public \\B|\\A|null $foo = null;\n}\n",
@@ -550,7 +558,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 36,
+                    "key": 37,
                     "args": [
                         "<?php\nclass Foo\n{\n    public int|null|string/* array */ $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string|null|int/* array */ $bar = null;\n}\n",
@@ -562,7 +570,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 37,
+                    "key": 38,
                     "args": [
                         "<?php\nclass Foo\n{\n    public /* int */A|B|null $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public /* int */B|A|null $foo = null;\n}\n",
@@ -574,7 +582,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 38,
+                    "key": 39,
                     "args": [
                         "<?php\nclass Foo\n{\n    public     A|B|null     $foo = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public     B|A|null     $foo = null;\n}\n",
@@ -586,7 +594,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 39,
+                    "key": 40,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar(array|callable|int|null $cb) {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar(array|int|callable|null $cb) {}\n}\n",
@@ -598,7 +606,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 40,
+                    "key": 41,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar($cb): array|callable|int|null {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar($cb): array|int|callable|null {}\n}\n",
@@ -610,7 +618,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 41,
+                    "key": 42,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar($cb): static|null {}\n}\n",
@@ -622,7 +630,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 42,
+                    "key": 43,
                     "args": [
                         "<?php\nclass Foo\n{\n    public function bar(null|string $str, array|int|null $arr) {}\n}\n",
                         "<?php\nclass Foo\n{\n    public function bar(string|null $str, int|array|null $arr) {}\n}\n",
@@ -634,7 +642,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 43,
+                    "key": 44,
                     "args": [
                         "<?php\nclass Foo\n{\n    public function bar(\\JsonSerializable|\\Stringable $obj): array|int {}\n}\n",
                         "<?php\nclass Foo\n{\n    public function bar(\\Stringable|\\JsonSerializable $obj): int|array {}\n}\n",
@@ -646,7 +654,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 44,
+                    "key": 45,
                     "args": [
                         "<?php function foo(int|null|string $bar): null|\\Stringable {}",
                         "<?php function foo(string|int|null $bar): \\Stringable|null {}",
@@ -658,7 +666,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 45,
+                    "key": 46,
                     "args": [
                         "<?php fn (\\Countable|int|null $number): int|null => $number;",
                         "<?php fn (int|\\Countable|null $number): int|null => $number;",
@@ -670,7 +678,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 46,
+                    "key": 47,
                     "args": [
                         "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
                         "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n",
@@ -682,7 +690,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 47,
+                    "key": 48,
                     "args": [
                         "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private array|null $baz = null;\n\n    public function baz(): null|string {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n",
                         null,
@@ -694,7 +702,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 48,
+                    "key": 49,
                     "args": [
                         "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string   |   null   |   int $bar = null;\n}\n"
@@ -702,7 +710,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 49,
+                    "key": 50,
                     "args": [
                         "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string | null | int $bar = null;\n}\n"
@@ -710,7 +718,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 50,
+                    "key": 51,
                     "args": [
                         "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
                         "<?php\nclass Foo\n{\n    public string |/* array| */null|int $bar = null;\n}\n"
@@ -718,7 +726,7 @@
                 },
                 {
                     "provider": "provideFix80Cases",
-                    "key": 51,
+                    "key": 52,
                     "args": [
                         "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
                         "<?php\nclass Foo\n{\n    private function bar($cb): static /* |int */ | null {}\n}\n"

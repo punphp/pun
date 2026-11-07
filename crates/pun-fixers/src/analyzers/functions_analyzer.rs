@@ -105,7 +105,16 @@ impl FunctionsAnalyzer {
             .get_next_token_of_kind(method_index, &["(".into()], true)
             .unwrap();
         let arguments_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, arguments_start);
-        let type_colon_index = tokens.get_next_meaningful_token(arguments_end)?;
+        let mut type_colon_index = tokens.get_next_meaningful_token(arguments_end)?;
+        // a closure's `use (...)` comes between its arguments and its return type
+        if tokens[type_colon_index].is_kind(CT_USE_LAMBDA) {
+            let lambda_use_start = tokens
+                .get_next_token_of_kind(type_colon_index, &["(".into()], true)
+                .unwrap();
+            let lambda_use_end =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, lambda_use_start);
+            type_colon_index = tokens.get_next_meaningful_token(lambda_use_end).unwrap();
+        }
         if !tokens[type_colon_index].is_kind(CT_TYPE_COLON) {
             return None;
         }

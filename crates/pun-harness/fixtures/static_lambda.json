@@ -2,7 +2,7 @@
     "fixer": "static_lambda",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\StaticLambdaFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/StaticLambdaFixerTest.php",
-    "case_count": 32,
+    "case_count": 37,
     "tests": [
         {
             "method": "testFix",
@@ -22,6 +22,43 @@
             "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\StaticLambdaFixerTest",
             "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
             "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix a lambda that is the direct subject of bindTo",
+                    "args": [
+                        "<?php $a = (function () { return 1; })->bindTo(new stdClass());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix an arrow function that is the direct subject of bindTo (immediately invoked)",
+                    "args": [
+                        "<?php $foobar = new Foobar(); echo (fn () => $foobar->sayHello())->bindTo(null, Foobar::class)();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix a lambda that is the direct subject of call",
+                    "args": [
+                        "<?php $b = (function () { return $x; })->call(new stdClass());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix a lambda argument of a call whose return value is bound",
+                    "args": [
+                        "<?php echo foo(static function () { return 1; })->bindTo(new stdClass());",
+                        "<?php echo foo(function () { return 1; })->bindTo(new stdClass());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix an immediately invoked lambda",
+                    "args": [
+                        "<?php echo (static function () { return 1; })();",
+                        "<?php echo (function () { return 1; })();"
+                    ]
+                },
                 {
                     "provider": "provideFixCases",
                     "key": "sample",

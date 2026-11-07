@@ -2,7 +2,7 @@
     "fixer": "control_structure_braces",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureBracesFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/ControlStructureBracesFixerTest.php",
-    "case_count": 26,
+    "case_count": 29,
     "tests": [
         {
             "method": "testFix",
@@ -22,6 +22,30 @@
             "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureBracesFixerTest",
             "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
             "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "else with a body starting with a parenthesis",
+                    "args": [
+                        "<?php if ($a) { b(); } else { (c() && d()) || e(); }",
+                        "<?php if ($a) { b(); } else (c() && d()) || e();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested bracesless control structures with such an else",
+                    "args": [
+                        "<?php\nif (is_array($d)) {\n    foreach ($d as $x) {\n        (f($x) && g($x)) || h($x); } }\nelse {\n    (f($d) && g($d)) || h($d); }\n",
+                        "<?php\nif (is_array($d))\n    foreach ($d as $x)\n        (f($x) && g($x)) || h($x);\nelse\n    (f($d) && g($d)) || h($d);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do with a body starting with a parenthesis",
+                    "args": [
+                        "<?php do { (a() && b()) || c(); } while ($x);",
+                        "<?php do (a() && b()) || c(); while ($x);"
+                    ]
+                },
                 {
                     "provider": "provideFixCases",
                     "key": "if",

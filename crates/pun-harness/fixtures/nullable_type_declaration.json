@@ -2,7 +2,7 @@
     "fixer": "nullable_type_declaration",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/NullableTypeDeclarationFixerTest.php",
-    "case_count": 29,
+    "case_count": 31,
     "tests": [
         {
             "method": "testFix",
@@ -60,6 +60,14 @@
                     "args": [
                         "<?php\nclass Dto\n{\n    public ?string $name;\n    public ?array $parameters;\n    public ?int $count;\n    public ?Closure $callable;\n}\n",
                         "<?php\nclass Dto\n{\n    public null|string $name;\n    public array|null $parameters;\n    public int|null $count;\n    public null|Closure $callable;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "closure with use clause",
+                    "args": [
+                        "<?php\n$bar = function () use ($baz): ?int {};\n",
+                        "<?php\n$bar = function () use ($baz): int|null {};\n"
                     ]
                 },
                 {
@@ -134,6 +142,14 @@
                     "args": [
                         "<?php\nclass Dto\n{\n    public null|\\Closure $callable;\n    public null|string $name;\n    public null|array $parameters;\n    public null|int $count;\n}\n",
                         "<?php\nclass Dto\n{\n    public ?\\Closure $callable;\n    public ?string $name;\n    public ?array $parameters;\n    public ?int $count;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "closure with use clause",
+                    "args": [
+                        "<?php\n$bar = function () use ($baz): null|int {};\n",
+                        "<?php\n$bar = function () use ($baz): ?int {};\n"
                     ]
                 },
                 {
