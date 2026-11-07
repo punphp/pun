@@ -14,7 +14,7 @@ pub(crate) struct Change<'a> {
 }
 
 pub(crate) const ABOUT: &str =
-    "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
+    "PHP CS Fixer 3.95.25 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
 
 pub(crate) fn json(changes: &[Change], verbose: bool, decorated: bool) -> String {
     let files: Vec<serde_json::Value> = changes

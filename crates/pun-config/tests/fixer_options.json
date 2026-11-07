@@ -1,4 +1,15 @@
 {
+    "Pint/prettier_cache_fingerprint": [
+        {
+            "name": "fingerprints",
+            "types": [
+                "array"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
     "align_multiline_comment": [
         {
             "name": "comment_type",

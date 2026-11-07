@@ -7,6 +7,10 @@
         "Remove all comments except those containing `@` annotations.",
         "fixers/type_annotations_only"
     ],
+    "Pint/prettier_cache_fingerprint": [
+        "Carries prettier dependency version fingerprints for cache invalidation.",
+        "App\\Fixers\\PrettierCacheFingerprint"
+    ],
     "align_multiline_comment": [
         "Each line of multi-line DocComments must have an asterisk [PSR-5] and must be aligned with the first one.",
         "phpdoc/align_multiline_comment"
@@ -161,7 +165,7 @@
     ],
     "declare_strict_types": [
         "Force a strict types mode in all files.",
-        "strict/declare_strict_types"
+        "laravel_blade/skip_blade_files"
     ],
     "dir_constant": [
         "Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant.",
@@ -249,7 +253,7 @@
     ],
     "fully_qualified_strict_types": [
         "Removes the leading part of fully qualified symbol references if a given symbol is imported or belongs to the current namespace.",
-        "import/fully_qualified_strict_types"
+        "laravel_blade/skip_blade_files"
     ],
     "function_declaration": [
         "Spaces should be properly placed in a function declaration.",
@@ -281,7 +285,7 @@
     ],
     "global_namespace_import": [
         "Imports or fully qualifies global classes/functions/constants.",
-        "import/global_namespace_import"
+        "laravel_blade/skip_blade_files"
     ],
     "group_import": [
         "There MUST be group use for the same namespaces.",
@@ -629,7 +633,7 @@
     ],
     "no_unused_imports": [
         "Unused `use` statements must be removed.",
-        "import/no_unused_imports"
+        "laravel_blade/no_unused_imports"
     ],
     "no_useless_concat_operator": [
         "There should not be useless concat operations.",

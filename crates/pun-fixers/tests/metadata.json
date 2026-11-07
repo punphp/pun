@@ -9,6 +9,11 @@
         "risky": false,
         "configurable": false
     },
+    "Pint/prettier_cache_fingerprint": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
     "align_multiline_comment": {
         "priority": 27,
         "risky": false,

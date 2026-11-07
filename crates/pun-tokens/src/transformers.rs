@@ -1,4 +1,4 @@
-//! Ports of `PhpCsFixer\Tokenizer\Transformer\*` (php-cs-fixer v3.95.17), run in the order
+//! Ports of `PhpCsFixer\Tokenizer\Transformer\*` (php-cs-fixer v3.95.25), run in the order
 //! `Transformers::createSingleton()` yields on PHP 8.5 (priority desc, ties in discovery
 //! order). Each runs `process($tokens, $token, $index)` for every index of the live,
 //! possibly growing collection, like upstream's `foreach` over the SplFixedArray.

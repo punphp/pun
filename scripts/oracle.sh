@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Reproduce the pinned formatting oracle in .oracle/ from scratch (versions: context/reference/oracle.md).
-#   .oracle/pint          laravel/pint at the ref Pinkary's composer.lock pins (dev-feat/blade-support),
+#   .oracle/pint          laravel/pint at the latest release (v1.32.1, which ships the Blade formatter),
 #                         with dev deps installed (bundled PHP-CS-Fixer lives in its vendor/).
-#                         Oracle binary: php .oracle/pint/builds/pint (the committed PHAR Pinkary runs).
+#                         Oracle binary: php .oracle/pint/builds/pint (the committed PHAR of that tag).
 #   .oracle/php-cs-fixer  PHP-CS-Fixer source + tests at the exact version Pint bundles,
 #                         with dev deps (PHPUnit) for fixture export. Binary: php .oracle/php-cs-fixer/php-cs-fixer
 #   .oracle/rector        rector-src at the rector/rector version Pinkary's composer.lock pins (2.6.1), for the rules'
@@ -17,8 +17,8 @@
 #   .oracle/phpstan-phar  that PHAR extracted, for reading (export-phpstan-api-stub.php, export-phpdoc-parser-fixtures.php).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
-PINT_REF=cef1b260c611f92e66902d678092e26932c9ea00
-FIXER_REF=0ee88422118f3cc59c8c3def222ba7f1493b6d5b # v3.95.17
+PINT_REF=006bd7825eb01daf92959d060b89cd9514fe4253 # v1.32.1
+FIXER_REF=2cdfc1f3daf173d83a1ebb6177949b58c95de6ff # v3.95.25
 RECTOR_REF=16be33c1c2364d51038752a299fce01043d42576 # rector-src 2.6.1
 PHPSTAN_SRC_REF=cb3b7e99489b2e3789ee2eec10501cb7a72580ea # phpstan-src 2.3.1
 
