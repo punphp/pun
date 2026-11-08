@@ -47,11 +47,7 @@ impl PhpFragmentFormatter {
         let mut tokens = Tokens::from_code(code);
         let file = Path::new("fragment.php");
         for fixer in self.fixers(fragment).iter().flat_map(|p| p.fixers()) {
-            // AbstractFixer::fix only applies to non-empty tokens.
-            if tokens.count() == 0 || !fixer.supports(file) || !fixer.is_candidate(&tokens) {
-                continue;
-            }
-            fixer.fix(file, &mut tokens);
+            fixer.apply(file, &mut tokens);
             if tokens.is_changed() {
                 tokens.clear_empty_tokens();
                 tokens.clear_changed();

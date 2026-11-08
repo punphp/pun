@@ -14,13 +14,11 @@ pub(crate) fn configured(mut f: impl pun_format::Fixer + 'static) -> Box<dyn pun
     Box::new(f)
 }
 
-/// The `Pun/*` rules' unit tests: `fixer` on `code` (as `t.php`), gated on `is_candidate` like `Pipeline::run`, so a
-/// too-strict candidate check fails the cases.
+/// The `Pun/*` rules' unit tests: `fixer` applied to `code` (as `t.php`) like `Pipeline::run`, so a too-strict
+/// candidate check fails the cases.
 #[cfg(test)]
 pub(crate) fn fix_with(fixer: &dyn pun_format::Fixer, code: &str) -> String {
     let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-    if fixer.is_candidate(&tokens) {
-        fixer.fix(std::path::Path::new("t.php"), &mut tokens);
-    }
+    fixer.apply(std::path::Path::new("t.php"), &mut tokens);
     String::from_utf8(tokens.generate_code()).unwrap()
 }

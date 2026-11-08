@@ -8,7 +8,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
-pub use pun_tokens::Tokens;
+use pun_tokens::Tokens;
 
 mod fixer_annotation;
 mod php_grammar;
@@ -36,6 +36,13 @@ pub trait Fixer: Send + Sync {
         }
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens);
+    /// `AbstractFixer::fix`: `fix` only for non-empty tokens of a supported file that are a candidate (Pint/laravel_blade
+    /// can empty the list).
+    fn apply(&self, file: &Path, tokens: &mut Tokens) {
+        if tokens.count() > 0 && self.supports(file) && self.is_candidate(tokens) {
+            self.fix(file, tokens);
+        }
+    }
     /// `WhitespacesAwareFixerInterface::setWhitespacesConfig`; only whitespace-aware fixers store it.
     fn set_whitespaces_config(&mut self, _config: &WhitespacesFixerConfig) {}
     /// The run's preset (Pint's `ConfigurationJsonRepository::preset()`); only `Pint/laravel_blade` reads it.
@@ -350,14 +357,7 @@ impl Pipeline {
             if ignored.iter().any(|n| n == f.name().as_bytes()) {
                 continue;
             }
-            // AbstractFixer::fix: `0 < $tokens->count() && isCandidate && supports` (Pint/laravel_blade can empty the list).
-            if tokens.count() == 0
-                || !f.supports(file)
-                || !self.timed("(is_candidate)", || f.is_candidate(&tokens))
-            {
-                continue;
-            }
-            self.timed(f.name(), || f.fix(file, &mut tokens));
+            self.timed(f.name(), || f.apply(file, &mut tokens));
             if tokens.is_changed() {
                 self.timed("(clear_empty_tokens)", || tokens.clear_empty_tokens());
                 tokens.clear_changed();
@@ -756,8 +756,8 @@ mod tests {
         p.enable_profile();
         p.run(Path::new("a.php"), b"<?php foo (bar);").unwrap();
         p.run(Path::new("b.php"), b"<?php $a;").unwrap();
-        // Two files linted and tokenized; is_candidate ran 2x per file; only the first had T_STRING (one call per
-        // fixer), changed by both, so two clear_empty_tokens, one generate and one lint of the result.
+        // Two files linted and tokenized; each fixer applied to both, but only the first had T_STRING and was changed
+        // by both, so two clear_empty_tokens, one generate and one lint of the result.
         let calls: BTreeMap<String, u64> = p
             .profile_report()
             .lines()
@@ -770,12 +770,11 @@ mod tests {
         let expected = [
             ("(clear_empty_tokens)", 2),
             ("(generate_code)", 1),
-            ("(is_candidate)", 4),
             ("(lint after fix)", 1),
             ("(lint)", 2),
             ("(tokenize)", 2),
-            ("drop_space", 1),
-            ("upper", 1),
+            ("drop_space", 2),
+            ("upper", 2),
         ];
         assert_eq!(
             calls,
