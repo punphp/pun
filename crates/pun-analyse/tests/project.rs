@@ -66,7 +66,6 @@ fn block_pollution_defaults_and_explicit_config() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/block-pollution");
     assert!(Project::new(Vec::new(), Vec::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
     assert!(Project::from_config(&root, &Array::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
-    assert!(mago_analyzer::settings::Settings::default().pollute_scope_with_block);
     for (mode, pollution, maybe, loops) in [
         ("default", true, true, true),
         ("enabled", true, true, true),

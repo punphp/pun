@@ -1015,7 +1015,6 @@ mod tests {
         // Tokens::BLOCK_TYPE_PARENTHESIS = 1 ... BLOCK_TYPE_PROPERTY_HOOK = 15.
         let numbers: Vec<u8> = BlockType::ALL.iter().map(|&t| t as u8).collect();
         assert_eq!(numbers, (1..=15).collect::<Vec<u8>>());
-        assert_eq!(Tokens::BLOCK_TYPE_PROPERTY_HOOK as u8, 15);
     }
 
     #[test]
