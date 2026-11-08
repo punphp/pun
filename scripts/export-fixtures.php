@@ -2,7 +2,7 @@
 
 // Export PHP-CS-Fixer's per-fixer data-provider test cases to JSON.
 //
-//   php scripts/export-fixtures.php docs/presets/pinkary-effective.json crates/pun-harness/fixtures
+//   php scripts/export-fixtures.php scripts/data/pinkary-effective.json crates/pun-fixers/tests/fixtures
 //
 // For every fixer in the effective list, reflects its *FixerTest class from the
 // pinned php-cs-fixer checkout (.oracle/php-cs-fixer, with dev deps), and for

@@ -336,7 +336,7 @@ fn composes_the_difference_with_the_sets() {
     assert!(done.off > 0);
 
     // No prepared set and no skip: no empty `sets` or `exclude` line. A Rector rule that is a format rule in Pun
-    // writes nothing: the laravel preset runs standardize-not-equals (docs/presets/laravel.json), an empty one is named.
+    // writes nothing: the laravel preset runs standardize-not-equals (presets/laravel.json), an empty one is named.
     let not_equal = Rector {
         want: vec![(
             id("format/operators/standardize-not-equals"),

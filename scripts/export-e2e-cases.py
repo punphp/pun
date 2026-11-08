@@ -2,9 +2,9 @@
 """Write crates/pun-cli/tests/e2e/rules.json, the manifest of crates/pun-cli/tests/rules_e2e.rs: one small project
 per rule, with what real Pint does to it.
 
-Rules: every fixer Pinkary's config enables (docs/presets/pinkary-effective.json, with its effective options), plus
+Rules: every fixer Pinkary's config enables (scripts/data/pinkary-effective.json, with its effective options), plus
 new_with_parentheses and Pint/phpdoc_type_annotations_only (laravel preset / Pest config), plus the 17 Pun/ rules.
-For a Pint rule the input is the first upstream fixture input (crates/pun-harness/fixtures/<rule>.json) that real
+For a Pint rule the input is the first upstream fixture input (crates/pun-fixers/tests/fixtures/<rule>.json) that real
 Pint changes with `{"preset": "empty", "rules": {<rule>: <options>}}` (falling back to the fixture case's own
 configuration); `expected` is the file Pint writes and `test_stdout`/`test_exit` what `pint --test` prints and
 returns. Pun/ rules are enabled through pun.toml; their input/expected is the first Mago-derived case of the
@@ -76,7 +76,7 @@ def fixture_cases(rule):
     """Upstream testFix inputs (default whitespace config, no file), then pun-fixers' oracle cases."""
     if rule in HAND:
         yield HAND[rule], None
-    path = os.path.join(ROOT, 'crates/pun-harness/fixtures', rule.replace('/', '_') + '.json')
+    path = os.path.join(ROOT, 'crates/pun-fixers/tests/fixtures', rule.replace('/', '_') + '.json')
     for test in json.load(open(path))['tests'] if os.path.exists(path) else []:
         names = [p['name'] for p in test['params']]
         if not test['method'].startswith('testFix') or 'input' not in names:
@@ -94,7 +94,7 @@ def fixture_cases(rule):
 
 
 def main():
-    effective = json.load(open(os.path.join(ROOT, 'docs/presets/pinkary-effective.json')))
+    effective = json.load(open(os.path.join(ROOT, 'scripts/data/pinkary-effective.json')))
     rules = {f['name']: (f['options'] if f['options'] else True) for f in effective['fixers']}
     rules.setdefault('new_with_parentheses', True)
     rules.setdefault('Pint/phpdoc_type_annotations_only', True)

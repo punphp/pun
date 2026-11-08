@@ -404,7 +404,7 @@ mod tests {
     fn invalid_configuration() {
         let raw = std::fs::read(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../pun-harness/fixtures/header_comment.json"
+            "/tests/fixtures/header_comment.json"
         ))
         .unwrap();
         let doc: Value = serde_json::from_slice(&raw).unwrap();

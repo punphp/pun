@@ -30,10 +30,7 @@ use std::sync::LazyLock;
 /// Presets from the pinned Pint (`resources/presets/*.php`), in declaration order. laravel comes from the
 /// harness export (`rules_as_configured`); the others are plain rule maps exported the same way.
 pub const PRESETS: [(&str, &str); 5] = [
-    (
-        "laravel",
-        include_str!("../../../docs/presets/laravel.json"),
-    ),
+    ("laravel", include_str!("../presets/laravel.json")),
     ("per", include_str!("../presets/per.json")),
     ("psr12", include_str!("../presets/psr12.json")),
     ("symfony", include_str!("../presets/symfony.json")),

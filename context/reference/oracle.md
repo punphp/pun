@@ -114,7 +114,7 @@ once to read a `.php-cs-fixer(.dist).php`'s resolved rules through the project's
 
 ## Fixtures
 
-`crates/pun-harness/fixtures/<fixer>.json`: per test method with a `#[DataProvider]`, its params
+`crates/pun-fixers/tests/fixtures/<fixer>.json`: per test method with a `#[DataProvider]`, its params
 (name/type/default), `#[RequiresPhp]`, `declared_in`, the PHP body (so you can see how args are
 used, e.g. whitespace config), and every case `{provider, key, args}`. Objects are dumped as
 `{"__class": ..., props}`; non-UTF-8 strings as `{"__base64": ...}`. Includes non-fix providers

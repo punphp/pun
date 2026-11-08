@@ -1,4 +1,4 @@
-//! Runs PHP-CS-Fixer's own test cases (exported to crates/pun-harness/fixtures/<name>.json) against each ported fixer.
+//! Runs PHP-CS-Fixer's own test cases (exported to crates/pun-fixers/tests/fixtures/<name>.json) against each ported fixer.
 //! `PUN_FIXERS_ONLY=name cargo test -p punphp-fixers --test fixtures -- --nocapture`
 //!
 //! Mirrors AbstractFixerTestCase::doTest: a fresh fixer per case, configured from the `configuration` arg
@@ -156,7 +156,7 @@ fn is_empty_config(c: &Value) -> bool {
 
 #[test]
 fn upstream_fixtures() {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-harness/fixtures");
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let verbose = std::env::var("PUN_FIXTURE_VERBOSE").is_ok();
     let (mut pass, mut fail) = (0, 0);
     for fixer in pun_fixers::all() {

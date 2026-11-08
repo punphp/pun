@@ -70,7 +70,7 @@ mod tests {
     fn invalid_configuration() {
         let raw = std::fs::read(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../pun-harness/fixtures/phpdoc_no_alias_tag.json"
+            "/tests/fixtures/phpdoc_no_alias_tag.json"
         ))
         .unwrap();
         let doc: Value = serde_json::from_slice(&raw).unwrap();

@@ -12,7 +12,7 @@ $root = __DIR__.'/..';
 // PRESET=<name> (default laravel): the preset whose getRules() PhpBlockFormatting runs (pun-config's exports).
 $presetFor = function (string $presetName) use ($root): array {
     return 'laravel' === $presetName
-        ? json_decode(file_get_contents("$root/docs/presets/laravel.json"), true)['rules_as_configured']
+        ? json_decode(file_get_contents("$root/crates/pun-config/presets/laravel.json"), true)['rules_as_configured']
         : json_decode(file_get_contents("$root/crates/pun-config/presets/$presetName.json"), true);
 };
 require "$root/.oracle/pint/vendor/autoload.php";

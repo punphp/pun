@@ -249,7 +249,7 @@ def format_config(data: dict, preset: str) -> dict[str, object]:
                 result[key] = value if on else False
         return result
 
-    path = ROOT / ("docs/presets/laravel.json" if preset == "laravel" else f"crates/pun-config/presets/{preset}.json")
+    path = ROOT / f"crates/pun-config/presets/{preset}.json"
     raw = json.loads(path.read_text())
     resolved = {}
     for key, value in raw.get("rules_as_configured", raw).items():

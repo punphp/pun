@@ -1198,7 +1198,7 @@ mod migrate {
         .unwrap()
     }
 
-    /// Hand-derived from Pint's laravel preset (docs/presets/laravel.json, in its order) and the mapping: its 4 risky
+    /// Hand-derived from Pint's laravel preset (presets/laravel.json, in its order) and the mapping: its 4 risky
     /// fixers and 11 code-deleting ones are lint rules (context/plan/commands.md §4).
     #[test]
     fn writes_a_delta_and_moves_risky_rules_to_lint() {
