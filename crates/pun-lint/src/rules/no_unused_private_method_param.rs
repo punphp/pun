@@ -13,6 +13,7 @@
 //! does Pun, but only removes parameters after the last kept one then, where the extra arguments PHP ignores do not
 //! shift the others.
 
+use crate::syntax::is_this;
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
@@ -234,11 +235,6 @@ fn find_references<'a>(
         _ => {}
     }
     node.visit_children(|child| find_references(class, child, name, out));
-}
-
-/// Whether `expr` is `$this`.
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(expr, Expression::Variable(Variable::Direct(v)) if v.name.eq_ignore_ascii_case(b"$this"))
 }
 
 /// Whether the class part of a static call is the class (`Some(true)`), another class (`Some(false)`) or unknown.

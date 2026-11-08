@@ -450,20 +450,6 @@ pub(crate) fn reindent(source: &str, tokens: &[Token], span: Span, cut: usize) -
     out
 }
 
-/// php-parser's `Name::toLowerString() === $name` for a constant fetch of `true` or `null` (`TRUE`, `\true`, ...).
-pub(crate) fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
-    match unparenthesize(expr) {
-        Expression::Literal(Literal::True(k) | Literal::Null(k)) => {
-            k.value.eq_ignore_ascii_case(name.as_bytes())
-        }
-        // Mago reads `\true` as a constant; `Foo\true` names another constant, and a bare `true` is a literal.
-        Expression::ConstantAccess(ConstantAccess {
-            name: Identifier::FullyQualified(id),
-        }) => id.value[1..].eq_ignore_ascii_case(name.as_bytes()),
-        _ => false,
-    }
-}
-
 /// Rector's `ExprAnalyzer::isDynamicExpr`: whether a value is not known at compile time.
 pub(crate) fn is_dynamic_expr(expr: &Expression<'_>) -> bool {
     let mut expr = unparenthesize(expr);

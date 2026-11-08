@@ -15,6 +15,7 @@
 //! keeps its source text, moved to the class's indentation (`TokenStream::getTokenCode`). A class body left with no
 //! statement (php-parser keeps a trailing comment as a `Nop`) makes php-parser print the whole class anew.
 
+use crate::rules::rector_code_quality::is_constant;
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Safety, Span};
 
@@ -254,21 +255,6 @@ pub(crate) fn is_string_node(expr: &Expression<'_>) -> bool {
         Expression::CompositeString(CompositeString::Document(d)) => {
             d.parts.iter().all(|p| matches!(p, StringPart::Literal(_)))
         }
-        _ => false,
-    }
-}
-
-/// `$value instanceof ConstFetch && $value->name->toLowerString() === $name` for `true` or `false`.
-fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
-    match unparenthesize(expr) {
-        Expression::Literal(Literal::True(_)) => name == "true",
-        Expression::Literal(Literal::False(_)) => name == "false",
-        Expression::ConstantAccess(c) => c
-            .name
-            .value()
-            .strip_prefix(b"\\")
-            .unwrap_or(c.name.value())
-            .eq_ignore_ascii_case(name.as_bytes()),
         _ => false,
     }
 }

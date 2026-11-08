@@ -7,6 +7,7 @@
 //! `a`. Rector skips a file
 //! with inline HTML.
 
+use crate::syntax::is_this;
 use mago_syntax::cst::{
     Access, AssignmentOperator, Call, ClassLikeMemberSelector, Expression, MethodBody, Node,
     NodeKind, Statement, Variable,
@@ -114,10 +115,6 @@ fn subject(stmt: &Statement<'_>) -> Option<String> {
         }
     }
     name(node)
-}
-
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(expr, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// `NodeNameResolver::getName()` for what can start a set: a variable, a property fetch, a function call.

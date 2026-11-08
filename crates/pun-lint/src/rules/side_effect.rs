@@ -15,7 +15,12 @@ use super::rector_stmts::is_plain_assign;
 const PURE: &str = include_str!("../../data/pure-functions.txt");
 const THROWABLES: &str = include_str!("../../data/throwables.txt");
 
-fn listed(list: &'static str, cache: &'static OnceLock<Vec<&'static str>>, name: &str) -> bool {
+/// Whether the lowercased `name` is in the sorted, newline-separated `list`, split once into `cache`.
+pub(crate) fn listed(
+    list: &'static str,
+    cache: &'static OnceLock<Vec<&'static str>>,
+    name: &str,
+) -> bool {
     let names = cache.get_or_init(|| list.lines().collect());
     names
         .binary_search(&name.to_ascii_lowercase().as_str())

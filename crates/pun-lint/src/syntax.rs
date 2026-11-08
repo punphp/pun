@@ -22,6 +22,11 @@ pub fn unparenthesize<'a>(mut expr: &'a Expression<'a>) -> &'a Expression<'a> {
     expr
 }
 
+/// Whether `expr` is `$this`, compared like `NodeNameResolver::isName` (ignoring case), through parentheses.
+pub fn is_this(expr: &Expression<'_>) -> bool {
+    matches!(unparenthesize(expr), Expression::Variable(mago_syntax::cst::Variable::Direct(v)) if v.name.eq_ignore_ascii_case(b"$this"))
+}
+
 /// Whether two spans of `source` hold the same tokens, ignoring whitespace and comments. This stands in for Rector's
 /// `NodeComparator::areNodesEqual`, which compares the two nodes printed without comments.
 pub fn same_code(source: &str, a: Span, b: Span) -> bool {

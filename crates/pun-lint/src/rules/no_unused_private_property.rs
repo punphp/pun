@@ -22,7 +22,7 @@ use super::rector_batch5::{
 };
 use super::rector_code_quality::{named, text};
 use super::rector_stmts::{List, enclosing};
-use super::syntax_types::is_this;
+use crate::syntax::is_this;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 

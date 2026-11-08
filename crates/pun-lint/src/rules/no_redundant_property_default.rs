@@ -22,11 +22,11 @@ use super::rector_batch5::{
     doc_comment, has_attribute, method, resolve_class_name, scope_statements,
 };
 use super::rector_stmts::previous_token_end;
-use super::syntax_types::is_this;
 use super::types::compare::classes::with_classes;
 use super::types::compare::mapper::expr_type;
 use super::types::facts::{self, facts, path_of};
 use super::types::property_type::ClassView;
+use crate::syntax::is_this;
 use crate::syntax::{node_span, same_code, unparenthesize};
 use crate::{Context, Report, Rule};
 

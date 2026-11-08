@@ -56,7 +56,7 @@ impl Rule for AddBoolReturn {
         let values: Vec<&Expression<'_>> = returns
             .iter()
             .filter_map(|r| r.value)
-            .map(unparenthesized)
+            .map(crate::syntax::unparenthesize)
             .collect();
         let constant = |e: &&Expression<'_>| {
             matches!(e, Expression::Literal(Literal::True(_) | Literal::False(_)))
@@ -71,14 +71,6 @@ impl Rule for AddBoolReturn {
             out.push(add_return_type(f.span, f.at, "bool"));
         }
     }
-}
-
-/// php-parser drops parentheses.
-pub(super) fn unparenthesized<'a>(mut expr: &'a Expression<'a>) -> &'a Expression<'a> {
-    while let Expression::Parenthesized(p) = expr {
-        expr = p.expression;
-    }
-    expr
 }
 
 /// `ExprAnalyzer::isBoolExpr`.

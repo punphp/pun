@@ -13,6 +13,7 @@
 //! `?Entity` when it calls `->getOneOrNullResult()` or `->findOneBy()`, and `array` with a new `@return Entity[]` when it
 //! calls `->findBy()`; the entity is written as the doc writes it.
 
+use crate::syntax::is_this;
 use mago_syntax::cst::{
     Call, ClassLikeMember, ClassLikeMemberSelector, Expression, Method, MethodBody, Modifier, Node,
     NodeKind, Variable,
@@ -271,11 +272,6 @@ fn is_container_get(expr: &Expression<'_>) -> bool {
         }
         caller => is_this(caller),
     }
-}
-
-/// `isName($expr, 'this')` on a variable.
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name[1..].eq_ignore_ascii_case(b"this"))
 }
 
 /// `isName` on a member name written as an identifier.

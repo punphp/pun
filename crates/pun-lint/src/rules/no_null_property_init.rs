@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Node, NodeKind, Property, PropertyItem};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::php_parser::is_constant;
+use super::rector_code_quality::is_constant;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 

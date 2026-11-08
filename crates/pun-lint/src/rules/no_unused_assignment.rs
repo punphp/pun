@@ -16,8 +16,9 @@ use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
 use super::no_useless_variable::find_last;
-use super::php_parser::{Token, is_constant, previous_token_end, tokens};
+use super::php_parser::{Token, previous_token_end, tokens};
 use super::rector_batch5::called_function_name;
+use super::rector_code_quality::is_constant;
 use super::rector_conditions::comments_between;
 use super::rector_stmts::{
     expression, is_plain_assign, is_static_or_global, is_used_by_reference, variable_name,

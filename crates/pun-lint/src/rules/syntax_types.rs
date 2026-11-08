@@ -1,7 +1,10 @@
 //! Types read from the syntax, where Rector asks PHPStan: Pun's stand-in until analyse's index can answer
 //! (lint.md Build 8). Each answer is "yes" only when the syntax alone proves it.
 
+use crate::syntax::is_this;
 use std::sync::OnceLock;
+
+use super::side_effect::listed;
 
 use mago_syntax::cst::*;
 
@@ -60,12 +63,8 @@ fn bool_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
         Expression::Construct(Construct::Isset(_) | Construct::Empty(_)) => true,
         Expression::Call(Call::Function(call)) => {
             static CACHE: OnceLock<Vec<&'static str>> = OnceLock::new();
-            let names = CACHE.get_or_init(|| BOOL_FUNCTIONS.lines().collect());
-            called_function_name(ancestors, call.function).is_some_and(|n| {
-                names
-                    .binary_search(&n.to_ascii_lowercase().as_str())
-                    .is_ok()
-            })
+            called_function_name(ancestors, call.function)
+                .is_some_and(|n| listed(BOOL_FUNCTIONS, &CACHE, &n))
         }
         Expression::Call(Call::Method(call)) if is_this(call.object) => {
             own_method_returns(ancestors, &call.method, &|h| matches!(h, Hint::Bool(_)))
@@ -128,11 +127,6 @@ fn parameter<'ast, 'arena>(
         return None;
     }
     Some(param)
-}
-
-/// Whether `expr` is `$this`, parentheses aside.
-pub(crate) fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// Whether the enclosing class declares the method `selector` names with a return type that `check` accepts.
@@ -245,12 +239,8 @@ fn int_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
         }
         Expression::Call(Call::Function(call)) => {
             static CACHE: OnceLock<Vec<&'static str>> = OnceLock::new();
-            let names = CACHE.get_or_init(|| INT_FUNCTIONS.lines().collect());
-            called_function_name(ancestors, call.function).is_some_and(|n| {
-                names
-                    .binary_search(&n.to_ascii_lowercase().as_str())
-                    .is_ok()
-            })
+            called_function_name(ancestors, call.function)
+                .is_some_and(|n| listed(INT_FUNCTIONS, &CACHE, &n))
         }
         Expression::Call(Call::Method(call)) if is_this(call.object) => {
             own_method_returns(ancestors, &call.method, &|h| matches!(h, Hint::Integer(_)))

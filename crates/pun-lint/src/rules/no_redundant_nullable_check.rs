@@ -23,7 +23,8 @@ use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::lint_b_doc::Doc;
 use super::no_useless_var_tag::var_removal_if_not_comment;
-use super::php_parser::{enclosing, is_constant, tokens};
+use super::php_parser::{enclosing, tokens};
+use super::rector_code_quality::is_constant;
 use super::rector_conditions::{if_parts, is_stmts_aware};
 use super::types::compare::RType;
 use super::types::compare::classes::with_classes;

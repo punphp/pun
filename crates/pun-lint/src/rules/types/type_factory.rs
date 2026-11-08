@@ -19,11 +19,11 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Block, Expression, Return};
 
-use super::add_bool_return::unparenthesized;
 use super::add_return_type_from_new::anonymous_parents;
 use super::declare::union_order;
 use super::native::native_type;
 use super::silent_void::{Place, has_silent_void};
+use crate::syntax::unparenthesize as unparenthesized;
 
 /// What `createUnionOrSingleType` gives.
 #[derive(Debug)]

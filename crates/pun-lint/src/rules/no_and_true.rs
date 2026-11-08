@@ -8,7 +8,8 @@
 use mago_syntax::cst::{Binary, BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety};
 
-use super::php_parser::{bare_text, is_constant, parent_of};
+use super::php_parser::{bare_text, parent_of};
+use super::rector_code_quality::is_constant;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 

@@ -2,6 +2,7 @@
 //! rules/TypeDeclaration) share: a function or method as a `ClassMethod|Function_`, `ReturnNodeFinder`, and the
 //! report whose fix writes the changed doc comment through [`crate::rules::phpdoc_writer`].
 
+use crate::syntax::is_this;
 use mago_syntax::cst::{
     Access, Assignment, AssignmentOperator, Block, ClassLikeMember, ClassLikeMemberSelector, Expression,
     FunctionLikeParameterList, FunctionLikeReturnTypeHint, Hint, Method, MethodBody, Node, Property, PropertyItem,
@@ -231,11 +232,6 @@ pub(crate) fn properties<'ast, 'arena>(
             }
         })
         .collect()
-}
-
-/// `$this->isName($expr, 'this')` of a direct variable.
-pub(crate) fn is_this(expr: &Expression<'_>) -> bool {
-    variable_name(expr) == Some("this")
 }
 
 /// The name of a direct variable, without `$`.

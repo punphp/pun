@@ -9,6 +9,7 @@
 //! Rector reads the traits from their files; Pun reads the traits of the same file, and keeps every property of a
 //! class that uses a trait from another file (tests/rector/NarrowUnusedSetUpDefinedPropertyRector/Pun).
 
+use crate::syntax::is_this;
 use mago_syntax::cst::{
     Access, ClassLikeMember, ClassLikeMemberSelector, Expression, Method, Modifier, Node, NodeKind,
     Property, Variable,
@@ -118,11 +119,6 @@ impl Rule for PreferLocalOverSetupProperty {
             edits,
         ));
     }
-}
-
-/// Whether `expr` is `$this`.
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name.eq_ignore_ascii_case(b"$this"))
 }
 
 /// The spans of the `$this->name` fetches under `node`, however deep (an inner one is listed too).

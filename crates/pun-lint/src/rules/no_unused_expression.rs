@@ -21,7 +21,7 @@ use super::rector_stmts::{
     Frame, HOLDERS, block_list, body_list, holder_list, line_indent, remove,
 };
 use super::side_effect::any_node;
-use super::syntax_types::is_this;
+use crate::syntax::is_this;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
