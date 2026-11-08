@@ -4,7 +4,8 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "The problem type shared by pun lint, pun analyse and the renderer"
+publish.workspace = true
+description = "The problem, span and edit types shared by pun lint and the renderer, and @pun-ignore comments"
 repository.workspace = true
 homepage.workspace = true
 

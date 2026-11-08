@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "PHP tokenizer with token_get_all / PHP-CS-Fixer Tokens semantics"
 repository.workspace = true
 homepage.workspace = true

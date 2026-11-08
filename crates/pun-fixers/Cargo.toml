@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Pun's ports of the PHP-CS-Fixer and Pint fixers"
 repository.workspace = true
 homepage.workspace = true

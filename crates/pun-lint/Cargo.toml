@@ -2,10 +2,14 @@
 name = "punphp-lint"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Pun's lint engine: rules on Mago's syntax tree that report problems and fix them with text edits"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [lib]
 name = "pun_lint"

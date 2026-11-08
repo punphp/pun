@@ -4,12 +4,17 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Pun: a fast, byte-for-byte Laravel Pint compatible PHP formatter written in Rust"
+publish.workspace = true
+description = "Pun: format, lint and analyse PHP with the results of Pint, Rector and PHPStan, in one Rust binary"
 repository.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 categories.workspace = true
 readme = "../../README.md"
+
+# publish = false would otherwise leave the binary out of the release archives.
+[package.metadata.dist]
+dist = true
 
 [[bin]]
 name = "pun"
