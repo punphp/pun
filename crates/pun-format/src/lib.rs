@@ -299,7 +299,7 @@ impl Pipeline {
         }
     }
 
-    /// See `ignore_mismatched_rules`; the CLI passes `php_bool` of the environment variable.
+    /// See `ignore_mismatched_rules`; the CLI passes `filter_var_bool` of the environment variable.
     pub fn ignore_mismatched_rules(&mut self, ignore: bool) {
         self.ignore_mismatched_rules = ignore;
     }
@@ -460,11 +460,6 @@ impl std::error::Error for AnnotationError {}
 fn has_annotation(code: &[u8]) -> bool {
     code.windows(13)
         .any(|w| w == b"php-cs-fixer-" || w == b"pun-ignore-fi")
-}
-
-/// `filter_var($v, FILTER_VALIDATE_BOOLEAN)`.
-pub fn php_bool(v: &str) -> bool {
-    ["1", "true", "on", "yes"].contains(&v.trim().to_ascii_lowercase().as_str())
 }
 
 /// A syntax error (PHP-CS-Fixer `LintingException`). `after_fix` = the fixers produced invalid code.
@@ -921,9 +916,6 @@ mod tests {
                 .to_string(),
             "Undefined array key 1"
         );
-        // filter_var(FILTER_VALIDATE_BOOLEAN), as PHP reads the variable.
-        assert!(php_bool(" Yes") && php_bool("on") && php_bool("1") && php_bool("TRUE"));
-        assert!(!php_bool("0") && !php_bool("y") && !php_bool(""));
     }
 
     #[test]

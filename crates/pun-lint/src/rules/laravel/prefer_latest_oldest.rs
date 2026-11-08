@@ -28,10 +28,11 @@ use super::object_type::{
 };
 use super::print::reprinted_call;
 use super::{is_name, member_name};
-use crate::rules::rector_batch5::{Value, float_string, value};
+use crate::rules::rector_batch5::{Value, value};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
+use pun_tokens::php_compat::float_to_string;
 
 pub struct PreferLatestOldest {
     pub allowed_patterns: Vec<String>,
@@ -207,10 +208,7 @@ fn to_string(got: Got) -> (String, bool) {
     match got {
         Got::Str(s, known) => (s, known),
         Got::Other(Value::Int(i)) => (i.to_string(), true),
-        // a float PHP writes with an exponent is not read
-        Got::Other(Value::Float(f)) => {
-            float_string(f).map_or((String::new(), false), |s| (s, true))
-        }
+        Got::Other(Value::Float(f)) => (float_to_string(f), true),
         Got::Other(Value::Bool(true)) => ("1".into(), true),
         // `false` and `null`; strings are never `Other`
         Got::Other(_) => (String::new(), true),

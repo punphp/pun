@@ -3,7 +3,9 @@
 //! `AttributeArrayNameInliner` and `AttributeNameFactory` (`UseAliasNameMatcher`), the Php80 attribute decorators,
 //! `AttributeValueResolver`, and php-parser's printer for the nodes they make.
 
+use crate::rules::phpunit::print_float;
 use mago_syntax::cst::LiteralStringKind;
+use pun_tokens::php_compat::intval;
 
 use super::doc::{Annotation, is_class_name};
 use super::phpdoc_parser::{ArrayItem, Key, Val, print_string};
@@ -128,7 +130,7 @@ fn map_val(value: &Val, nested: bool) -> Option<Expr> {
         Val::Const(value) => match value.as_str() {
             "true" => Expr::Const("true"),
             "false" => Expr::Const("false"),
-            _ => Expr::Int(php_int(value)),
+            _ => Expr::Int(intval(value)),
         },
         // `CurlyListNodeAnnotationToAttributeMapper`
         Val::Curly(items) => {
@@ -138,7 +140,7 @@ fn map_val(value: &Val, nested: bool) -> Option<Expr> {
                 let mut mapped = map_item(item, nested);
                 let key = match &item.key {
                     // (a curly list's keys are values, never `Key::Int`)
-                    Some(Key::Val(Val::Str(key))) if is_numeric(key) => php_int(key),
+                    Some(Key::Val(Val::Str(key))) if is_numeric(key) => intval(key),
                     _ => {
                         array.push(mapped);
                         continue;
@@ -297,7 +299,7 @@ pub(crate) fn create(
                 && let Expr::Str(string, _) = value
                 && is_numeric(string)
             {
-                *value = Expr::Int(php_int(string));
+                *value = Expr::Int(intval(string));
             }
         }
     }
@@ -312,8 +314,8 @@ pub(crate) fn create(
             && is_numeric(string)
         {
             let float = php_float(string);
-            arg.value = match float == php_int(string) as f64 {
-                true => Expr::Int(php_int(string)),
+            arg.value = match float == intval(string) as f64 {
+                true => Expr::Int(intval(string)),
                 false => Expr::Float(float),
             };
         }
@@ -650,16 +652,6 @@ fn php_float(value: &str) -> f64 {
     value.trim().parse().unwrap_or(0.0)
 }
 
-/// PHP's `(int)` of a numeric string: its float value cut towards zero (saturating) where it has a fraction or an
-/// exponent, else its digits.
-fn php_int(value: &str) -> i64 {
-    let trimmed = value.trim();
-    match trimmed.parse::<i64>() {
-        Ok(int) => int,
-        Err(_) => php_float(trimmed) as i64,
-    }
-}
-
 impl std::fmt::Display for Attribute {
     /// `pAttributeGroup()` of the attribute's group.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -711,38 +703,4 @@ fn print(expr: &Expr) -> String {
         ),
         Expr::New(class, args) => format!("new {class}({})", print_args(args)),
     }
-}
-
-/// `pScalar_Float()`: `%.16G`, or `%.17G` where that does not give the value back. (Its `.0` after an integer never
-/// comes: a float printed without an exponent is below 1e16, so equals its `(int)`, and the mapper made it an integer.)
-fn print_float(value: f64) -> String {
-    let printed = format_g(value, 16);
-    match printed.parse::<f64>() == Ok(value) {
-        true => printed,
-        false => format_g(value, 17),
-    }
-}
-
-/// PHP's `sprintf('%.{precision}G')` (`php_gcvt()`): fixed below the precision's exponent, else a mantissa with at
-/// least one decimal and `E`, the sign and the exponent's digits. (A zero is never a float here: it is an integer.)
-fn format_g(value: f64, precision: usize) -> String {
-    let exponent = format!("{:.*e}", precision - 1, value);
-    let (mantissa, exp) = exponent.split_once('e').expect("an exponent");
-    let exp: i32 = exp.parse().expect("digits");
-    let trim = |s: &str| s.trim_end_matches('0').trim_end_matches('.').to_string();
-    if exp < -4 || exp >= precision as i32 {
-        let mantissa = trim(mantissa);
-        let mantissa = if mantissa.contains('.') {
-            mantissa
-        } else {
-            format!("{mantissa}.0")
-        };
-        return format!(
-            "{mantissa}E{}{}",
-            if exp < 0 { '-' } else { '+' },
-            exp.abs()
-        );
-    }
-    let fixed = format!("{:.*}", (precision as i32 - 1 - exp) as usize, value);
-    fixed.contains('.').then(|| trim(&fixed)).unwrap_or(fixed)
 }

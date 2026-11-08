@@ -868,7 +868,7 @@ fn pipeline(cfg: &Config) -> Result<Pipeline> {
     p.set_preset(&cfg.preset);
     p.ignore_mismatched_rules(
         std::env::var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS")
-            .is_ok_and(|v| pun_format::php_bool(&v)),
+            .is_ok_and(|v| pun_tokens::php_compat::filter_var_bool(&v)),
     );
     // PUN_PROFILE=1: per-stage timings on stderr after the run.
     if std::env::var_os("PUN_PROFILE").is_some() {

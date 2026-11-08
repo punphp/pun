@@ -12,11 +12,12 @@
 use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
-use super::rector_batch5::{Value, float_string, int_version, replace_with, value};
+use super::rector_batch5::{Value, int_version, replace_with, value};
 use super::rector_code_quality::call_to;
 use super::rector_stmts::if_view;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
+use pun_tokens::php_compat::float_to_string;
 
 pub struct NoFuturePhpVersionCheck;
 
@@ -168,7 +169,7 @@ fn argument_version(expr: &Expression<'_>, version: i64) -> Option<i64> {
             Some(version)
         }
         Value::Str(s) => Some(int_version(&s)),
-        Value::Float(f) => Some(int_version(&float_string(f)?)),
+        Value::Float(f) => Some(int_version(&float_to_string(f))),
         Value::Int(i) => Some(i),
         _ => None,
     }

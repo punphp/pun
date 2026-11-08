@@ -12,8 +12,8 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{ArgumentList, Expression, Literal, Node, NodeKind, Variable};
 use pun_problem::{Edit, Safety};
+use pun_tokens::php_compat::{intval, sprintf_g};
 
-use super::prefer_test_with_attribute::php_g;
 use super::{AnyCall, class_is, class_parents, is_in_test_class, own_class, resolve};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -100,11 +100,11 @@ impl Rule for RequireExactTestArgumentType {
                     i.value.map(|v| format!("'{v}'"))
                 }
                 (TAtomic::Scalar(TScalar::String(_)), Literal::Float(f)) => {
-                    Some(format!("'{}'", php_g(*f.value, 14)))
+                    Some(format!("'{}'", sprintf_g(*f.value, 14)))
                 }
                 (TAtomic::Scalar(TScalar::Integer(_)), Literal::String(s)) => {
                     // `pScalar_Int()`: `PHP_INT_MIN` has no literal
-                    s.value.map(|v| match php_int_cast(v) {
+                    s.value.map(|v| match intval(&String::from_utf8_lossy(v)) {
                         i64::MIN => "(-9223372036854775807-1)".to_string(),
                         i => i.to_string(),
                     })
@@ -197,70 +197,5 @@ fn object_type_class(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String>
             Some(n.name.to_string())
         }
         _ => None,
-    }
-}
-
-/// PHP's `(int)` of a string: its leading numeric part (white space, a sign, digits, a fraction, an exponent), an
-/// integer that does not fit or a number with a fraction or an exponent cast from the float, capped; `0` without one.
-fn php_int_cast(s: &[u8]) -> i64 {
-    let mut i = 0;
-    while matches!(
-        s.get(i),
-        Some(b' ' | b'\t' | b'\n' | b'\r' | b'\x0B' | b'\x0C')
-    ) {
-        i += 1;
-    }
-    let start = i;
-    if matches!(s.get(i), Some(b'+' | b'-')) {
-        i += 1;
-    }
-    let digits_start = i;
-    while s.get(i).is_some_and(u8::is_ascii_digit) {
-        i += 1;
-    }
-    let mut integer = true;
-    let int_digits = i - digits_start;
-    let mut frac_digits = 0;
-    if s.get(i) == Some(&b'.') {
-        let mut j = i + 1;
-        while s.get(j).is_some_and(u8::is_ascii_digit) {
-            j += 1;
-        }
-        frac_digits = j - i - 1;
-        if int_digits + frac_digits > 0 {
-            integer = false;
-            i = j;
-        }
-    }
-    if int_digits + frac_digits == 0 {
-        return 0;
-    }
-    if matches!(s.get(i), Some(b'e' | b'E')) {
-        let mut j = i + 1;
-        if matches!(s.get(j), Some(b'+' | b'-')) {
-            j += 1;
-        }
-        if s.get(j).is_some_and(u8::is_ascii_digit) {
-            while s.get(j).is_some_and(u8::is_ascii_digit) {
-                j += 1;
-            }
-            integer = false;
-            i = j;
-        }
-    }
-    let text = std::str::from_utf8(&s[start..i]).unwrap_or("0");
-    if integer && let Ok(value) = text.parse::<i64>() {
-        return value;
-    }
-    let value: f64 = text.parse().unwrap_or(0.0);
-    if !value.is_finite() {
-        return 0;
-    }
-    if value >= 9.223_372_036_854_776e18 {
-        i64::MAX
-    } else if value < -9.223_372_036_854_776e18 {
-        i64::MIN
-    } else {
-        value as i64
     }
 }

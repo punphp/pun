@@ -8,6 +8,7 @@
 
 use mago_syntax::cst::{Method, Node, NodeKind};
 use pun_problem::Safety;
+use pun_tokens::php_compat::sprintf_g;
 use serde_json::Value;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
@@ -182,44 +183,13 @@ fn print_value(value: &Value) -> Option<String> {
 /// php-parser's `pScalar_Float`: `%.16G`, or `%.17G` when that does not read back as the same float, with `.0` after a
 /// whole number.
 pub(crate) fn print_float(value: f64) -> String {
-    let mut printed = php_g(value, 16);
+    let mut printed = sprintf_g(value, 16);
     if printed.parse::<f64>().ok() != Some(value) {
-        printed = php_g(value, 17);
+        printed = sprintf_g(value, 17);
     }
     let digits = printed.strip_prefix('-').unwrap_or(&printed);
     if digits.bytes().all(|c| c.is_ascii_digit()) {
         printed.push_str(".0");
     }
     printed
-}
-
-/// PHP's `sprintf('%.{precision}G', $value)`: the shorter of `%E` (a whole mantissa with `.0`, the exponent without
-/// padding) and `%F`, without trailing zeros.
-pub(super) fn php_g(value: f64, precision: usize) -> String {
-    if value == 0.0 {
-        return if value.is_sign_negative() { "-0" } else { "0" }.to_string();
-    }
-    let scientific = format!("{:.*e}", precision - 1, value);
-    let (mantissa, exponent) = scientific.split_once('e').unwrap_or((&scientific, "0"));
-    let exponent: i32 = exponent.parse().unwrap_or(0);
-    let (sign, mantissa) = match mantissa.strip_prefix('-') {
-        Some(m) => ("-", m),
-        None => ("", mantissa),
-    };
-    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
-    if exponent < -4 || exponent >= precision as i32 {
-        let digits = digits.trim_end_matches('0');
-        let (first, rest) = digits.split_at(1);
-        let rest = if rest.is_empty() { "0" } else { rest };
-        let exponent_sign = if exponent < 0 { '-' } else { '+' };
-        return format!("{sign}{first}.{rest}E{exponent_sign}{}", exponent.abs());
-    }
-    let fixed = if exponent < 0 {
-        format!("0.{}{digits}", "0".repeat((-exponent - 1) as usize))
-    } else {
-        let point = exponent as usize + 1;
-        format!("{}.{}", &digits[..point], &digits[point..])
-    };
-    let fixed = fixed.trim_end_matches('0').trim_end_matches('.');
-    format!("{sign}{fixed}")
 }

@@ -575,7 +575,7 @@ pub fn var_export_string(s: &[u8]) -> Vec<u8> {
     out
 }
 
-/// PHP's `(string) $float` (`precision` = 14, `%.14G` with PHP's `.0` and `E+` exponent spelling).
+/// PHP's `(string) $float` (`precision` = 14: `%.14G`, plus `NAN` and `INF`).
 pub fn float_to_string(f: f64) -> String {
     if f.is_nan() {
         return "NAN".into();
@@ -583,34 +583,48 @@ pub fn float_to_string(f: f64) -> String {
     if f.is_infinite() {
         return if f > 0.0 { "INF" } else { "-INF" }.into();
     }
-    if f == 0.0 {
-        return if f.is_sign_negative() { "-0" } else { "0" }.into();
-    }
-    let s = format!("{:.13e}", f.abs());
-    let (mantissa, exp) = s.split_once('e').unwrap();
-    let exp: i32 = exp.parse().unwrap();
-    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
-    let digits = digits.trim_end_matches('0');
-    let sign = if f < 0.0 { "-" } else { "" };
-    if !(-4..14).contains(&exp) {
-        let (head, tail) = digits.split_at(1);
-        let tail = if tail.is_empty() { "0" } else { tail };
-        let esign = if exp < 0 { '-' } else { '+' };
-        return format!("{sign}{head}.{tail}E{esign}{}", exp.abs());
-    }
-    if exp < 0 {
-        return format!("{sign}0.{}{digits}", "0".repeat((-exp - 1) as usize));
-    }
-    let int_len = exp as usize + 1;
-    if digits.len() <= int_len {
-        format!("{sign}{digits}{}", "0".repeat(int_len - digits.len()))
-    } else {
-        format!("{sign}{}.{}", &digits[..int_len], &digits[int_len..])
-    }
+    sprintf_g(f, 14)
 }
 
-/// PHP's `intval()` on a string: the leading numeric part (whitespace, sign, digits, fraction, exponent), truncated
-/// toward zero and saturating; 0 when there is none.
+/// PHP's `sprintf('%.{precision}G', $value)`: the shorter of `%E` (a whole mantissa with `.0`, the exponent without
+/// padding) and `%F`, without trailing zeros.
+pub fn sprintf_g(value: f64, precision: usize) -> String {
+    if value == 0.0 {
+        return if value.is_sign_negative() { "-0" } else { "0" }.to_string();
+    }
+    let scientific = format!("{:.*e}", precision - 1, value);
+    let (mantissa, exponent) = scientific.split_once('e').unwrap_or((&scientific, "0"));
+    let exponent: i32 = exponent.parse().unwrap_or(0);
+    let (sign, mantissa) = match mantissa.strip_prefix('-') {
+        Some(m) => ("-", m),
+        None => ("", mantissa),
+    };
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    if exponent < -4 || exponent >= precision as i32 {
+        let digits = digits.trim_end_matches('0');
+        let (first, rest) = digits.split_at(1);
+        let rest = if rest.is_empty() { "0" } else { rest };
+        let exponent_sign = if exponent < 0 { '-' } else { '+' };
+        return format!("{sign}{first}.{rest}E{exponent_sign}{}", exponent.abs());
+    }
+    let fixed = if exponent < 0 {
+        format!("0.{}{digits}", "0".repeat((-exponent - 1) as usize))
+    } else {
+        let point = exponent as usize + 1;
+        format!("{}.{}", &digits[..point], &digits[point..])
+    };
+    let fixed = fixed.trim_end_matches('0').trim_end_matches('.');
+    format!("{sign}{fixed}")
+}
+
+/// `filter_var($v, FILTER_VALIDATE_BOOLEAN)`.
+pub fn filter_var_bool(v: &str) -> bool {
+    ["1", "true", "on", "yes"].contains(&v.trim().to_ascii_lowercase().as_str())
+}
+
+/// PHP's `intval()` (and `(int)`) on a string: the leading numeric part (whitespace, sign, digits, fraction,
+/// exponent). An integer that fits is exact; anything else goes through the float, truncated toward zero and
+/// saturating, with an infinite float giving 0. 0 when there is no numeric part.
 pub fn intval(s: &str) -> i64 {
     let t = s.trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
     let b = t.as_bytes();
@@ -640,7 +654,12 @@ pub fn intval(s: &str) -> i64 {
             i = k;
         }
     }
-    t[..i].parse::<f64>().map_or(0, |f| f as i64)
+    if let Ok(int) = t[..i].parse::<i64>() {
+        return int;
+    }
+    t[..i]
+        .parse::<f64>()
+        .map_or(0, |f| if f.is_finite() { f as i64 } else { 0 })
 }
 
 #[cfg(test)]
@@ -667,6 +686,10 @@ mod tests {
             ("1e", 1),
             ("1e+2", 100),
             ("99999999999999999999", i64::MAX),
+            ("9007199254740993", 9007199254740993),
+            ("1e1000", 0),
+            ("-1e1000", 0),
+            ("1.9e1", 19),
             ("-0", 0),
             ("", 0),
             ("-", 0),
@@ -675,6 +698,18 @@ mod tests {
         ] {
             assert_eq!(intval(s), want, "intval({s:?})");
         }
+    }
+
+    // filter_var($v, FILTER_VALIDATE_BOOLEAN) on PHP 8.5.
+    #[test]
+    fn filter_var_bool_matches_php() {
+        assert!(
+            filter_var_bool(" Yes")
+                && filter_var_bool("on")
+                && filter_var_bool("1")
+                && filter_var_bool("TRUE")
+        );
+        assert!(!filter_var_bool("0") && !filter_var_bool("y") && !filter_var_bool(""));
     }
 
     #[test]

@@ -3,6 +3,7 @@
 
 use mago_syntax::cst::*;
 use pun_problem::Edit;
+use pun_tokens::php_compat::intval;
 
 use mago_syntax::token::TokenKind;
 use pun_problem::Span;
@@ -115,31 +116,14 @@ pub(crate) fn value(expr: &Expression<'_>) -> Option<Value> {
     })
 }
 
-/// PHP's `(string)` of a float, for the floats a version is written as (no exponent).
-pub(crate) fn float_string(f: f64) -> Option<String> {
-    (f.is_finite() && (f == 0.0 || (1e-4..1e15).contains(&f.abs()))).then(|| format!("{f}"))
-}
-
 /// `PhpVersionFactory::createIntVersion`.
 pub(crate) fn int_version(version: &str) -> i64 {
     let version = version.split('-').next().unwrap_or(version);
     let parts: Vec<&str> = version.split('.').collect();
     if parts.len() >= 2 {
-        return php_int(parts[0]) * 10000 + php_int(parts[1]) * 100;
+        return intval(parts[0]) * 10000 + intval(parts[1]) * 100;
     }
-    php_int(version)
-}
-
-/// PHP's `(int)` of a string: the leading integer after leading whitespace, 0 when there is none. A `-` never
-/// reaches it, since `createIntVersion` cuts the string at the first one.
-fn php_int(s: &str) -> i64 {
-    let s = s.trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
-    let digits = s.strip_prefix('+').unwrap_or(s);
-    let end = digits
-        .bytes()
-        .position(|b| !b.is_ascii_digit())
-        .unwrap_or(digits.len());
-    digits[..end].parse::<i64>().unwrap_or(0)
+    intval(version)
 }
 
 /// The first method of a class named `name`, ignoring ASCII case (`Class_::getMethod`).
@@ -939,15 +923,5 @@ mod tests {
         assert_eq!(int_version(" -5"), 0);
         assert_eq!(int_version(" 7"), 7);
         assert_eq!(int_version("+7.4"), 70400);
-    }
-
-    #[test]
-    fn float_string_is_php_cast() {
-        // php -r 'var_dump((string) 7.2, (string) 8.0, (string) 7.10);'
-        assert_eq!(float_string(7.2).as_deref(), Some("7.2"));
-        assert_eq!(float_string(8.0).as_deref(), Some("8"));
-        assert_eq!(float_string(7.10).as_deref(), Some("7.1"));
-        assert_eq!(float_string(0.0).as_deref(), Some("0"));
-        assert_eq!(float_string(1e20), None);
     }
 }

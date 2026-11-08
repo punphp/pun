@@ -15,8 +15,9 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
+use super::print_float;
 use super::{AnyCall, is_in_test_class};
-use crate::rules::rector_batch5::{Value, float_string, value};
+use crate::rules::rector_batch5::{Value, value};
 use crate::rules::rector_stmts::{Frame, enclosing, line_indent};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -206,14 +207,7 @@ fn print(v: &Val) -> Option<String> {
         Val::Scalar(Value::Null) => "null".to_string(),
         Val::Scalar(Value::Bool(b)) => b.to_string(),
         Val::Scalar(Value::Int(i)) => i.to_string(),
-        Val::Scalar(Value::Float(f)) => {
-            let text = float_string(*f)?;
-            if text.contains('.') {
-                text
-            } else {
-                format!("{text}.0")
-            }
-        }
+        Val::Scalar(Value::Float(f)) => print_float(*f),
         Val::Scalar(Value::Str(s)) => format!("'{}'", s.replace('\\', "\\\\").replace('\'', "\\'")),
         Val::Scalar(Value::Constant(_)) => return None,
         Val::Array(items) => {
