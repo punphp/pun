@@ -7,7 +7,7 @@ pagination: false
 
 Code that can be written more simply, and size and complexity limits.
 
-Across commands: format: 0, lint: 61, analyse: 0.
+Across commands: format: 0, lint: 65, analyse: 0.
 
 <CardGroup cols={2}>
 <Card title="lint/complexity/no-and-assignment">
@@ -71,6 +71,15 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 Change variable class constant fetch to direct class constant fetch when class or constant target is final
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
+
+</Card>
+<Card title="lint/complexity/no-dirname-dir-concat">
+
+[`lint/complexity/no-dirname-dir-concat`](/docs/rules/lint/complexity/no-dirname-dir-concat)
+
+Change dirname() and string concat, to __DIR__ and direct string path
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-duplicate-match-arm">
@@ -224,6 +233,15 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 Simplify negated conditions with de Morgan theorem
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
+
+</Card>
+<Card title="lint/complexity/no-negated-instanceof-ternary">
+
+[`lint/complexity/no-negated-instanceof-ternary`](/docs/rules/lint/complexity/no-negated-instanceof-ternary)
+
+Flip negated ternary of `instanceof` to direct use of object
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-phpdoc-class-case-mismatch">
@@ -397,6 +415,15 @@ Simplify empty() functions calls on empty arrays
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
+<Card title="lint/complexity/prefer-explicit-array-comparison">
+
+[`lint/complexity/prefer-explicit-array-comparison`](/docs/rules/lint/complexity/prefer-explicit-array-comparison)
+
+Make array if conditions more explicit
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+
+</Card>
 <Card title="lint/complexity/prefer-func-num-args">
 
 [`lint/complexity/prefer-func-num-args`](/docs/rules/lint/complexity/prefer-func-num-args)
@@ -404,6 +431,15 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 Simplify count of func_get_args() to func_num_args()
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
+
+</Card>
+<Card title="lint/complexity/prefer-if-statement">
+
+[`lint/complexity/prefer-if-statement`](/docs/rules/lint/complexity/prefer-if-statement)
+
+Change inline if to explicit if
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-in-array">

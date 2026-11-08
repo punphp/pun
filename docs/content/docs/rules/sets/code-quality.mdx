@@ -14,13 +14,12 @@ sets = ["code-quality"]
 
 Ecosystem and target-version settings still apply. Planned rules are not implemented.
 
-## Enabled rules (237)
+## Enabled rules (246)
 
 | Rule | Configuration applied | Status |
 | --- | --- | --- |
 | [`lint/arrays/no-implicit-array-creation`](/docs/rules/lint/arrays/no-implicit-array-creation) | `"error"` | Ported |
 | [`lint/arrays/prefer-array-append`](/docs/rules/lint/arrays/prefer-array-append) | `"error"` | Ported |
-| [`lint/classes/add-dynamic-properties`](/docs/rules/lint/classes/add-dynamic-properties) | `"error"` | Ported |
 | [`lint/classes/no-explicit-constructor-call`](/docs/rules/lint/classes/no-explicit-constructor-call) | `"error"` | Ported |
 | [`lint/classes/no-redundant-readonly`](/docs/rules/lint/classes/no-redundant-readonly) | `"error"` | Ported |
 | [`lint/classes/no-redundant-readonly-property`](/docs/rules/lint/classes/no-redundant-readonly-property) | `"error"` | Ported |
@@ -36,12 +35,14 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/complexity/no-compact`](/docs/rules/lint/complexity/no-compact) | `"error"` | Ported |
 | [`lint/complexity/no-concat-assign-new-item`](/docs/rules/lint/complexity/no-concat-assign-new-item) | `"error"` | Ported |
 | [`lint/complexity/no-constant-via-variable`](/docs/rules/lint/complexity/no-constant-via-variable) | `"error"` | Ported |
+| [`lint/complexity/no-dirname-dir-concat`](/docs/rules/lint/complexity/no-dirname-dir-concat) | `"error"` | Planned |
 | [`lint/complexity/no-duplicate-match-arm`](/docs/rules/lint/complexity/no-duplicate-match-arm) | `"error"` | Ported |
 | [`lint/complexity/no-iterator-to-array-in-foreach`](/docs/rules/lint/complexity/no-iterator-to-array-in-foreach) | `"error"` | Ported |
 | [`lint/complexity/no-negated-and`](/docs/rules/lint/complexity/no-negated-and) | `"error"` | Ported |
 | [`lint/complexity/no-negated-boolean-literal`](/docs/rules/lint/complexity/no-negated-boolean-literal) | `"error"` | Ported |
 | [`lint/complexity/no-negated-comparison`](/docs/rules/lint/complexity/no-negated-comparison) | `"error"` | Ported |
 | [`lint/complexity/no-negated-group`](/docs/rules/lint/complexity/no-negated-group) | `"error"` | Ported |
+| [`lint/complexity/no-negated-instanceof-ternary`](/docs/rules/lint/complexity/no-negated-instanceof-ternary) | `"error"` | Planned |
 | [`lint/complexity/no-phpdoc-class-case-mismatch`](/docs/rules/lint/complexity/no-phpdoc-class-case-mismatch) | `"error"` | Ported |
 | [`lint/complexity/no-redundant-isset`](/docs/rules/lint/complexity/no-redundant-isset) | `"error"` | Ported |
 | [`lint/complexity/no-redundant-literal-return`](/docs/rules/lint/complexity/no-redundant-literal-return) | `"error"` | Ported |
@@ -61,7 +62,9 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/complexity/prefer-coalesce-over-foreach`](/docs/rules/lint/complexity/prefer-coalesce-over-foreach) | `"error"` | Ported |
 | [`lint/complexity/prefer-empty-array-compare`](/docs/rules/lint/complexity/prefer-empty-array-compare) | `"error"` | Ported |
 | [`lint/complexity/prefer-empty-array-identical`](/docs/rules/lint/complexity/prefer-empty-array-identical) | `"error"` | Ported |
+| [`lint/complexity/prefer-explicit-array-comparison`](/docs/rules/lint/complexity/prefer-explicit-array-comparison) | `"error"` | Planned |
 | [`lint/complexity/prefer-func-num-args`](/docs/rules/lint/complexity/prefer-func-num-args) | `"error"` | Ported |
+| [`lint/complexity/prefer-if-statement`](/docs/rules/lint/complexity/prefer-if-statement) | `"error"` | Planned |
 | [`lint/complexity/prefer-in-array`](/docs/rules/lint/complexity/prefer-in-array) | `"error"` | Ported |
 | [`lint/complexity/prefer-in-array-over-foreach`](/docs/rules/lint/complexity/prefer-in-array-over-foreach) | `"error"` | Ported |
 | [`lint/complexity/prefer-in-array-over-search`](/docs/rules/lint/complexity/prefer-in-array-over-search) | `"error"` | Ported |
@@ -102,6 +105,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/functions/require-array-filter-callback`](/docs/rules/lint/functions/require-array-filter-callback) | `"error"` | Ported |
 | [`lint/laravel/no-app-array-access`](/docs/rules/lint/laravel/no-app-array-access) | `"error"` | Ported |
 | [`lint/laravel/no-collection-aliases`](/docs/rules/lint/laravel/no-collection-aliases) | `"error"` | Ported |
+| [`lint/laravel/no-default-authorize`](/docs/rules/lint/laravel/no-default-authorize) | `"error"` | Planned |
 | [`lint/laravel/no-implicit-model-query`](/docs/rules/lint/laravel/no-implicit-model-query) | `"error"` | Ported |
 | [`lint/laravel/no-negated-blank-filled`](/docs/rules/lint/laravel/no-negated-blank-filled) | `"error"` | Ported |
 | [`lint/laravel/no-negated-contains`](/docs/rules/lint/laravel/no-negated-contains) | `"error"` | Ported |
@@ -114,6 +118,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/laravel/prefer-array-validation-rules`](/docs/rules/lint/laravel/prefer-array-validation-rules) | `"error"` | Ported |
 | [`lint/laravel/prefer-back-helper`](/docs/rules/lint/laravel/prefer-back-helper) | `"error"` | Ported |
 | [`lint/laravel/prefer-collection-all`](/docs/rules/lint/laravel/prefer-collection-all) | `"error"` | Ported |
+| [`lint/laravel/prefer-collection-is-empty`](/docs/rules/lint/laravel/prefer-collection-is-empty) | `"error"` | Planned |
 | [`lint/laravel/prefer-date-facade`](/docs/rules/lint/laravel/prefer-date-facade) | `"error"` | Ported |
 | [`lint/laravel/prefer-dedicated-status-assertion`](/docs/rules/lint/laravel/prefer-dedicated-status-assertion) | `"error"` | Ported |
 | [`lint/laravel/prefer-default-argument`](/docs/rules/lint/laravel/prefer-default-argument) | `"error"` | Ported |
@@ -123,8 +128,10 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/laravel/prefer-exception-class-string`](/docs/rules/lint/laravel/prefer-exception-class-string) | `"error"` | Ported |
 | [`lint/laravel/prefer-explicit-json-call`](/docs/rules/lint/laravel/prefer-explicit-json-call) | `"error"` | Ported |
 | [`lint/laravel/prefer-fake-helper`](/docs/rules/lint/laravel/prefer-fake-helper) | `"error"` | Ported |
+| [`lint/laravel/prefer-file-facade-delete`](/docs/rules/lint/laravel/prefer-file-facade-delete) | `"error"` | Planned |
 | [`lint/laravel/prefer-latest-oldest`](/docs/rules/lint/laravel/prefer-latest-oldest) | `"error"` | Ported |
 | [`lint/laravel/prefer-nullsafe`](/docs/rules/lint/laravel/prefer-nullsafe) | `"error"` | Ported |
+| [`lint/laravel/prefer-pivot-class`](/docs/rules/lint/laravel/prefer-pivot-class) | `"error"` | Planned |
 | [`lint/laravel/prefer-protected-model-methods`](/docs/rules/lint/laravel/prefer-protected-model-methods) | `"error"` | Ported |
 | [`lint/laravel/prefer-query-builder-call`](/docs/rules/lint/laravel/prefer-query-builder-call) | `"error"` | Ported |
 | [`lint/laravel/prefer-request-facade`](/docs/rules/lint/laravel/prefer-request-facade) | `"error"` | Ported |
@@ -152,6 +159,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/phpunit/add-mock-intersection-type`](/docs/rules/lint/phpunit/add-mock-intersection-type) | `"error"` | Ported |
 | [`lint/phpunit/add-param-type-depends`](/docs/rules/lint/phpunit/add-param-type-depends) | `"error"` | Ported |
 | [`lint/phpunit/add-stub-intersection-type`](/docs/rules/lint/phpunit/add-stub-intersection-type) | `"error"` | Ported |
+| [`lint/phpunit/add-will-return-callback-false-fallback`](/docs/rules/lint/phpunit/add-will-return-callback-false-fallback) | `"error"` | Planned |
 | [`lint/phpunit/add-will-return-callback-param-type`](/docs/rules/lint/phpunit/add-will-return-callback-param-type) | `"error"` | Ported |
 | [`lint/phpunit/no-assert-internal-type`](/docs/rules/lint/phpunit/no-assert-internal-type) | `"error"` | Ported |
 | [`lint/phpunit/no-assert-same-type-mismatch`](/docs/rules/lint/phpunit/no-assert-same-type-mismatch) | `"error"` | Ported |
@@ -253,10 +261,11 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 | [`lint/tags/no-invalid-open-tag`](/docs/rules/lint/tags/no-invalid-open-tag) | `"error"` | Ported |
 | [`lint/types/no-loose-comparison`](/docs/rules/lint/types/no-loose-comparison) | `"error"` | Ported |
 | [`lint/types/no-nullsafe-on-non-null`](/docs/rules/lint/types/no-nullsafe-on-non-null) | `"error"` | Ported |
+| [`lint/types/prefer-explicit-null-instanceof`](/docs/rules/lint/types/prefer-explicit-null-instanceof) | `"error"` | Planned |
 | [`lint/types/prefer-identical-same-type`](/docs/rules/lint/types/prefer-identical-same-type) | `"error"` | Ported |
 | [`lint/types/prefer-instanceof`](/docs/rules/lint/types/prefer-instanceof) | `"error"` | Ported |
 
-## Rules left off (464)
+## Rules left off (473)
 
 - [`lint/arrays/prefer-array-spread`](/docs/rules/lint/arrays/prefer-array-spread)
 - [`lint/classes/add-stringable`](/docs/rules/lint/classes/add-stringable)
@@ -315,6 +324,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/dead-code/no-null-default-argument`](/docs/rules/lint/dead-code/no-null-default-argument)
 - [`lint/dead-code/no-null-default-named-argument`](/docs/rules/lint/dead-code/no-null-default-named-argument)
 - [`lint/dead-code/no-null-tag-value`](/docs/rules/lint/dead-code/no-null-tag-value)
+- [`lint/dead-code/no-overridden-assign-before-if`](/docs/rules/lint/dead-code/no-overridden-assign-before-if)
 - [`lint/dead-code/no-overwritten-assignment`](/docs/rules/lint/dead-code/no-overwritten-assignment)
 - [`lint/dead-code/no-parent-call-without-parent`](/docs/rules/lint/dead-code/no-parent-call-without-parent)
 - [`lint/dead-code/no-redundant-condition`](/docs/rules/lint/dead-code/no-redundant-condition)
@@ -322,6 +332,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/dead-code/no-redundant-foreach-guard`](/docs/rules/lint/dead-code/no-redundant-foreach-guard)
 - [`lint/dead-code/no-redundant-promoted-assign`](/docs/rules/lint/dead-code/no-redundant-promoted-assign)
 - [`lint/dead-code/no-redundant-property-default`](/docs/rules/lint/dead-code/no-redundant-property-default)
+- [`lint/dead-code/no-redundant-type-check`](/docs/rules/lint/dead-code/no-redundant-type-check)
 - [`lint/dead-code/no-return-in-constructor`](/docs/rules/lint/dead-code/no-return-in-constructor)
 - [`lint/dead-code/no-self-assignment`](/docs/rules/lint/dead-code/no-self-assignment)
 - [`lint/dead-code/no-typed-property-instanceof`](/docs/rules/lint/dead-code/no-typed-property-instanceof)
@@ -341,7 +352,6 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/dead-code/no-useless-cast`](/docs/rules/lint/dead-code/no-useless-cast)
 - [`lint/dead-code/no-useless-catch`](/docs/rules/lint/dead-code/no-useless-catch)
 - [`lint/dead-code/no-useless-condition`](/docs/rules/lint/dead-code/no-useless-condition)
-- [`lint/dead-code/no-useless-constructor`](/docs/rules/lint/dead-code/no-useless-constructor)
 - [`lint/dead-code/no-useless-continue`](/docs/rules/lint/dead-code/no-useless-continue)
 - [`lint/dead-code/no-useless-filter-var`](/docs/rules/lint/dead-code/no-useless-filter-var)
 - [`lint/dead-code/no-useless-math`](/docs/rules/lint/dead-code/no-useless-math)
@@ -361,9 +371,12 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/laravel-12/prefer-scope-attribute`](/docs/rules/lint/laravel-12/prefer-scope-attribute)
 - [`lint/laravel/add-factory-extends-phpdoc`](/docs/rules/lint/laravel/add-factory-extends-phpdoc)
 - [`lint/laravel/add-has-factory-trait`](/docs/rules/lint/laravel/add-has-factory-trait)
+- [`lint/laravel/add-legacy-relation-generics`](/docs/rules/lint/laravel/add-legacy-relation-generics)
+- [`lint/laravel/add-new-relation-generics`](/docs/rules/lint/laravel/add-new-relation-generics)
 - [`lint/laravel/add-query-closure-type`](/docs/rules/lint/laravel/add-query-closure-type)
 - [`lint/laravel/add-relation-generics`](/docs/rules/lint/laravel/add-relation-generics)
 - [`lint/laravel/add-relation-query-closure-type`](/docs/rules/lint/laravel/add-relation-query-closure-type)
+- [`lint/laravel/add-scope-builder-generics`](/docs/rules/lint/laravel/add-scope-builder-generics)
 - [`lint/laravel/add-tap-closure-type`](/docs/rules/lint/laravel/add-tap-closure-type)
 - [`lint/laravel/no-controller-middleware`](/docs/rules/lint/laravel/no-controller-middleware)
 - [`lint/laravel/prefer-abort-if`](/docs/rules/lint/laravel/prefer-abort-if)
@@ -378,6 +391,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/laravel/prefer-command-hidden-attribute`](/docs/rules/lint/laravel/prefer-command-hidden-attribute)
 - [`lint/laravel/prefer-connection-attribute`](/docs/rules/lint/laravel/prefer-connection-attribute)
 - [`lint/laravel/prefer-constructor-injection`](/docs/rules/lint/laravel/prefer-constructor-injection)
+- [`lint/laravel/prefer-container-method-call`](/docs/rules/lint/laravel/prefer-container-method-call)
 - [`lint/laravel/prefer-date-format-attribute`](/docs/rules/lint/laravel/prefer-date-format-attribute)
 - [`lint/laravel/prefer-delay-attribute`](/docs/rules/lint/laravel/prefer-delay-attribute)
 - [`lint/laravel/prefer-delete-when-missing-models-attribute`](/docs/rules/lint/laravel/prefer-delete-when-missing-models-attribute)
@@ -394,7 +408,9 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/laravel/prefer-preserve-keys-attribute`](/docs/rules/lint/laravel/prefer-preserve-keys-attribute)
 - [`lint/laravel/prefer-queue-attribute`](/docs/rules/lint/laravel/prefer-queue-attribute)
 - [`lint/laravel/prefer-report-if`](/docs/rules/lint/laravel/prefer-report-if)
+- [`lint/laravel/prefer-repository-method-call`](/docs/rules/lint/laravel/prefer-repository-method-call)
 - [`lint/laravel/prefer-request-validate`](/docs/rules/lint/laravel/prefer-request-validate)
+- [`lint/laravel/prefer-route-key-attribute`](/docs/rules/lint/laravel/prefer-route-key-attribute)
 - [`lint/laravel/prefer-signature-attribute`](/docs/rules/lint/laravel/prefer-signature-attribute)
 - [`lint/laravel/prefer-stop-on-first-failure-attribute`](/docs/rules/lint/laravel/prefer-stop-on-first-failure-attribute)
 - [`lint/laravel/prefer-table-attribute`](/docs/rules/lint/laravel/prefer-table-attribute)
@@ -402,6 +418,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/laravel/prefer-timeout-attribute`](/docs/rules/lint/laravel/prefer-timeout-attribute)
 - [`lint/laravel/prefer-touches-attribute`](/docs/rules/lint/laravel/prefer-touches-attribute)
 - [`lint/laravel/prefer-tries-attribute`](/docs/rules/lint/laravel/prefer-tries-attribute)
+- [`lint/laravel/prefer-unguarded-attribute`](/docs/rules/lint/laravel/prefer-unguarded-attribute)
 - [`lint/laravel/prefer-unique-for-attribute`](/docs/rules/lint/laravel/prefer-unique-for-attribute)
 - [`lint/laravel/prefer-view-array`](/docs/rules/lint/laravel/prefer-view-array)
 - [`lint/laravel/prefer-visible-attribute`](/docs/rules/lint/laravel/prefer-visible-attribute)
@@ -491,6 +508,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/php-8.5/prefer-array-first-last`](/docs/rules/lint/php-8.5/prefer-array-first-last)
 - [`lint/php-8.5/prefer-ord-first-byte`](/docs/rules/lint/php-8.5/prefer-ord-first-byte)
 - [`lint/php-8.6/prefer-clamp`](/docs/rules/lint/php-8.6/prefer-clamp)
+- [`lint/php-8.6/prefer-readonly-property-default`](/docs/rules/lint/php-8.6/prefer-readonly-property-default)
 - [`lint/phpdoc/add-missing-param`](/docs/rules/lint/phpdoc/add-missing-param)
 - [`lint/phpdoc/no-access`](/docs/rules/lint/phpdoc/no-access)
 - [`lint/phpdoc/no-empty-return`](/docs/rules/lint/phpdoc/no-empty-return)
@@ -516,6 +534,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/phpunit/add-property-type-setup-docblock`](/docs/rules/lint/phpunit/add-property-type-setup-docblock)
 - [`lint/phpunit/add-return-type-from-mock-object`](/docs/rules/lint/phpunit/add-return-type-from-mock-object)
 - [`lint/phpunit/add-test-void-return`](/docs/rules/lint/phpunit/add-test-void-return)
+- [`lint/phpunit/no-any-matcher`](/docs/rules/lint/phpunit/no-any-matcher)
 - [`lint/phpunit/no-assert-contains-only`](/docs/rules/lint/phpunit/no-assert-contains-only)
 - [`lint/phpunit/no-assert-is-type`](/docs/rules/lint/phpunit/no-assert-is-type)
 - [`lint/phpunit/no-final-constructor-override`](/docs/rules/lint/phpunit/no-final-constructor-override)
@@ -549,7 +568,6 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/refactor/rename-function`](/docs/rules/lint/refactor/rename-function)
 - [`lint/refactor/rename-method`](/docs/rules/lint/refactor/rename-method)
 - [`lint/refactor/rename-phpdoc-tag`](/docs/rules/lint/refactor/rename-phpdoc-tag)
-- [`lint/refactor/replace-array-access`](/docs/rules/lint/refactor/replace-array-access)
 - [`lint/refactor/replace-function-with-constant`](/docs/rules/lint/refactor/replace-function-with-constant)
 - [`lint/refactor/replace-function-with-new`](/docs/rules/lint/refactor/replace-function-with-new)
 - [`lint/refactor/replace-function-with-static`](/docs/rules/lint/refactor/replace-function-with-static)
@@ -612,7 +630,6 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/style/prefer-dirname-levels`](/docs/rules/lint/style/prefer-dirname-levels)
 - [`lint/style/prefer-early-continue`](/docs/rules/lint/style/prefer-early-continue)
 - [`lint/style/prefer-early-return`](/docs/rules/lint/style/prefer-early-return)
-- [`lint/style/prefer-early-return-of-variable`](/docs/rules/lint/style/prefer-early-return-of-variable)
 - [`lint/style/prefer-early-return-over-prepared-value`](/docs/rules/lint/style/prefer-early-return-over-prepared-value)
 - [`lint/style/prefer-generic-array-phpdoc`](/docs/rules/lint/style/prefer-generic-array-phpdoc)
 - [`lint/style/prefer-instanceof-stringable`](/docs/rules/lint/style/prefer-instanceof-stringable)
@@ -650,6 +667,7 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/types/add-arrow-function-return-type`](/docs/rules/lint/types/add-arrow-function-return-type)
 - [`lint/types/add-bool-return-type`](/docs/rules/lint/types/add-bool-return-type)
 - [`lint/types/add-bool-return-type-from-const`](/docs/rules/lint/types/add-bool-return-type-from-const)
+- [`lint/types/add-bool-return-type-from-mixed-returns`](/docs/rules/lint/types/add-bool-return-type-from-mixed-returns)
 - [`lint/types/add-closure-never-return`](/docs/rules/lint/types/add-closure-never-return)
 - [`lint/types/add-closure-return-type`](/docs/rules/lint/types/add-closure-return-type)
 - [`lint/types/add-closure-void-return`](/docs/rules/lint/types/add-closure-void-return)
@@ -678,10 +696,8 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/types/add-param-type-dim-fetch-key`](/docs/rules/lint/types/add-param-type-dim-fetch-key)
 - [`lint/types/add-param-type-iterable-method-call`](/docs/rules/lint/types/add-param-type-iterable-method-call)
 - [`lint/types/add-param-type-method-call`](/docs/rules/lint/types/add-param-type-method-call)
-- [`lint/types/add-param-type-parent-call`](/docs/rules/lint/types/add-param-type-parent-call)
 - [`lint/types/add-param-type-property`](/docs/rules/lint/types/add-param-type-property)
 - [`lint/types/add-param-type-spl-fixed-array`](/docs/rules/lint/types/add-param-type-spl-fixed-array)
-- [`lint/types/add-param-type-sprintf`](/docs/rules/lint/types/add-param-type-sprintf)
 - [`lint/types/add-param-type-variable-call`](/docs/rules/lint/types/add-param-type-variable-call)
 - [`lint/types/add-private-method-array-return-type`](/docs/rules/lint/types/add-private-method-array-return-type)
 - [`lint/types/add-property-type-assigns`](/docs/rules/lint/types/add-property-type-assigns)
@@ -718,7 +734,9 @@ Ecosystem and target-version settings still apply. Planned rules are not impleme
 - [`lint/types/add-var-phpdoc-from-dim-fetch`](/docs/rules/lint/types/add-var-phpdoc-from-dim-fetch)
 - [`lint/types/add-var-phpdoc-from-getter`](/docs/rules/lint/types/add-var-phpdoc-from-getter)
 - [`lint/types/add-void-return-type`](/docs/rules/lint/types/add-void-return-type)
+- [`lint/types/no-phpstan-phpdoc-tag`](/docs/rules/lint/types/no-phpstan-phpdoc-tag)
 - [`lint/types/prefer-generic-collection-phpdoc`](/docs/rules/lint/types/prefer-generic-collection-phpdoc)
+- [`lint/types/prefer-literal-bool-phpdoc`](/docs/rules/lint/types/prefer-literal-bool-phpdoc)
 - [`lint/types/prefer-narrow-param-type`](/docs/rules/lint/types/prefer-narrow-param-type)
 - [`lint/types/prefer-specific-return-type`](/docs/rules/lint/types/prefer-specific-return-type)
 - [`lint/types/require-strict-param`](/docs/rules/lint/types/require-strict-param)

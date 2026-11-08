@@ -7,7 +7,7 @@ pagination: false
 
 Type declarations, type checks and inferred types.
 
-Across commands: format: 6, lint: 80, analyse: 118.
+Across commands: format: 6, lint: 82, analyse: 118.
 
 <CardGroup cols={2}>
 <Card title="lint/types/add-array-return-type">
@@ -44,6 +44,15 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 Add return bool, based on direct true/false returns
 
 Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
+
+</Card>
+<Card title="lint/types/add-bool-return-type-from-mixed-returns">
+
+[`lint/types/add-bool-return-type-from-mixed-returns`](/docs/rules/lint/types/add-bool-return-type-from-mixed-returns)
+
+Add bool return type when returns mix direct true/false consts with strict bool expressions
+
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/types/add-closure-never-return">
@@ -298,15 +307,6 @@ Change private method param type to strict type, based on passed strict types
 Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
 
 </Card>
-<Card title="lint/types/add-param-type-parent-call">
-
-[`lint/types/add-param-type-parent-call`](/docs/rules/lint/types/add-param-type-parent-call)
-
-Change param type based on parent param type
-
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
-
-</Card>
 <Card title="lint/types/add-param-type-property">
 
 [`lint/types/add-param-type-property`](/docs/rules/lint/types/add-param-type-property)
@@ -321,15 +321,6 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 [`lint/types/add-param-type-spl-fixed-array`](/docs/rules/lint/types/add-param-type-spl-fixed-array)
 
 Add exact fixed array type in known cases
-
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
-
-</Card>
-<Card title="lint/types/add-param-type-sprintf">
-
-[`lint/types/add-param-type-sprintf`](/docs/rules/lint/types/add-param-type-sprintf)
-
-Add string type to parameters used in sprintf calls
 
 Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
 
@@ -676,6 +667,24 @@ Cleanup unneeded nullsafe operator
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
+<Card title="lint/types/no-phpstan-phpdoc-tag">
+
+[`lint/types/no-phpstan-phpdoc-tag`](/docs/rules/lint/types/no-phpstan-phpdoc-tag)
+
+Merge more precise @phpstan-var/@phpstan-param/@phpstan-return docblock tag into its native @var/@param/@return tag
+
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+
+</Card>
+<Card title="lint/types/prefer-explicit-null-instanceof">
+
+[`lint/types/prefer-explicit-null-instanceof`](/docs/rules/lint/types/prefer-explicit-null-instanceof)
+
+Make implicit nullable object checks explicit with instanceof
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+
+</Card>
 <Card title="lint/types/prefer-generic-collection-phpdoc">
 
 [`lint/types/prefer-generic-collection-phpdoc`](/docs/rules/lint/types/prefer-generic-collection-phpdoc)
@@ -701,6 +710,15 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: mixed (
 Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects.
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
+
+</Card>
+<Card title="lint/types/prefer-literal-bool-phpdoc">
+
+[`lint/types/prefer-literal-bool-phpdoc`](/docs/rules/lint/types/prefer-literal-bool-phpdoc)
+
+Narrow @return docblock "bool" to "false" or "true" when the native return type only allows one of them
+
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/types/prefer-narrow-param-type">

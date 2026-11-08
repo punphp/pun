@@ -283,11 +283,18 @@ Lint 7 batch 1 (dead-code, 2026-10-18; 13 of 14 rules ported, parity on Pinkary 
   `return (1);` in a constructor into `return ();` and stops on `public $a = (null);`; Pun writes `return;` and
   `public $a;`. The meaning-over-bytes call above also covers `!($a ? $b : $c)`, `$x || ($b ?? $c)` and
   `'a' . ($b ? 'x' : 'y')` and `if (($a = 1) !== $b)`, where Rector drops the parentheses.
-- **Known differences, left for later:** (1) Rector runs each rule once per file, and Pun's fix rounds run until no
-  rule has a fix, so a fix that leaves new dead code goes further in Pun (`if ($a) {} else {}` becomes
-  `if (!$a) {}` in Rector and nothing in Pun). (2) An alternative-syntax body (`while (...): ... endwhile;`) that a
+- **Fix rounds:** since Rector 2.8.4 (rector-src 65d5dc5d90, `FileProcessor`), Rector runs its rules over a file
+  until none changes it, as Pun's fix rounds do, so `no-unused-assignment` removes a chain of dead assignments.
+  Rector reruns on the same AST, though: a removed argument leaves its position empty and attributes set at parse
+  time stay (`IS_BYREF_VAR`), so the rules whose fix would match again keep `Rule::once`.
+- **Rector 2.8.4's docblock printer, not ported yet:** Rector 2.8.4 prints a changed docblock with phpdoc-parser's
+  format-preserving `Printer` and reads Doctrine annotations with phpdoc-parser's parser. Pun still prints as Rector
+  2.6.1's `PhpDocInfoPrinter` did: a tag added after an empty ` *` line, a description glued to its variable and a
+  doc without `*` lines differ (tests/rector_types_doc.rs's Pun/ cases), and most RenameClassRector and
+  AnnotationToAttributeRector Oracle cases still hold Rector 2.6.1's output (tests/rector_refactor.rs).
+- **Known differences, left for later:** (1) An alternative-syntax body (`while (...): ... endwhile;`) that a
   rule empties: Rector's printer writes the statement again with braces; Pun does so only in
-  `no-useless-continue`, and elsewhere keeps the `:` form. (3) A heredoc that php-parser prints anew (a dynamic
+  `no-useless-continue`, and elsewhere keeps the `:` form. (2) A heredoc that php-parser prints anew (a dynamic
   `return <<<T` split in a constructor) gets php-parser's own indent in Rector and keeps its bytes in Pun.
 - **`lint/dead-code/no-empty-loop` (`RemoveDeadLoopRector`) waits for analyse:** its `SideEffectNodeDetector` asks
   PHPStan's reflection whether a called function is pure (`count()` is, `array_shift()` is not) and whether a
@@ -434,10 +441,9 @@ Lint 7 lint-a batch 9 (2026-10-19; `no-bool-ternary`, `no-useless-ternary`, `no-
   `prefer-empty-array-identical` also takes an earlier `if (!is_array($v)) { ...; return; }` in the function, the
   narrowing PHPStan does. Inside a trait nothing has a type, as in Rector's run (verified on the oracle). Each widens
   with analyse's index (Build 8).
-- **Assistant's call (lint-a batch 9): `prefer-empty-array-identical` follows Rector's run, not its fixture.** The
-  pinned Rector 2.6.1, run on `replace_is_array_check`, leaves `is_array($v) && empty($v)` unchanged and writes
-  `!empty($v)` there as `!($v === [])`; the fixture expects `$v === []` and `$v !== []`. Pun leaves the guarded form
-  alone (`Pun/skip_is_array_guard`).
+- **`prefer-empty-array-identical` and the `is_array()` guard.** Rector 2.6.1 left `is_array($v) && empty($v)`
+  unchanged, against its own `replace_is_array_check` fixture. Rector 2.8.4 runs as the fixture expects
+  (`$v === []`, `$v !== []`), and so does Pun; the fixture is copied with the others.
 
 Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-private-method`,
 `no-useless-constructor`, `no-useless-override`, `no-redundant-default-argument`):
@@ -448,7 +454,7 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   parses the trait's file again (`Facts::source_of`), as Rector's `AstResolver` does. The CLI scans the project for
   these rules as for every rule that reads facts (`facts::set_project_scan`), so parents, interfaces and traits in
   other files count.
-- **Assistant's call: only the fluent-call fallback treats `mixed` as implicit.** Rector 2.6.1 on PHPStan 2.2.7 keeps
+- **Assistant's call: only the fluent-call fallback treats `mixed` as implicit.** Rector 2.8.4 on PHPStan 2.3.5 keeps
   calls through a fluent `$this` chain after a method declared `: mixed` or documented `@return mixed`.
   Explicit-mixed variables, documented receivers of another class, and nullsafe roots do not enter this fallback
   (`Oracle/mixed_receivers.php.inc`). The global mixed filter and native type contracts are unchanged.

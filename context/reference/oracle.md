@@ -75,6 +75,11 @@ looks like an upstream change but is not one. Load PHPUnit first with a bootstra
 for `tests/phpunit-stubs`, through `->withBootstrapFiles([...])`. Rector also reads `vendor/composer/installed.json`
 next to the config for the versions of the packages a rule depends on (PHPUnit 12.5, Laravel 13).
 
+Autoload the classes the test names with `->withAutoloadPaths([...])`: the rule's `Source/`, and `Stubs/` where the
+rule's test directory has one (RenameClassRector and AnnotationToAttributeRector hold rector-src's `stubs/` classes
+there, Doctrine's among them). Without them Rector resolves no annotation class and leaves every Doctrine annotation
+alone, which also looks like an upstream change but is not one.
+
 ## Harness
 
 ```

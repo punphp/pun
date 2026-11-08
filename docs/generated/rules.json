@@ -898,9 +898,13 @@
       "tools": [
         "mago",
         "php-cs-fixer",
-        "pint"
+        "pint",
+        "rector"
       ],
       "upstream": [
+        "CompleteMissingIfElseBracket",
+        "CompleteMissingIfElseBracketRector",
+        "Rector\\CodeQuality\\Rector\\If_\\CompleteMissingIfElseBracketRector",
         "block-statement",
         "control_structure_braces"
       ],
@@ -1012,9 +1016,13 @@
       "tools": [
         "mago",
         "php-cs-fixer",
-        "pint"
+        "pint",
+        "rector"
       ],
       "upstream": [
+        "AlternativeIfToBracket",
+        "AlternativeIfToBracketRector",
+        "Rector\\CodingStyle\\Rector\\If_\\AlternativeIfToBracketRector",
         "no-alternative-syntax",
         "no_alternative_syntax"
       ],
@@ -3342,26 +3350,6 @@
       "ported": true
     },
     {
-      "id": "lint/classes/add-dynamic-properties",
-      "command": "lint",
-      "group": "classes",
-      "summary": "Add missing dynamic properties",
-      "enabled": [
-        "code-quality"
-      ],
-      "fix": "safe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "CompleteDynamicProperties",
-        "CompleteDynamicPropertiesRector",
-        "Rector\\CodeQuality\\Rector\\Class_\\CompleteDynamicPropertiesRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/classes/add-stringable",
       "command": "lint",
       "group": "classes",
@@ -3916,6 +3904,26 @@
       "ported": true
     },
     {
+      "id": "lint/complexity/no-dirname-dir-concat",
+      "command": "lint",
+      "group": "complexity",
+      "summary": "Change dirname() and string concat, to __DIR__ and direct string path",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "safe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "DirnameDirConcatStringToDirectStringPath",
+        "DirnameDirConcatStringToDirectStringPathRector",
+        "Rector\\CodeQuality\\Rector\\Concat\\DirnameDirConcatStringToDirectStringPathRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/complexity/no-duplicate-match-arm",
       "command": "lint",
       "group": "complexity",
@@ -4206,6 +4214,26 @@
         "SimplifyDeMorganBinaryRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/complexity/no-negated-instanceof-ternary",
+      "command": "lint",
+      "group": "complexity",
+      "summary": "Flip negated ternary of instanceof to direct use of object",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "safe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "FlipNegatedTernaryInstanceof",
+        "FlipNegatedTernaryInstanceofRector",
+        "Rector\\Instanceof_\\Rector\\Ternary\\FlipNegatedTernaryInstanceofRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/complexity/no-phpdoc-class-case-mismatch",
@@ -4592,6 +4620,26 @@
       "ported": true
     },
     {
+      "id": "lint/complexity/prefer-explicit-array-comparison",
+      "command": "lint",
+      "group": "complexity",
+      "summary": "Make array if conditions more explicit",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "safe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "ArrayExplicitBoolCompare",
+        "ArrayExplicitBoolCompareRector",
+        "Rector\\CodeQuality\\Rector\\If_\\ArrayExplicitBoolCompareRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/complexity/prefer-func-num-args",
       "command": "lint",
       "group": "complexity",
@@ -4610,6 +4658,26 @@
         "SimplifyFuncGetArgsCountRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/complexity/prefer-if-statement",
+      "command": "lint",
+      "group": "complexity",
+      "summary": "Change inline if to explicit if",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "safe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "InlineIfToExplicitIf",
+        "InlineIfToExplicitIfRector",
+        "Rector\\CodeQuality\\Rector\\Expression\\InlineIfToExplicitIfRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/complexity/prefer-in-array",
@@ -5818,6 +5886,26 @@
       "ported": true
     },
     {
+      "id": "lint/dead-code/no-overridden-assign-before-if",
+      "command": "lint",
+      "group": "dead-code",
+      "summary": "Remove assign before if/else that overrides the variable in both branches",
+      "enabled": [
+        "dead-code"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "Rector\\DeadCode\\Rector\\If_\\RemoveOverriddenAssignBeforeIfElseRector",
+        "RemoveOverriddenAssignBeforeIfElse",
+        "RemoveOverriddenAssignBeforeIfElseRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/dead-code/no-overwritten-assignment",
       "command": "lint",
       "group": "dead-code",
@@ -5956,6 +6044,26 @@
         "RemoveDefaultValueFromAssignedPropertyRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/dead-code/no-redundant-type-check",
+      "command": "lint",
+      "group": "dead-code",
+      "summary": "Remove is_<type>() check that can never fail on already known type",
+      "enabled": [
+        "dead-code"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "Rector\\DeadCode\\Rector\\BinaryOp\\RemoveRedundantTypeCheckRector",
+        "RemoveRedundantTypeCheck",
+        "RemoveRedundantTypeCheckRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/dead-code/no-return-in-constructor",
@@ -6444,26 +6552,6 @@
       "ported": true
     },
     {
-      "id": "lint/dead-code/no-useless-constructor",
-      "command": "lint",
-      "group": "dead-code",
-      "summary": "Remove constructor that only delegates call to parent class with same values",
-      "enabled": [
-        "dead-code"
-      ],
-      "fix": "safe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "Rector\\DeadCode\\Rector\\ClassMethod\\RemoveParentDelegatingConstructorRector",
-        "RemoveParentDelegatingConstructor",
-        "RemoveParentDelegatingConstructorRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/dead-code/no-useless-continue",
       "command": "lint",
       "group": "dead-code",
@@ -6542,7 +6630,7 @@
         "rector"
       ],
       "upstream": [
-        "Rector\\DeadCode\\Rector\\ClassMethod\\RemoveParentDelegatingClassMethodRector",
+        "Rector\\DeadCode\\Rector\\Class_\\RemoveParentDelegatingClassMethodRector",
         "RemoveParentDelegatingClassMethod",
         "RemoveParentDelegatingClassMethodRector",
         "no-redundant-method-override"
@@ -6987,6 +7075,48 @@
       "ported": true
     },
     {
+      "id": "lint/laravel/add-legacy-relation-generics",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Add generic return type to relations in child of Illuminate\\Database\\Eloquent\\Model",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "AddLegacyGenericReturnTypeToRelations",
+        "AddLegacyGenericReturnTypeToRelationsRector",
+        "RectorLaravel\\Rector\\ClassMethod\\AddLegacyGenericReturnTypeToRelationsRector"
+      ],
+      "ported": false
+    },
+    {
+      "id": "lint/laravel/add-new-relation-generics",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Add generic return type to relations in child of Illuminate\\Database\\Eloquent\\Model",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "AddNewGenericReturnTypeToRelations",
+        "AddNewGenericReturnTypeToRelationsRector",
+        "RectorLaravel\\Rector\\ClassMethod\\AddNewGenericReturnTypeToRelationsRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/laravel/add-query-closure-type",
       "command": "lint",
       "group": "laravel",
@@ -7048,6 +7178,27 @@
         "RectorLaravel\\Rector\\MethodCall\\EloquentWhereRelationTypeHintingParameterRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/laravel/add-scope-builder-generics",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Add generic Builder return type to scopes in child of Illuminate\\Database\\Eloquent\\Model",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "AddGenericBuilderToScopes",
+        "AddGenericBuilderToScopesRector",
+        "RectorLaravel\\Rector\\ClassMethod\\AddGenericBuilderToScopesRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/laravel/add-tap-closure-type",
@@ -7127,6 +7278,27 @@
         "middleware-in-routes"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/laravel/no-default-authorize",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Remove the authorize() method from FormRequest classes when it only returns true, as passesAuthorization() defaults to true when the method does not exist",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "safe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "RectorLaravel\\Rector\\Class_\\RemoveDefaultAuthorizeTrueFromFormRequestRector",
+        "RemoveDefaultAuthorizeTrueFromFormRequest",
+        "RemoveDefaultAuthorizeTrueFromFormRequestRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/laravel/no-implicit-model-query",
@@ -7535,6 +7707,27 @@
       "ported": true
     },
     {
+      "id": "lint/laravel/prefer-collection-is-empty",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Convert collection count() comparisons against 0 or 1 to isEmpty() or isNotEmpty()",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "CollectionCountComparisonToIsEmpty",
+        "CollectionCountComparisonToIsEmptyRector",
+        "RectorLaravel\\Rector\\Expr\\CollectionCountComparisonToIsEmptyRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/laravel/prefer-collects-attribute",
       "command": "lint",
       "group": "laravel",
@@ -7609,6 +7802,25 @@
         "RectorLaravel\\Rector\\FuncCall\\ArgumentFuncCallToMethodCallRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/laravel/prefer-container-method-call",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Change array access on the container to the matching method call, as the contract does not extend ArrayAccess",
+      "enabled": [],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "ContainerArrayAccessToMethodCall",
+        "ContainerArrayAccessToMethodCallRector",
+        "RectorLaravel\\Rector\\ArrayDimFetch\\ContainerArrayAccessToMethodCallRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/laravel/prefer-date-facade",
@@ -7929,6 +8141,27 @@
       "ported": true
     },
     {
+      "id": "lint/laravel/prefer-file-facade-delete",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Use the File facade instead of the unlink() function.",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "RectorLaravel\\Rector\\FuncCall\\UnlinkFuncCallToFileFacadeDeleteRector",
+        "UnlinkFuncCallToFileFacadeDelete",
+        "UnlinkFuncCallToFileFacadeDeleteRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/laravel/prefer-fillable-attribute",
       "command": "lint",
       "group": "laravel",
@@ -8085,6 +8318,27 @@
       "ported": true
     },
     {
+      "id": "lint/laravel/prefer-pivot-class",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Changes the pivot table name of a many to many relation to the pivot model class.",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "RectorLaravel\\Rector\\ClassMethod\\RelationTableStringToPivotClassRector",
+        "RelationTableStringToPivotClass",
+        "RelationTableStringToPivotClassRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/laravel/prefer-preserve-keys-attribute",
       "command": "lint",
       "group": "laravel",
@@ -8189,6 +8443,25 @@
       "ported": true
     },
     {
+      "id": "lint/laravel/prefer-repository-method-call",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Change array access on a config or cache repository to the matching method call, as the contracts do not extend ArrayAccess",
+      "enabled": [],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "RectorLaravel\\Rector\\ArrayDimFetch\\RepositoryArrayAccessToMethodCallRector",
+        "RepositoryArrayAccessToMethodCall",
+        "RepositoryArrayAccessToMethodCallRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/laravel/prefer-request-facade",
       "command": "lint",
       "group": "laravel",
@@ -8269,6 +8542,25 @@
         "RectorLaravel\\Rector\\FuncCall\\AppToResolveRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/laravel/prefer-route-key-attribute",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Changes model getRouteKeyName() method to use the RouteKey attribute",
+      "enabled": [],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "RectorLaravel\\Rector\\Class_\\RouteKeyMethodToRouteKeyAttributeRector",
+        "RouteKeyMethodToRouteKeyAttribute",
+        "RouteKeyMethodToRouteKeyAttributeRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/laravel/prefer-session-facade",
@@ -8570,6 +8862,25 @@
         "RectorLaravel\\Rector\\StaticCall\\AssertWithClassStringToTypeHintedClosureRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/laravel/prefer-unguarded-attribute",
+      "command": "lint",
+      "group": "laravel",
+      "summary": "Changes model empty guarded property to use the Unguarded attribute",
+      "enabled": [],
+      "fix": "unsafe",
+      "ecosystem": "laravel",
+      "tools": [
+        "rector",
+        "rector-laravel"
+      ],
+      "upstream": [
+        "EmptyGuardedPropertyToUnguardedAttribute",
+        "EmptyGuardedPropertyToUnguardedAttributeRector",
+        "RectorLaravel\\Rector\\Class_\\EmptyGuardedPropertyToUnguardedAttributeRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/laravel/prefer-unique-for-attribute",
@@ -10523,6 +10834,26 @@
       "ported": true
     },
     {
+      "id": "lint/php-8.6/prefer-readonly-property-default",
+      "command": "lint",
+      "group": "php-8.6",
+      "summary": "Move a constant constructor assignment of a readonly property to a property default value",
+      "enabled": [
+        "modernize"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "ConstructorReadonlyAssignToDefault",
+        "ConstructorReadonlyAssignToDefaultRector",
+        "Rector\\Php86\\Rector\\Class_\\ConstructorReadonlyAssignToDefaultRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/phpdoc/add-missing-param",
       "command": "lint",
       "group": "phpdoc",
@@ -11111,7 +11442,7 @@
         "rector"
       ],
       "upstream": [
-        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\ReturnTypeFromMockObjectRector",
+        "Rector\\TypeDeclaration\\Rector\\Class_\\ReturnTypeFromMockObjectRector",
         "ReturnTypeFromMockObject",
         "ReturnTypeFromMockObjectRector"
       ],
@@ -11159,6 +11490,27 @@
       "ported": true
     },
     {
+      "id": "lint/phpunit/add-will-return-callback-false-fallback",
+      "command": "lint",
+      "group": "phpunit",
+      "summary": "Add a \"return false\" fallback to a willReturnCallback() closure that only returns booleans, but can fall through without a return",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "phpunit",
+      "tools": [
+        "rector",
+        "rector-phpunit"
+      ],
+      "upstream": [
+        "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\WillReturnCallbackFallbackToReturnFalseRector",
+        "WillReturnCallbackFallbackToReturnFalse",
+        "WillReturnCallbackFallbackToReturnFalseRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/phpunit/add-will-return-callback-param-type",
       "command": "lint",
       "group": "phpunit",
@@ -11178,6 +11530,25 @@
         "TypeWillReturnCallableArrowFunctionRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/phpunit/no-any-matcher",
+      "command": "lint",
+      "group": "phpunit",
+      "summary": "Change deprecated $this->any() matcher assign to direct new AnyInvokedCount()",
+      "enabled": [],
+      "fix": "safe",
+      "ecosystem": "phpunit",
+      "tools": [
+        "rector",
+        "rector-phpunit"
+      ],
+      "upstream": [
+        "AnyMatcherToNewAnyInvokedCount",
+        "AnyMatcherToNewAnyInvokedCountRector",
+        "Rector\\PHPUnit\\PHPUnit120\\Rector\\Assign\\AnyMatcherToNewAnyInvokedCountRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/phpunit/no-assert-contains-only",
@@ -13306,24 +13677,6 @@
       "ported": true
     },
     {
-      "id": "lint/refactor/replace-array-access",
-      "command": "lint",
-      "group": "refactor",
-      "summary": "Change array dim fetch to method call",
-      "enabled": [],
-      "fix": "unsafe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "ArrayDimFetchToMethodCall",
-        "ArrayDimFetchToMethodCallRector",
-        "Rector\\Transform\\Rector\\ArrayDimFetch\\ArrayDimFetchToMethodCallRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/refactor/replace-function-with-constant",
       "command": "lint",
       "group": "refactor",
@@ -13350,12 +13703,13 @@
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
-        "rector"
+        "rector",
+        "rector-laravel"
       ],
       "upstream": [
         "FuncCallToNew",
         "FuncCallToNewRector",
-        "Rector\\Transform\\Rector\\FuncCall\\FuncCallToNewRector"
+        "RectorLaravel\\Rector\\FuncCall\\FuncCallToNewRector"
       ],
       "ported": true
     },
@@ -13368,12 +13722,13 @@
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
-        "rector"
+        "rector",
+        "rector-laravel"
       ],
       "upstream": [
         "FuncCallToStaticCall",
         "FuncCallToStaticCallRector",
-        "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector"
+        "RectorLaravel\\Rector\\FuncCall\\FuncCallToStaticCallRector"
       ],
       "ported": true
     },
@@ -13386,12 +13741,13 @@
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
-        "rector"
+        "rector",
+        "rector-laravel"
       ],
       "upstream": [
-        "Rector\\Transform\\Rector\\StaticCall\\StaticCallToMethodCallRector",
-        "StaticCallToMethodCall",
-        "StaticCallToMethodCallRector"
+        "RectorLaravel\\Rector\\StaticCall\\StaticFacadeToServiceMethodCallRector",
+        "StaticFacadeToServiceMethodCall",
+        "StaticFacadeToServiceMethodCallRector"
       ],
       "ported": true
     },
@@ -14912,26 +15268,6 @@
       "ported": true
     },
     {
-      "id": "lint/style/prefer-early-return-of-variable",
-      "command": "lint",
-      "group": "style",
-      "summary": "Return the value directly where an if overrides a variable that is returned right after.",
-      "enabled": [
-        "early-return"
-      ],
-      "fix": "safe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "Rector\\EarlyReturn\\Rector\\StmtsAwareInterface\\ReturnEarlyIfVariableRector",
-        "ReturnEarlyIfVariable",
-        "ReturnEarlyIfVariableRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/style/prefer-early-return-over-prepared-value",
       "command": "lint",
       "group": "style",
@@ -15653,6 +15989,26 @@
       "ported": true
     },
     {
+      "id": "lint/types/add-bool-return-type-from-mixed-returns",
+      "command": "lint",
+      "group": "types",
+      "summary": "Add bool return type when returns mix direct true/false consts with strict bool expressions",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "BoolReturnTypeFromBooleanConstAndStrictReturns",
+        "BoolReturnTypeFromBooleanConstAndStrictReturnsRector",
+        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\BoolReturnTypeFromBooleanConstAndStrictReturnsRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/types/add-closure-never-return",
       "command": "lint",
       "group": "types",
@@ -15848,7 +16204,7 @@
       "upstream": [
         "AddVoidReturnTypeWhereNoReturn",
         "AddVoidReturnTypeWhereNoReturnRector",
-        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddVoidReturnTypeWhereNoReturnRector"
+        "Rector\\TypeDeclaration\\Rector\\ClassLike\\AddVoidReturnTypeWhereNoReturnRector"
       ],
       "ported": true
     },
@@ -16213,26 +16569,6 @@
       "ported": true
     },
     {
-      "id": "lint/types/add-param-type-parent-call",
-      "command": "lint",
-      "group": "types",
-      "summary": "Change param type based on parent param type",
-      "enabled": [
-        "types"
-      ],
-      "fix": "unsafe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "ParamTypeByParentCallType",
-        "ParamTypeByParentCallTypeRector",
-        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\ParamTypeByParentCallTypeRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/types/add-param-type-property",
       "command": "lint",
       "group": "types",
@@ -16269,26 +16605,6 @@
         "AddParamTypeSplFixedArray",
         "AddParamTypeSplFixedArrayRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddParamTypeSplFixedArrayRector"
-      ],
-      "ported": true
-    },
-    {
-      "id": "lint/types/add-param-type-sprintf",
-      "command": "lint",
-      "group": "types",
-      "summary": "Add string type to parameters used in sprintf calls",
-      "enabled": [
-        "types"
-      ],
-      "fix": "unsafe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "AddParamStringTypeFromSprintfUse",
-        "AddParamStringTypeFromSprintfUseRector",
-        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamStringTypeFromSprintfUseRector"
       ],
       "ported": true
     },
@@ -17053,6 +17369,46 @@
       "ported": true
     },
     {
+      "id": "lint/types/no-phpstan-phpdoc-tag",
+      "command": "lint",
+      "group": "types",
+      "summary": "Merge more precise @phpstan-var/@phpstan-param/@phpstan-return docblock tag into its native @var/@param/@return tag",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "MergePhpstanDocTagIntoNative",
+        "MergePhpstanDocTagIntoNativeRector",
+        "Rector\\TypeDeclarationDocblocks\\Rector\\Property\\MergePhpstanDocTagIntoNativeRector"
+      ],
+      "ported": false
+    },
+    {
+      "id": "lint/types/prefer-explicit-null-instanceof",
+      "command": "lint",
+      "group": "types",
+      "summary": "Make implicit nullable object checks explicit with instanceof",
+      "enabled": [
+        "code-quality"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "ExplicitNullableObjectInstance",
+        "ExplicitNullableObjectInstanceRector",
+        "Rector\\CodeQuality\\Rector\\If_\\ExplicitNullableObjectInstanceRector"
+      ],
+      "ported": false
+    },
+    {
       "id": "lint/types/prefer-generic-collection-phpdoc",
       "command": "lint",
       "group": "types",
@@ -17111,6 +17467,26 @@
         "Rector\\CodeQuality\\Rector\\FuncCall\\InlineIsAInstanceOfRector"
       ],
       "ported": true
+    },
+    {
+      "id": "lint/types/prefer-literal-bool-phpdoc",
+      "command": "lint",
+      "group": "types",
+      "summary": "Narrow @return docblock \"bool\" to \"false\" or \"true\" when the native return type only allows one of them",
+      "enabled": [
+        "types"
+      ],
+      "fix": "unsafe",
+      "ecosystem": "core",
+      "tools": [
+        "rector"
+      ],
+      "upstream": [
+        "NarrowBoolDocblockReturnType",
+        "NarrowBoolDocblockReturnTypeRector",
+        "Rector\\TypeDeclaration\\Rector\\ClassMethod\\NarrowBoolDocblockReturnTypeRector"
+      ],
+      "ported": false
     },
     {
       "id": "lint/types/prefer-narrow-param-type",

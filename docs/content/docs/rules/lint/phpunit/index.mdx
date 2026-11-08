@@ -7,7 +7,7 @@ pagination: false
 
 PHPUnit (ecosystem: on when composer.lock has phpunit/phpunit).
 
-Across commands: format: 1, lint: 111, analyse: 0.
+Across commands: format: 1, lint: 113, analyse: 0.
 
 <CardGroup cols={2}>
 <Card title="lint/phpunit/add-allow-mock-objects-attribute">
@@ -172,6 +172,15 @@ Add void to PHPUnit test methods
 Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
+<Card title="lint/phpunit/add-will-return-callback-false-fallback">
+
+[`lint/phpunit/add-will-return-callback-false-fallback`](/docs/rules/lint/phpunit/add-will-return-callback-false-fallback)
+
+Add a "return false" fallback to a willReturnCallback() closure that only returns booleans, but can fall through without a return
+
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+
+</Card>
 <Card title="lint/phpunit/add-will-return-callback-param-type">
 
 [`lint/phpunit/add-will-return-callback-param-type`](/docs/rules/lint/phpunit/add-will-return-callback-param-type)
@@ -179,6 +188,15 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
+
+</Card>
+<Card title="lint/phpunit/no-any-matcher">
+
+[`lint/phpunit/no-any-matcher`](/docs/rules/lint/phpunit/no-any-matcher)
+
+Change deprecated `$this->any()` matcher assign to direct `new AnyInvokedCount()`
+
+Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/phpunit/no-assert-contains-only">
