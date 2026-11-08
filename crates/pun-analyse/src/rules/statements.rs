@@ -331,6 +331,7 @@ pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
     if c.php_version < 80500 {
         return;
     }
+    let count = c.errors.len();
     c.report(
         s,
         "backtick.deprecated",
@@ -338,6 +339,8 @@ pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
             .to_string(),
         None,
     );
+    // its fix replaces the backticks with a shell_exec() call
+    c.fixable_since(count);
 }
 
 /// NoncapturingCatchRule.

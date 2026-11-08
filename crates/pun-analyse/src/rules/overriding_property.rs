@@ -227,10 +227,15 @@ pub fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
     let k = c.class_scope().expect("a property is walked inside its class");
     let errors = declared::with_classes(c, || errors(c, node, is_readonly, k));
     for (identifier, message, ignorable) in errors {
+        let count = c.errors.len();
         if ignorable {
             c.report(node.at, identifier, message, None);
         } else {
             c.report_non_ignorable(node.at, identifier, message, None);
+        }
+        // its fix removes the #[\Override] attribute
+        if identifier == "property.override" {
+            c.fixable_since(count);
         }
     }
 }

@@ -70,6 +70,7 @@ fn error(j: &J) -> Error {
         trait_file_path: opt(&j["traitFilePath"]),
         tip: opt(&j["tip"]),
         identifier: opt(&j["identifier"]),
+        fixable: false,
     }
 }
 
@@ -146,6 +147,7 @@ fn phpstan_analyse_local_ignores() {
             s("ignorable"),
             s("identifier"),
             s("tip"),
+            s("fixable"),
         )
     };
     let mut failures = Vec::new();
@@ -181,8 +183,11 @@ fn phpstan_analyse_local_ignores() {
             let (kept, _) =
                 pun_phpstan::ignore::local_ignores(&file, raw, &mut lines, &mut unmatched);
             out.extend(kept);
+            pun_phpstan::ignore::fix_all_line_errors(&file, Some(&code), &mut out);
             out.extend(pun_phpstan::ignore::unmatched_line_errors(
-                &file, &unmatched,
+                &file,
+                Some(&code),
+                &unmatched,
             ));
             let mut got: Vec<_> = out
                 .iter()
@@ -193,6 +198,9 @@ fn phpstan_analyse_local_ignores() {
                     }
                     if let Some(tip) = &e.tip {
                         j["tip"] = json!(tip);
+                    }
+                    if e.fixable {
+                        j["fixable"] = json!(true);
                     }
                     key(&j)
                 })

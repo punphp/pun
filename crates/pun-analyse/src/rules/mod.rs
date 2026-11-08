@@ -1091,6 +1091,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         });
     }
 
+    /// The errors reported since there were `count` are fixable (RuleErrorBuilder::fixNode() with a fix that
+    /// changes the code).
+    fn fixable_since(&mut self, count: usize) {
+        for e in &mut self.errors[count..] {
+            e.fixable = true;
+        }
+    }
+
     /// A `nonIgnorable()` error: no `@phpstan-ignore` or `ignoreErrors` entry removes it.
     fn report_non_ignorable(
         &mut self,

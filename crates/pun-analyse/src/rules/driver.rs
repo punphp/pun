@@ -14,7 +14,7 @@ use mago_syntax::cst::Program;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::comments::lines_to_ignore;
 use pun_phpstan::ignore::{
-    Error, ignores_without_comments, parse_errors, unmatched_line_errors,
+    Error, fix_all_line_errors, ignores_without_comments, parse_errors, unmatched_line_errors,
 };
 use super::named_argument::deferred_local_ignores as local_ignores;
 
@@ -437,23 +437,24 @@ fn checker<'a, 'arena>(
 }
 
 /// The file's errors after its `@phpstan-ignore*` comments (LocalIgnoresProcessor), with the unmatched ones, and
-/// the errors of the traits its classes use, analysed in each class's context. `files` finds a symbol's file.
+/// the errors of the traits its classes use, analysed in each class's context. `files` finds a symbol's file. Also
+/// returns how many locally ignored errors PHPStan could fix (`getFixableIgnoredErrors()`).
 pub(crate) fn check_file(
     path: &Path,
     codebase: &CodebaseMetadata,
     project: &Checks,
     files: &HashMap<FileId, PathBuf>,
     sources: &Sources,
-) -> Vec<Error> {
+) -> (Vec<Error>, usize) {
     // the scan read every analysed file it could
     let Some(file) = sources.get(path) else {
-        return Vec::new();
+        return (Vec::new(), 0);
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
     let errors = crate::parser::errors(file, program, crate::codebase::php_version(project.php_version));
     if !errors.is_empty() {
-        return errors;
+        return (errors, 0);
     }
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources, None,
@@ -475,10 +476,12 @@ pub(crate) fn check_file(
     if project.switches.contains(Switches::REPORT_IGNORES_WITHOUT_COMMENTS) {
         out.extend(ignores_without_comments(&name, &mut lines, &mut unmatched));
     }
-    let (kept, _) = local_ignores(&name, errors, &mut lines, &mut unmatched);
+    let (kept, ignored) = local_ignores(&name, errors, &mut lines, &mut unmatched);
+    let mut fixable_ignored = ignored.iter().filter(|e| e.fixable).count();
     out.extend(kept);
+    fix_all_line_errors(&name, Some(&file.contents), &mut out);
     if project.switches.contains(Switches::REPORT_UNMATCHED_IGNORES) {
-        out.extend(unmatched_line_errors(&name, &unmatched));
+        out.extend(unmatched_line_errors(&name, Some(&file.contents), &unmatched));
     }
     enum TraitWalk {
         Enter(TraitUse),
@@ -502,12 +505,13 @@ pub(crate) fn check_file(
         if !active.insert(trait_name.clone()) {
             continue;
         }
-        let (errors, uses) = in_trait_context(&name, &u, codebase, project, files, sources);
+        let (errors, uses, ignored) = in_trait_context(&name, &u, codebase, project, files, sources);
         out.extend(errors);
+        fixable_ignored += ignored;
         pending.push(TraitWalk::Exit(trait_name));
         pending.extend(uses.into_iter().map(TraitWalk::Enter));
     }
-    out
+    (out, fixable_ignored)
 }
 
 /// NodeScopeResolver::processTraitUse() and InTraitNode: the trait of `u` walked in the context of its class
@@ -521,20 +525,20 @@ fn in_trait_context(
     project: &Checks,
     files: &HashMap<FileId, PathBuf>,
     sources: &Sources,
-) -> (Vec<Error>, Vec<TraitUse>) {
+) -> (Vec<Error>, Vec<TraitUse>, usize) {
     let class = u.class.as_str();
     let Some(t) = codebase
         .get_class_like(u.trait_name.as_bytes())
         .filter(|t| t.kind == SymbolKind::Trait)
     else {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), 0);
     };
     // the analysed files are the ones the scan kept the sources of
     let Some(file) = files
         .get(&t.span.file_id)
         .and_then(|p| sources.get(p).cloned())
     else {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), 0);
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, &file);
@@ -570,8 +574,8 @@ fn in_trait_context(
     let mut unmatched = lines.clone();
     let mut errors = std::mem::take(&mut checker.errors);
     project.keep_reported(&mut errors);
-    let (kept, _) = local_ignores(&label, errors, &mut lines, &mut unmatched);
-    (kept, checker.trait_uses)
+    let (kept, ignored) = local_ignores(&label, errors, &mut lines, &mut unmatched);
+    (kept, checker.trait_uses, ignored.iter().filter(|e| e.fixable).count())
 }
 
 /// Walk a file with the `typeAliases` parameter and Larastan's type node extensions in effect.

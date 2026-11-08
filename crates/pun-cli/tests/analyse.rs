@@ -1,4 +1,4 @@
-//! `pun analyse` against PHPStan 2.3.1 (`.oracle/phpstan`, scripts/oracle.sh): every `--format` (PHPStan's
+//! `pun analyse` against PHPStan 2.3.5 (`.oracle/phpstan`, scripts/oracle.sh): every `--format` (PHPStan's
 //! `--error-format`) byte for byte and the exit code, on a project with errors and on a clean one. Without the
 //! oracle (or `php`) the comparisons are skipped. The baseline and ignore cases are derived by hand from
 //! context/plan/analyse.md Build 2 and rules.md §4.

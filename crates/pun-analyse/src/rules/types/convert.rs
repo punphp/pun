@@ -1668,7 +1668,7 @@ mod never_identity_tests {
             expected.push(format!("Dumped type: {}", oracle["types"][kind]["description"].as_str().unwrap()));
         }
         let checks = crate::rules::Checks::of(&project, &codebase);
-        let errors = crate::rules::check_file(&file, &codebase, &checks, &HashMap::new(), &sources);
+        let (errors, _) = crate::rules::check_file(&file, &codebase, &checks, &HashMap::new(), &sources);
         let actual: Vec<_> = errors.into_iter().map(|error| {
             assert_eq!(error.identifier.as_deref(), Some("phpstan.dumpType"));
             error.message

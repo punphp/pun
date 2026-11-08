@@ -38,6 +38,8 @@ pub struct Error {
     pub tip: Option<String>,
     /// Whether ignore comments, configured ignores and baselines may suppress this error.
     pub can_be_ignored: bool,
+    /// PHPStan's `isFixable()`: `--fix` has a fix for it (the JSON formats' `fixable`, the table's 🔧).
+    pub fixable: bool,
 }
 
 /// Identifiers Pun reports. Errors with other identifiers are PHPStan's alone for now.
@@ -67,6 +69,8 @@ pub struct Analysis {
     pub errors: Vec<Error>,
     /// PHPStan's not-file-specific errors: `ignoreErrors` entries without a file path nothing matched.
     pub general: Vec<String>,
+    /// `getFixableIgnoredErrors()`: how many ignored errors (by comments or `ignoreErrors`) have a fix.
+    pub fixable_ignored: usize,
 }
 
 /// [`run`], with PHPStan's not-file-specific errors.
@@ -86,10 +90,13 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         })
         .collect();
     let settings = rules::Checks::of(project, &codebase);
-    let errors: Vec<_> = project
+    let checked: Vec<_> = project
         .analysed
         .par_iter()
-        .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
+        .map(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
+        .collect();
+    let mut fixable_ignored: usize = checked.iter().map(|(_, n)| n).sum();
+    let errors: Vec<_> = (checked.into_iter().flat_map(|(errors, _)| errors))
         .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
     let errors = rules::renamed_named_arguments(
@@ -110,6 +117,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
     let processed = project
         .ignore_errors
         .process(errors, false, &analysed, false);
+    fixable_ignored += processed.ignored.iter().filter(|(e, _)| e.fixable).count();
     let mut errors: Vec<Error> = processed
         .errors
         .into_iter()
@@ -120,6 +128,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
             message: e.message,
             tip: e.tip,
             can_be_ignored: e.can_be_ignored,
+            fixable: e.fixable,
         })
         .collect();
     // PHPStan's AnalysisResult orders diagnostics by file, line and message, not identifier.
@@ -127,6 +136,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
     Ok(Analysis {
         errors,
         general: processed.string_errors,
+        fixable_ignored,
     })
 }
 
