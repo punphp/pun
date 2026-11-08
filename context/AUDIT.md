@@ -186,10 +186,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   field (`Pipeline::ignore_mismatched_rules`, `Options::ignore_php_constraint`); the `unsafe` blocks go. Spans crates.
   pun-format half done: `Pipeline::ignore_mismatched_rules(bool)`, read once in pun-cli's `pipeline()` through
   `pun_format::php_bool`; pun-config's `ignore_php_constraint` is the config track's.
-- [ ] 28. No shared lint policy: the root `Cargo.toml` has no `[workspace.lints]`, clippy doesn't gate in CI
+- [x] 28. No shared lint policy: the root `Cargo.toml` has no `[workspace.lints]`, clippy doesn't gate in CI
   (`ci.yml:30-32`), and nothing compiles the `mago-lint` feature that release builds ship
   (`crates/pun-cli/Cargo.toml:15-16`; no test passes `--mago`). Add the block below, `[lints] workspace = true` in each
-  crate, `--all-features` to the clippy job and one `pun lint --mago` smoke test. Spans crates. Needs a decision. Partly fixed in 0af1ad4: the block is in the root Cargo.toml and pun-cli, pun-workspace and pun-problem opt in (their hits fixed; pun-cli allows print_stdout/print_stderr). The `mago-lint` feature is gone (item 29). Left: the other crates opt in (request row in PLAN.md); CI is off, so no clippy job.
+  crate, `--all-features` to the clippy job and one `pun lint --mago` smoke test. Spans crates. Needs a decision. Partly fixed in 0af1ad4: the block is in the root Cargo.toml and pun-cli, pun-workspace and pun-problem opt in (their hits fixed; pun-cli allows print_stdout/print_stderr). The `mago-lint` feature is gone (item 29). Fixed in 54df451: every crate opts in, clippy is at 0 warnings, and ci.yml's clippy step passes `-D warnings`.
 - [x] 29. `crates/pun-cli/src/main.rs:210` and `lint.rs:24`: `pun lint --mago` parses every `FormatArgs` flag and then
   drops them, so `--dirty`, `--fix` and `--format=json` silently do nothing. Give it its own args or
   `conflicts_with_all`. Fixed in 0af1ad4: `pun lint --mago` and the `mago-lint` feature are removed; `pun lint` runs the native rules, Mago's Laravel ones among them.

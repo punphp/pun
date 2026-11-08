@@ -2,6 +2,8 @@
 
 Pun is one Rust binary for the PHP toolchain. `pun format` produces the same bytes as Laravel Pint. `pun analyse` (parity with PHPStan and Larastan) is in progress.
 
+Pun ships only as the Composer package `punphp/pun`: `composer.json` at the root and the shim `composer/bin/pun`, which downloads the release binary. No crate, npm package or Homebrew tap is published (`context/plan/foundations.md` §4).
+
 Read these for more:
 
 - `context/PLAN.md`: the source of truth. Every decision, the build order with each row's status, and the open questions. Start here.
@@ -18,7 +20,7 @@ Pun's machine formats (`--format=...`), messages, and exit codes must match the 
 
 Port upstream code function by function. Use the `pcre2` crate wherever upstream calls `preg_*`. Use `pun_tokens::php_compat` for PHP string behavior, such as byte-based `strlen` and ASCII-only `strtolower`.
 
-Corpus projects live in `corpus/`. `corpus/manifest.toml` lists them, and `scripts/corpus.sh <name>` checks one out. `/home/forge/projects/pinkary.com` is the acceptance project. Never modify it. To get a writable checkout, copy it into `corpus/`.
+Corpus projects live in `corpus/`. `corpus/manifest.toml` lists them, and `scripts/corpus.sh <name>` checks one out. Pinkary is the acceptance project: `corpus/pinkary`, checked out from GitHub at the pinned commit. A local copy may also exist at `/home/forge/projects/pinkary.com`. Never modify that copy.
 
 Run these checks in this order, cheapest first:
 
@@ -35,7 +37,7 @@ scripts/coverage.sh punphp-tokens
 
 - Package `punphp-<x>` lives in `crates/pun-<x>` and is imported as `pun_<x>`.
 - `cargo clippy --workspace --all-targets -- -D warnings` must pass. Every crate uses the shared `[workspace.lints]`; silence a single hit with `#[expect(lint, reason = "...")]`.
-- `scripts/analyse-tests.sh` builds every `punphp-analyse` test target once and runs the binaries in parallel. Every target must pass. `SKIP="levels rules"` leaves out the two slowest while you iterate.
+- `scripts/analyse-tests.sh` builds every `punphp-analyse` test target once and runs the binaries in parallel. Every target must pass. The whole run takes about 40 minutes on 8 cores, a quarter of it building. `SKIP="levels rules"` leaves out the two slowest (about 7 and 3 minutes alone) while you iterate.
 - `PUN_FIXERS_ONLY=a,b` makes `build.rs` compile only fixers `a` and `b`.
 - `pun-harness` compares Pint with `pun migrate` followed by `pun check --fix`. Add `--fixer <name>` to test one rule.
 - `scripts/cli-parity.sh` compares the exit codes, machine formats, and resulting files of Pint and `pun` byte for byte.
@@ -94,14 +96,16 @@ Every Rector run uses `--dry-run --clear-cache`.
 - `pun-tokens` is the base crate. It holds a lexer that matches `token_get_all`, PHP-CS-Fixer's transformers, and `TokensAnalyzer`.
 - `pun-format` runs the fixers (the `Fixer` trait) over one token list, in PHP-CS-Fixer's priority order. It also lints with PHP's own grammar. `scripts/gen-php-grammar.py` generates `php_grammar.rs`.
 - `pun-fixers` holds one file per fixer in `src/fixers/`, and `build.rs` registers them. Its `Pun/*` rules are opt-in ports from Mago (`context/reference/mago-extras.md`).
-- A fixer's tests come from three sources: upstream fixtures exported to JSON, oracle output in `tests/cases/<fixer>.json` (create it with `scripts/oracle-case.php`), and `tests/metadata.json` (the priority and risky flag from Pint).
+- A fixer's tests come from three sources: upstream fixtures exported to JSON in `tests/fixtures/`, oracle output in `tests/cases/<fixer>.json` (create it with `scripts/oracle-case.php`), and `tests/metadata.json` (the priority and risky flag from Pint).
 - `pun-config` reads `pun.toml` and nothing else. `rules/mapping.toml` maps Pun rule IDs to upstream names, and `scripts/check-rule-mapping.py` checks it. `migrate.rs` converts `pint.json` and `.php-cs-fixer.php`. The Pint presets in `crates/pun-config/presets/` are compiled into the crate.
 - Pun never runs PHP for a rule it lacks. A rule in `pun.toml` without a native port is a config error (exit 2) that names the rule. System PHP is only the test oracle, and `pun migrate` uses it to read a `.php-cs-fixer.php`.
+- `pun-workspace` finds the files a run covers, reproducing Pint's finder and its git path selection. `pun-problem` is the problem and fix type that `pun-lint` reports and `pun-cli` renders; `pun-cli` converts analyse errors into it.
 - `pun-cli` builds the `pun` binary. The crate holds Pint-identical reporters, the compact output for coding agents (`agent.rs`), the cache, `--watch`, and the interactive `migrate`.
 - `pun-phpstan` ports PHPStan's config, ignore, and type-string behavior. Its built-in symbols are in `data/symbols.json`. `pun-analyse` builds `pun analyse` on `pun-phpstan` and Mago's analyzer.
 - `pun-harness` is local tooling. It regenerates `context/reports/scoreboard.md`.
+- Release: a tag runs cargo-dist (`dist-workspace.toml`, `.github/workflows/release.yml`), which builds the four archives `composer/bin/pun` downloads (Linux musl and macOS, x86_64 and arm64). `.gitattributes` export-ignores every top-level path except the Composer package; add each new top-level path there. Every crate has `publish = false`.
 - The commands divide the work like this. `format` changes layout only. `lint` applies code rules, including PHP-CS-Fixer's risky fixers. `analyse` reports type errors. `check` runs all three in one pass.
-- The Mago crates are pinned to `=1.57.0`. Bump them together.
+- The Mago crates are pinned to `=1.57.0`. Bump them together. Four of them (mago-analyzer, mago-codex, mago-syntax, mago-phpdoc-syntax) are vendored and patched in `third_party/`; each has a PATCHES.md, and a bump re-applies those patches.
 - Harness-only environment variables: `PUN_IGNORE_PHP_CONSTRAINT=1` (for corpora that allow PHP below 8.4), `PUN_BIN`, `PUN_HARNESS_ROOT`, and `PUN_PROFILE`.
 - Every test that spawns `pun` sets `PUN_AGENT=0`. Tests of agent mode are the exception.
 
@@ -112,7 +116,7 @@ Every Rector run uses `--dry-run --clear-cache`.
 3. Prefix long commands with `timeout 900 nice`, for example `timeout 900 nice cargo test -p punphp-tokens`.
 4. Build and test only the crates you changed (`-p`). Give each concurrent build its own `CARGO_TARGET_DIR`
    (`target-<name>`) so two cargo runs never wait on one lock or reuse each other's stale artifacts.
-5. Delete scratch target dirs and downloads when you no longer need them. Keep `target/`.
+5. Delete scratch target dirs and downloads when you no longer need them. Keep `target/`. A target dir with every analyse test built is about 56 GB, so check `df -h` before you start another one.
 
 Corpus runs cover one fixer on one project. While you iterate, use Pinkary or laravel-framework.
 
