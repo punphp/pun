@@ -642,7 +642,7 @@ fn rector_paths_skips_and_unsupported_rules() {
     );
     // php53 (withPhpSets below 8.4) adds many upgrade rules that share one reason.
     assert!(
-        out.lines().any(|l| l.starts_with(" ! 13 Rector rules ")
+        out.lines().any(|l| l.starts_with(" ! 107 Rector rules ")
             && l.ends_with(
                 "  only in php52..php83 upgrade sets (below the PHP 8.4 floor); skipped"
             )),
