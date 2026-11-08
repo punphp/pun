@@ -1,7 +1,7 @@
 <?php
 
 // php capture.php /absolute/path/to/phpstan.phar [output.json]
-// PHPStan 2.3.1, phpstan-src cb3b7e99489b2e3789ee2eec10501cb7a72580ea.
+// PHPStan 2.3.5, phpstan-src 95d9e8b0578ebf75439a3744a845ef25417028fa.
 declare(strict_types=1);
 
 $phar = realpath($argv[1]);
