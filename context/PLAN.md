@@ -1619,7 +1619,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
-| design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
 | fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
 | audit fixers-messages follow-up: run scripts/cli-parity.sh on a bad fixer config to confirm the reworded configure errors end to end | todo |

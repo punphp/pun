@@ -4,7 +4,7 @@ Pun is one fast Rust binary for the whole PHP toolchain: `pun format`, `pun lint
 
 The brand is **Sticker Pop**: cream paper, pastel fills, thick ink outlines, and hard offset shadows, like a laptop lid covered in stickers. The surface is loud and cheeky. Underneath, every claim is a number that the repo can reproduce.
 
-![The Pun mascot](assets/Mascot/pun-sprinter-512.png)
+![The Pun mascot](../docs/public/mascot-512.png)
 
 ## Voice
 
@@ -116,8 +116,8 @@ Motion is quick and physical:
 
 ## Mascot and logos
 
-- The **mascot** is the sprinter elephant (Assets > Mascot). It has grape skin, yellow high-tops, a bolt cowlick, and a wink. Use it in hero panels, the docs sidebar, the 404 page, and social cards. It always faces right and runs forward.
-- The **wordmark** (Assets > Logos) is the bolt plus hand-built "pun" lettering. Use `pun-wordmark.svg` on light grounds and `pun-wordmark-reverse.svg` on dark grounds.
+- The **mascot** is the sprinter elephant (`docs/public/mascot-512.png`). It has grape skin, yellow high-tops, a bolt cowlick, and a wink. Use it in hero panels, the docs sidebar, the 404 page, and social cards. It always faces right and runs forward.
+- The **wordmark** is the bolt plus hand-built "pun" lettering. Use `docs/public/wordmark.svg` on light grounds and `docs/public/wordmark-reverse.svg` on dark grounds. The bolt alone is `docs/public/icon.svg`, and the bolt on a lilac tile is `docs/public/app-icon.svg`.
 - The **bolt** alone is the small mark. Use it for the favicon, avatars, and Ribbon separators.
 
 ## Iconography
