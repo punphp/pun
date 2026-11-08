@@ -148,18 +148,18 @@ Intentional differences:
 
 | component | version | ref |
 |---|---|---|
-| phpstan/phpstan | 2.3.1 (the latest release, Pun's parity target; PHAR, vendor prefixed `_PHPStan_cb3b7e994\`) | phpstan-src `cb3b7e99489b2e3789ee2eec10501cb7a72580ea` |
-| larastan/larastan | v3.10.0 (Pinkary's composer.lock) | |
+| phpstan/phpstan | 2.3.5 (the latest release, Pun's parity target; PHAR, vendor prefixed `_PHPStan_95d9e8b05\`) | phpstan-src `95d9e8b0578ebf75439a3744a845ef25417028fa` |
+| larastan/larastan | v3.14.0 (the latest release) | |
 | phpstan/phpstan-deprecation-rules | ^2.0 (Pinkary requires it) | |
 | nette/neon | v3.3.4 (bundled in the PHAR) | `bb88bf3a54dd21bf4dbddb5cd525d7b0c61b7cda` |
 | nette/di / nette/schema | 3.1.10 / 1.2.5 (bundled in the PHAR) | |
 
-- `.oracle/phpstan`: installed by `scripts/oracle.sh` from the committed `scripts/oracle-phpstan/composer.{json,lock}` (exactly `phpstan/phpstan: 2.3.1`, `larastan/larastan: 3.10.0`,
+- `.oracle/phpstan`: installed by `scripts/oracle.sh` from the committed `scripts/oracle-phpstan/composer.{json,lock}` (exactly `phpstan/phpstan: 2.3.5`, `larastan/larastan: 3.14.0`,
   `phpstan/phpstan-deprecation-rules: ^2.0`; `composer install` there. Oracle binary:
   `php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar`. Its `vendor/` also serves the corpus parity
   tests (symlinked into a farm, so `%rootDir%` and `includes: vendor/...` resolve as in a real project).
 - `.oracle/neon`: nette/neon source + tests at the bundled tag (`git fetch --depth 1 https://github.com/nette/neon.git v3.3.4`).
-- `.oracle/phpstan-src`: phpstan-src at the tag 2.3.1 (`scripts/oracle.sh` fetches it; its `tests/` give data
+- `.oracle/phpstan-src`: phpstan-src at the tag 2.3.5 (`scripts/oracle.sh` fetches it; its `tests/` give data
   providers, its `src/Rules/` and `conf/` the PHPStan inventory).
 - phpstan/phpstan-strict-rules 2.0.12 and phpstan/phpstan-deprecation-rules 2.0.5 are the versions the rule mapping's
   inventory read (`crates/pun-config/rules/upstream/phpstan-extensions.json`).
@@ -178,7 +178,7 @@ parents); expected values are never written by hand. Re-run one after touching i
 | `php scripts/export-ignore-fixtures.php` | `comments.json` (RichParser::getLinesToIgnore), `local-processor.json` (LocalIgnoresProcessor), `ignore.json` (IgnoredErrorHelper + result processing) |
 | `php scripts/export-local-ignore-fixtures.php` | `local.json`: real `phpstan analyse` on `local/*.php`, comments blanked vs. kept |
 | `php scripts/export-php-helpers-fixtures.php` | `php.json`: regex (Nette Strings::match), preg_quote, FileHelper, relative paths, fnmatch, (string) casts, `phpfile/ok-*.php` |
-| `php scripts/export-phpstan-symbols.php` | `../data/symbols.json` (every built-in function, method, class and constant as PHPStan 2.3.1 reflects them on PHP 8.4, with the 8.5 differences), `type-strings.json` (every signature-map type string through TypeStringResolver + `describe()`), `reflected-types.json` (every type in those signatures, `toPhpDocNode()` and its descriptions) |
+| `php scripts/export-phpstan-symbols.php` | `../data/symbols.json` (every built-in function, method, class and constant as PHPStan 2.3.5 reflects them on PHP 8.4, with the 8.5 differences), `type-strings.json` (every signature-map type string through TypeStringResolver + `describe()`), `reflected-types.json` (every type in those signatures, `toPhpDocNode()` and its descriptions) |
 | `php scripts/export-phpstan-symbols.php probes` | `type-probes.json` (hand-picked and generated type strings: descriptions and iterable key/value), `type-super.json` (`isSuperTypeOf()` of every ordered pair within each atom set) |
 
 ### How PHPStan resolves a built-in function's signature
@@ -204,7 +204,7 @@ resolver (`resolve.rs`) and type model (`types.rs`: `TypeCombinator` union/inter
 
 Rule fixtures and corpus parity run the real PHAR at level 0. Two environment traps, both handled by the scripts:
 
-- PHPStan 2.3.1 detects AI agents (`src/Internal/AgentDetector.php`: `AI_AGENT`, `CLAUDECODE`,
+- PHPStan 2.3.5 detects AI agents (`src/Internal/AgentDetector.php`: `AI_AGENT`, `CLAUDECODE`,
   `AMP_CURRENT_THREAD_ID`, ...) and switches its output format; the scripts unset those variables.
 - PHP 8.5's `max_memory_limit` (512M in php.ini) caps `--memory-limit`, also in worker processes, which don't
   inherit `-d`. The scripts set `PHP_INI_SCAN_DIR=:target-analyse/php-ini` with `max_memory_limit = -1` there.
@@ -213,7 +213,7 @@ Rule fixtures and corpus parity run the real PHAR at level 0. Two environment tr
 |---|---|
 | `php scripts/export-rule-fixtures.php [--resume] [--budget=SECONDS]` | `crates/pun-analyse/tests/fixtures/rules/<Dir>/<Test>.json`: every `analyse()` call of every level-0 RuleTestCase (data providers expanded, `RequiresPhp` applied), re-run as `phpstan analyse --level 0` on the same files, plus copies of the data files under `data/` |
 | `php scripts/export-phpstan-api-stub.php > crates/pun-analyse/data/phpstan-api.php` | the PHAR's unprefixed classes (PHPStan\, PhpParser\ with its `class_alias()` compatibility names, phpdoc-parser, BetterReflection), bodies stripped; Pun scans it when an analysed file names those namespaces |
-| `python3 scripts/analyse-corpus.py setup\|oracle\|diff\|rank <project>` | corpus checkouts under `target-analyse/corpus` (larastan at tag v3.10.0), PHPStan's level-0 JSON in `target-analyse/oracle/<p>.json` (cold, one worker), and the per-identifier diff against `examples/analyse` |
+| `python3 scripts/analyse-corpus.py setup\|oracle\|diff\|rank <project>` | corpus checkouts under `target-analyse/corpus` (larastan at tag v3.14.0), PHPStan's level-0 JSON in `target-analyse/oracle/<p>.json` (cold, one worker), and the per-identifier diff against `examples/analyse` |
 
 `tests/rules.rs` compares only the identifiers `pun_analyse::IDENTIFIERS` lists; cases that still differ are
 listed, with reasons, in `tests/fixtures/rules/gaps.txt` (the list must be exact).

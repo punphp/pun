@@ -606,7 +606,6 @@ pg_num_fields
 pg_num_rows
 pg_numfields
 pg_numrows
-pg_pipeline_status
 pg_put_copy_data
 pg_put_copy_end
 pg_result_memory_size

@@ -1,4 +1,4 @@
-//! NEON, ported from nette/neon v3.3.4 (the version bundled in PHPStan 2.3.1): `Lexer`, `TokenStream`, `Parser`, the
+//! NEON, ported from nette/neon v3.3.4 (the version bundled in PHPStan 2.3.5): `Lexer`, `TokenStream`, `Parser`, the
 //! node `toValue()`s and `Encoder`. Error messages and positions are nette/neon's.
 
 use std::sync::LazyLock;
@@ -213,6 +213,8 @@ enum Node {
 struct Item {
     key: Option<Node>,
     value: Node,
+    /// `startTokenPos`
+    start: usize,
 }
 
 struct Parser {
@@ -235,6 +237,7 @@ impl Parser {
         let mut items: Vec<Item> = Vec::new();
         let mut keys = Vec::new();
         loop {
+            let start = self.s.pos;
             let mut key = None;
             if self.s.consume(&[T::Char(b'-')]).is_some() {
             } else if !self.s.has_next() || only_bullets {
@@ -281,7 +284,7 @@ impl Parser {
                     return self.s.error();
                 }
             }
-            items.push(Item { key, value });
+            items.push(Item { key, value, start });
             if close {
                 return Ok(Node::Array(items));
             }
@@ -372,9 +375,14 @@ impl Parser {
                 Item {
                     key: Some(value),
                     value: v,
+                    start: pos,
                 }
             } else {
-                Item { key: None, value }
+                Item {
+                    key: None,
+                    value,
+                    start: pos,
+                }
             };
             items.push(item);
             if self.s.consume(&[T::Char(b','), T::Newline]).is_some() {
@@ -583,6 +591,39 @@ pub fn decode(input: &str) -> Result<Value, Error> {
         s: tokenize(input)?,
     };
     Ok(to_value(parser.parse()?))
+}
+
+/// IgnoreErrorsConfigFixer::findNeonEntries(): each item of the `parameters: ignoreErrors:` list as decoded, with its
+/// `startLine`. None when the file does not decode or the list is not an array.
+pub fn ignore_errors_items(input: &[u8]) -> Option<Vec<(Value, usize)>> {
+    let mut parser = Parser {
+        s: tokenize(std::str::from_utf8(input).ok()?).ok()?,
+    };
+    let root = parser.parse().ok()?;
+    // Parser::initLines()
+    let mut lines = Vec::with_capacity(parser.s.tokens.len() + 1);
+    let mut line = 1;
+    for token in &parser.s.tokens {
+        lines.push(line);
+        line += token.value.matches('\n').count();
+    }
+    lines.push(line);
+    // findNeonItem(): the first item with the key
+    let find = |node: Node, key: &str| match node {
+        Node::Array(items) => items.into_iter().find(|i| {
+            i.key.as_ref().is_some_and(|k| match k {
+                Node::Str(s) => s == key,
+                Node::Literal(v) => v.to_php_string().as_deref() == Some(key),
+                _ => false,
+            })
+        }),
+        _ => None,
+    };
+    let parameters = find(root, "parameters")?;
+    let Node::Array(items) = find(parameters.value, "ignoreErrors")?.value else {
+        return None;
+    };
+    Some(items.into_iter().map(|i| (to_value(i.value), lines[i.start])).collect())
 }
 
 /// `Neon::decode()` on bytes: nette/neon's lexer (`/u`) rejects invalid UTF-8 up front.

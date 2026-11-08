@@ -48,6 +48,11 @@ const EXTRA: &[(&str, &str, i64, &str)] = &[
     ("types", "offsets.php", 125, "offsetAccess.nonOffsetAccessible"),
     // The GAPS entry's message with `TReduceInitial` alone
     ("max", "template-self-reference.php", 32, "return.type"),
+    // PHPStan 2.3.5 reports an unmatched entry in its config file. These two match PHPStan's errors that Pun does not
+    // report: expr.resultUnused on the `$f()` calls (unused-variable.php:278, 509, 543) and booleanOr.leftAlwaysFalse
+    // (unused-variable-usage-flow.php:21)
+    ("unused-variable", "phpstan.neon", 10, "ignore.unmatched"),
+    ("unused-variable", "phpstan.neon", 20, "ignore.unmatched"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
@@ -67,7 +72,9 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
         })
         .collect();
     got.sort();
-    for (case, file, line, id) in EXTRA.iter().filter(|(case, ..)| dir.ends_with(case)) {
+    // An entry in a config file belongs to that config's run only
+    let ours = |file: &str| !file.ends_with(".neon") || file == format!("{neon}.neon");
+    for (case, file, line, id) in EXTRA.iter().filter(|(case, file, ..)| dir.ends_with(case) && ours(file)) {
         let at = got
             .iter()
             .position(|k| k.0 == *file && k.1 == *line && k.2 == *id)

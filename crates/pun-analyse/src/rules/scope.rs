@@ -987,6 +987,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn php_versions(&self) -> Option<(i64, Option<i64>)> {
         const MIN: i64 = 50207;
         match version_range(&self.guards) {
+            // PHPStan 2.3.2 (#6746): a guard like `PHP_VERSION_ID < 80400` gives only an upper bound; without a configured
+            // version range (Pun has none) the lower bound is the analysed version, or as close to it as the guard
+            // allows
+            Some((lo, Some(hi))) if lo.is_none_or(|l| l <= MIN) => Some((i64::from(self.php_version).min(hi), Some(hi))),
             Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => Some((lo.unwrap_or(MIN).max(MIN), hi)),
             _ => None,
         }

@@ -12,6 +12,7 @@ use Illuminate\Database\Schema\MySqlSchemaState;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use PDO;
+use RuntimeException;
 
 class MySqlConnection extends Connection
 {
@@ -116,6 +117,37 @@ class MySqlConnection extends Connection
      * @return string
      */
     public function getServerVersion(): string
+    {}
+
+    /**
+     * Get the ID of the last committed transaction.
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function getLastCommitId()
+    {}
+
+    /**
+     * Calculate the commit ID for a set of commit IDs that includes all of them.
+     *
+     * @param  string[]  $values
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function mergeCommitIds(array $values)
+    {}
+
+    /**
+     * Determine if the given commit ID has been applied.
+     *
+     * @param  string  $value
+     * @param  int  $wait
+     * @return bool
+     */
+    public function hasCommitId(string $value, int $wait = 0)
     {}
 
     /**

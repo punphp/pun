@@ -1061,28 +1061,28 @@
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 18,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:17::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 22,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:17::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 26,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:17::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 29,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:17::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
@@ -1131,28 +1131,28 @@
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 72,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:71::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 76,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:71::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 80,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:71::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Arrays/data/offset-access-legal.php",
                     "line": 83,
                     "identifier": "method.tentativeReturnType",
-                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/offset-access-legal.php:71::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
                     "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 }
             ],

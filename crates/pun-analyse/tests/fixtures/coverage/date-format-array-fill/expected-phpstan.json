@@ -257,7 +257,7 @@
    "file": "types.php",
    "line": 59,
    "identifier": "phpstan.dumpType",
-   "message": "Dumped type: non-empty-string",
+   "message": "Dumped type: 'Q'",
    "tip": null
   },
   {
@@ -320,7 +320,7 @@
    "file": "types.php",
    "line": 67,
    "identifier": "phpstan.dumpType",
-   "message": "Dumped type: non-falsy-string",
+   "message": "Dumped type: 'Fri'|'Mon'|'Sat'|'Sun'|'Thu'|'Tue'|'Wed'",
    "tip": null
   },
   {

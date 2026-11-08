@@ -18,6 +18,13 @@ namespace Symfony\Component\HttpFoundation;
  */
 class IpUtils
 {
+    /**
+     * Ranges that a server must not connect to: the private networks, plus the documentation, benchmarking
+     * and other special-purpose ranges listed below. This is a deny list for outgoing requests, so it also
+     * covers the IPv6 prefixes that embed an IPv4 address (IPv4-mapped, IPv4-compatible, 6to4, Teredo,
+     * NAT64). A remote client can present such an address as its own, so this list must not serve as an
+     * allow list of trusted proxies: use PRIVATE_RANGES for that.
+     */
     public const PRIVATE_SUBNETS = [
         '127.0.0.0/8',     // RFC1700 (Loopback)
         '10.0.0.0/8',      // RFC1918
@@ -43,6 +50,25 @@ class IpUtils
         '2001:0002::/48',  // IPv6 Benchmarking (RFC 5180 and corrections)
         '64:ff9b::/96',    // NAT64 well-known prefix (RFC 6052)
         '64:ff9b:1::/48',  // NAT64 local-use prefix (RFC 8215)
+    ];
+
+    /**
+     * Ranges reserved for private networks, which a reverse proxy in front of the application can live in.
+     *
+     * Unlike PRIVATE_SUBNETS, this list holds no prefix that a remote client can present as its own address,
+     * so it can serve as an allow list, as Request::setTrustedProxies() does for "private_ranges".
+     * An IPv4-mapped IPv6 address is matched as the IPv4 host it embeds.
+     */
+    public const PRIVATE_RANGES = [
+        '127.0.0.0/8',    // RFC1700 (Loopback)
+        '10.0.0.0/8',     // RFC1918
+        '172.16.0.0/12',  // RFC1918
+        '192.168.0.0/16', // RFC1918
+        '169.254.0.0/16', // RFC3927
+        '100.64.0.0/10',  // RFC6598
+        '::1/128',        // Loopback
+        'fc00::/7',       // Unique Local Address
+        'fe80::/10',      // Link Local Address
     ];
 
     private static array $checkedIps = [];

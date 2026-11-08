@@ -46,12 +46,17 @@ fn collection_class_name(codebase: &CodebaseMetadata, model: &[u8]) -> Word {
 /// `determineCollectionClass()`: the model's collection, given its key and value when it is generic over both, its
 /// value when its one template is `TModel`.
 pub(crate) fn collection_class(codebase: &CodebaseMetadata, model: &[u8]) -> TAtomic {
+    keyed_collection_class(codebase, model, get_int())
+}
+
+/// `determineCollectionClass()` with a key type.
+fn keyed_collection_class(codebase: &CodebaseMetadata, model: &[u8], key: TUnion) -> TAtomic {
     let class = collection_class_name(codebase, model);
     let Some(k) = codebase.get_class_like(class.as_bytes()) else { return named(class, None) };
     let model = codebase.get_class_like(model).map_or_else(|| word(model), |m| m.original_name);
     let value = TUnion::from_atomic(named(model, None));
     let parameters = match k.template_types.len() {
-        2 => Some(vec![get_int(), value]),
+        2 => Some(vec![key, value]),
         1 if k.template_types.contains_key(&word("TModel")) => Some(vec![value]),
         _ => None,
     };
@@ -60,11 +65,18 @@ pub(crate) fn collection_class(codebase: &CodebaseMetadata, model: &[u8]) -> TAt
 
 /// CollectionOfType::getResult() for Mago's expander (`collection-of<TModel>` without a template): each object
 /// class's own collection; `None` when no part is a model (CollectionOfTypeNodeResolverExtension declines it).
-pub(crate) fn collection_of(codebase: &CodebaseMetadata, model: &TUnion) -> Option<TUnion> {
+pub(crate) fn collection_of(codebase: &CodebaseMetadata, model: &TUnion, key: Option<&TUnion>) -> Option<TUnion> {
     const MODEL: &[u8] = b"Illuminate\\Database\\Eloquent\\Model";
     let classes = object_class_names(model);
     let models = classes.iter().any(|c| c.as_bytes().eq_ignore_ascii_case(MODEL) || codebase.is_instance_of(c.as_bytes(), MODEL));
-    models.then(|| TUnion::from_vec(classes.iter().map(|c| collection_class(codebase, c.as_bytes())).collect()))
+    // without a key, `new BenevolentUnionType([new IntegerType(), new StringType()])`
+    let key = key.cloned().unwrap_or_else(|| {
+        let mut key = TUnion::from_vec(vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::string())]);
+        key.set_ignore_nullable_issues(true);
+        key.set_ignore_falsable_issues(true);
+        key
+    });
+    models.then(|| TUnion::from_vec(classes.iter().map(|c| keyed_collection_class(codebase, c.as_bytes(), key.clone())).collect()))
 }
 
 /// `getObjectClassNames()` of a type whose parts are objects.

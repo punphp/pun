@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Larastan\Larastan\Support;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\HasCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Iterator;
 use IteratorAggregate;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\String_;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
@@ -21,18 +23,20 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\UnionType;
-use PHPStan\Type\VerbosityLevel;
 use Traversable;
 
 use function array_map;
 use function array_values;
 use function count;
 use function in_array;
+use function ltrim;
+use function version_compare;
 
 final class CollectionHelper
 {
@@ -69,57 +73,106 @@ final class CollectionHelper
         return null;
     }
 
-    public function determineCollectionClassName(string $modelClassName): string
+    /**
+     * The collection type declared by the model's `CollectedBy` attribute or by the
+     * return type of its `newCollection()` method, which can be a union or an intersection.
+     */
+    private function determineCollectionType(string $modelClassName): Type
     {
         try {
-            $modelReflection = $this->reflectionProvider->getClass($modelClassName);
+            $modelReflection     = $this->reflectionProvider->getClass($modelClassName);
+            $newCollectionMethod = $modelReflection->getNativeMethod('newCollection');
 
-            $attrs = $modelReflection->getNativeReflection()->getAttributes('Illuminate\Database\Eloquent\Attributes\CollectedBy'); //@phpstan-ignore argument.type (Attribute class might not exist)
+            // The attribute is read by HasCollection::newCollection(), so it has no effect when that method is overridden.
+            $newCollectionFileName = $newCollectionMethod->getDeclaringClass()->getNativeReflection()->getMethod('newCollection')->getFileName();
 
-            if ($attrs !== []) {
-                $expr =  $attrs[0]->getArgumentsExpressions()[0];
+            if ($newCollectionFileName === $this->reflectionProvider->getClass(HasCollection::class)->getFileName()) {
+                $collectionClassName = $this->findCollectedByClassName($modelReflection);
 
-                if ($expr instanceof ClassConstFetch && $expr->class instanceof Name) {
-                    return $expr->class->toString();
+                if ($collectionClassName !== null) {
+                    return new ObjectType($collectionClassName);
                 }
             }
 
-            $newCollectionMethod = $modelReflection->getNativeMethod('newCollection');
-            $returnType          = $newCollectionMethod->getVariants()[0]->getReturnType();
-
-            $classNames = $returnType->getObjectClassNames();
-
-            if (count($classNames) === 1) {
-                return $classNames[0];
-            }
-
-            return $returnType->describe(VerbosityLevel::value());
+            return $newCollectionMethod->getVariants()[0]->getReturnType();
         } catch (MissingMethodFromReflectionException | ShouldNotHappenException) {
-            return EloquentCollection::class;
+            return new ObjectType(EloquentCollection::class);
         }
     }
 
-    public function determineCollectionClass(string $modelClassName): Type
+    /**
+     * Mirrors HasCollection::resolveCollectionFromAttribute(), which only reads a positional argument.
+     * Since Laravel 13.4, the parent classes are searched too, nearest first.
+     */
+    private function findCollectedByClassName(ClassReflection $modelReflection): string|null
     {
-        $collectionClassName  = $this->determineCollectionClassName($modelClassName);
-        $collectionReflection = $this->reflectionProvider->getClass($collectionClassName);
+        // @phpstan-ignore ternary.alwaysTrue, ternary.alwaysFalse
+        $classReflections = version_compare(LARAVEL_VERSION, '13.4.0', '>=')
+            ? [$modelReflection, ...$modelReflection->getParents()]
+            : [$modelReflection];
 
-        if ($collectionReflection->isGeneric()) {
-            $typeMap = $collectionReflection->getActiveTemplateTypeMap();
+        foreach ($classReflections as $classReflection) {
+            $attributes = $classReflection->getNativeReflection()->getAttributes('Illuminate\Database\Eloquent\Attributes\CollectedBy'); //@phpstan-ignore argument.type (Attribute class might not exist)
+            $expr       = ($attributes[0] ?? null)?->getArgumentsExpressions()[0] ?? null;
 
-            // Specifies key and value
-            if ($typeMap->count() === 2) {
-                return new GenericObjectType($collectionClassName, [new IntegerType(), new ObjectType($modelClassName)]);
+            if ($expr === null) {
+                continue;
             }
 
-            // Specifies only value
-            if (($typeMap->count() === 1) && $typeMap->hasType('TModel')) {
-                return new GenericObjectType($collectionClassName, [new ObjectType($modelClassName)]);
+            if ($expr instanceof ClassConstFetch && $expr->class instanceof Name) {
+                return $expr->class->toString();
             }
+
+            if ($expr instanceof String_) {
+                return ltrim($expr->value, '\\');
+            }
+
+            return null;
         }
 
-        // Not generic. So return the type as is
-        return new ObjectType($collectionClassName);
+        return null;
+    }
+
+    public function determineCollectionClass(string $modelClassName, Type|null $modelType = null, Type|null $keyType = null): Type
+    {
+        $modelType ??= new ObjectType($modelClassName);
+
+        return TypeTraverser::map($this->determineCollectionType($modelClassName), function (Type $type, callable $traverse) use ($modelType, $keyType): Type {
+            if ($type instanceof UnionType || $type instanceof IntersectionType) {
+                return $traverse($type);
+            }
+
+            // Members that are not collections keep their declared type arguments.
+            if (! (new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes()) {
+                return TypeTraverser::map($type, static fn (Type $type, callable $traverse): Type => $type instanceof StaticType ? $modelType : $traverse($type));
+            }
+
+            $classNames = $type->getObjectClassNames();
+
+            if (count($classNames) !== 1) {
+                return $type;
+            }
+
+            $collectionClassName  = $classNames[0];
+            $collectionReflection = $this->reflectionProvider->getClass($collectionClassName);
+
+            if ($collectionReflection->isGeneric()) {
+                $typeMap = $collectionReflection->getActiveTemplateTypeMap();
+
+                // Specifies key and value
+                if ($typeMap->count() === 2) {
+                    return new GenericObjectType($collectionClassName, [$keyType ?? new IntegerType(), $modelType]);
+                }
+
+                // Specifies only value
+                if (($typeMap->count() === 1) && $typeMap->hasType('TModel')) {
+                    return new GenericObjectType($collectionClassName, [$modelType]);
+                }
+            }
+
+            // Not generic. So return the type as is
+            return new ObjectType($collectionClassName);
+        });
     }
 
     public function replaceCollectionsInType(Type $type): Type

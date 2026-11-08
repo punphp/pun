@@ -185,8 +185,8 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
 - **`variant`** on PHPStan-family entries keeps the original identifier when one Pun rule replaces several, so `-v`
   output can print it and migrated `ignoreErrors` keep their narrow scope.
 - **Pinned upstream versions** in `[meta] upstream`: PHP-CS-Fixer 3.95.25, Rector 2.8.4 (with rector-phpunit
-  dev-main@22c6dae bundled), rector-laravel 2.7.3, pest-plugin-rector 5.x-dev@8c1b780, PHPStan 2.3.1, strict-rules
-  2.0.12, deprecation-rules 2.0.5, Larastan 3.10.0, Mago 1.57.0. reference/oracle.md says how to fetch each.
+  dev-main@22c6dae bundled), rector-laravel 2.7.3, pest-plugin-rector 5.x-dev@8c1b780, PHPStan 2.3.5, strict-rules
+  2.0.12, deprecation-rules 2.0.5, Larastan 3.14.0, Mago 1.57.0. reference/oracle.md says how to fetch each.
 
 **What Step 1 changes in the data** (config.md Build 1-3): rule keys become `<group>/<name>` under `[rules.<command>]`
 and every `pun`, `fixed_by` and `conflicts` reference becomes a full `<command>/<group>/<name>`; `[meta] groups` holds

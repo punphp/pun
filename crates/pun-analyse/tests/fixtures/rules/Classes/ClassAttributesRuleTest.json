@@ -263,6 +263,23 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testPhpStanApiAttributes",
+            "files": [
+                "Classes/data/api-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/api-attributes.php",
+                    "line": 64,
+                    "identifier": "phpstanApi.attribute",
+                    "message": "Using attribute PHPStan\\DependencyInjection\\ContainerExtension is not covered by backward compatibility promise. The attribute might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
         }
     ]
 }

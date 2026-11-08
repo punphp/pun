@@ -1,4 +1,4 @@
-//! `pun analyse --format=<f>`: PHPStan 2.3.1's error formatters, byte for byte
+//! `pun analyse --format=<f>`: PHPStan 2.3.5's error formatters, byte for byte
 //! (.oracle/phpstan-src/src/Command/ErrorFormatter/*.php). `json` and `raw` print absolute paths, the others paths
 //! relative to the project root (PHPStan's simple relative path helper, the cwd being the root). The errors about
 //! ignores can't be ignored, and an unmatched `ignoreErrors` entry has no line (or, without a file path, no file:
@@ -34,6 +34,8 @@ pub(crate) struct Context<'a> {
     pub(crate) paths: &'a [PathBuf],
     /// The not-file-specific errors.
     pub(crate) general: &'a [String],
+    /// How many ignored errors have a fix (`getFixableIgnoredErrors()`), for `table`.
+    pub(crate) fixable_ignored: usize,
     /// pun.toml, relative to the root: teamcity's file for the not-file-specific errors (PHPStan's config file).
     pub(crate) config: Option<String>,
 }
@@ -113,6 +115,9 @@ fn json(findings: &[Finding], general: &[String], pretty: bool) -> String {
             message.insert("tip".into(), json!(tip));
         }
         message.insert("identifier".into(), json!(f.identifier));
+        if f.fixable {
+            message.insert("fixable".into(), json!(true));
+        }
         entry["messages"]
             .as_array_mut()
             .expect("an array")
@@ -314,12 +319,22 @@ fn teamcity(findings: &[Finding], general: &[String], config: Option<&str>) -> S
 }
 
 /// TableErrorFormatter: one Symfony table per file (`Line` and the path), the identifier (🪪) and tip (💡) under
-/// each message, then the `[ERROR] Found N errors` block; `[OK] No errors` without any. The paths are relative to
-/// the analysed paths' common directory (PHPStan's fuzzy relative path).
+/// each message (a fixable one marked 🔧), then the `[ERROR] Found N errors` block and how many errors `--fix` and
+/// `--fix-ignored` would fix; `[OK] No errors` without any. The paths are relative to the analysed paths' common
+/// directory (PHPStan's fuzzy relative path).
 fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
     let style = crate::table::Style::new(width);
+    let errors = |n: usize| if n == 1 { "error" } else { "errors" };
+    // printFixableIgnoredErrors()
+    let fixable_ignored = match cx.fixable_ignored {
+        0 => String::new(),
+        n => format!(
+            "🔧 {n} ignored {} can be fixed automatically. Run PHPStan again with --fix-ignored.\n\n",
+            errors(n)
+        ),
+    };
     if findings.is_empty() && cx.general.is_empty() {
-        return style.block("OK", "No errors", 0);
+        return style.block("OK", "No errors", 0) + &fixable_ignored;
     }
     let mut out = String::new();
     let files = by_file(findings, |f| &f.rel);
@@ -328,7 +343,8 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
         let rows: Vec<[String; 2]> = list
             .iter()
             .map(|f| {
-                let mut message = format!("{}\n🪪  {}", f.message, f.identifier);
+                let fix = if f.fixable { " 🔧" } else { "" };
+                let mut message = format!("{}{fix}\n🪪  {}", f.message, f.identifier);
                 if !f.ignorable() {
                     message.push_str(" (non-ignorable)");
                 }
@@ -357,7 +373,18 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
         format!("Found {n} errors")
     };
     out.push_str(&style.block("ERROR", &found, tables));
-    out
+    let fixable = findings.iter().filter(|f| f.fixable).count();
+    if fixable > 0 {
+        let _ = writeln!(
+            out,
+            "🔧 {fixable} {} can be fixed automatically. Run PHPStan again with --fix.",
+            errors(fixable)
+        );
+        if cx.fixable_ignored == 0 {
+            out.push('\n');
+        }
+    }
+    out + &fixable_ignored
 }
 
 /// FuzzyRelativePathHelper: `file` without the deepest directory that the working directory and every analysed

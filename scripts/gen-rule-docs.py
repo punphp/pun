@@ -104,7 +104,7 @@ def upstream_url(row: dict, urls: dict) -> str:
     if tool == "mago-analyzer":
         return "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/"
     if tool == "larastan":
-        return "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md"
+        return "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md"
     return "https://laravel.com/docs/pint"
 
 

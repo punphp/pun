@@ -1,4 +1,4 @@
-//! `@phpstan-ignore`, `@phpstan-ignore-line` and `@phpstan-ignore-next-line` comments: PHPStan 2.3.1's
+//! `@phpstan-ignore`, `@phpstan-ignore-line` and `@phpstan-ignore-next-line` comments: PHPStan 2.3.5's
 //! `RichParser::getLinesToIgnore()` and `IgnoreLexer`, over the file's tokens as nikic/php-parser's lexer produces
 //! them (token_get_all plus its sentinel token).
 
@@ -23,7 +23,7 @@ pub type ParseErrors = IndexMap<i64, Vec<String>>;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(usize)]
-enum T {
+pub(crate) enum T {
     Whitespace,
     End,
     Identifier,
@@ -71,10 +71,9 @@ static PHPDOC_TAG: LazyLock<Regex> = LazyLock::new(|| {
         .expect("PHPDoc tag pattern")
 });
 
-/// `IgnoreLexer::tokenize()`
-fn tokenize(input: &[u8]) -> Vec<(String, T, i64)> {
+/// `IgnoreLexer::tokenize()`: each token's byte range and type, without the `end` token it appends.
+pub(crate) fn token_spans(input: &[u8]) -> Vec<(std::ops::Range<usize>, T)> {
     let mut tokens = Vec::new();
-    let mut line = 1;
     let mut at = 0;
     let mut locs = LEXER.capture_locations();
     while at < input.len() {
@@ -84,12 +83,18 @@ fn tokenize(input: &[u8]) -> Vec<(String, T, i64)> {
         let t = (1..=TYPES.len())
             .find(|&g| locs.get(g).is_some())
             .map_or(T::Other, |g| TYPES[g - 1]);
-        tokens.push((
-            String::from_utf8_lossy(&input[at..m.end()]).into_owned(),
-            t,
-            line,
-        ));
+        tokens.push((at..m.end(), t));
         at = m.end();
+    }
+    tokens
+}
+
+/// `IgnoreLexer::tokenize()`
+fn tokenize(input: &[u8]) -> Vec<(String, T, i64)> {
+    let mut tokens = Vec::new();
+    let mut line = 1;
+    for (span, t) in token_spans(input) {
+        tokens.push((String::from_utf8_lossy(&input[span]).into_owned(), t, line));
         if t == T::End {
             line += 1;
         }

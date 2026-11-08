@@ -1,4 +1,4 @@
-//! Larastan 3.10.0's rules (the `laravel` group), run when the project's PHPStan config includes Larastan's
+//! Larastan 3.14.0's rules (the `laravel` group), run when the project's PHPStan config includes Larastan's
 //! extension.neon. Each rule is registered by extension.neon whatever the level; the opt-in ones only when their
 //! parameter is on. See [`Larastan`].
 
@@ -37,6 +37,7 @@ pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
+pub(crate) use forwards::late_builder;
 pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
 pub(super) use config::Types as ConfigTypes;
 pub(super) use macros::{Macros, macro_method};
@@ -570,6 +571,17 @@ pub(crate) fn resolving_unresolvable<R>(f: impl FnOnce() -> R) -> R {
     result
 }
 
+/// A model collection `type_node()` resolved, with its key type `key` (a two-argument collection's first).
+fn with_key(collection: pun_phpstan::types::Type, key: &pun_phpstan::types::Type) -> pun_phpstan::types::Type {
+    match collection {
+        pun_phpstan::types::Type::Object(name, mut args, nullable) if args.len() == 2 => {
+            args[0] = key.clone();
+            pun_phpstan::types::Type::Object(name, args, nullable)
+        }
+        c => c,
+    }
+}
+
 /// Larastan's TypeNodeResolverExtensions: `view-string` (ViewStringType), `model-property<TModel>`
 /// (ModelPropertyTypeNodeResolverExtension: GenericModelPropertyType with `checkModelProperties`, else a string),
 /// `collection-of<TModel>` (CollectionOfType, the model's own collection) and GenericEloquentBuilderTypeNodeResolverExtension's
@@ -604,6 +616,16 @@ pub(crate) fn type_node(
             Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ModelProperty(Box::new(t.clone())))]))
         }
         ("model-property", _) => Some(Type::Error),
+        // `collection-of<TKey, TModel>`: like `array<TKey, TValue>`, the optional key type comes first
+        ("collection-of", [key, t]) => {
+            if is_super_type_of(&Type::Union(vec![Type::Int, Type::String]), key).no() {
+                return None;
+            }
+            match type_node(codebase, larastan, name, std::slice::from_ref(t))? {
+                Type::Union(collections) => Some(pun_phpstan::types::union(collections.into_iter().map(|c| with_key(c, key)).collect())),
+                c => Some(with_key(c, key)),
+            }
+        }
         ("collection-of", [t]) if is_super_type_of(&model(), t).no() || matches!(t, Type::Never(_)) => None,
         // FunctionReturnTypeCheck's TypeUtils::resolveLateResolvableTypes() resolves a template's CollectionOfType by
         // the template's bound (getObjectClassNames())
@@ -631,7 +653,8 @@ pub(crate) fn type_node(
                         .iter()
                         .flatten()
                         .map(|p| match p.types.as_ref() {
-                            [TAtomic::Scalar(_)] => Some(Type::Int),
+                            // CollectionOfType's default key, `new BenevolentUnionType([new IntegerType(), new StringType()])`
+                            [TAtomic::Scalar(_)] => Some(pun_phpstan::types::Type::Benevolent(vec![Type::Int, Type::String])),
                             [a] => object(a).map(|o| Type::Object(crate::text(o.name.as_bytes()), vec![], false)),
                             _ => None,
                         })

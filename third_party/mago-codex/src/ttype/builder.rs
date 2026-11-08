@@ -427,15 +427,24 @@ pub fn get_union_from_type(
                         union.set_ignore_falsable_issues(true);
                         return Ok(union);
                     }
-                    // a placeholder the expander resolves (see `expander::COLLECTION_OF`)
-                    (b"collection-of", Some(inner)) => {
-                        let model = get_union_from_type(inner, scope, type_context, classname)?;
-                        return Ok(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-                            word("collection-of"),
-                            Some(vec![model]),
-                        )))));
-                    }
                     _ => {}
+                }
+                // Larastan's `builder-of<TModel>`, `builder-of<TModel, TRelation>` and `relation-of<TModel, TRelation>`:
+                // placeholders the expander resolves (see `expander::BUILDER_OF`)
+                // and `collection-of<[TKey, ]TModel>` (see `expander::COLLECTION_OF`)
+                let count = reference_type.parameters.as_ref().map_or(0, |p| p.entries.len());
+                if let Some(entries) = reference_type.parameters.as_ref().map(|p| &p.entries)
+                    && ((matches!(identifier.value, b"builder-of" | b"collection-of") && matches!(count, 1 | 2))
+                        || (identifier.value == b"relation-of" && count == 2))
+                {
+                    let parameters = entries
+                        .iter()
+                        .map(|e| get_union_from_type(&e.inner, scope, type_context, classname))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    return Ok(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+                        word(identifier.value),
+                        Some(parameters),
+                    )))));
                 }
                 let reference_name_atom = word(identifier.value);
 

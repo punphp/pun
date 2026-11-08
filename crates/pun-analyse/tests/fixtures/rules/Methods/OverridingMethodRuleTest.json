@@ -67,6 +67,13 @@
                 {
                     "file": "Methods/data/overriding-method.php",
                     "line": 125,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type bool of method OverridingFinalMethod\\FixedArray::setSize() is not covariant with tentative return type true of method SplFixedArray<mixed>::setSize().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 125,
                     "identifier": "return.missing",
                     "message": "Method OverridingFinalMethod\\FixedArray::setSize() should return bool but return statement is missing.",
                     "tip": null
@@ -269,6 +276,13 @@
                     "identifier": "parameter.missing",
                     "message": "Method OverridingFinalMethod\\Dolor::doFoo() overrides method OverridingFinalMethod\\Ipsum::doFoo() but misses parameter #1 $i.",
                     "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 125,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type bool of method OverridingFinalMethod\\FixedArray::setSize() is not covariant with tentative return type true of method SplFixedArray<mixed>::setSize().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
                 },
                 {
                     "file": "Methods/data/overriding-method.php",
@@ -1985,6 +1999,15 @@
                     "tip": null
                 }
             ],
+            "general": []
+        },
+        {
+            "method": "testEngineProvidedEnumMethodsWinOverTraitMethods",
+            "files": [
+                "Methods/data/backed-enum-from-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
             "general": []
         }
     ]

@@ -22,7 +22,9 @@ use function str_starts_with;
 use function trim;
 use PHPUnit\Event\Code\Throwable;
 use PHPUnit\Event\Test\AfterLastTestMethodErrored;
+use PHPUnit\Event\Test\AfterLastTestMethodFailed;
 use PHPUnit\Event\Test\BeforeFirstTestMethodErrored;
+use PHPUnit\Event\Test\BeforeFirstTestMethodFailed;
 use PHPUnit\Framework\TestStatus\TestStatus;
 use PHPUnit\Logging\TestDox\TestResult as TestDoxTestResult;
 use PHPUnit\Logging\TestDox\TestResultCollection;
@@ -110,9 +112,10 @@ final readonly class ResultPrinter
     {}
 
     /**
-     * @param 'after-last-test'|'before-first-test'                                            $type
-     * @param array<non-empty-string, AfterLastTestMethodErrored|BeforeFirstTestMethodErrored> $errors
+     * @param 'after-last-test'|'before-first-test'                                                                                                  $type
+     * @param 'errored'|'failed'                                                                                                                     $outcome
+     * @param array<non-empty-string, AfterLastTestMethodErrored|AfterLastTestMethodFailed|BeforeFirstTestMethodErrored|BeforeFirstTestMethodFailed> $events
      */
-    private function printBeforeClassOrAfterClassErrors(string $type, array $errors): void
+    private function printBeforeClassOrAfterClassProblems(string $type, string $outcome, array $events): void
     {}
 }

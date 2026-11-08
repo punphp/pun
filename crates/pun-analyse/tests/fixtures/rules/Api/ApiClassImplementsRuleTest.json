@@ -568,6 +568,13 @@
                     "file": "Api/data/class-implements-out-of-phpstan.php",
                     "line": 54,
                     "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toNativePhpTypeNode() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
                     "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toObjectTypeForInstanceofCheck() from interface PHPStan\\Type\\Type.",
                     "tip": null
                 },

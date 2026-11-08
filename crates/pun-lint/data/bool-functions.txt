@@ -1220,8 +1220,6 @@ pg_connection_reset
 pg_consume_input
 pg_copy_from
 pg_end_copy
-pg_enter_pipeline_mode
-pg_exit_pipeline_mode
 pg_free_result
 pg_freeresult
 pg_lo_close
@@ -1233,7 +1231,6 @@ pg_loclose
 pg_loexport
 pg_lounlink
 pg_ping
-pg_pipeline_sync
 pg_put_line
 pg_result_seek
 pg_set_chunked_rows_size

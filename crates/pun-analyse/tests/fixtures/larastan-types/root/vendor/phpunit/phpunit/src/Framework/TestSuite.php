@@ -25,6 +25,7 @@ use function sprintf;
 use function str_ends_with;
 use function str_starts_with;
 use function trim;
+use AssertionError;
 use Iterator;
 use IteratorAggregate;
 use PHPUnit\Event;

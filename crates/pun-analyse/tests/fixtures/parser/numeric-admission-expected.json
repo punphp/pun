@@ -85,19 +85,41 @@
             ]
         },
         "valid": {
-            "errors": [],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "errors": [
+                {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
         },
         "overflow-valid": {
-            "errors": [],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "errors": [
+                {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
         },
         "overflow-prefix": {
             "errors": [
+                {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                },
                 {
                     "file": "input.php",
                     "line": 3,
@@ -115,12 +137,18 @@
                     "ignorable": false
                 }
             ],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "general": []
         },
         "overflow-wide": {
             "errors": [
+                {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                },
                 {
                     "file": "input.php",
                     "line": 3,
@@ -130,9 +158,7 @@
                     "ignorable": false
                 }
             ],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "general": []
         },
         "overflow-edge": {
             "errors": [
@@ -167,6 +193,14 @@
         "separated-prefix": {
             "errors": [
                 {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
                     "file": "input.php",
                     "line": 3,
                     "identifier": "phpstan.dumpType",
@@ -175,9 +209,7 @@
                     "ignorable": false
                 }
             ],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "general": []
         },
         "semantics": {
             "errors": [
@@ -480,10 +512,17 @@
             ]
         },
         "offset-bare": {
-            "errors": [],
-            "general": [
-                "Ignored error pattern phpstan.parse was not matched in reported errors."
-            ]
+            "errors": [
+                {
+                    "file": "config.neon",
+                    "line": 4,
+                    "identifier": "ignore.unmatched",
+                    "message": "Ignored error pattern phpstan.parse was not matched in reported errors.",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
         },
         "offset-braced": {
             "errors": [

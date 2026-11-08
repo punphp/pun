@@ -29,6 +29,9 @@ class Parser
     public const DEFAULT_MAX_NESTING_LEVEL = 128;
     public const DEFAULT_MAX_ALIASES_FOR_COLLECTIONS = 128;
 
+    // nested blocks that have a longer run of empty or comment lines are read in place instead of being copied at each nesting level
+    private const MAX_COPIED_EMPTY_LINES = 8;
+
     private ?string $filename = null;
     private int $offset = 0;
     private int $numberOfParsedLines = 0;
@@ -41,6 +44,12 @@ class Parser
     private array $locallySkippedLineNumbers = [];
     private array $refsBeingParsed = [];
     private ?ParserState $state = null;
+    private ?array $nextLineNumbers = null;
+    private int $linesOffset = 0;
+    private int $linesIndentation = 0;
+    private ?array $linesIndentations = null;
+    private array $replacedLines = [];
+    private array $commentIndentations = [];
 
     public function __construct(int $maxNestingLevel = self::DEFAULT_MAX_NESTING_LEVEL, int $maxAliasesForCollections = self::DEFAULT_MAX_ALIASES_FOR_COLLECTIONS)
     {}
@@ -70,10 +79,10 @@ class Parser
     private function getState(): ParserState
     {}
 
-    private function doParse(string $value, int $flags): mixed
+    private function doParse(string|array $value, int $flags): mixed
     {}
 
-    private function parseBlock(int $offset, string $yaml, int $flags): mixed
+    private function parseBlock(int $offset, string|array $yaml, int $flags): mixed
     {}
 
     /**
@@ -90,12 +99,68 @@ class Parser
     /**
      * Returns the next embed block of YAML.
      *
+     * A block that contains many empty or comment lines is returned as an array
+     * that describes the lines to read in place.
+     *
      * @param int|null $indentation The indent level at which the block is to be read, or null for default
      * @param bool     $inSequence  True if the enclosing data structure is a sequence
      *
      * @throws ParseException When indentation problem are detected
      */
-    private function getNextEmbedBlock(?int $indentation = null, bool $inSequence = false): string
+    private function getNextEmbedBlock(?int $indentation = null, bool $inSequence = false): string|array
+    {}
+
+    /**
+     * Returns a line of a nested block as getNextEmbedBlock() reads it.
+     */
+    private function getBlockLine(string $line, ?int $indentation): string
+    {}
+
+    /**
+     * Describes the lines of a nested block, so that they are read in place.
+     */
+    private function createBlock(int $firstLineNumber, int $lastLineNumber, int $indentation, string $firstLine): array
+    {}
+
+    private function prependLine(string $line, string|array $block): string|array
+    {}
+
+    private function useBlock(array $block): void
+    {}
+
+    /**
+     * Reads a nested block in place, as cleanup() would have left it.
+     */
+    private function readBlock(array $block): void
+    {}
+
+    private function skipLines(int $count): void
+    {}
+
+    /**
+     * Returns the text of a nested block, or only its first line that is neither empty nor a comment.
+     */
+    private function getBlockText(array $block, bool $firstContentLineOnly = false): string
+    {}
+
+    /**
+     * Indexes the blank and comment lines, so that nested blocks can skip them.
+     *
+     * A comment line points to the next line that is not a comment, any other line to the next content line.
+     */
+    private function indexLines(): void
+    {}
+
+    /**
+     * Returns the number of the first line from the given one that is neither empty nor a comment.
+     */
+    private function getNextContentLineNumber(int $lineNumber): int
+    {}
+
+    private function getLine(int $lineNumber): string
+    {}
+
+    private function getLines(): array
     {}
 
     private function hasMoreLines(): bool

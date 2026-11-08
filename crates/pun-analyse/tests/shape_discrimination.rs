@@ -29,6 +29,7 @@ fn shape_discrimination_preserves_correlations_without_preventing_upstream_merge
             message: error["message"].as_str().unwrap().into(),
             tip: error["tip"].as_str().map(str::to_owned),
             can_be_ignored: error["ignorable"].as_bool().unwrap(),
+            fixable: error["fixable"].as_bool().unwrap_or(false),
         })
         .collect();
     got.sort();

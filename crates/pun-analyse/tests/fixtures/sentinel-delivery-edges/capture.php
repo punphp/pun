@@ -2,7 +2,7 @@
 // php capture.php /absolute/path/to/phpstan-2.3.1.phar > expected.json
 declare(strict_types=1);
 $phar = realpath($argv[1]);
-if (hash_file('sha256', $phar) !== '85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae') {
+if (hash_file('sha256', $phar) !== '4b3ed7850a20b092331bd1040e4f54a1d3c0559b4cf006431073997ebcb4324b') {
     throw new RuntimeException('Use the pinned PHPStan 2.3.1 PHAR.');
 }
 require 'phar://' . $phar . '/vendor/autoload.php';

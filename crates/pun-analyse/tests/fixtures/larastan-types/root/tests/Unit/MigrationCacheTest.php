@@ -15,7 +15,6 @@ use function glob;
 use function is_dir;
 use function mkdir;
 use function rmdir;
-use function sleep;
 use function sys_get_temp_dir;
 use function touch;
 use function uniqid;
@@ -28,6 +27,7 @@ class MigrationCacheTest extends TestCase
     protected function setUp(): void
     {
         $this->cacheDir = sys_get_temp_dir() . '/larastan_tests_' . uniqid();
+
         if (! is_dir($this->cacheDir)) {
             mkdir($this->cacheDir);
         }
@@ -92,8 +92,7 @@ class MigrationCacheTest extends TestCase
         });
 
         // Modify mtime
-        sleep(1);
-        touch($file1);
+        touch($file1, $migrationFiles[0]->getMTime() + 1);
         clearstatcache(true, $file1);
 
         // Second call should execute callback
@@ -147,8 +146,7 @@ class MigrationCacheTest extends TestCase
         $firstCacheFile = $files[0];
 
         // Modify mtime to change fingerprint
-        sleep(1);
-        touch($file1);
+        touch($file1, $migrationFiles[0]->getMTime() + 1);
         clearstatcache(true, $file1);
 
         // Generate cache for state 2

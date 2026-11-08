@@ -21,6 +21,13 @@
                     "identifier": "larastan.configCollection",
                     "message": "Config key 'test.bar' is not an array.",
                     "tip": null
+                },
+                {
+                    "file": "Rules/data/config-collection-rule.php",
+                    "line": 13,
+                    "identifier": "larastan.configCollection",
+                    "message": "Config key 'test.bar' is not an array.",
+                    "tip": null
                 }
             ]
         }

@@ -231,6 +231,17 @@ class CallQueuedHandler
     {}
 
     /**
+     * Record a potentially batched job as failed when its models are missing.
+     *
+     * @param  string  $uuid
+     * @param  array  $data
+     * @param  \Throwable|null  $e
+     * @return void
+     */
+    protected function ensureFailedBatchJobIsRecordedForMissingModel(string $uuid, array $data, $e)
+    {}
+
+    /**
      * Ensure the chained job catch callbacks are invoked.
      *
      * @param  string  $uuid

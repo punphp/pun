@@ -27,6 +27,7 @@ use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::block::VariableScope;
 use crate::context::scope::control_action::ControlAction;
 use crate::context::scope::finally_scope::FinallyScope;
 use crate::context::utils::inherit_branch_context_properties;
@@ -115,6 +116,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         }
         block_context.flags.set_inside_try(was_inside_try);
         let mut throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
+        // the try block's throw points before any catch takes them (TryCatchHandler's `$branchScopeResult->getThrowPoints()`)
+        let all_throw_scopes: Vec<VariableScope> = if observation_entry.is_none() {
+            let mut points: Vec<_> = throw_scopes.iter().collect();
+            points.sort_by_key(|((span, _), _)| (span.start.offset, span.end.offset));
+            points.into_iter().flat_map(|(_, thrown)| {
+                let mut thrown: Vec<_> = thrown.iter().collect();
+                thrown.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
+                thrown.into_iter().map(|(_, scope)| scope.clone())
+            }).collect()
+        } else {
+            Vec::new()
+        };
         // TryCatchHandler's "previously removed throw points": a call may still throw any throwable
         let removed_throw_scopes: Vec<_> = throw_scopes.iter()
             .filter(|((_, kind), _)| *kind != VariableThrowKind::Expression)
@@ -339,6 +352,40 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                     artifacts.extend_expression_types(std::mem::take(&mut scratch.expression_types));
                     artifacts.transfer_expression_results(&mut scratch);
                     artifacts.transfer_native_expression_types(&mut scratch);
+                } else {
+                    // TryCatchHandler (PHPStan 2.3.3): rules still see the statements of a catch no throw point
+                    // reaches. It is entered from where the try block can throw anything, else from the scope before
+                    // the try merged with the one after it, and the result of the walk does not flow anywhere.
+                    let entries = if all_throw_scopes.is_empty() {
+                        vec![entry_scope.clone(), finally_entry_scopes[0].clone()]
+                    } else {
+                        all_throw_scopes.clone()
+                    };
+                    let mut observed = catch_block_context.clone();
+                    // never share live sinks
+                    observed.if_body_context = None;
+                    observed.finally_scope = None;
+                    observed.merge_variable_scope_types(&entries, context.codebase);
+                    if let Some(variable) = &catch_clause.variable {
+                        let name = Word::from(variable.name);
+                        observed.invalidate_variable_certainty(name);
+                        observed.locals.insert(name, Rc::new(TUnion::new(caught_classes.iter().map(|class| {
+                            TAtomic::Object(TObject::Named(TNamedObject::new(*class)))
+                        }).collect())));
+                        observed.remove_variable_from_conflicting_clauses(context, name, None);
+                        observed.variables_possibly_in_scope.insert(name);
+                    }
+                    let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
+                    context.isolate_unmatched_catch(|context| {
+                        analyze_statements(catch_clause.block.statements.as_slice(), context, &mut observed, &mut scratch)
+                    })?;
+                    artifacts.extend_expression_types(std::mem::take(&mut scratch.expression_types));
+                    artifacts.transfer_expression_results(&mut scratch);
+                    artifacts.transfer_native_expression_types(&mut scratch);
+                    // the node callback still gathers its return and yield statements
+                    artifacts.inferred_return_types.append(&mut scratch.inferred_return_types);
+                    artifacts.inferred_yield_key_types.append(&mut scratch.inferred_yield_key_types);
+                    artifacts.inferred_yield_value_types.append(&mut scratch.inferred_yield_value_types);
                 }
                 continue;
             }

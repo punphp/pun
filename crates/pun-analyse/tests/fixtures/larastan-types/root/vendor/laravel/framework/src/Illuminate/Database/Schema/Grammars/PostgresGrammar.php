@@ -415,6 +415,16 @@ class PostgresGrammar extends Grammar
     {}
 
     /**
+     * Wrap an index name, qualifying it with the schema of the blueprint's table.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
+     * @param  string  $index
+     * @return string
+     */
+    protected function wrapIndex(Blueprint $blueprint, $index)
+    {}
+
+    /**
      * Compile the command to enable foreign key constraints.
      *
      * @return string

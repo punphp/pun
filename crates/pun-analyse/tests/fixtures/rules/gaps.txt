@@ -36,3 +36,8 @@ Methods/CallMethodsRuleTest::testBug6917
 Properties/AccessPropertiesRuleTest::testTraitMixin
 Variables/UnsetRuleTest::testBug3391
 Variables/UnsetRuleTest::testBug8113
+# PHPStan 2.3.2 (#6731): InitializerExprTypeResolver stops at an enum case value that reads itself (directly or through
+# other cases) and gives mixed, which EnumSanityRule reports; Pun's case value resolution is not ported
+Classes/EnumSanityRuleTest::testBug15458
+# PHPStan 2.3.5: template types as object shape keys (`object{TKey: int}` with `TKey` resolved, 9aaeccb14); not ported
+Methods/CallMethodsRuleTest::testObjectShapeTemplateKey

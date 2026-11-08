@@ -1222,6 +1222,39 @@ class Connection implements ConnectionInterface
     {}
 
     /**
+     * Get the ID of the last committed transaction.
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function getLastCommitId()
+    {}
+
+    /**
+     * Calculate the commit ID for a set of commit IDs that includes all of them.
+     *
+     * @param  string[]  $values
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function mergeCommitIds(array $values)
+    {}
+
+    /**
+     * Determine if the given commit ID has been applied.
+     *
+     * @param  string  $value
+     * @param  int  $wait
+     * @return bool
+     *
+     * @throws \RuntimeException
+     */
+    public function hasCommitId(string $value, int $wait = 0)
+    {}
+
+    /**
      * Register a connection resolver.
      *
      * @param  string  $driver

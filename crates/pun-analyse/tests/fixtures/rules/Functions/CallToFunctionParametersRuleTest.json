@@ -2645,6 +2645,15 @@
             "general": []
         },
         {
+            "method": "testBug15308",
+            "files": [
+                "Functions/data/bug-15308.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug4608",
             "files": [
                 "Functions/data/bug-4608-call-user-func.php"
@@ -2867,6 +2876,42 @@
             "method": "testBug11510",
             "files": [
                 "Functions/data/bug-11510.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15432ImplicitMixed",
+            "files": [
+                "Functions/data/bug-15432-implicit-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15432",
+            "files": [
+                "Functions/data/bug-15432.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15487",
+            "files": [
+                "Functions/data/bug-15487.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15487ImplicitMixed",
+            "files": [
+                "Functions/data/bug-15487.php"
             ],
             "scan": [],
             "errors": [],

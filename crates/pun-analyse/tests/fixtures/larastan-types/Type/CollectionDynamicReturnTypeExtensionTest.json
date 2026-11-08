@@ -182,6 +182,22 @@
                     "tip": null
                 }
             ]
+        },
+        {
+            "file": "tests/Type/data/collection-nullsafe-chain.php",
+            "declares": [
+                "collectionnullsafechain\\holder",
+                "collectionnullsafechain\\test"
+            ],
+            "asserts": [
+                20,
+                21,
+                24,
+                25,
+                26,
+                27
+            ],
+            "errors": []
         }
     ]
 }

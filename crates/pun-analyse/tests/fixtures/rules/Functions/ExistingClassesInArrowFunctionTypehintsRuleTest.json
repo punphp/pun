@@ -565,13 +565,6 @@
                     "identifier": "return.neverTypeNotSupported",
                     "message": "Never return type in arrow function is supported only on PHP 8.2 and later.",
                     "tip": null
-                },
-                {
-                    "file": "Functions/data/arrow-function-never-php-versions.php",
-                    "line": 7,
-                    "identifier": "throw.notSupported",
-                    "message": "Throw expression is supported only on PHP 8.0 and later.",
-                    "tip": null
                 }
             ],
             "general": []

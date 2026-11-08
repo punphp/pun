@@ -1,0 +1,13 @@
+{
+    "test": "Rules/Queue/BatchedJobIsBatchableRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/bus-batch.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

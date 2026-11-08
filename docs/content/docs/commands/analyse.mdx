@@ -251,7 +251,7 @@ Braces belonging to control statements do not count as standalone blocks.
 
 Finally entry joins actual branch ends, throw points and abrupt exits.
 Changes from a nonterminating finally block update pending return, break and continue scopes before outer scopes join.
-These ordinary analysis semantics follow PHPStan 2.3.1.
+These ordinary analysis semantics follow PHPStan 2.3.5.
 Pinned Rector uses its own PHPStan 2.3.5, pinned apart from the analyse oracle; general lint return-type parity remains incomplete.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
@@ -458,5 +458,7 @@ Errors PHPStan marks as non-ignorable, such as a duplicate parameter, remain vis
 Default output includes code frames and a summary. `--concise` prints one line per finding. `--max-processes` caps worker threads.
 
 `--format`, also spelled `--error-format`, selects a PHPStan-compatible report: `table`, `raw`, `json`, `prettyJson`, `checkstyle`, `junit`, `gitlab`, `github`, or `teamcity`. `-v` adds identifiers to `raw` output.
+
+The `json` and `prettyJson` reports add `"fixable": true` to each error that PHPStan's `--fix` can fix. The `table` report marks these errors with 🔧 and counts them after the summary. It also counts the ignored errors that `--fix-ignored` can fix. Fixable errors include unmatched ignore comments, `@phpstan-ignore-line` comments without identifiers, unmatched or over-counted `[[analyse.ignore]]` entries, `#[\Override]` on a method or property that overrides nothing, backtick operators, and named arguments to a `@no-named-arguments` function. Pun reports these errors but does not fix them.
 
 Exit code 0 means no errors, 1 means errors, and 2 means Pun could not run.

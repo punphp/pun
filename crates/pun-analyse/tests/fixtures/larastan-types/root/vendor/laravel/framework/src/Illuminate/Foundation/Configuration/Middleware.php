@@ -191,10 +191,30 @@ class Middleware
      * Specify a middleware that should be replaced with another middleware.
      *
      * @param  string  $search
-     * @param  string  $replace
+     * @param  array|string  $replace
      * @return $this
      */
-    public function replace(string $search, string $replace)
+    public function replace(string $search, array|string $replace)
+    {}
+
+    /**
+     * Insert middleware before the given middleware in the global middleware stack.
+     *
+     * @param  string  $search
+     * @param  array|string  $middleware
+     * @return $this
+     */
+    public function insertBefore(string $search, array|string $middleware)
+    {}
+
+    /**
+     * Insert middleware after the given middleware in the global middleware stack.
+     *
+     * @param  string  $search
+     * @param  array|string  $middleware
+     * @return $this
+     */
+    public function insertAfter(string $search, array|string $middleware)
     {}
 
     /**
@@ -251,10 +271,32 @@ class Middleware
      *
      * @param  string  $group
      * @param  string  $search
-     * @param  string  $replace
+     * @param  array|string  $replace
      * @return $this
      */
-    public function replaceInGroup(string $group, string $search, string $replace)
+    public function replaceInGroup(string $group, string $search, array|string $replace)
+    {}
+
+    /**
+     * Insert middleware before the given middleware in the specified group.
+     *
+     * @param  string  $group
+     * @param  string  $search
+     * @param  array|string  $middleware
+     * @return $this
+     */
+    public function insertBeforeInGroup(string $group, string $search, array|string $middleware)
+    {}
+
+    /**
+     * Insert middleware after the given middleware in the specified group.
+     *
+     * @param  string  $group
+     * @param  string  $search
+     * @param  array|string  $middleware
+     * @return $this
+     */
+    public function insertAfterInGroup(string $group, string $search, array|string $middleware)
     {}
 
     /**

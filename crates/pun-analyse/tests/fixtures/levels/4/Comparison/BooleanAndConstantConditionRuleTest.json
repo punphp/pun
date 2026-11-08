@@ -1096,7 +1096,7 @@
                     "line": 25,
                     "identifier": "booleanNot.alwaysFalse",
                     "message": "Negated boolean expression is always false.",
-                    "tip": "If SelfContradiction\\AssertStaticCall::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/self-contradiction.php",
@@ -1117,7 +1117,7 @@
                     "line": 51,
                     "identifier": "booleanNot.alwaysFalse",
                     "message": "Negated boolean expression is always false.",
-                    "tip": "If SelfContradiction\\AssertMethodCall::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/self-contradiction.php",
@@ -1138,7 +1138,7 @@
                     "line": 77,
                     "identifier": "booleanNot.alwaysFalse",
                     "message": "Negated boolean expression is always false.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If SelfContradiction\\AssertStaticConditionalReturn::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 },
                 {
                     "file": "Comparison/data/self-contradiction.php",
@@ -1159,7 +1159,7 @@
                     "line": 103,
                     "identifier": "booleanNot.alwaysFalse",
                     "message": "Negated boolean expression is always false.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If SelfContradiction\\AssertInstanceConditionalReturn::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 }
             ],
             "general": []

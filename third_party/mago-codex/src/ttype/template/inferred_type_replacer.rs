@@ -82,6 +82,13 @@ pub fn replace_with_polarity(
             new_types.extend(resolved.types.into_owned());
             continue;
         }
+        if let TAtomic::Object(TObject::Named(named)) = &mut atomic_type
+            && matches!(named.name.as_bytes(), crate::ttype::expander::BUILDER_OF | crate::ttype::expander::RELATION_OF)
+            && let Some(resolved) = crate::ttype::expander::builder_of(codebase, named, &Default::default())
+        {
+            new_types.extend(resolved.types.into_owned());
+            continue;
+        }
 
         match &atomic_type {
             TAtomic::GenericParameter(TGenericParameter {

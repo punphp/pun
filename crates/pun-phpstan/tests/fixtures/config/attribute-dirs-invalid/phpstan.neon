@@ -1,0 +1,7 @@
+attributeServicesDirectories:
+	- 1
+	- %rootDir%/x
+	- "*/x"
+	- missing
+parameters:
+	level: 0

@@ -113,6 +113,7 @@ pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use dead_code::impure_points;
 pub(crate) use named_argument::resolve as renamed_named_arguments;
 pub(crate) use larastan::finish as larastan_finish;
+pub(crate) use larastan::late_builder;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
 
@@ -1088,6 +1089,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             trait_file_path: self.trait_context.as_ref().map(|_| self.file_name()),
             ..Error::new(message, self.label.clone(), Some(line))
         });
+    }
+
+    /// The errors reported since there were `count` are fixable (RuleErrorBuilder::fixNode() with a fix that
+    /// changes the code).
+    fn fixable_since(&mut self, count: usize) {
+        for e in &mut self.errors[count..] {
+            e.fixable = true;
+        }
     }
 
     /// A `nonIgnorable()` error: no `@phpstan-ignore` or `ignoreErrors` entry removes it.

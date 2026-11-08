@@ -179,7 +179,7 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure(5)\nparameters: []\n",
-        "exception": "_PHPStan_cb3b7e994\\Nette\\Schema\\Expect::structure(): Argument #1 ($items) must be of type array, int given, called in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 298"
+        "exception": "_PHPStan_95d9e8b05\\Nette\\Schema\\Expect::structure(): Argument #1 ($items) must be of type array, int given, called in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 321"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(string())\nparameters:\n\ta: [x, 1]\n",
@@ -233,7 +233,7 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf()\nparameters: []\n",
-        "exception": "Too few arguments to function _PHPStan_cb3b7e994\\Nette\\Schema\\Expect::arrayOf(), 0 passed in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 298 and at least 1 expected"
+        "exception": "Too few arguments to function _PHPStan_95d9e8b05\\Nette\\Schema\\Expect::arrayOf(), 0 passed in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 321 and at least 1 expected"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"int|string\")\nparameters:\n\ta: x\n",
@@ -247,7 +247,7 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type()\nparameters:\n\ta: 1\n",
-        "exception": "Too few arguments to function _PHPStan_cb3b7e994\\Nette\\Schema\\Expect::type(), 0 passed in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 298 and exactly 1 expected"
+        "exception": "Too few arguments to function _PHPStan_95d9e8b05\\Nette\\Schema\\Expect::type(), 0 passed in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 321 and exactly 1 expected"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int(5)\nparameters: []\n",
@@ -401,7 +401,7 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), default())\nparameters: []\n",
-        "exception": "Too few arguments to function _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Type::default(), 0 passed in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 300 and exactly 1 expected"
+        "exception": "Too few arguments to function _PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Type::default(), 0 passed in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 323 and exactly 1 expected"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), deprecated(\"old\"))\nparameters:\n\ta: 1\n",
@@ -409,11 +409,11 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), fooBar())\nparameters: []\n",
-        "exception": "Call to undefined method _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Type::fooBar()."
+        "exception": "Call to undefined method _PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Type::fooBar()."
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(1), pattern(\"x\"))\nparameters: []\n",
-        "exception": "Call to undefined method _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\AnyOf::pattern()."
+        "exception": "Call to undefined method _PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\AnyOf::pattern()."
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: bool()\nparameters:\n\ta: yes\n",
@@ -506,7 +506,7 @@
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"Nette\\\\DI\\\\Definitions\\\\Statement\")\nparameters:\n\ta: Foo(1)\n",
         "messages": [
-            "The item 'parameters › a' expects to be Nette\\DI\\Definitions\\Statement, object _PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement given."
+            "The item 'parameters › a' expects to be Nette\\DI\\Definitions\\Statement, object _PHPStan_95d9e8b05\\Nette\\DI\\Definitions\\Statement given."
         ]
     },
     {
@@ -536,7 +536,7 @@
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: Foo(1)\n",
         "messages": [
-            "The item 'parameters › a' expects to be int, object _PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement given."
+            "The item 'parameters › a' expects to be int, object _PHPStan_95d9e8b05\\Nette\\DI\\Definitions\\Statement given."
         ]
     },
     {
@@ -637,11 +637,11 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(5)\nparameters: []\n",
-        "exception": "_PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Type::__construct(): Argument #1 ($type) must be of type string, int given, called in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Type.php on line 69"
+        "exception": "_PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Type::__construct(): Argument #1 ($type) must be of type string, int given, called in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Type.php on line 69"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: \"int\"])\nparameters:\n\ta: {b: x}\n",
-        "exception": "_PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Structure::{closure:_PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Structure::__construct():31}(): Argument #1 must be of type _PHPStan_cb3b7e994\\Nette\\Schema\\Schema, string given, called in phar:///home/forge/projects/pun-oracle-23/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Structure.php on line 32"
+        "exception": "_PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Structure::{closure:_PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Structure::__construct():31}(): Argument #1 must be of type _PHPStan_95d9e8b05\\Nette\\Schema\\Schema, string given, called in phar:///home/user/workspace/pun-stan/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Structure.php on line 32"
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf([int()])\nparameters:\n\ta: [1]\n",
@@ -651,7 +651,7 @@
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), pattern(\"x\"))\nparameters: []\n",
-        "exception": "Call to undefined method _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\Structure::pattern()."
+        "exception": "Call to undefined method _PHPStan_95d9e8b05\\Nette\\Schema\\Elements\\Structure::pattern()."
     },
     {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int()])\nparameters:\n\ta!: {b: 1}\n",

@@ -1,369 +1,369 @@
 {
-  "general": [],
-  "errors": [
-    {
-      "file": "names.php",
-      "line": 22,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 22,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 23,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 23,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 27,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property static(StaticPropertyNames\\Holder)::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 27,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property static(StaticPropertyNames\\Holder)::$other.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 33,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 34,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 36,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 39,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 40,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 43,
-      "identifier": "staticProperty.private",
-      "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 44,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $inheritedPrivate of class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 46,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$upper.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 48,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 49,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$$present.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 50,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$0.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 56,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 57,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 61,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$checked.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 64,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$unguarded.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 82,
-      "identifier": "staticProperty.nameNotString",
-      "message": "Static property name for StaticPropertyNames\\Holder must be a string, but array was given.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 85,
-      "identifier": "staticProperty.nameNotString",
-      "message": "Static property name for StaticPropertyNames\\Holder must be a string, but array was given.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 96,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 103,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 105,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 113,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 113,
-      "identifier": "staticProperty.private",
-      "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 113,
-      "identifier": "staticProperty.protected",
-      "message": "Access to protected property $inheritedProtected of class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 113,
-      "identifier": "staticProperty.protected",
-      "message": "Access to protected property $protected of class StaticPropertyNames\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 114,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 114,
-      "identifier": "staticProperty.private",
-      "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 114,
-      "identifier": "staticProperty.protected",
-      "message": "Access to protected property $inheritedProtected of class StaticPropertyNames\\Base.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 114,
-      "identifier": "staticProperty.protected",
-      "message": "Access to protected property $protected of class StaticPropertyNames\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 115,
-      "identifier": "staticProperty.private",
-      "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 121,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 121,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 122,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 122,
-      "identifier": "property.staticAccess",
-      "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 124,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $instance on int.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 124,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $missing on int.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 124,
-      "identifier": "staticProperty.nonObject",
-      "message": "Cannot access static property $present on int.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 126,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 133,
-      "identifier": "class.notFound",
-      "message": "Access to static property $missing on an unknown class StaticPropertyNames\\Missing.",
-      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-    },
-    {
-      "file": "names.php",
-      "line": 133,
-      "identifier": "class.notFound",
-      "message": "Access to static property $present on an unknown class StaticPropertyNames\\Missing.",
-      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-    },
-    {
-      "file": "names.php",
-      "line": 137,
-      "identifier": "outOfClass.self",
-      "message": "Accessing self::$missing outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 137,
-      "identifier": "outOfClass.self",
-      "message": "Accessing self::$present outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 138,
-      "identifier": "outOfClass.static",
-      "message": "Accessing static::$missing outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 138,
-      "identifier": "outOfClass.static",
-      "message": "Accessing static::$present outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 139,
-      "identifier": "outOfClass.parent",
-      "message": "Accessing parent::$missing outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 139,
-      "identifier": "outOfClass.parent",
-      "message": "Accessing parent::$present outside of class scope.",
-      "tip": null
-    },
-    {
-      "file": "names.php",
-      "line": 146,
-      "identifier": "class.noParent",
-      "message": "StaticPropertyNames\\NoParent::read() accesses parent::$missing but StaticPropertyNames\\NoParent does not extend any class.",
-      "tip": null
-    }
-  ]
+ "general": [],
+ "errors": [
+  {
+   "file": "names.php",
+   "line": 22,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 22,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 23,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 23,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 27,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(StaticPropertyNames\\Holder)::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 27,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(StaticPropertyNames\\Holder)::$other.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 33,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 34,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 36,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 39,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 40,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 43,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 44,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $inheritedPrivate of class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 46,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$upper.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 48,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 49,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$$present.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 50,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$0.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 56,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 57,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 61,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$checked.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 64,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$unguarded.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 82,
+   "identifier": "staticProperty.nameNotString",
+   "message": "Static property name for StaticPropertyNames\\Holder must be a string, but array was given.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 85,
+   "identifier": "staticProperty.nameNotString",
+   "message": "Static property name for StaticPropertyNames\\Holder must be a string, but array was given.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 96,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 103,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 105,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 113,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 113,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 113,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $inheritedProtected of class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 113,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $protected of class StaticPropertyNames\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 114,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 114,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $inheritedPrivate of parent class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 114,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $inheritedProtected of class StaticPropertyNames\\Base.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 114,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $protected of class StaticPropertyNames\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 115,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $secret of class StaticPropertyNames\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 121,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 121,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 122,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 122,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property StaticPropertyNames\\Holder::$instance.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 124,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $instance on int.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 124,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $missing on int.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 124,
+   "identifier": "staticProperty.nonObject",
+   "message": "Cannot access static property $present on int.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 126,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 133,
+   "identifier": "class.notFound",
+   "message": "Access to static property $missing on an unknown class StaticPropertyNames\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "names.php",
+   "line": 133,
+   "identifier": "class.notFound",
+   "message": "Access to static property $present on an unknown class StaticPropertyNames\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "names.php",
+   "line": 137,
+   "identifier": "outOfClass.self",
+   "message": "Accessing self::$missing outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 137,
+   "identifier": "outOfClass.self",
+   "message": "Accessing self::$present outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 138,
+   "identifier": "outOfClass.static",
+   "message": "Accessing static::$missing outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 138,
+   "identifier": "outOfClass.static",
+   "message": "Accessing static::$present outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 139,
+   "identifier": "outOfClass.parent",
+   "message": "Accessing parent::$missing outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 139,
+   "identifier": "outOfClass.parent",
+   "message": "Accessing parent::$present outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "names.php",
+   "line": 146,
+   "identifier": "class.noParent",
+   "message": "StaticPropertyNames\\NoParent::read() accesses parent::$missing but StaticPropertyNames\\NoParent does not extend any class.",
+   "tip": null
+  }
+ ]
 }

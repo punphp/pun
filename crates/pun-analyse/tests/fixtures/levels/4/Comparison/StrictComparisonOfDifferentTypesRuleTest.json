@@ -2471,7 +2471,7 @@
             "general": []
         },
         {
-            "method": "testPossiblyImpureTip",
+            "method": "testRememberedPossiblyImpureValues",
             "files": [
                 "Comparison/data/possibly-impure-tip.php"
             ],
@@ -2482,7 +2482,7 @@
                     "line": 34,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\maybeImpureFunction() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
@@ -2496,7 +2496,7 @@
                     "line": 85,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\MethodCallTest::maybeImpureMethod() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
@@ -2524,7 +2524,7 @@
                     "line": 156,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\StaticCallTest::maybeImpureStatic() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
@@ -2538,7 +2538,7 @@
                     "line": 233,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\ObjectInvalidationTest::maybeImpureIntermediate() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
@@ -2559,14 +2559,14 @@
                     "line": 294,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\IntermediateCallPriority::next() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
                     "line": 303,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
-                    "tip": "If PossiblyImpureTip\\IntermediateCallPriority::fetch() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/possibly-impure-tip.php",
@@ -2729,6 +2729,23 @@
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between string and null will always evaluate to false.",
                     "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15432",
+            "files": [
+                "Comparison/data/bug-15432.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15432.php",
+                    "line": 18,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 }
             ],
             "general": []

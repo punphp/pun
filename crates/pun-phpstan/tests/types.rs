@@ -520,7 +520,7 @@ fn constant_float_identity() {
 /// Per-object ClassReflection::asFinal(), not a change to the declaration or printed type identity.
 #[test]
 fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct() {
-    use pun_phpstan::types::{Template, Type, accepts, infer_template_types, intersect, mixed, to_phpdoc, union};
+    use pun_phpstan::types::{Template, Type, accepts, infer_template_types, intersect, mixed, to_phpdoc_fully_qualified, union};
     use serde_json::json;
     use std::{cell::RefCell, collections::BTreeMap};
 
@@ -580,8 +580,9 @@ fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct()
         let got = observation(&types[name.as_str()].traverse(&Clone::clone));
         if got != *want { failures.push(format!("traversed {name}: want {want}\ngot {got}")); }
     }
+    // `Printer::print($type->toPhpDocNode())` of PHPStan 2.3.5, which prints class names fully qualified
     for (name, want) in oracle["phpdoc"].as_object().unwrap() {
-        assert_eq!(to_phpdoc(&types[name.as_str()]), want.as_str().unwrap(), "{name}");
+        assert_eq!(to_phpdoc_fully_qualified(&types[name.as_str()]), want.as_str().unwrap(), "{name}");
     }
     let template = Type::Template(Box::new(Template {
         name: "T".into(), scope: "function exact()".into(), bound: mixed(), default: None, argument: false,

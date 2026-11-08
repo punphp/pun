@@ -1,14 +1,25 @@
 {
- "general": [
-  "Ignored error pattern function.alreadyNarrowedType was not matched in reported errors.",
-  "Ignored error pattern function.impossibleType was not matched in reported errors."
- ],
+ "general": [],
  "errors": [
   {
    "file": "extra.php",
    "line": 56,
    "identifier": "arguments.count",
    "message": "Function in_array invoked with 1 parameter, 2-3 required.",
+   "tip": null
+  },
+  {
+   "file": "phpstan-level3.neon",
+   "line": 8,
+   "identifier": "ignore.unmatched",
+   "message": "Ignored error pattern function.alreadyNarrowedType was not matched in reported errors.",
+   "tip": null
+  },
+  {
+   "file": "phpstan-level3.neon",
+   "line": 10,
+   "identifier": "ignore.unmatched",
+   "message": "Ignored error pattern function.impossibleType was not matched in reported errors.",
    "tip": null
   }
  ]

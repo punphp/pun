@@ -738,6 +738,44 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug15261",
+            "files": [
+                "Functions/data/bug-15261.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15261.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_diff_assoc expects an array of values castable to string, array<string, stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15261.php",
+                    "line": 8,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15261.php",
+                    "line": 9,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff_assoc expects an array of values castable to string, array<string, stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15261.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

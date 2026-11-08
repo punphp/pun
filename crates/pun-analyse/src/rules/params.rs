@@ -835,6 +835,10 @@ pub(super) fn check_bound_in(
         }).flatten()
     }).collect();
     let inferred: Vec<_> = unpacked.iter().map(|ty| ty.as_ref().and_then(unpacked_types)).collect();
+    // the fix of every `named argument $x` error of the call
+    let positional_fix = !acceptor.accepts_named_arguments.yes()
+        && counts.args.iter().any(|a| a.name.is_some())
+        && positional_arguments_fix(c, acceptor, &counts.args, call.kind);
     let mut arguments: Vec<Entry> = Vec::new();
     let (mut has_named, mut has_unpacked) = (false, false);
     for ((arg, inferred), unpacked) in counts.args.iter().zip(&inferred).zip(&unpacked) {
@@ -940,11 +944,11 @@ pub(super) fn check_bound_in(
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
     if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) || c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE) {
         if semantic {
-            super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
+            super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call, positional_fix);
         } else {
             for (argument, parameter) in arguments.iter().zip(parameters) {
                 if parameter.is_some() {
-                    check_named(c, acceptor, argument, &call);
+                    check_named(c, acceptor, argument, &call, positional_fix);
                 }
             }
         }
@@ -953,10 +957,12 @@ pub(super) fn check_bound_in(
 
 /// The per-bound-argument `@no-named-arguments` check. Like upstream, it runs only after processArguments and
 /// only when argument type/reference checking is enabled, immediately before that argument's type checks.
-pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call: &Call) {
+/// `positional_fix`: the call's named arguments can be made positional ([`positional_arguments_fix()`]).
+pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call: &Call, positional_fix: bool) {
     if acceptor.accepts_named_arguments.yes() {
         return;
     }
+    let fixable = e.name.is_some() && positional_fix;
     let argument = if let Some(name) = e.name {
         format!("named argument ${name}")
     } else if e.unpack {
@@ -981,9 +987,61 @@ pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call:
     } else {
         return;
     };
+    let count = c.errors.len();
     c.report(e.span, "argument.named", format!(
         "{} invoked with {argument}, but it's not allowed because of @no-named-arguments.", call.subject
     ), None);
+    if fixable {
+        c.fixable_since(count);
+    }
+}
+
+/// FunctionCallParametersCheck::createPositionalArgumentsFix() is not false: no argument is unpacked, each named
+/// one names a different non-variadic parameter, and each skipped parameter before the last one passed is optional,
+/// not by reference, with a default createDefaultValueExpr() can write. A call made from an attribute is not in
+/// the file.
+fn positional_arguments_fix(c: &Checker, acceptor: &Acceptor, args: &[Arg], kind: CallKind) -> bool {
+    if kind == CallKind::Attribute {
+        return false;
+    }
+    let mut positions: std::collections::HashMap<usize, usize> = std::collections::HashMap::new();
+    let mut last = 0;
+    for (i, arg) in args.iter().enumerate() {
+        if arg.unpack.is_some() {
+            return false;
+        }
+        let Some(name) = &arg.name else {
+            positions.insert(i, i);
+            last = last.max(i);
+            continue;
+        };
+        // `$parameterPositions[$name]`: the last parameter of the name
+        let Some(position) = acceptor.names.iter().rposition(|n| n == name) else {
+            return false;
+        };
+        // a named argument that is collected by the variadic parameter keeps its string key
+        if acceptor.variadics.get(position) || positions.insert(position, i).is_some() {
+            return false;
+        }
+        last = last.max(position);
+    }
+    let user = acceptor.user(c);
+    (0..last).filter(|p| !positions.contains_key(p)).all(|p| {
+        if !acceptor.optional.get(p) || acceptor.by_ref.get(p) != Some(&ByRef::No) {
+            return false;
+        }
+        // ponytail: a built-in's default (data/symbols.json's type string) is not read; such a call is not fixable
+        let Some(default) = user.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref()) else {
+            return false;
+        };
+        // createDefaultValueExpr()
+        let ty = c.to_phpstan(&default.type_union);
+        (ty.is_constant_array().yes() && ty.is_iterable_at_least_once().no())
+            || matches!(
+                ty,
+                Type::Null | Type::ConstBool(_) | Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_)
+            )
+    })
 }
 
 /// The declared parameter types with a policy, for the built-in fallback check on other parameters.
@@ -1039,8 +1097,16 @@ pub(super) fn check_constants(
     } else if acceptor.builtin && !matches!(call.kind, CallKind::Callable | CallKind::CallUserFunc) && allowed_type.zip(parameter_type).is_some_and(|(a, p)| {
         super::declared::with_classes(c, || is_super_type_of(a, p).yes())
     }) {
+        // only a constant another parameter of the function takes is reported here
+        let policies: Vec<_> = acceptor.param_types.iter().filter_map(|p| match p {
+            ParamType::Builtin(_, Some(policy)) => Some(policy),
+            _ => None,
+        }).collect();
         for constant in constants.iter().filter(|k| k.builtin) {
-            invalid(c, constant);
+            let one = std::slice::from_ref(constant);
+            if policies.iter().any(|policy| policy.check(one).is_ok()) {
+                invalid(c, constant);
+            }
         }
     }
 }

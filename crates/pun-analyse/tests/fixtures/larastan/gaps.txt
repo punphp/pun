@@ -1,0 +1,20 @@
+# Larastan 3.14.0 rule-fixture cases (test::method) whose errors for ported identifiers still differ (tests/larastan.rs).
+# The list must be exact.
+# ModelRelationDefaultsRule (new in 3.14: relations named by a model's $with defaults) is not ported
+Rules/ModelRelationDefaultsRuleTest::testDefaults
+# the expected error is on the view of the Larastan checkout's vendor/orchestra/testbench-core, an absolute path outside
+# the fixture
+Rules/NoMissingTranslationsRuleTest::testRule
+Rules/UnusedViewsRuleTest::testNamespacedViewFunctionIsNotLaravelView
+Rules/UnusedViewsRuleTest::testRule
+# 3.14 also checks bindings written as arrow functions and more forbidden services (FORBIDDEN_SERVICES): not ported
+Rules/OctaneCompatibilityRuleTest::testNoContainerInjection
+# 3.14's RelationExistenceHelper (relation paths in the loading methods, bare relation strings, column selection like
+# `posts:id,title`, nested relations) is not ported
+Rules/RelationExistenceRuleTest::testBareRelationPaths
+Rules/RelationExistenceRuleTest::testColumnSelection
+Rules/RelationExistenceRuleTest::testLoading
+Rules/RelationExistenceRuleTest::testRule
+# 3.14 resolves the commands the console kernel registers and loads (ConsoleApplicationResolver), whose
+# signatures Pun does not read: Pun reports their arguments and options as undefined
+Rules/UndefinedArgumentOrOptionRuleTest::testRuleWithCommandsRegisteredByTheConsoleKernel

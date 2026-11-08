@@ -21,6 +21,7 @@ use function str_replace;
 use function strlen;
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Tracer\Tracer;
+use PHPUnit\Util\Sanitizer;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit

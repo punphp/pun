@@ -1,4 +1,4 @@
-//! Complete PHPStan 2.3.1 records for compound method reflections before call-variant selection.
+//! Complete PHPStan 2.3.5 records for compound method reflections before call-variant selection.
 //! Reproduce with fixtures/named-method-reflections/capture.php and the pinned PHPStan PHAR.
 
 use std::path::Path;
@@ -77,6 +77,7 @@ fn check_with(file: &str, level: u8, switches: Option<&str>) {
             message: error["message"].as_str().unwrap().into(),
             tip: error["tip"].as_str().map(str::to_owned),
             can_be_ignored: error["ignorable"].as_bool().unwrap(),
+            fixable: error["fixable"].as_bool().unwrap_or(false),
         })
         .collect();
     got.sort();

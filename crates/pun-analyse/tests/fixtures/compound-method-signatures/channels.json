@@ -18,7 +18,7 @@
         "variant": 0,
         "effective": "static(DateTimeImmutable)",
         "phpdoc": "static(DateTimeImmutable)|false",
-        "native": "mixed",
+        "native": "DateTimeImmutable",
         "templates": [],
         "resolvedTemplates": [],
         "variances": []
@@ -92,7 +92,7 @@
         "variant": 0,
         "effective": "static(DateTimeImmutable)",
         "phpdoc": "static(DateTimeImmutable)|false",
-        "native": "mixed",
+        "native": "DateTimeImmutable",
         "templates": [],
         "resolvedTemplates": [],
         "variances": []

@@ -2,7 +2,7 @@
 """Level-0 corpus parity for `pun analyse` (Phase 2 M2.3).
 
     scripts/analyse-corpus.py setup  [project...]   copy corpus/<p> to target-analyse/corpus/<p>, composer install,
-                                                    pin PHPStan 2.3.1 (symlink to .oracle/phpstan)
+                                                    pin PHPStan 2.3.5 (symlink to .oracle/phpstan)
     scripts/analyse-corpus.py oracle [project...]   phpstan analyse --level 0 --error-format=json (cold, no result
                                                     cache) -> target-analyse/oracle/<p>.json (+ seconds)
     scripts/analyse-corpus.py diff   [project...]   run Pun's analyser (target-analyse/$PUN_PROFILE/examples/analyse, default debug) and diff
@@ -53,8 +53,8 @@ def run(cmd, cwd, env=None):
     return subprocess.run(['nice', 'timeout', '3600'] + cmd, cwd=cwd, env=env, capture_output=True, text=True)
 
 
-# The corpus larastan commit needs PHPStan 2.3; the oracle pins Larastan v3.10.0, so analyse that tag.
-TAGS = {'larastan': ('https://github.com/larastan/larastan.git', 'v3.10.0')}
+# The corpus larastan commit needs PHPStan 2.3; the oracle pins Larastan v3.14.0, so analyse that tag.
+TAGS = {'larastan': ('https://github.com/larastan/larastan.git', 'v3.14.0')}
 
 
 def setup(p):

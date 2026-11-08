@@ -1,4 +1,4 @@
-//! Which reported errors PHPStan 2.3.1 drops: `ignoreErrors` (`IgnoredErrorHelper` / `IgnoredErrorHelperResult`, with
+//! Which reported errors PHPStan 2.3.5 drops: `ignoreErrors` (`IgnoredErrorHelper` / `IgnoredErrorHelperResult`, with
 //! `count`, `reportUnmatched` and the unmatched-pattern errors) and the `@phpstan-ignore*` comments
 //! (`LocalIgnoresProcessor`, `reportIgnoresWithoutComments`, the unmatched-line errors). Comment parsing is in
 //! `comments`. Everything is a pure function of the errors and the resolved config, except that `path` entries are
@@ -6,7 +6,7 @@
 
 use crate::comments::{Identifier, LinesToIgnore};
 use crate::neon::json_string;
-use crate::php::{FileExcluder, is_match, normalize_path, preg, preg_quote};
+use crate::php::{FileExcluder, absolutize_path, is_match, normalize_path, preg, preg_quote};
 use crate::value::{Array, Key, Value};
 use indexmap::IndexMap;
 use pcre2::bytes::Regex;
@@ -25,6 +25,8 @@ pub struct Error {
     pub trait_file_path: Option<String>,
     pub tip: Option<String>,
     pub identifier: Option<String>,
+    /// `isFixable()`: PHPStan has a fix (`getFixedErrorDiffs()`) for it.
+    pub fixable: bool,
 }
 
 impl Error {
@@ -39,6 +41,7 @@ impl Error {
             trait_file_path: None,
             tip: None,
             identifier: None,
+            fixable: false,
         }
     }
 
@@ -146,7 +149,36 @@ pub struct IgnoredErrors {
     patterns: Vec<Option<Option<Regex>>>,
     /// The Pun rule of an identifier, for entries with Pun's `rule` key (`[[analyse.ignore]] rule`).
     rule_of: fn(&str) -> Option<&'static str>,
+    /// IgnoreErrorsConfigFixer::getEntriesByPath(): the config files' entries by normalized path, or by `""`.
+    config_entries: HashMap<String, Vec<ConfigEntry>>,
+    current_working_directory: String,
 }
+
+/// An `ignoreErrors` entry of a config file, with its values as loaded.
+struct ConfigEntry {
+    file: String,
+    values: Array,
+    /// The entry as written (`$entry['items']`: its keys, and whether a list field is a NEON list).
+    raw: Value,
+    /// `None` for an entry of pun.toml, which unmatched errors are not reported in.
+    line: Option<i64>,
+    /// The file mixes `\r\n` and `\n` (IgnoreErrorsConfigFixer::createNeonEdit() makes no edit then).
+    mixed_line_breaks: bool,
+}
+
+/// IgnoreErrorsConfigFixer::ENTRY_KEYS
+const ENTRY_KEYS: [&str; 10] = [
+    "message",
+    "messages",
+    "rawMessage",
+    "rawMessages",
+    "identifier",
+    "identifiers",
+    "path",
+    "paths",
+    "count",
+    "reportUnmatched",
+];
 
 /// `IgnoredErrorHelperResult::process()`'s result.
 #[derive(Debug, Default, PartialEq)]
@@ -301,7 +333,210 @@ impl IgnoredErrors {
             report_unmatched,
             patterns,
             rule_of: |_| None,
+            config_entries: HashMap::new(),
+            current_working_directory: String::new(),
         }
+    }
+
+    /// IgnoreErrorsConfigFixer::getEntriesByPath() over the container parameters' `allConfigFiles`, so an unmatched
+    /// entry without a file of its own is reported in the config file it is in (`findEntryLocation()`). The files
+    /// in the PHAR and in installed Composer packages are left out.
+    pub fn with_config_files(mut self, parameters: &Array) -> IgnoredErrors {
+        let string = |k: &str| str_of(parameters.get_str(k)).unwrap_or_default();
+        let strings = |k: &str| -> Vec<String> {
+            parameters
+                .get_str(k)
+                .and_then(Value::as_array)
+                .map(|a| a.values().filter_map(Value::to_php_string).collect())
+                .unwrap_or_default()
+        };
+        let cwd = string("currentWorkingDirectory");
+        // IgnoreErrorsConfigFixer::getParameters()
+        let mut env = Array::new();
+        for (k, v) in std::env::vars() {
+            env.set(Key::from_string(k), Value::Str(v));
+        }
+        let mut known = Array::new();
+        known.set("rootDir".into(), Value::Str(string("rootDir")));
+        known.set("currentWorkingDirectory".into(), Value::Str(cwd.clone()));
+        known.set("env".into(), Value::Array(env));
+        let installed = InstalledPackages::of(&strings("composerAutoloaderProjectPaths"));
+        let relative = [
+            "[parameters][ignoreErrors][][path]".to_string(),
+            "[parameters][ignoreErrors][][paths][]".to_string(),
+        ];
+        for file in strings("allConfigFiles") {
+            if file.starts_with("phar://") || installed.has_file(&file) {
+                continue;
+            }
+            // ponytail: entries in a .php config file are not looked for (findPhpEntries() needs PHP's parser)
+            if file.ends_with(".php") {
+                continue;
+            }
+            let Some(code) = std::fs::read(&file).ok() else {
+                continue;
+            };
+            let Some(items) = crate::neon::ignore_errors_items(&code) else {
+                continue;
+            };
+            let without_cr: Vec<u8> = code.iter().copied().filter(|&c| c != b'\r').collect();
+            let mixed_line_breaks = without_cr != code
+                && pun_tokens::php_compat::str_replace(b"\n", b"\r\n", &without_cr) != code;
+            for (raw, line) in items {
+                if let Value::Array(a) = &raw
+                    && a.keys().any(|k| !matches!(k, Key::Str(k) if ENTRY_KEYS.contains(&k.as_str())))
+                {
+                    continue;
+                }
+                let mut list = Array::new();
+                list.push(raw.clone());
+                let mut wrapped = Array::new();
+                wrapped.set("ignoreErrors".into(), Value::Array(list));
+                let mut root = Array::new();
+                root.set("parameters".into(), Value::Array(wrapped));
+                let values = crate::di::process(root, "", &file, &relative, &known)
+                    .ok()
+                    .and_then(|p| p.get_str("parameters")?.as_array()?.get_str("ignoreErrors")?.as_array()?.values().next().cloned())
+                    .and_then(|v| crate::di::expand(&v, &known, None).ok());
+                let values = match values {
+                    Some(Value::Array(a)) => a,
+                    Some(v @ Value::Str(_)) => {
+                        let mut a = Array::new();
+                        a.set("message".into(), v);
+                        a
+                    }
+                    _ => continue,
+                };
+                if values.is_empty() || values.get_str("count").is_some_and(|c| !matches!(c, Value::Int(_))) {
+                    continue;
+                }
+                let key = match values.get_str("path") {
+                    None if values.get_str("paths").is_none() => String::new(),
+                    Some(Value::Str(p)) => normalize_path(&absolutize_path(&cwd, p)),
+                    _ => continue,
+                };
+                self.config_entries.entry(key).or_default().push(ConfigEntry {
+                    file: file.clone(),
+                    values,
+                    raw,
+                    line: Some(line as i64),
+                    mixed_line_breaks,
+                });
+            }
+        }
+        self.current_working_directory = cwd;
+        self
+    }
+
+    /// Pun's `[[analyse.ignore]]` entries as the config file's own (pun.toml, `file`): unmatched or over-counted ones
+    /// are fixable as IgnoreErrorsConfigFixer fixes the entries of a NEON file.
+    pub fn with_config_entries(mut self, file: &str, entries: &Array, current_working_directory: &str) -> IgnoredErrors {
+        for raw in entries.values() {
+            let values = match raw {
+                Value::Array(a) => a.clone(),
+                v => {
+                    let mut a = Array::new();
+                    a.set("message".into(), v.clone());
+                    a
+                }
+            };
+            let key = match values.get_str("path") {
+                None if values.get_str("paths").is_none() => String::new(),
+                Some(Value::Str(p)) => normalize_path(&absolutize_path(current_working_directory, p)),
+                _ => continue,
+            };
+            self.config_entries.entry(key).or_default().push(ConfigEntry {
+                file: file.to_string(),
+                values,
+                raw: raw.clone(),
+                line: None,
+                mixed_line_breaks: false,
+            });
+        }
+        self.current_working_directory = current_working_directory.to_string();
+        self
+    }
+
+    /// IgnoreErrorsConfigFixer::findEntries(): the entries `ignore` was made of, with the list field (`messages`,
+    /// ...) when it matched through a list that has other items too.
+    fn find_entries(&self, ignore: &Value) -> Vec<(&ConfigEntry, Option<&'static str>)> {
+        let e = match ignore {
+            Value::Array(a) => Value::Array(a.clone()),
+            other => {
+                let mut a = Array::new();
+                a.set("message".into(), other.clone());
+                Value::Array(a)
+            }
+        };
+        let path = str_of(isset(&e, "realPath").or_else(|| isset(&e, "path")));
+        if path.is_none() && isset(&e, "paths").is_some() {
+            return Vec::new();
+        }
+        let key = path.map_or_else(String::new, |p| normalize_path(&absolutize_path(&self.current_working_directory, &p)));
+        let Some(entries) = self.config_entries.get(&key) else {
+            return Vec::new();
+        };
+        let mut found = Vec::new();
+        'entries: for entry in entries {
+            let mut list_field = None;
+            for (field, matched_list) in [("message", "messages"), ("rawMessage", "rawMessages"), ("identifier", "identifiers")] {
+                let Some(expected) = isset(&e, field) else {
+                    if entry.values.contains(&Key::from(field)) || entry.values.contains(&Key::from(matched_list)) {
+                        continue 'entries;
+                    }
+                    continue;
+                };
+                if entry.values.get_str(field).filter(|v| **v != Value::Null) == Some(expected) {
+                    continue;
+                }
+                let Some(Value::Array(list)) = entry.values.get_str(matched_list) else {
+                    continue 'entries;
+                };
+                if !list.values().any(|v| v == expected) {
+                    continue 'entries;
+                }
+                if list.len() != 1 {
+                    list_field = Some(matched_list);
+                }
+            }
+            found.push((entry, list_field));
+        }
+        found
+    }
+
+    /// IgnoreErrorsConfigFixer::findEntryLocation(): the config file and line of the first entry `ignore` was made
+    /// of.
+    fn entry_location(&self, ignore: &Value) -> Option<(String, i64)> {
+        let (entry, _) = *self.find_entries(ignore).first()?;
+        Some((entry.file.clone(), entry.line?))
+    }
+
+    /// Whether IgnoreErrorsConfigFixer::removeUnmatched() has diffs: every entry is found, a list item only from a
+    /// list as written, and no file mixes line breaks.
+    fn removes_unmatched(&self, ignore: &Value) -> bool {
+        let found = self.find_entries(ignore);
+        !found.is_empty()
+            && found.iter().all(|(entry, list_field)| {
+                let list_ok = list_field.is_none_or(|field| {
+                    let written = match &entry.raw {
+                        Value::Array(a) => a.get_str(field),
+                        _ => None,
+                    };
+                    matches!((written, entry.values.get_str(field)), (Some(Value::Array(w)), Some(Value::Array(v))) if w.len() == v.len())
+                });
+                list_ok && !entry.mixed_line_breaks
+            })
+    }
+
+    /// Whether IgnoreErrorsConfigFixer::lowerCount() has a diff: one entry, not through a list, with the same
+    /// `count` written in it.
+    fn lowers_count(&self, ignore: &Value) -> bool {
+        let found = self.find_entries(ignore);
+        let [(entry, None)] = found.as_slice() else {
+            return false;
+        };
+        let written = matches!(&entry.raw, Value::Array(a) if a.contains(&Key::from("count")));
+        entry.values.get_str("count") == isset(ignore, "count") && written && !entry.mixed_line_breaks
     }
 
     /// Pun's `rule` key: an entry with one ignores only errors whose identifier `rule_of` maps to that rule.
@@ -492,7 +727,7 @@ impl IgnoredErrors {
             match real_counts.get(&i) {
                 Some(&(real, count)) if real_path.is_some() || !only_files => {
                     if real < count {
-                        out.errors.push(count_error(
+                        let mut error = count_error(
                             i,
                             format!(
                                 "{} {} is expected to occur {count} times, but occurred only {real} {}.",
@@ -500,19 +735,27 @@ impl IgnoredErrors {
                                 stringify(u),
                                 times(real)
                             ),
-                        ));
+                        );
+                        error.fixable = self.lowers_count(u);
+                        out.errors.push(error);
                     }
                 }
                 _ => match real_path {
                     Some(p) => {
                         if analysed_files.contains(&p) && !only_files {
-                            out.errors.push(
-                                Error::new(not_matched(), p, None)
-                                    .non_ignorable("ignore.unmatched"),
-                            );
+                            let mut error = Error::new(not_matched(), p, None).non_ignorable("ignore.unmatched");
+                            error.fixable = self.removes_unmatched(u);
+                            out.errors.push(error);
                         }
                     }
-                    None if !only_files => out.string_errors.push(not_matched()),
+                    // without a file of its own, the error is reported in the config file the entry is in
+                    None if !only_files => match self.entry_location(u) {
+                        Some((file, line)) => out.errors.push(Error {
+                            fixable: self.removes_unmatched(u),
+                            ..Error::new(not_matched(), file, Some(line)).non_ignorable("ignore.unmatched")
+                        }),
+                        None => out.string_errors.push(not_matched()),
+                    },
                     None => {}
                 },
             }
@@ -613,17 +856,48 @@ pub fn ignores_without_comments(
     errors
 }
 
+/// AnalyserResultFinalizer::fixAllLineErrorsIgnores() over one file's reported errors (`code` its contents): an
+/// `ignore.allLineErrors` error is fixable where LineIgnoreFixer turns the ignore into one of the identifiers of the
+/// ignorable errors reported on its line, which all have one.
+pub fn fix_all_line_errors(file: &str, code: Option<&[u8]>, errors: &mut [Error]) {
+    let all_line = |e: &Error| e.identifier.as_deref() == Some("ignore.allLineErrors") && e.file == file;
+    let lines: Vec<i64> = errors.iter().filter(|e| all_line(e)).filter_map(|e| e.line).collect();
+    let Some(code) = code.filter(|_| !lines.is_empty()) else {
+        return;
+    };
+    let mut fixable: HashMap<i64, bool> = HashMap::new();
+    for e in errors.iter() {
+        let Some(line) = e.line.filter(|l| e.file == file && e.can_be_ignored && lines.contains(l)) else {
+            continue;
+        };
+        // an error without an identifier cannot be ignored by one
+        let ok = fixable.entry(line).or_insert(true);
+        *ok &= e.identifier.is_some();
+    }
+    let mut fixed: HashMap<i64, bool> = HashMap::new();
+    for e in errors.iter_mut().filter(|e| all_line(e)) {
+        let Some(line) = e.line else { continue };
+        if fixable.get(&line) == Some(&true) {
+            e.fixable = *fixed.entry(line).or_insert_with(|| crate::fixers::line_ignore(code, line));
+        }
+    }
+}
+
 /// `reportUnmatchedIgnoredErrors` (AnalyserResultFinalizer): errors for the ignore comments nothing matched.
-pub fn unmatched_line_errors(file: &str, unmatched: &LinesToIgnore) -> Vec<Error> {
+/// `code` is the file's contents (`null` when it is not a file); the errors are fixable where UnmatchedIgnoreFixer
+/// removes the ignore.
+pub fn unmatched_line_errors(file: &str, code: Option<&[u8]>, unmatched: &LinesToIgnore) -> Vec<Error> {
     let mut errors = Vec::new();
     for (&line, ids) in unmatched {
-        let error = |message: String, identifier: &str| {
-            Error::new(message, file, Some(line)).non_ignorable(identifier)
+        let error = |message: String, identifier: &str, name: Option<&str>| Error {
+            fixable: code.is_some_and(|code| crate::fixers::unmatched_ignore(code, line, name).is_some()),
+            ..Error::new(message, file, Some(line)).non_ignorable(identifier)
         };
         match ids {
             None => errors.push(error(
                 format!("No error to ignore is reported on line {line}."),
                 "ignore.unmatchedLine",
+                None,
             )),
             Some(ids) => errors.extend(ids.iter().map(|id| {
                 error(
@@ -632,6 +906,7 @@ pub fn unmatched_line_errors(file: &str, unmatched: &LinesToIgnore) -> Vec<Error
                         id.name
                     ),
                     "ignore.unmatchedIdentifier",
+                    Some(&id.name),
                 )
             })),
         }
@@ -654,4 +929,59 @@ pub fn parse_errors(file: &str, errors: &IndexMap<i64, Vec<String>>) -> Vec<Erro
             })
         })
         .collect()
+}
+
+/// PackageDependencyResolver::isFileOfInstalledPackage() over the projects' `vendor/composer/installed.json` (the
+/// install paths Composer also writes to installed.php).
+struct InstalledPackages {
+    vendor_dirs: Vec<String>,
+    /// Install paths, longest first, and whether the package came from a path repository.
+    packages: Vec<(String, bool)>,
+}
+
+impl InstalledPackages {
+    fn of(project_paths: &[String]) -> InstalledPackages {
+        let mut vendor_dirs = Vec::new();
+        let mut packages = Vec::new();
+        let json = |p: &str| -> Option<serde_json::Value> { serde_json::from_slice(&std::fs::read(p).ok()?).ok() };
+        for root in project_paths {
+            // ComposerHelper::getComposerConfig() / getVendorDirFromComposerConfig()
+            let Some(composer) = json(&format!("{root}/composer.json")) else {
+                continue;
+            };
+            let vendor = composer["config"]["vendor-dir"].as_str().unwrap_or("vendor").trim_matches('/').to_string();
+            let vendor = format!("{root}/{vendor}");
+            vendor_dirs.push(normalize_path(&vendor));
+            let installed = json(&format!("{vendor}/composer/installed.json"));
+            let list = installed.as_ref().and_then(|i| i.get("packages").unwrap_or(i).as_array().cloned()).unwrap_or_default();
+            for p in list {
+                let Some(path) = p["install-path"].as_str() else {
+                    continue;
+                };
+                let path_package = p["dist"]["type"].as_str() == Some("path");
+                let at = normalize_path(&format!("{vendor}/composer/{path}"));
+                if let Ok(real) = std::fs::canonicalize(&at) {
+                    let real = normalize_path(&real.to_string_lossy());
+                    if real != at {
+                        packages.push((real, path_package));
+                    }
+                }
+                packages.push((at, path_package));
+            }
+        }
+        packages.sort_by_key(|(p, _)| std::cmp::Reverse(p.len()));
+        InstalledPackages { vendor_dirs, packages }
+    }
+
+    fn has_file(&self, file: &str) -> bool {
+        let file = normalize_path(file);
+        if !self.vendor_dirs.iter().any(|v| file.starts_with(v.as_str())) {
+            return false;
+        }
+        // a file of no package, or of one that is not the project's own code
+        self.packages
+            .iter()
+            .find(|(p, _)| file.starts_with(&format!("{p}/")))
+            .is_none_or(|(_, path_package)| !path_package)
+    }
 }

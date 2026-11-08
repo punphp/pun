@@ -166,6 +166,138 @@
                     "tip": null
                 }
             ]
+        },
+        {
+            "method": "itDoesNotReportInEditorModeWhenInsteadOfPointsAtConfigFile",
+            "files": [
+                "Rules/data/env-calls.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 7,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 8,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
+        },
+        {
+            "method": "itReportsInEditorModeWhenInsteadOfIsOutsideConfig",
+            "files": [
+                "Rules/data/env-calls.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 7,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 8,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
+        },
+        {
+            "method": "itUsesNormalLogicWhenAnalysedFileDiffersFromTmpFile",
+            "files": [
+                "Rules/data/env-calls.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 7,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 8,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
         }
     ]
 }

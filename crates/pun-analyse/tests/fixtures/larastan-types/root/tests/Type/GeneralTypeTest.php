@@ -18,17 +18,23 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/abstract-manager.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/app-make.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/application-make.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-get-pull.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-map.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arrayable.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/builder-of-type.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1346.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1565.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1718.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1760.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1830.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1985.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2057.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2073.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2111.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2188.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2283.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/conditionable.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-array-access.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-make.php');
@@ -36,6 +42,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-eloquent-collection.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/database-transaction.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/eager-loading-callbacks.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-of-type.php');
 
         if (laravel_version_compare('12.0.0', '>=')) {
@@ -44,21 +51,42 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension-l11.php');
         }
 
+        yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-getter-types.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-where.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/environment-helper.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/event-dispatcher.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/facade-fakes.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/form-request.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/gate-facade.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/has-events.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/helpers.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/higher-order-collection-proxy-methods.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-date-column-casts.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-factories.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-methods.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-serialization.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties-relations.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties.php');
+
+        if (laravel_version_compare('13.0.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties-l13.php');
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-serialization-l13.php');
+        }
+
+        if (laravel_version_compare('13.2.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties-l13-2.php');
+        }
+
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-relations.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/migrator.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-scopes.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-template-class-string.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-with-relations.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/optional-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/paginator-extension.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/query-builder.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/relationship-query-callbacks.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/relation-of-type.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/request-header.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/request-object.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/route.php');
@@ -77,6 +105,10 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections-l11-28.php');
         }
 
+        if (laravel_version_compare('13.4.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections-l13-4.php');
+        }
+
         if (laravel_version_compare('11.42.0', '<')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/model.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder.php');
@@ -85,12 +117,24 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-l11-42.php');
         }
 
+        if (laravel_version_compare('13.3.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-increment-each-l13-3.php');
+        }
+
+        if (laravel_version_compare('13.20.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/model-increment-each-l13-20.php');
+        }
+
         if (laravel_version_compare('12.0.0', '>=')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute-l12.php');
         }
 
         if (laravel_version_compare('12.19.0', '>=')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-l12-19.php');
+        }
+
+        if (laravel_version_compare('13.31.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-l13-31.php');
         }
 
         if (laravel_version_compare('12.15.0', '>=')) {
@@ -107,12 +151,18 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
         }
 
+        if (laravel_version_compare('11.42.0', '>=') && laravel_version_compare('12.0.0', '<')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/facades-l11-42.php');
+        }
+
         //##############################################################################################################
 
         // Console Commands
         yield from self::gatherAssertTypes(__DIR__ . '/../application/app/Console/Commands/BarCommand.php');
         yield from self::gatherAssertTypes(__DIR__ . '/../application/app/Console/Commands/BazCommand.php');
         yield from self::gatherAssertTypes(__DIR__ . '/../application/app/Console/Commands/FooCommand.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/../application/app/Console/Commands/RegisteredInKernelCommand.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/../application/app/Console/LoadedCommands/LoadedByKernelCommand.php');
     }
 
     #[DataProvider('dataFileAsserts')]

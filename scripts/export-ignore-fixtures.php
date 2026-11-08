@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Exact results of PHPStan 2.3.1's ignore logic, from the phar's own classes:
+ * Exact results of PHPStan 2.3.5's ignore logic, from the phar's own classes:
  *
  *   tests/fixtures/comments.json  RichParser::getLinesToIgnore() over php-parser's tokens (the inputs of
  *                                 phpstan-src's RichParserTest and IgnoreLexerTest, plus extra cases)
@@ -28,6 +28,17 @@ namespace {
     use PHPStan\Parser\RichParser;
 
     $root = dirname(__DIR__);
+
+    /** PHPStan 2.3.5's IgnoredErrorHelper takes the `--fix` helper; with no config files it finds no entry to fix. */
+    function configFixer(string $root): PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer
+    {
+        $fixer = (new ReflectionClass(PHPStan\Analyser\Ignore\IgnoreErrorsConfigFixer::class))->newInstanceWithoutConstructor();
+        foreach (['fileHelper' => new FileHelper($root), 'allConfigFiles' => [], 'rootDir' => $root, 'currentWorkingDirectory' => $root] as $k => $v) {
+            (new ReflectionProperty($fixer, $k))->setValue($fixer, $v);
+        }
+
+        return $fixer;
+    }
     $fixtures = $root.'/crates/pun-phpstan/tests/fixtures';
     Phar::loadPhar($root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar', 'phpstan.phar');
     require 'phar://phpstan.phar/vendor/autoload.php';
@@ -186,7 +197,7 @@ namespace {
     $placeholder = static fn (mixed $v) => json_decode(str_replace(addcslashes($dir, '/'), '{dir}', json_encode($v)), true);
     foreach ($cases as $case) {
         [$ignoreErrors, $reportUnmatched, $errors, $onlyFiles, $analysedFiles, $internal] = $case + [3 => false, 4 => [], 5 => false];
-        $helper = (new IgnoredErrorHelper(new FileHelper($root), $ignoreErrors, $reportUnmatched))->initialize();
+        $helper = (new IgnoredErrorHelper(new FileHelper($root), configFixer($root), $ignoreErrors, $reportUnmatched))->initialize();
         $result = $helper->process($errors, $onlyFiles ?? false, $analysedFiles ?? [], $internal ?? false);
         $out[] = $placeholder([
             'ignoreErrors' => tagged($ignoreErrors),

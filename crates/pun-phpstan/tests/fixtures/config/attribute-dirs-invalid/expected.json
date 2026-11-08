@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nThe attributeServicesDirectories section must contain a list of directory paths.\n\nEntry %rootDir%/x in the attributeServicesDirectories section must be a plain path - % parameters are not supported.\n\nEntry */x in the attributeServicesDirectories section must be a plain path - wildcards are not supported.\n\nDirectory {cwd}/missing from the attributeServicesDirectories section does not exist."
+}

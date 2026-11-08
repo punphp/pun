@@ -3,19 +3,24 @@
 namespace Illuminate\Console\Scheduling;
 
 use BadMethodCallException;
+use Carbon\CarbonInterval;
 use Closure;
 use DateTimeInterface;
 use Illuminate\Bus\UniqueLock;
 use Illuminate\Console\Application;
+use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\ProcessUtils;
 use Illuminate\Support\Traits\Macroable;
 use RuntimeException;
@@ -29,7 +34,7 @@ use function Illuminate\Support\enum_value;
  */
 class Schedule
 {
-    use Macroable {
+    use InteractsWithTime, Macroable {
         __call as macroCall;
     }
 
@@ -330,6 +335,16 @@ class Schedule
      * @return void
      */
     public static function alwaysOnOneServer($value = true)
+    {}
+
+    /**
+     * Register a callback to be invoked when a scheduled task runs for longer than a given amount of time.
+     *
+     * @param  \DateTimeInterface|\Carbon\CarbonInterval|float|int  $threshold
+     * @param  (callable(\Illuminate\Console\Scheduling\Event, float): mixed)  $handler
+     * @return void
+     */
+    public function whenTaskRunsLongerThan($threshold, $handler)
     {}
 
     /**

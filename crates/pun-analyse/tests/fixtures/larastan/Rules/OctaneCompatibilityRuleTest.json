@@ -10,49 +10,168 @@
             "errors": [
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 12,
+                    "line": 13,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 16,
+                    "line": 17,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 25,
+                    "line": 26,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 29,
+                    "line": 30,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 33,
+                    "line": 34,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 46,
+                    "line": 47,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 },
                 {
                     "file": "Rules/data/ContainerInjection.php",
-                    "line": 51,
+                    "line": 52,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 61,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 65,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 70,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 72,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 105,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 110,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 115,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 120,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 125,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 130,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 135,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 151,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 152,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 153,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 154,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 155,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Rules/data/ContainerInjection.php",
+                    "line": 156,
                     "identifier": "larastan.octaneCompatibility",
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"

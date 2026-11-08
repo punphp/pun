@@ -31,9 +31,12 @@ use function in_array;
 use function inet_pton;
 use function is_object;
 use function preg_match;
+use function preg_replace_callback;
 use function rawurldecode;
+use function rawurlencode;
 use function strpos;
 use function strtolower;
+use function strtoupper;
 use function substr;
 
 use const FILTER_FLAG_IPV4;
@@ -51,8 +54,9 @@ final class HostRecord implements JsonSerializable
      * @var int
      */
     private const MAXIMUM_HOST_CACHED = 100;
-
     private const REGEXP_NON_ASCII_PATTERN = '/[^\x20-\x7f]/';
+    private const REGEXP_PART_UNRESERVED = 'A-Za-z\d_\-.~';
+    private const REGEXP_CHARS_ENCODED = ',%[A-Fa-f0-9]{2},';
 
     /**
      * @see https://tools.ietf.org/html/rfc3986#section-3.2.2
@@ -121,6 +125,8 @@ final class HostRecord implements JsonSerializable
     private bool $unicodeIsLoaded = false;
     private ?string $hostAsUnicode = null;
     private bool $isIpVersionLoaded = false;
+    private ?string $hostAsEncoded = null;
+    private bool $encodedIsLoaded = false;
     private ?string $ipVersion = null;
     private bool $isIpValueLoaded = false;
     private ?string $ipValue = null;
@@ -140,6 +146,9 @@ final class HostRecord implements JsonSerializable
     public function toUnicode(): ?string
     {}
 
+    public function percentEncoded(): ?string
+    {}
+
     public function isDomainType(): bool
     {}
 
@@ -149,25 +158,25 @@ final class HostRecord implements JsonSerializable
     public function ipValue(): ?string
     {}
 
-    public static function isValid(BackedEnum|Stringable|string|null $host): bool
+    public static function isValid(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isIpv4(Stringable|string|null $host): bool
+    public static function isIpv4(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isIpv6(Stringable|string|null $host): bool
+    public static function isIpv6(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isIpvFuture(Stringable|string|null $host): bool
+    public static function isIpvFuture(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isIp(Stringable|string|null $host): bool
+    public static function isIp(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isRegisteredName(Stringable|string|null $host): bool
+    public static function isRegisteredName(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
-    public static function isDomain(Stringable|string|null $host): bool
+    public static function isDomain(self|BackedEnum|Stringable|string|null $host): bool
     {}
 
     public static function parse(BackedEnum|Stringable|string|null $host): ?self
@@ -176,7 +185,16 @@ final class HostRecord implements JsonSerializable
     /**
      * @throws SyntaxError
      */
-    public static function from(BackedEnum|Stringable|string|null $host): self
+    public static function from(self|BackedEnum|Stringable|string|null $host): self
+    {}
+
+    /**
+     * @return ($value is null ? null : string)
+     */
+    private static function normalized(?string $value): ?string
+    {}
+
+    private static function isValidRegisteredName(?string $host): bool
     {}
 
     /**

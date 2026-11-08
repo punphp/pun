@@ -1,208 +1,208 @@
 {
-  "general": [],
-  "errors": [
-    {
-      "file": "boundaries.php",
-      "line": 8,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 12,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 14,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 15,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 22,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 24,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 30,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 33,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 35,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 37,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 37,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 43,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 43,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 49,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 49,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 55,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 55,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 55,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 55,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 61,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 61,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 61,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 61,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 67,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 70,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 73,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 79,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 82,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
-      "tip": null
-    },
-    {
-      "file": "boundaries.php",
-      "line": 87,
-      "identifier": "staticProperty.notFound",
-      "message": "Access to an undefined static property StaticPropertyNames\\Holder::$$name.",
-      "tip": null
-    }
-  ]
+ "general": [],
+ "errors": [
+  {
+   "file": "boundaries.php",
+   "line": 8,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 12,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 14,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 15,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 22,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 24,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 30,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 33,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 35,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 37,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$changed.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 37,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 43,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 43,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 49,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 49,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 55,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 55,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 55,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 55,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 61,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 61,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 61,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 61,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$other.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 67,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 70,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 73,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 79,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 82,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$missing.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 87,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property StaticPropertyNames\\Holder::$$name.",
+   "tip": null
+  }
+ ]
 }

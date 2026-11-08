@@ -1,4 +1,4 @@
-//! Resolving a project's PHPStan configuration the way `phpstan analyse` does (PHPStan 2.3.1): the config half of
+//! Resolving a project's PHPStan configuration the way `phpstan analyse` does (PHPStan 2.3.5): the config half of
 //! `CommandHelper::begin()` and `ContainerFactory::create()`, down to the container's parameters, including the
 //! validation errors PHPStan prints for broken configs. Services are not built.
 
@@ -16,7 +16,7 @@ macro_rules! conf {
     };
 }
 
-/// PHPStan 2.3.1's `conf/` directory (from the PHAR).
+/// PHPStan 2.3.5's `conf/` directory (from the PHAR).
 pub const CONF: &[(&str, &str)] = conf![
     "bleedingEdge.neon",
     "config.level0.neon",
@@ -39,11 +39,13 @@ pub const CONF: &[(&str, &str)] = conf![
 ];
 
 /// The PHPStan extensions registered with `#[ContainerExtension]`, in registration (name) order.
-const ATTRIBUTE_EXTENSIONS: [&str; 11] = [
+const ATTRIBUTE_EXTENSIONS: [&str; 13] = [
+    "attributeServicesDirectories",
     "autowiredAttributeServices",
     "autowiredExtensions",
     "conditionalTags",
     "expandRelativePaths",
+    "extensionInterfaces",
     "fnsr",
     "parametersSchema",
     "preloadParameters",
@@ -369,6 +371,11 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
         ));
     }
     let project_config = project_config.as_array().cloned().expect("merged arrays");
+    let attribute_services_directories = attribute_services_directories(
+        project_config.get_str("attributeServicesDirectories"),
+        &cwd,
+    )
+    .map_err(|e| format!("Invalid configuration:\n{e}"))?;
     let expand_relative: Vec<String> = project_config
         .get_str("expandRelativePaths")
         .and_then(Value::as_array)
@@ -395,6 +402,12 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
         ("generateBaselineFile", opt(&generate_baseline)),
         ("usedLevel", s(level.as_deref().unwrap_or("0"))),
         ("cliAutoloadFile", opt(&o.autoload_file)),
+        (
+            "attributeServicesDirectories",
+            list(&attribute_services_directories),
+        ),
+        // filled by AutowiredAttributeServicesExtension
+        ("attributeServicesClasses", list(&[])),
         ("env", Value::Array(env)),
     ]);
     let dynamic = arr(vec![
@@ -558,7 +571,13 @@ fn config_files(
     let mut data = if file.ends_with(".php") {
         di::load_file(files, file, &[], &Array::new())?
     } else {
-        di::load_neon(files, file, &[], &Array::new())?
+        // attributeServicesDirectories comes out absolutized relative to the declaring file in this pre-pass
+        di::load_neon(
+            files,
+            file,
+            &["[attributeServicesDirectories][]".to_string()],
+            &Array::new(),
+        )?
     };
     let mut all = vec![file.to_string()];
     if let Some(includes) = data
@@ -576,6 +595,71 @@ fn config_files(
         }
     }
     Ok((all, data))
+}
+
+/// `AttributeServicesDirectoriesResolver::resolve()`: the section's directories, absolute, without nested ones and
+/// sorted, or its errors (`InvalidAttributeServicesDirectoriesException`, joined by blank lines). The cache key
+/// components are left out: only the container cache reads them.
+fn attribute_services_directories(
+    section: Option<&Value>,
+    cwd: &str,
+) -> Result<Vec<String>, String> {
+    let entries = match section {
+        None | Some(Value::Null) => return Ok(Vec::new()),
+        Some(Value::Array(a)) if a.is_empty() => return Ok(Vec::new()),
+        Some(Value::Array(a)) => a,
+        Some(_) => {
+            return Err(
+                "The attributeServicesDirectories section must contain a list of directory paths."
+                    .to_string(),
+            );
+        }
+    };
+    let mut errors = Vec::new();
+    let mut directories = Vec::new();
+    for entry in entries.values() {
+        let Value::Str(entry) = entry else {
+            errors.push(
+                "The attributeServicesDirectories section must contain a list of directory paths."
+                    .to_string(),
+            );
+            continue;
+        };
+        if entry.contains('%') {
+            errors.push(format!("Entry {entry} in the attributeServicesDirectories section must be a plain path - % parameters are not supported."));
+            continue;
+        }
+        if entry.starts_with('*') {
+            errors.push(format!("Entry {entry} in the attributeServicesDirectories section must be a plain path - wildcards are not supported."));
+            continue;
+        }
+        let dir = normalize_path(&absolutize_path(cwd, entry));
+        directories.push(dir.trim_end_matches('/').to_string());
+    }
+    // deduplicateNested(): shortest first, a directory inside a kept one is dropped, then sorted
+    directories.sort_by_key(String::len);
+    let mut kept: Vec<String> = Vec::new();
+    for d in directories {
+        if !kept
+            .iter()
+            .any(|k| d == *k || d.starts_with(&format!("{k}/")))
+        {
+            kept.push(d);
+        }
+    }
+    kept.sort();
+    for d in &kept {
+        if !std::path::Path::new(d).is_dir() {
+            errors.push(format!(
+                "Directory {d} from the attributeServicesDirectories section does not exist."
+            ));
+        }
+    }
+    if errors.is_empty() {
+        Ok(kept)
+    } else {
+        Err(errors.join("\n\n"))
+    }
 }
 
 /// `sysGetTempDir: ::sys_get_temp_dir()` is the one statement among PHPStan's own parameters; it is evaluated like the

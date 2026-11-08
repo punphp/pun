@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's reflection of built-in functions, classes and constants (`data/symbols.json`, written by
+//! PHPStan 2.3.5's reflection of built-in functions, classes and constants (`data/symbols.json`, written by
 //! `scripts/export-phpstan-symbols.php`). Types are kept as the strings PHPStan's `toPhpDocNode()` printed, in
 //! the syntax [`crate::resolve`] reads back.
 
@@ -56,6 +56,13 @@ pub struct AllowedConstantsResult<'a> {
     pub disallowed: Vec<&'a ConstantReflection>,
     pub violated_groups: Vec<Vec<&'a str>>,
     pub bitmask_not_allowed: bool,
+}
+
+impl AllowedConstantsResult<'_> {
+    /// `ParameterAllowedConstantsCheckResult::isOk()`
+    pub fn is_ok(&self) -> bool {
+        self.disallowed.is_empty() && self.violated_groups.is_empty() && !self.bitmask_not_allowed
+    }
 }
 
 impl ParameterAllowedConstants {

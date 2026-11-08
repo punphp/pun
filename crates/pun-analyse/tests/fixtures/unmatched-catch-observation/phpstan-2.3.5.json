@@ -1,0 +1,203 @@
+{
+    "phar_sha256": "4b3ed7850a20b092331bd1040e4f54a1d3c0559b4cf006431073997ebcb4324b",
+    "input_sha256": "da21224eb1f9232c57a8f5e1712f1dc33746f646b2c92b5e7a751c7b17afea91",
+    "records": {
+        "after-dead-yield": {
+            "start": 2807,
+            "end": 2813,
+            "expression": "$value",
+            "full": "17",
+            "native": "17"
+        },
+        "after-inner": {
+            "start": 1538,
+            "end": 1544,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "after-shared-finally": {
+            "start": 1637,
+            "end": 1643,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "catch-assignment": {
+            "start": 344,
+            "end": 350,
+            "expression": "$value",
+            "full": "2",
+            "native": "2"
+        },
+        "catch-void": {
+            "start": 283,
+            "end": 292,
+            "expression": "nothing()",
+            "full": "null",
+            "native": "void"
+        },
+        "catch-without-variable": {
+            "start": 2435,
+            "end": 2437,
+            "expression": "16",
+            "full": "16",
+            "native": "16"
+        },
+        "channels-after": {
+            "start": 1947,
+            "end": 1953,
+            "expression": "$value",
+            "full": "9",
+            "native": "9"
+        },
+        "channels-before": {
+            "start": 1787,
+            "end": 1793,
+            "expression": "$value",
+            "full": "string",
+            "native": "int|string"
+        },
+        "channels-pre-try": {
+            "start": 1901,
+            "end": 1907,
+            "expression": "$value",
+            "full": "9|string",
+            "native": "int|string"
+        },
+        "continuation": {
+            "start": 446,
+            "end": 452,
+            "expression": "$value",
+            "full": "'written'",
+            "native": "'written'"
+        },
+        "exception": {
+            "start": 246,
+            "end": 252,
+            "expression": "$error",
+            "full": "RuntimeException",
+            "native": "RuntimeException"
+        },
+        "finally-live": {
+            "start": 404,
+            "end": 410,
+            "expression": "$value",
+            "full": "'written'",
+            "native": "'written'"
+        },
+        "first-return": {
+            "start": 2128,
+            "end": 2134,
+            "expression": "$value",
+            "full": "11",
+            "native": "11"
+        },
+        "inner-exception": {
+            "start": 815,
+            "end": 821,
+            "expression": "$inner",
+            "full": "LogicException",
+            "native": "LogicException"
+        },
+        "inner-finally": {
+            "start": 1000,
+            "end": 1006,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "inner-matching": {
+            "start": 769,
+            "end": 775,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "inner-nonmatching": {
+            "start": 907,
+            "end": 913,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "matched-continuation": {
+            "start": 3183,
+            "end": 3189,
+            "expression": "$value",
+            "full": "20",
+            "native": "20"
+        },
+        "matched-entry": {
+            "start": 3065,
+            "end": 3071,
+            "expression": "$value",
+            "full": "19",
+            "native": "19"
+        },
+        "matched-finally": {
+            "start": 3138,
+            "end": 3144,
+            "expression": "$value",
+            "full": "19|20",
+            "native": "19|20"
+        },
+        "multiple-exception-types": {
+            "start": 2617,
+            "end": 2623,
+            "expression": "$error",
+            "full": "LogicException|RuntimeException",
+            "native": "LogicException|RuntimeException"
+        },
+        "nested-continuation": {
+            "start": 1287,
+            "end": 1293,
+            "expression": "$value",
+            "full": "4",
+            "native": "4"
+        },
+        "outer-catch-tail": {
+            "start": 1051,
+            "end": 1057,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "outer-finally": {
+            "start": 1244,
+            "end": 1250,
+            "expression": "$value",
+            "full": "4",
+            "native": "4"
+        },
+        "outer-pre-try": {
+            "start": 602,
+            "end": 608,
+            "expression": "$value",
+            "full": "3|4",
+            "native": "3|4"
+        },
+        "pre-try": {
+            "start": 211,
+            "end": 217,
+            "expression": "$value",
+            "full": "1|'written'",
+            "native": "1|'written'"
+        },
+        "shared-finally": {
+            "start": 1593,
+            "end": 1599,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "sibling-not-fed-by-dead-catch": {
+            "start": 1171,
+            "end": 1177,
+            "expression": "$value",
+            "full": "3|4",
+            "native": "3|4"
+        }
+    },
+    "errors": []
+}

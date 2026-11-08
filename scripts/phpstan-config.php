@@ -111,19 +111,19 @@ try {
         $loader = (new LoaderFactory($fileHelper, $containerFactory->getRootDirectory(), $containerFactory->getCurrentWorkingDirectory(), $generateBaseline, ['[parameters][paths][]', '[parameters][tmpDir]']))->createLoader();
         try {
             $projectConfig = $loader->load($config, null);
-        } catch (\_PHPStan_cb3b7e994\Nette\InvalidStateException|\_PHPStan_cb3b7e994\Nette\FileNotFoundException $e) {
+        } catch (\_PHPStan_95d9e8b05\Nette\InvalidStateException|\_PHPStan_95d9e8b05\Nette\FileNotFoundException $e) {
             $out($e->getMessage());
             $fail();
         }
         $defaultParameters = ['rootDir' => $containerFactory->getRootDirectory(), 'currentWorkingDirectory' => $containerFactory->getCurrentWorkingDirectory(), 'env' => PHPStan\Command\Environment::getCleanedArray()];
         if (isset($projectConfig['parameters']['tmpDir'])) {
-            $tmpDir = \_PHPStan_cb3b7e994\Nette\DI\Helpers::expand($projectConfig['parameters']['tmpDir'], $defaultParameters);
+            $tmpDir = \_PHPStan_95d9e8b05\Nette\DI\Helpers::expand($projectConfig['parameters']['tmpDir'], $defaultParameters);
         }
         if ($level === null && isset($projectConfig['parameters']['level'])) {
             $level = (string) $projectConfig['parameters']['level'];
         }
         if (isset($projectConfig['parameters']['paths'])) {
-            $analysedPathsFromConfig = \_PHPStan_cb3b7e994\Nette\DI\Helpers::expand($projectConfig['parameters']['paths'], $defaultParameters);
+            $analysedPathsFromConfig = \_PHPStan_95d9e8b05\Nette\DI\Helpers::expand($projectConfig['parameters']['paths'], $defaultParameters);
         }
         if (count($paths) === 0) {
             $paths = $analysedPathsFromConfig;
@@ -169,7 +169,7 @@ try {
     @mkdir($tmpDir, 0777, true);
     try {
         $container = $containerFactory->create($tmpDir, $additional, $paths, [], $analysedPathsFromConfig, $level ?? '0', $generateBaseline);
-    } catch (\_PHPStan_cb3b7e994\Nette\DI\InvalidConfigurationException|\_PHPStan_cb3b7e994\Nette\Utils\AssertionException $e) {
+    } catch (\_PHPStan_95d9e8b05\Nette\DI\InvalidConfigurationException|\_PHPStan_95d9e8b05\Nette\Utils\AssertionException $e) {
         $out('Invalid configuration:');
         $out($e->getMessage());
         $fail();
@@ -206,7 +206,7 @@ try {
             $out('');
         }
         $fail();
-    } catch (\_PHPStan_cb3b7e994\Nette\Schema\ValidationException $e) {
+    } catch (\_PHPStan_95d9e8b05\Nette\Schema\ValidationException $e) {
         foreach ($e->getMessages() as $message) {
             $out('Invalid configuration:');
             $out($message);

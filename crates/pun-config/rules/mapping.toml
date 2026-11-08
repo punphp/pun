@@ -35,7 +35,7 @@
 
 [meta]
 schema = 2
-upstream = { php-cs-fixer = "3.95.25", pint = "1.32.1 (oracle .oracle/pint)", rector = "2.8.4", rector-laravel = "driftingly/rector-laravel 2.7.3", pest-plugin-rector = "5.x-dev@8c1b780", rector-phpunit = "dev-main@22c6dae (bundled with Rector 2.8.4)", phpstan = "2.3.1", phpstan-strict-rules = "2.0.12", phpstan-deprecation-rules = "2.0.5", larastan = "3.10.0", mago = "1.57.0" }
+upstream = { php-cs-fixer = "3.95.25", pint = "1.32.1 (oracle .oracle/pint)", rector = "2.8.4", rector-laravel = "driftingly/rector-laravel 2.7.3", pest-plugin-rector = "5.x-dev@8c1b780", rector-phpunit = "dev-main@22c6dae (bundled with Rector 2.8.4)", phpstan = "2.3.5", phpstan-strict-rules = "2.0.12", phpstan-deprecation-rules = "2.0.5", larastan = "3.14.0", mago = "1.57.0" }
 ecosystems = ["laravel", "pest", "phpunit", "doctrine"]
 sets = ["dead-code", "modernize", "code-quality", "types", "early-return", "privatization", "naming", "coding-style"]
 presets = { format = ["laravel", "psr12", "empty"], analyse = ["basic", "essential", "recommended", "strict", "max"] }

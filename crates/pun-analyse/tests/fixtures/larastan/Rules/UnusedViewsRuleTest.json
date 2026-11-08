@@ -1,0 +1,38 @@
+{
+    "test": "Rules/UnusedViewsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/FooController.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "/home/user/workspace/pun-stan/target-stan-work/larastan/vendor/orchestra/testbench-core/laravel/resources/views/welcome.blade.php",
+                    "line": 0,
+                    "identifier": "larastan.unusedViews",
+                    "message": "This view is not used in the project.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testNamespacedViewFunctionIsNotLaravelView",
+            "files": [
+                "Rules/data/FooController.php",
+                "Rules/data/NamespacedViewFunction.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "/home/user/workspace/pun-stan/target-stan-work/larastan/vendor/orchestra/testbench-core/laravel/resources/views/welcome.blade.php",
+                    "line": 0,
+                    "identifier": "larastan.unusedViews",
+                    "message": "This view is not used in the project.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

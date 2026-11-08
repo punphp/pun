@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's InvalidThrowsPhpDocValueRule (level 2). Raw class/function/method declarations are skipped:
+//! PHPStan 2.3.5's InvalidThrowsPhpDocValueRule (level 2). Raw class/function/method declarations are skipped:
 //! their virtual nodes supply the declaration's own name/template scope. Hooks are virtual nodes too; closure
 //! expressions are not statements and do not acquire a declaration check.
 

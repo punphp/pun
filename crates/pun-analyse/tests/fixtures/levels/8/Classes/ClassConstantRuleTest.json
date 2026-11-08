@@ -1845,6 +1845,58 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testClosureAttributeArguments",
+            "files": [
+                "Classes/data/closure-attribute-class-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClosureAttributeClassConstant\\Missing.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClosureAttributeClassConstant\\Missing.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 28,
+                    "identifier": "attribute.noConstructor",
+                    "message": "Attribute class ClosureAttributeClassConstant\\AttrWithoutConstructor does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClosureAttributeClassConstant\\Missing.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClosureAttributeClassConstant\\Missing.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/closure-attribute-class-constant.php",
+                    "line": 29,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClosureAttributeClassConstant\\Foo::BAR.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

@@ -71,14 +71,24 @@ class HigherOrderCollectionProxyHelper
             'keyBy' => $this->getCollectionType($collectionType, new Type\BenevolentUnionType([$integerType, new Type\StringType()]), $valueType),
             'first' => Type\TypeCombinator::addNull($valueType),
             'flatMap' => $this->getCollectionType(SupportCollection::class, $integerType, new Type\MixedType()),
-            'groupBy', 'partition' => $this->getCollectionType($collectionType, $integerType, $this->getCollectionType($collectionType, $integerType, $valueType)),
+            'groupBy' => $this->getCollectionType(
+                $collectionType,
+                // Collection::groupBy() casts a bool group key to int
+                $methodOrPropertyReturnType->isInteger()->or($methodOrPropertyReturnType->isBoolean())->yes()
+                    ? $integerType
+                    : new BenevolentUnionType([$integerType, new StringType()]),
+                $this->getCollectionType($collectionType, $integerType, $valueType),
+            ),
+            'partition' => $this->getCollectionType($collectionType, $integerType, $this->getCollectionType($collectionType, $integerType, $valueType)),
             'map' => $this->getCollectionType(
                 SupportCollection::class,
                 new BenevolentUnionType([new IntegerType(), new StringType()]),
                 $methodOrPropertyReturnType,
             ),
             'max', 'min' => $methodOrPropertyReturnType,
-            'sum' => $methodOrPropertyReturnType->accepts(new Type\IntegerType(), true)->yes() ? new Type\IntegerType() : new Type\ErrorType(),
+            'sum' => $methodOrPropertyReturnType->isInteger()->yes() || $methodOrPropertyReturnType->accepts($integerType, true)->yes()
+                ? $integerType
+                : new Type\ErrorType(),
             default => new Type\ErrorType(),
         };
     }

@@ -48,7 +48,7 @@ class HandleExceptions
      * @param  string  $message
      * @param  string  $file
      * @param  int  $line
-     * @return void
+     * @return false|void
      *
      * @throws \ErrorException
      */

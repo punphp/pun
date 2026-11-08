@@ -9,8 +9,10 @@
  */
 namespace PHPUnit\Framework\TestCase;
 
+use AssertionError;
 use PHPUnit\Event;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\IncompleteTest;
 use PHPUnit\Framework\SkippedTest;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Metadata\Api\HookMethods;

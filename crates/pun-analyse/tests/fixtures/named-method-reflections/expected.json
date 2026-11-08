@@ -378,14 +378,16 @@
             "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 81,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
             "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 82,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
@@ -604,14 +606,16 @@
             "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 81,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
             "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 82,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
@@ -830,14 +834,16 @@
             "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 81,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
             "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 82,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
@@ -1056,14 +1062,16 @@
             "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 81,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
             "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 82,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
@@ -1282,14 +1290,16 @@
             "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 81,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",
             "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
             "line": 82,
             "ignorable": true,
-            "identifier": "argument.named"
+            "identifier": "argument.named",
+            "fixable": true
         },
         {
             "file": "$ROOT/structural.php",

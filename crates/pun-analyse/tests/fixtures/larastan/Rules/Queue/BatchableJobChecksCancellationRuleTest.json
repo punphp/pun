@@ -1,0 +1,13 @@
+{
+    "test": "Rules/Queue/BatchableJobChecksCancellationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/batchable-jobs.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

@@ -38,6 +38,22 @@ impl Drop for Inputs {
     }
 }
 
+/// `ignoreErrors` as PHPStan reads them from the capture's config.neon, written beside the inputs: an unmatched
+/// entry without a path is reported in that file.
+fn configured_ignores(
+    root: &Inputs,
+    neon: &str,
+    entries: &pun_phpstan::Array,
+) -> pun_phpstan::ignore::IgnoredErrors {
+    use pun_phpstan::{Array, Value as Php};
+    let config = root.0.join("config.neon");
+    std::fs::write(&config, neon).unwrap();
+    let mut parameters = Array::new();
+    parameters.set("allConfigFiles".into(), Php::Array(Array::list([Php::str(config.to_str().unwrap())])));
+    parameters.set("currentWorkingDirectory".into(), Php::str(root.0.to_str().unwrap()));
+    pun_phpstan::ignore::IgnoredErrors::new(entries, true).with_config_files(&parameters)
+}
+
 fn errors(project: &Project) -> Value {
     Value::Array(
         analyse_project(project)
@@ -110,24 +126,27 @@ fn parser_errors_survive_rule_filters_and_configured_ignores() {
     );
     let mut entry = Array::new();
     entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
-    project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(
+    project.ignore_errors = configured_ignores(
+        &root,
+        "parameters:\n    reportIgnoresWithoutComments: true\n    ignoreErrors:\n        - identifier: phpstan.parse\n        - '#^NoSuchError$#'\n",
         &Array::list([Php::Array(entry), Php::str("#^NoSuchError$#")]),
-        true,
     );
     let analysis = analyse_project(&project).unwrap();
     assert!(pun_analyse::reports("phpstan.parse"));
-    assert_eq!(analysis.errors.len(), 1);
-    let error = &analysis.errors[0];
+    // PHPStan 2.3.5 reports the unmatched entry in its config file (as capture-entry-brace.php records for the same
+    // config)
+    let found: Vec<_> = analysis
+        .errors
+        .iter()
+        .map(|e| (std::path::Path::new(&e.file).file_name().unwrap().to_str().unwrap(), e.identifier.as_str(), e.line, e.can_be_ignored))
+        .collect();
     assert_eq!(
-        (error.identifier.as_str(), error.line, error.can_be_ignored),
-        ("phpstan.parse", 2, false)
+        found,
+        [("attribute.php", "phpstan.parse", 2, false), ("config.neon", "ignore.unmatched", 5, false)]
     );
     assert_eq!(
         analysis.general,
-        [
-            "Error message \"'\\self' is an invalid class name on line 2\" cannot be ignored, use excludePaths instead.",
-            "Ignored error pattern #^NoSuchError$# was not matched in reported errors."
-        ]
+        ["Error message \"'\\self' is an invalid class name on line 2\" cannot be ignored, use excludePaths instead."]
     );
 }
 
@@ -858,9 +877,10 @@ fn entry_brace_errors_survive_configured_ignores_and_rule_filters() {
     );
     let mut entry = Array::new();
     entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
-    project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(
+    project.ignore_errors = configured_ignores(
+        &root,
+        "parameters:\n    reportIgnoresWithoutComments: true\n    ignoreErrors:\n        - identifier: phpstan.parse\n        - '#^NoSuchError$#'\n",
         &Array::list([Php::Array(entry), Php::str("#^NoSuchError$#")]),
-        true,
     );
     let expected: Value =
         serde_json::from_str(include_str!("fixtures/parser/entry-brace-expected.json")).unwrap();
@@ -1751,6 +1771,14 @@ fn numeric_admission_collects_literal_reductions_before_enclosing_checks() {
         let file = root.write_source("input", source.as_str().unwrap());
         let mut project = Project::new(vec![file], Vec::new());
         project.php_version = 80500;
+        // the capture's config ignores phpstan.parse, which parse errors cannot be
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors = configured_ignores(
+            &root,
+            "parameters:\n    phpVersion: 80500\n    ignoreErrors:\n        - identifier: phpstan.parse\n",
+            &Array::list([Php::Array(entry)]),
+        );
         assert_eq!(
             errors(&project),
             expected["analysed"][name]["errors"],
@@ -1758,10 +1786,6 @@ fn numeric_admission_collects_literal_reductions_before_enclosing_checks() {
         );
         // Rule filters cannot suppress parser admission; ignores expose the unsorted collecting order.
         project.reported = Some(std::sync::Arc::new(|_| false));
-        let mut entry = Array::new();
-        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
-        project.ignore_errors =
-            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
         assert_eq!(
             json!(analyse_project(&project).unwrap().general),
             expected["analysed"][name]["general"],

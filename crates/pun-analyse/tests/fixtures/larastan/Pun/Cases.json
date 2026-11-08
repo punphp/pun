@@ -430,6 +430,27 @@
                     "identifier": "larastan.noPublicModelAccessorMethod",
                     "message": "Model accessor method 'name' should be declared as protected.",
                     "tip": null
+                },
+                {
+                    "file": "Pun/Models.php",
+                    "line": 47,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Models.php",
+                    "line": 48,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Models.php",
+                    "line": 49,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
                 }
             ]
         },

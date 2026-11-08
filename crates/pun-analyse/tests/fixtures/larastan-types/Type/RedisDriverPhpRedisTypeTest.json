@@ -1,0 +1,32 @@
+{
+    "test": "Type/RedisDriverPhpRedisTypeTest",
+    "configs": [
+        "tests/Type/data/redis-driver-phpredis.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/redis-driver-phpredis.php",
+            "declares": [
+                "redisdriverphpredis\\test"
+            ],
+            "asserts": [
+                12,
+                15,
+                16,
+                17,
+                20,
+                21,
+                24,
+                25,
+                28,
+                29,
+                32,
+                33,
+                34,
+                37,
+                38
+            ],
+            "errors": []
+        }
+    ]
+}

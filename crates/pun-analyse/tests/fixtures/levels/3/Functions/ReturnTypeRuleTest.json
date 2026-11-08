@@ -861,6 +861,40 @@
             "general": []
         },
         {
+            "method": "testBug11507",
+            "files": [
+                "Functions/data/bug-11507.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11507.php",
+                    "line": 43,
+                    "identifier": "return.type",
+                    "message": "Function Bug11507\\foo() should return Bug11507\\Collection<non-empty-array<string>> but returns Bug11507\\Collection<non-empty-array<string>>.",
+                    "tip": "Template type TValue on class Bug11507\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6567",
+            "files": [
+                "Functions/data/bug-6567.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-6567.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: int<0, 100>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug15245",
             "files": [
                 "Functions/data/bug-15245.php"

@@ -1,0 +1,175 @@
+{
+    "test": "Rules/NoMissingTranslationsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/Translation.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "/home/user/workspace/pun-stan/target-stan-work/larastan/vendor/orchestra/testbench-core/laravel/resources/views/welcome.blade.php",
+                    "line": 0,
+                    "identifier": "larastan.unusedViews",
+                    "message": "This view is not used in the project.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 14,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.foo\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 15,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.foo\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 16,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.foo\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 18,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 19,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 20,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 22,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.bar\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 23,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.bar\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 25,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 26,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 28,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.baz\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 29,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.baz\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 31,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 32,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.test\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 34,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"foo bar baz\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 35,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 36,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.nested\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 37,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.nested.key\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 39,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"sub/lines.greeting\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 40,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"sub/lines.farewell\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 44,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.You're beautiful\" has not been found.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/Translation.php",
+                    "line": 46,
+                    "identifier": "larastan.missingTranslations",
+                    "message": "Translation \"messages.A.Key.With.Dots.\" has not been found.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

@@ -571,6 +571,14 @@
     "order": {
         "errors": [
             {
+                "file": "config.neon",
+                "line": 5,
+                "identifier": "ignore.unmatched",
+                "message": "Ignored error pattern #^NoSuchError$# was not matched in reported errors.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
                 "file": "order.php",
                 "line": 3,
                 "identifier": "phpstan.parse",
@@ -580,8 +588,7 @@
             }
         ],
         "general": [
-            "Error message \"Syntax error, unexpected '}', expecting EOF on line 3\" cannot be ignored, use excludePaths instead.",
-            "Ignored error pattern #^NoSuchError$# was not matched in reported errors."
+            "Error message \"Syntax error, unexpected '}', expecting EOF on line 3\" cannot be ignored, use excludePaths instead."
         ]
     }
 }

@@ -42,10 +42,10 @@ class Glob
     {}
 
     /**
-     * Returns null when a "/" comes before the closing "]", and "\[" when no "]" closes the "[" at position $i.
+     * Returns "\[" when no "]" closes the "[" at position $i, or when a "/" comes before the closing "]".
      *
      * $scanEnd is where the last scan stopped without finding a "]": every "[" before that position gets the same result.
      */
-    private static function bracketExpressionToRegex(string $glob, int &$i, string $delimiter, int &$scanEnd): ?string
+    private static function bracketExpressionToRegex(string $glob, int &$i, string $delimiter, int &$scanEnd): string
     {}
 }

@@ -4,6 +4,7 @@
 
 pub mod baseline;
 pub mod comments;
+pub mod fixers;
 pub mod config;
 pub mod di;
 pub mod ignore;

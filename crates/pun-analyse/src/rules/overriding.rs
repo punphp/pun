@@ -977,6 +977,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
         c.report(m, super::named_argument::ID, record, None);
     }
     for (id, message, tip, ignorable) in messages {
+        let count = c.errors.len();
         if ignorable {
             c.report(m, id, message, tip);
         } else if id == "method.visibility" {
@@ -984,6 +985,10 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
             c.report_non_ignorable(m.name, id, message, tip);
         } else {
             c.report_non_ignorable(m, id, message, tip);
+        }
+        // its fix removes the #[\Override] attribute
+        if id == "method.override" {
+            c.fixable_since(count);
         }
     }
 }

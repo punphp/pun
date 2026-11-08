@@ -1,5 +1,5 @@
 {
-    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "phar_sha256": "4b3ed7850a20b092331bd1040e4f54a1d3c0559b4cf006431073997ebcb4324b",
     "fixtures": {
         "global.php": {
             "source_sha256": "50b9dd3a17f441a6adf3511da17fd088598276ea19f97229e1ad83fc7e206eb1",

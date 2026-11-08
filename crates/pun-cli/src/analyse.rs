@@ -91,6 +91,8 @@ pub(crate) struct Finding {
     pub(crate) message: String,
     pub(crate) tip: Option<String>,
     pub(crate) can_be_ignored: bool,
+    /// PHPStan's `isFixable()`.
+    pub(crate) fixable: bool,
 }
 
 impl Finding {
@@ -110,6 +112,8 @@ pub(crate) struct Analysed {
     pub(crate) findings: Vec<Finding>,
     /// PHPStan's not-file-specific errors: `[[analyse.ignore]]` entries without a file path nothing matched.
     pub(crate) general: Vec<String>,
+    /// PHPStan's `getFixableIgnoredErrors()` count.
+    pub(crate) fixable_ignored: usize,
     /// The files analysed.
     pub(crate) files: usize,
     /// Baseline entries (counts) no error matched any more.
@@ -164,8 +168,14 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> 
     let analysed_paths: Vec<String> = analysed_paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
     project.relative_path = pun_analyse::RelativePath::of(&analysed_paths);
     let ignores = (params.get_str("ignoreErrors").and_then(Value::as_array)).cloned();
-    project.ignore_errors =
-        IgnoredErrors::new(&ignores.unwrap_or_default(), true).with_rules(rule_of_identifier);
+    let ignores = ignores.unwrap_or_default();
+    // pun.toml is the config file the entries are in, as IgnoreErrorsConfigFixer finds them in a project's NEON file
+    let pun_toml = (cfg.sources.iter()).find(|s| s.extension().is_some_and(|e| e == "toml"));
+    let mut ignore_errors = IgnoredErrors::new(&ignores, true).with_rules(rule_of_identifier);
+    if let Some(file) = pun_toml {
+        ignore_errors = ignore_errors.with_config_entries(&file.to_string_lossy(), &ignores, &cfg.root.to_string_lossy());
+    }
+    project.ignore_errors = ignore_errors;
     let on: std::collections::HashSet<String> =
         cfg.analyse.rules.iter().map(|r| r.id.clone()).collect();
     let method_rules = pun_analyse::MethodRules {
@@ -259,6 +269,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
                 message: e.message,
                 tip: e.tip,
                 can_be_ignored: e.can_be_ignored,
+                fixable: e.fixable,
             }
         })
         .collect();
@@ -278,6 +289,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     Ok(Analysed {
         findings,
         general,
+        fixable_ignored: if severe { 0 } else { analysis.fixable_ignored },
         files: count,
         unmatched_baseline,
         malformed,
@@ -372,6 +384,7 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
                 root: &root,
                 paths: &analysed.paths,
                 general: &analysed.general,
+                fixable_ignored: analysed.fixable_ignored,
                 config: (cfg.sources.iter())
                     .find(|s| s.extension().is_some_and(|e| e == "toml"))
                     .map(|s| relative(&root, s)),

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * The PHP and PHPStan helpers crates/pun-phpstan/src/php.rs reimplements, run for real (PHP + the PHPStan 2.3.1
+ * The PHP and PHPStan helpers crates/pun-phpstan/src/php.rs reimplements, run for real (PHP + the PHPStan 2.3.5
  * phar's classes), written to crates/pun-phpstan/tests/fixtures/php.json:
  *
  *   regex           Nette Strings::match($subject, $pattern): matched, or the RegexpException message
@@ -23,7 +23,7 @@ $root = dirname(__DIR__);
 Phar::loadPhar($root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar', 'phpstan.phar');
 require 'phar://phpstan.phar/vendor/autoload.php';
 
-use _PHPStan_cb3b7e994\Nette\Utils\Strings;
+use _PHPStan_95d9e8b05\Nette\Utils\Strings;
 use PHPStan\File\FileHelper;
 use PHPStan\File\ParentDirectoryRelativePathHelper;
 
@@ -90,7 +90,7 @@ function tagged(mixed $v): mixed
     return is_string($v) ? str_replace(dirname(__DIR__).'/crates/pun-phpstan/tests/fixtures/phpfile', '{dir}', $v) : $v;
 }
 $string_cast = ['neon' => '[1, -1.5, 1e999, -1e999, 0.1, 1e20, true, false, null, "s", [1], Foo(1), 2024-01-02]', 'casts' => []];
-foreach (_PHPStan_cb3b7e994\Nette\Neon\Neon::decode($string_cast['neon']) as $v) {
+foreach (_PHPStan_95d9e8b05\Nette\Neon\Neon::decode($string_cast['neon']) as $v) {
     try {
         $cast = @(string) $v;
     } catch (Error) {

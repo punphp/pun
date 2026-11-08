@@ -1,4 +1,4 @@
-//! Nette DI's config machinery as PHPStan 2.3.1 uses it: `Nette\Schema\Helpers::merge`, `Nette\DI\Helpers::expand`
+//! Nette DI's config machinery as PHPStan 2.3.5 uses it: `Nette\Schema\Helpers::merge`, `Nette\DI\Helpers::expand`
 //! / `escape`, `Nette\DI\Config\Loader` (includes) and `PHPStan\DependencyInjection\NeonAdapter::process` (`!`
 //! replacing, statements, relative paths, `(?)` optional excludePaths).
 
@@ -322,7 +322,7 @@ fn expand_known(value: &str, known: &Array) -> Option<String> {
     Some(out)
 }
 
-fn process(
+pub(crate) fn process(
     arr: Array,
     file_key: &str,
     file: &str,
@@ -441,7 +441,7 @@ pub(crate) fn assert_list(v: &Value, label: &str) -> Result<(), String> {
         Value::Str(_) => "string".to_string(),
         Value::Array(_) => "array".to_string(),
         // (the phar's scoped class name)
-        _ => "object _PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement".to_string(),
+        _ => "object _PHPStan_95d9e8b05\\Nette\\DI\\Definitions\\Statement".to_string(),
     };
     Err(format!("The {label} expects to be list, {ty} given."))
 }

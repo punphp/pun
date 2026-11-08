@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's ArrayFillFunctionReturnTypeExtension as a Mago return type provider: `array_fill()` of a constant
+//! PHPStan 2.3.5's ArrayFillFunctionReturnTypeExtension as a Mago return type provider: `array_fill()` of a constant
 //! start index and a constant count of at most 100 is a constant array, else a list or array of the value type.
 
 use std::sync::Arc;

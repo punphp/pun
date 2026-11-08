@@ -88,8 +88,10 @@
                 "unresolvedTemplateArguments": false,
                 "closureSignaturesFromUsages": false,
                 "staticVariablesFromUsages": false,
+                "backedEnumFromParameterType": false,
                 "unusedVariable": false,
-                "unusedParameters": false
+                "unusedParameters": false,
+                "reuseCollectedDataRuleErrors": false
             },
             "fileExtensions": [
                 "php"
@@ -290,6 +292,10 @@
             "editorUrlTitle": null,
             "errorFormat": null,
             "sourceLocatorPlaygroundMode": false,
+            "fixer": {
+                "importNames": true,
+                "preferSelf": false
+            },
             "__validate": true,
             "parametersNotInvalidatingCache": [
                 [
@@ -345,6 +351,7 @@
             "checkOctaneCompatibility": false,
             "noEnvCallsOutsideOfConfig": true,
             "noModelMake": true,
+            "noImplicitQueryBuilderCall": false,
             "noUnnecessaryCollectionCall": true,
             "noUnnecessaryCollectionCallOnly": [],
             "noUnnecessaryCollectionCallExcept": [],
@@ -365,7 +372,15 @@
             "checkConfigTypes": false,
             "checkAuthCallsWhenInRequestScope": false,
             "parseModelCastsMethod": false,
-            "enableMigrationCache": false,
+            "enableMigrationCache": true,
+            "checkUniqueJobUniqueFor": false,
+            "checkUniqueJobUniqueId": false,
+            "noBatchedUniqueJob": false,
+            "checkJobSerializesModels": false,
+            "checkBatchedJobIsBatchable": false,
+            "checkBatchableJobChecksCancellation": false,
+            "checkDispatchInTransactionAfterCommit": false,
+            "redisDriver": null,
             "debugMode": true,
             "productionMode": false,
             "tempDir": "{tmp}/phpstan",
@@ -393,6 +408,8 @@
             "generateBaselineFile": null,
             "usedLevel": "6",
             "cliAutoloadFile": null,
+            "attributeServicesDirectories": [],
+            "attributeServicesClasses": [],
             "sysGetTempDir": "{tmp}",
             "pro": {
                 "dnsServers": [

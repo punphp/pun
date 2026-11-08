@@ -1,7 +1,7 @@
 //! PHPStan's type representation (the subset built-in signatures use), with `describe()` at each
 //! `VerbosityLevel`, `isSuperTypeOf()` and `TypeCombinator::union()` / `intersect()`.
 //!
-//! Each variant is one of PHPStan 2.3.1's `Type` classes; methods keep upstream's control flow so a PHP and a
+//! Each variant is one of PHPStan 2.3.5's `Type` classes; methods keep upstream's control flow so a PHP and a
 //! Rust function can be read side by side. Class knowledge (canonical names, ancestors) comes from
 //! [`crate::symbols`]: PHPStan's own reflection of built-in classes.
 
@@ -2133,9 +2133,31 @@ fn print_templates(sig: &Signature) -> Vec<u8> {
     description!("<", tags.join(b", ".as_slice()), ">")
 }
 
-/// `Printer::print($type->toPhpDocNode())`
+/// `Printer::print($type->toPhpDocNode())` up to PHPStan 2.3.3 (what Rector's PHPStan prints): class names as written.
 pub fn to_phpdoc(t: &Type) -> String {
     display_bytes(&to_phpdoc_bytes(t))
+}
+
+thread_local! {
+    static NAME_NODES: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// `Printer::print($type->toPhpDocNode())` from PHPStan 2.3.4 on: object, generic object, `Closure` and enum case
+/// types are fully qualified name nodes, printed with a leading backslash.
+pub fn to_phpdoc_fully_qualified(t: &Type) -> String {
+    NAME_NODES.set(true);
+    let printed = display_bytes(&to_phpdoc_bytes(t));
+    NAME_NODES.set(false);
+    printed
+}
+
+/// A class name as `toPhpDocNode()` prints it.
+fn phpdoc_class_name(class: &str) -> Vec<u8> {
+    if NAME_NODES.get() {
+        description!("\\", class)
+    } else {
+        class.as_bytes().to_vec()
+    }
 }
 
 fn to_phpdoc_bytes(t: &Type) -> Vec<u8> {
@@ -2182,7 +2204,7 @@ fn to_phpdoc_bytes(t: &Type) -> Vec<u8> {
         Type::ClassString(Some(g)) => description!("class-string<", to_phpdoc_bytes(g), ">"),
         Type::Object(class, args, _) if !args.is_empty() => {
             description!(
-                class,
+                phpdoc_class_name(class),
                 "<",
                 args.iter()
                     .map(to_phpdoc_bytes)
@@ -2191,7 +2213,8 @@ fn to_phpdoc_bytes(t: &Type) -> Vec<u8> {
                 ">"
             )
         }
-        Type::Object(class, _, _) => class.as_bytes().to_vec(),
+        Type::Object(class, _, _) => phpdoc_class_name(class),
+        Type::EnumCase(class, case) if NAME_NODES.get() => description!("\\", class, "::", case),
         Type::Static(..) => "static".into(),
         Type::This(_) => "$this".into(),
         Type::Array(key, item) => {
@@ -2281,6 +2304,7 @@ fn to_phpdoc_bytes(t: &Type) -> Vec<u8> {
         Type::Template(tpl) => tpl.name.as_bytes().to_vec(),
         Type::Callable(None) => "callable".into(),
         Type::Callable(Some(sig)) => print_callable_named("callable", sig),
+        Type::Closure(sig) if NAME_NODES.get() => print_callable_named("\\Closure", sig),
         Type::Closure(sig) => print_callable_named("Closure", sig),
         Type::Projection(c, inner) => description!(variance_name(*c), " ", to_phpdoc_bytes(inner)),
         Type::OffsetAccess(t, o) => {
@@ -3798,12 +3822,14 @@ pub fn union(types: Vec<Type>) -> Type {
             }
             continue;
         }
+        // only a type containing every value of the scalar (not `T of int`, `1&T`) absorbs all the constants of that
+        // scalar (PHPStan 2.3.4)
         if t.is_boolean().yes() {
-            generic[0] = true;
+            generic[0] |= is_super_type_of(&t, &Type::Bool).yes();
         } else if t.is_float().yes() {
-            generic[2] = true;
+            generic[2] |= is_super_type_of(&t, &Type::Float).yes();
         } else if t.is_integer().yes() && !matches!(t, Type::IntRange(..)) {
-            generic[1] = true;
+            generic[1] |= is_super_type_of(&t, &Type::Int).yes();
         }
         // (a string that is no class-string, without accessories, is only a `mixed~string` subtraction PHPStan
         // intersects with a string, which Pun has no type for: generic[3] stays false)

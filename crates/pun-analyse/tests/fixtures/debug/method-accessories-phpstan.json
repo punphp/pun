@@ -86,7 +86,7 @@
           "identifier": "phpstan.dumpType"
         },
         {
-          "message": "Dumped type: class-string<MethodAccessories\\OpenType>",
+          "message": "Dumped type: class-string<\\MethodAccessories\\OpenType>",
           "line": 45,
           "ignorable": false,
           "identifier": "phpstan.dumpPhpDocType"
@@ -122,7 +122,7 @@
           "identifier": "phpstan.dumpType"
         },
         {
-          "message": "Dumped type: MethodAccessories\\OpenType",
+          "message": "Dumped type: \\MethodAccessories\\OpenType",
           "line": 61,
           "ignorable": false,
           "identifier": "phpstan.dumpPhpDocType"

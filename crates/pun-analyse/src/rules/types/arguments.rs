@@ -344,6 +344,7 @@ pub(in super::super) fn arguments(
     parameters: &[Option<usize>],
     at: Span,
     call: &Call,
+    positional_fix: bool,
 ) {
     // `%s of function foo expects ...`: the subject with a lowercase first letter
     let of = call.subject[..1].to_ascii_lowercase() + &call.subject[1..];
@@ -369,7 +370,7 @@ pub(in super::super) fn arguments(
         let Some(p) = *p else {
             continue;
         };
-        super::super::params::check_named(c, acceptor, e, call);
+        super::super::params::check_named(c, acceptor, e, call, positional_fix);
         let by_ref = acceptor.by_ref[p];
         let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a by-reference parameter that creates the variable takes anything from a built-in's caller, and an

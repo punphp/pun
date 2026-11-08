@@ -11,6 +11,7 @@ use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Database\Schema\PostgresSchemaState;
 use Illuminate\Filesystem\Filesystem;
 use PDO;
+use RuntimeException;
 
 class PostgresConnection extends Connection
 {
@@ -63,6 +64,37 @@ class PostgresConnection extends Connection
      * @return array{index: string|null, columns: list<string>}
      */
     protected function parseUniqueConstraintViolation(Exception $exception): array
+    {}
+
+    /**
+     * Get the ID of the last committed transaction.
+     *
+     * @return string
+     */
+    public function getLastCommitId()
+    {}
+
+    /**
+     * Calculate the commit ID for a set of commit IDs that includes all of them.
+     *
+     * @param  string[]  $values
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function mergeCommitIds(array $values)
+    {}
+
+    /**
+     * Determine if the given commit ID has been applied.
+     *
+     * @param  string  $value
+     * @param  int  $wait
+     * @return bool
+     *
+     * @throws \RuntimeException
+     */
+    public function hasCommitId(string $value, int $wait = 0)
     {}
 
     /**

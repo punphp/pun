@@ -1,0 +1,13 @@
+{
+    "test": "Rules/Queue/JobWithModelPropertyDeclaresSerializesModelsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/Queue/data/serializes-models.php"
+            ],
+            "scanned": [],
+            "errors": []
+        }
+    ]
+}

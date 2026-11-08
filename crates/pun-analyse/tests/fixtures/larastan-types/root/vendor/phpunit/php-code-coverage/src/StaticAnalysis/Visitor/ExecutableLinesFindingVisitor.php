@@ -117,6 +117,32 @@ final class ExecutableLinesFindingVisitor extends NodeVisitorAbstract
     private array $unsets = [];
 
     /**
+     * @var list<array{int, int}> line and file position of the start of a
+     *                            match expression that may share its first
+     *                            line with other code
+     */
+    private array $matchStartLines = [];
+
+    /**
+     * @var list<array{int, int}> line and file position of the end of a
+     *                            match expression that may share its last
+     *                            line with other code
+     */
+    private array $matchEndLines = [];
+
+    /**
+     * @var array<int, int> keyed by line number, file position of the start
+     *                      of the rightmost node that starts on that line
+     */
+    private array $rightmostNodeStartOnLine = [];
+
+    /**
+     * @var array<int, int> keyed by line number, file position of the end
+     *                      of the leftmost node that ends on that line
+     */
+    private array $leftmostNodeEndOnLine = [];
+
+    /**
      * @var array<int, string>
      */
     private array $commentsToCheckForUnset = [];
@@ -163,6 +189,18 @@ final class ExecutableLinesFindingVisitor extends NodeVisitorAbstract
     {}
 
     private function enterMatch(Node\Expr\Match_ $node): void
+    {}
+
+    /**
+     * A node that ends on the first line of a match expression before the
+     * match expression starts, or that starts on its last line after the
+     * match expression ends, is code that shares the line with the match
+     * expression. Such a line must not be removed from the executable lines.
+     */
+    private function markMatchBoundaryLinesWithoutOtherCodeForUnset(): void
+    {}
+
+    private function rememberNodePosition(Node $node): void
     {}
 
     /**

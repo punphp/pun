@@ -21,8 +21,11 @@ use Stringable;
 
 use function idn_to_ascii;
 use function idn_to_utf8;
+use function preg_match;
+use function preg_replace_callback;
 use function rawurldecode;
 use function strtolower;
+use function strtoupper;
 
 use const INTL_IDNA_VARIANT_UTS46;
 
@@ -34,6 +37,8 @@ final class Converter
     private const REGEXP_IDNA_PATTERN = '/[^\x20-\x7f]/';
     private const MAX_DOMAIN_LENGTH = 253;
     private const MAX_LABEL_LENGTH = 63;
+    private const REGEXP_CHARS_ENCODED = ',%[A-Fa-f0-9]{2},';
+    private const REGEXP_PART_UNRESERVED = 'A-Za-z\d_\-.~';
 
     /**
      * General registered name regular expression.
@@ -90,6 +95,9 @@ final class Converter
      * @throws SyntaxError if the string cannot be converted to UNICODE using IDN UTS46 algorithm
      */
     public static function toUnicode(BackedEnum|Stringable|string $domain, Option|int|null $options = null): Result
+    {}
+
+    private static function filterDomain(BackedEnum|Stringable|string $domain): string
     {}
 
     /**

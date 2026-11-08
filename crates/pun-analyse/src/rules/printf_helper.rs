@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's PrintfFormatParser (php_formatted_print() of PHP 8.0+); scanf's count is PHP 8.5
+//! PHPStan 2.3.5's PrintfFormatParser (php_formatted_print() of PHP 8.0+); scanf's count is PHP 8.5
 //! ValidateFormat(format, 0).
 
 use std::collections::HashSet;

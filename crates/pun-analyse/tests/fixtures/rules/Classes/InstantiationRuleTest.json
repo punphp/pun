@@ -945,6 +945,24 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug14002",
+            "files": [
+                "Classes/data/bug-14002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14002Part2",
+            "files": [
+                "Classes/data/bug-14002-2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

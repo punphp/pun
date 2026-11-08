@@ -167,51 +167,63 @@ trait InteractsWithData
      *
      * @param  string  $key
      * @param  mixed  $default
+     * @param  bool  $strict
      * @return \Illuminate\Support\Stringable
      */
-    public function str($key, $default = null)
+    public function str($key, $default = null, $strict = false)
     {}
 
     /**
      * Retrieve data from the instance as a Stringable instance.
      *
+     * When strict, values that are not strings, numbers, or Stringable objects return the default.
+     *
      * @param  string  $key
      * @param  mixed  $default
+     * @param  bool  $strict
      * @return \Illuminate\Support\Stringable
      */
-    public function string($key, $default = null)
+    public function string($key, $default = null, $strict = false)
     {}
 
     /**
      * Retrieve data as a boolean value.
      *
      * Returns true when value is "1", "true", "on", and "yes". Otherwise, returns false.
+     * When strict, values other than "1", "true", "on", "yes", "0", "false", "off", and "no" return the default.
      *
      * @param  string|null  $key
      * @param  bool  $default
+     * @param  bool  $strict
      * @return bool
      */
-    public function boolean($key = null, $default = false)
+    public function boolean($key = null, $default = false, $strict = false)
     {}
 
     /**
      * Retrieve data as an integer value.
      *
+     * When strict, values that are not valid integers return the default.
+     *
      * @param  string  $key
      * @param  int  $default
+     * @param  bool  $strict
      * @return int
      */
-    public function integer($key, $default = 0)
+    public function integer($key, $default = 0, $strict = false)
     {}
 
     /**
      * Retrieve data as a float value.
      *
+     * When strict, values that are not valid numbers return the default.
+     *
      * @param  string  $key
      * @param  float  $default
+     * @param  bool  $strict
      * @return float
      */
-    public function float($key, $default = 0.0)
+    public function float($key, $default = 0.0, $strict = false)
     {}
 
     /**

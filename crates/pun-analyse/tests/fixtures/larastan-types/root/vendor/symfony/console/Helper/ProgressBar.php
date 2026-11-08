@@ -58,6 +58,9 @@ final class ProgressBar
     private bool $overwrite = true;
     private Terminal $terminal;
     private ?string $previousMessage = null;
+    private int $lastDrawnStep = 0;
+    private ?int $lastDrawnMax = null;
+    private bool $maxInferred = false;
     private Cursor $cursor;
     private array $placeholders = [];
     private ?int $oscProgressState = null;

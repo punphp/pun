@@ -248,7 +248,7 @@
                     "line": 13,
                     "identifier": "function.alreadyNarrowedType",
                     "message": "Call to function assert() with true will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                    "tip": null
                 },
                 {
                     "file": "Comparison/data/bug-4043.php",

@@ -1,4 +1,4 @@
-//! PHPStan 2.3.1's `RegexArrayShapeMatcher` (with `RegexGroupList`), building the types of `$matches`.
+//! PHPStan 2.3.5's `RegexArrayShapeMatcher` (with `RegexGroupList`), building the types of `$matches`.
 
 use std::sync::Arc;
 
@@ -29,6 +29,8 @@ struct Value {
     ty: RType,
     offset: bool,
     list: Option<bool>,
+    /// `non-empty-array<int<0, max>, ty>`: preg_match_all()'s marks by the index of the match that set them.
+    by_match: bool,
 }
 
 impl Value {
@@ -37,11 +39,12 @@ impl Value {
             ty,
             offset: false,
             list: None,
+            by_match: false,
         }
     }
 
     fn plain(&self) -> bool {
-        !self.offset && self.list.is_none()
+        !self.offset && self.list.is_none() && !self.by_match
     }
 }
 
@@ -166,7 +169,7 @@ fn match_regex(
     was_matched: Tri,
     matches_all: bool,
 ) -> Option<Vec<Out>> {
-    // `None`: regex could not be parsed by Hoa/Regex
+    // `None`: regex could not be parsed by RegexParser
     let walk = groups::parse_groups(regex, php.capture_only_named)?;
     let m = Matcher {
         php,
@@ -183,6 +186,26 @@ fn match_regex(
     let trailing_optionals = list.count_trailing_optionals();
     let only_optional_top_level_group = list.only_optional_top_level_group();
     let only_top_level_alternation = list.only_top_level_alternation();
+
+    let branches = (!matches_all && only_optional_top_level_group.is_none() && !m.contains_unmatched_as_null())
+        .then_some(only_top_level_alternation)
+        .flatten()
+        .map(|id| &walk.alternations[id]);
+    if list.has_duplicate_names_outside_of_alternation_branches(branches) {
+        // which of the groups sharing a name sets the named offset is only modelled
+        // for groups in different branches of a top level alternation
+        return None;
+    }
+    if list.0.iter().any(Capturing::resets_group_counter)
+        && (matches_all
+            || only_optional_top_level_group.is_some()
+            || only_top_level_alternation.is_none()
+            || m.contains_unmatched_as_null())
+    {
+        // groups in a branch reset (?|...) share offsets, which is only modelled
+        // when its alternation is the only top level alternation
+        return None;
+    }
 
     if !matches_all
         && was_matched.yes()
@@ -308,7 +331,9 @@ impl Matcher {
                     .iter()
                     .map(|m| RType::from(Atom::Const(m.clone()))),
             );
-            set_offset(&mut shape, Key::Str("MARK".into()), Value::str(marks), true);
+            // marks are keyed by the index of the match that set them, matches without a mark are left out
+            let by_match = self.matches_all && self.contains_pattern_order();
+            set_offset(&mut shape, Key::Str("MARK".into()), Value { by_match, ..Value::str(marks) }, true);
         }
         if self.matches_all && self.contains_set_order() {
             return Out::SetOrder(vec![shape], self.was_matched.yes());
@@ -359,7 +384,8 @@ impl Matcher {
         if self.matches_all {
             let mut value = if !unmatched_as_null
                 && group.is_optional()
-                && (!self.contains_set_order() || !is_trailing_optional)
+                // an unmatched group followed by a matched one is reported as ''
+                && (!self.contains_set_order() || !is_last_group)
             {
                 remove_null(self.value_type(&RType::union([
                     group.ty().clone(),
@@ -437,6 +463,7 @@ impl Matcher {
             ty: value,
             offset: self.contains_offset_capture(),
             list: None,
+            by_match: false,
         }
     }
 }
@@ -535,6 +562,33 @@ impl GroupList {
                 .cloned()
                 .collect(),
         )
+    }
+
+    /// `hasDuplicateNamesOutsideOfAlternationBranches()`: groups sharing a name (allowed by (?J)) are only understood
+    /// when each of them is in a different branch of the given alternation.
+    fn has_duplicate_names_outside_of_alternation_branches(&self, alternation: Option<&groups::Alternation>) -> bool {
+        let mut by_name: Vec<(&str, Vec<i64>)> = Vec::new();
+        for group in &self.0 {
+            let Some(name) = &group.name else { continue };
+            match by_name.iter_mut().find(|(n, _)| n == name) {
+                Some((_, ids)) => ids.push(group.id),
+                None => by_name.push((name, vec![group.id])),
+            }
+        }
+        let branch_of = |id: i64| {
+            alternation?.combinations.iter().rev().find(|(_, ids)| ids.contains(&id)).map(|(branch, _)| *branch)
+        };
+        by_name.iter().filter(|(_, ids)| ids.len() > 1).any(|(_, ids)| {
+            let mut branches = Vec::new();
+            ids.iter().any(|id| match branch_of(*id) {
+                None => true,
+                Some(branch) if branches.contains(&branch) => true,
+                Some(branch) => {
+                    branches.push(branch);
+                    false
+                }
+            })
+        })
     }
 
     fn only_optional_top_level_group(&self) -> Option<Capturing> {
@@ -770,6 +824,7 @@ fn union_values(a: &Value, b: &Value) -> Value {
         ty: RType::union([a.ty.clone(), b.ty.clone()]),
         offset: a.offset,
         list: a.list.zip(b.list).map(|(a, b)| a && b),
+        by_match: a.by_match,
     }
 }
 
@@ -855,6 +910,11 @@ fn value_union(value: &Value) -> TUnion {
             .into_iter()
             .collect(),
         ))));
+    }
+    if value.by_match {
+        return TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
+            TKeyedArray::new_with_parameters(Arc::new(get_int_range(Some(0), None)), Arc::new(ty)).with_non_empty(true),
+        )));
     }
     match value.list {
         None => ty,

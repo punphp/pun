@@ -1,4 +1,4 @@
-//! `@phpstan-ignore*` comment parsing and `ignoreErrors` matching against PHPStan 2.3.1's own classes
+//! `@phpstan-ignore*` comment parsing and `ignoreErrors` matching against PHPStan 2.3.5's own classes
 //! (tests/fixtures/comments.json and ignore.json, exported by scripts/export-ignore-fixtures.php).
 
 mod common;
@@ -70,6 +70,7 @@ fn error(j: &J) -> Error {
         trait_file_path: opt(&j["traitFilePath"]),
         tip: opt(&j["tip"]),
         identifier: opt(&j["identifier"]),
+        fixable: false,
     }
 }
 
@@ -146,6 +147,7 @@ fn phpstan_analyse_local_ignores() {
             s("ignorable"),
             s("identifier"),
             s("tip"),
+            s("fixable"),
         )
     };
     let mut failures = Vec::new();
@@ -181,8 +183,11 @@ fn phpstan_analyse_local_ignores() {
             let (kept, _) =
                 pun_phpstan::ignore::local_ignores(&file, raw, &mut lines, &mut unmatched);
             out.extend(kept);
+            pun_phpstan::ignore::fix_all_line_errors(&file, Some(&code), &mut out);
             out.extend(pun_phpstan::ignore::unmatched_line_errors(
-                &file, &unmatched,
+                &file,
+                Some(&code),
+                &unmatched,
             ));
             let mut got: Vec<_> = out
                 .iter()
@@ -193,6 +198,9 @@ fn phpstan_analyse_local_ignores() {
                     }
                     if let Some(tip) = &e.tip {
                         j["tip"] = json!(tip);
+                    }
+                    if e.fixable {
+                        j["fixable"] = json!(true);
                     }
                     key(&j)
                 })
@@ -320,4 +328,72 @@ fn validate_ignore_errors() {
     );
     let e = validate_ignore_errors(&params(&[("message", Value::str("#(#"))])).unwrap_err();
     assert!(e.starts_with("Invalid entry in ignoreErrors:\n"), "{e}");
+}
+
+/// PHPStan 2.3.5 reports an unmatched entry without a file of its own in the config file and line of the entry
+/// (IgnoreErrorsConfigFixer::findEntryLocation()), but not one in the files of an installed Composer package (a
+/// package from a path repository is the project's own code). Lines and messages derived from that class by hand.
+#[test]
+fn unmatched_entries_are_reported_in_their_config_file() {
+    let dir = std::env::temp_dir().join(format!("pun-ignore-location-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let write = |path: &str, contents: &str| {
+        let path = dir.join(path);
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, contents).unwrap();
+    };
+    write(
+        "phpstan.neon",
+        "parameters:\n\tignoreErrors:\n\t\t- '#^A$#'\n\t\t-\n\t\t\tidentifier: x.y\n\t\t-\n\t\t\tmessage: '#^B$#'\n\t\t\tpath: missing.php\n\t\t-\n\t\t\tmessages: ['#^C$#', '#^D$#']\n",
+    );
+    write("composer.json", "{}");
+    write(
+        "vendor/composer/installed.json",
+        r#"{"packages": [{"name": "acme/pkg", "install-path": "../acme/pkg"}, {"name": "acme/own", "install-path": "../acme/own", "dist": {"type": "path"}}]}"#,
+    );
+    for package in ["pkg", "own"] {
+        write(&format!("vendor/acme/{package}/extension.neon"), &format!("parameters:\n\tignoreErrors:\n\t\t- identifier: {package}.id\n"));
+    }
+    let d = dir.to_string_lossy().into_owned();
+    let entry = |fields: &[(&str, Value)]| {
+        let mut e = Array::new();
+        for (k, v) in fields {
+            e.set((*k).into(), v.clone());
+        }
+        Value::Array(e)
+    };
+    let entries = Array::list([
+        Value::str("#^A$#"),
+        entry(&[("identifier", Value::str("x.y"))]),
+        entry(&[("message", Value::str("#^B$#")), ("path", Value::str(&format!("{d}/missing.php")))]),
+        entry(&[("messages", Value::Array(Array::list([Value::str("#^C$#"), Value::str("#^D$#")])))]),
+        entry(&[("identifier", Value::str("pkg.id"))]),
+        entry(&[("identifier", Value::str("own.id"))]),
+    ]);
+    let mut parameters = Array::new();
+    parameters.set("currentWorkingDirectory".into(), Value::str(&d));
+    parameters.set("rootDir".into(), Value::str("phar:///phpstan.phar"));
+    parameters.set("composerAutoloaderProjectPaths".into(), Value::Array(Array::list([Value::str(&d)])));
+    let files = ["phar:///phpstan.phar/conf/config.neon", "phpstan.neon", "vendor/acme/pkg/extension.neon", "vendor/acme/own/extension.neon"];
+    parameters.set(
+        "allConfigFiles".into(),
+        Value::Array(Array::list(files.iter().map(|f| Value::str(&if f.starts_with("phar:") { f.to_string() } else { format!("{d}/{f}") })))),
+    );
+    let p = IgnoredErrors::new(&entries, true).with_config_files(&parameters).process(Vec::new(), false, &[], false);
+    let not_matched = |s: &str| format!("Ignored error pattern {s} was not matched in reported errors.");
+    let got: Vec<_> = p.errors.iter().map(|e| (e.file.clone(), e.line, e.message.clone(), e.identifier.clone(), e.can_be_ignored)).collect();
+    let at = |file: &str, line: i64, s: &str| (format!("{d}/{file}"), Some(line), not_matched(s), Some("ignore.unmatched".to_string()), false);
+    assert_eq!(
+        got,
+        [
+            at("phpstan.neon", 3, "#^A$#"),
+            at("phpstan.neon", 4, "x.y"),
+            at("phpstan.neon", 6, &format!("#^B$# in path {d}/missing.php")),
+            at("phpstan.neon", 9, "#^C$#"),
+            at("phpstan.neon", 9, "#^D$#"),
+            at("vendor/acme/own/extension.neon", 3, "own.id"),
+        ]
+    );
+    assert_eq!(p.string_errors, [not_matched("pkg.id")]);
+    std::fs::remove_dir_all(&dir).unwrap();
 }
