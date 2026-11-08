@@ -126,7 +126,8 @@ fn carries_rule_configurations() {
             json!({"Old": null}),
         ),
         (
-            "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector",
+            // core's class is deprecated in 2.8.4; rector-laravel's copy is the one the rule maps to
+            "RectorLaravel\\Rector\\FuncCall\\FuncCallToStaticCallRector",
             json!([{"@unsupported": "Closure"}]),
         ),
         (
@@ -182,16 +183,16 @@ fn carries_rule_configurations() {
         unsupported,
         [
             (
+                "FuncCallToStaticCallRector",
+                "configured; its configuration holds a Closure, which pun.toml can't"
+            ),
+            (
                 "RenameClassConstFetchRector",
                 "configured; its configuration has a `level` key, which pun.toml keeps for the rule's level"
             ),
             (
                 "RenameClassRector",
                 "configured; its configuration holds a null, which pun.toml can't"
-            ),
-            (
-                "FuncCallToStaticCallRector",
-                "configured; its configuration holds a Closure, which pun.toml can't"
             ),
         ]
     );
