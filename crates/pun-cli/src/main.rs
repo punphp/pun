@@ -171,7 +171,7 @@ pub(crate) struct FormatArgs {
     /// File path context for stdin input.
     #[arg(long)]
     stdin_filename: Option<PathBuf>,
-    /// Pint's `--cache-file`, accepted and ignored: Pun has no cache (Pint's presets don't cache either).
+    /// Pint's `--cache-file`, accepted and ignored: Pun has no cache (Pint 1.32 writes PHP-CS-Fixer's there).
     #[arg(long = "cache-file", hide = true)]
     _cache_file: Option<String>,
     /// Accepted for Pint compatibility; Pun always runs in parallel.

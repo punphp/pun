@@ -2,7 +2,7 @@
     "fixer": "no_unused_imports",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Import/NoUnusedImportsFixerTest.php",
-    "case_count": 95,
+    "case_count": 99,
     "tests": [
         {
             "method": "testFix",
@@ -276,6 +276,34 @@
                     "key": "with_case_insensitive_matches_in_comments",
                     "args": [
                         "<?php\nuse Foo;\nuse Bar;\nuse Baz;\n\n//foo\n#bar\n/*baz*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_match_in_comment_single_quoted",
+                    "args": [
+                        "<?php\nuse Foo;\n\n// todo: use 'Foo' class to solve the problem\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_match_in_comment_double_quoted",
+                    "args": [
+                        "<?php\nuse Foo;\n\n// todo: use \"Foo\" class to solve the problem\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_match_in_comment_backtick_quoted",
+                    "args": [
+                        "<?php\nuse Foo;\n\n// todo: use `Foo` class to solve the problem\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_match_in_comment_and_::class",
+                    "args": [
+                        "<?php\nuse Foo;\n\n// todo: use Foo::class to solve the problem\n"
                     ]
                 },
                 {

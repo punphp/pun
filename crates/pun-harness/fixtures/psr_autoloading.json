@@ -2,7 +2,7 @@
     "fixer": "psr_autoloading",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\PsrAutoloadingFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php",
-    "case_count": 200,
+    "case_count": 202,
     "tests": [
         {
             "method": "testFix",
@@ -25,10 +25,7 @@
                 {
                     "name": "file",
                     "type": "?SplFileInfo",
-                    "default": {
-                        "__class": "SplFileInfo",
-                        "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
-                    }
+                    "default": null
                 }
             ],
             "requires_php": null,
@@ -2458,6 +2455,34 @@
                             "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
                         }
                     ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file that does not exist, but has a name that can be a class name",
+                    "args": [
+                        "<?php namespace Aaa; class Foo {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "Bar.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file that does not exist, but has a name that can be a class name, with \"dir\" configured",
+                    "args": [
+                        "<?php namespace Aaa; class Foo {}",
+                        null,
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "Bar.php"
+                        }
+                    ]
                 }
             ]
         },
@@ -2500,14 +2525,6 @@
                     "name": "input",
                     "type": "?string",
                     "default": null
-                },
-                {
-                    "name": "file",
-                    "type": "?\\SplFileInfo",
-                    "default": {
-                        "__class": "SplFileInfo",
-                        "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
-                    }
                 }
             ],
             "requires_php": ">= 8.1.0",
@@ -2524,6 +2541,5 @@
                 }
             ]
         }
-    ],
-    "note": "Post-processed by lint-b: the `file` the test bodies pass when a case gives none (`new \\SplFileInfo(__FILE__)`) is written as the file parameter's default, since the fixture runner's default is test.php."
+    ]
 }

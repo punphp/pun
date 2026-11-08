@@ -2,7 +2,7 @@
     "fixer": "statement_indentation",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Whitespace/StatementIndentationFixerTest.php",
-    "case_count": 91,
+    "case_count": 94,
     "tests": [
         {
             "method": "testFix",
@@ -670,6 +670,30 @@
                     "key": "ternary operator in property",
                     "args": [
                         "<?php\nclass Foo\n{\n    public int $bar = BAZ ? -1 : 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline ternary operator in class constant",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const BAR = BAZ\n        ? 1\n        : 2;\n}",
+                        "<?php\nclass Foo\n{\n    const BAR = BAZ\n        ? 1\n    : 2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline nested ternary operator in class constant",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const BAR = A\n        ? B\n        ? C\n        ? D\n        : E\n        : F\n        : G;\n}",
+                        "<?php\nclass Foo\n{\n    const BAR = A\n    ? B\n        ? C\n            ? D\n            : E\n        : F\n    : G;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline ternary operator in class constant with indentation to adjust",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const BAR = A\n        ? B\n        : C;\n}",
+                        "<?php\nclass Foo\n{\n    const BAR = A\n                ? B\n    : C;\n}"
                     ]
                 },
                 {

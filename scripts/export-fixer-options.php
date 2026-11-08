@@ -7,7 +7,7 @@
 [$pint, $config] = require __DIR__.'/pint-boot.php';
 $factory = (new PhpCsFixer\FixerFactory)->registerBuiltInFixers()->registerCustomFixers($config->getCustomFixers());
 $out = [];
-foreach ($factory->getFixers() as $f) {
+foreach (array_map(pint_unwrap(...), $factory->getFixers()) as $f) {
     if (! $f instanceof PhpCsFixer\Fixer\ConfigurableFixerInterface) {
         continue;
     }

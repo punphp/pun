@@ -43,6 +43,24 @@ impl Fixer for IsNullFixer {
             if tokens[next].equals(")", true) {
                 continue;
             }
+            // an unpacked argument is not a value that can be compared to `null`, so leave such call as is
+            if tokens[next].is_kind(T_ELLIPSIS) {
+                continue;
+            }
+            let reference_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
+            // `is_null()` takes a single parameter, so only the first token inside the parentheses can carry a name
+            if let Some(colon) = tokens.get_next_meaningful_token(next)
+                && tokens[colon].is_kind(CT_NAMED_ARGUMENT_COLON)
+            {
+                // a name other than the one `is_null()` declares (`value`) does not resolve to its parameter
+                if !tokens[next].equals((CT_NAMED_ARGUMENT_NAME, "value"), true) {
+                    continue;
+                }
+                // the name is redundant for a single-parameter call, drop it to not break the transformation
+                tokens.clear_token_and_merge_surrounding_whitespace(colon);
+                tokens.clear_token_and_merge_surrounding_whitespace(next);
+                tokens.remove_trailing_whitespace(open, None);
+            }
             let mut prev_token_index = tokens.get_prev_meaningful_token(is_null_index).unwrap();
             // handle function references with namespaces
             if tokens[prev_token_index].is_kind(T_NS_SEPARATOR) {
@@ -59,7 +77,6 @@ impl Fixer for IsNullFixer {
                 tokens.clear_at(prev_token_index);
             }
             // before getting rind of `()` around a parameter, ensure it's not assignment/ternary invariant
-            let reference_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             let is_containing_dangerous_constructs = (open..=reference_end)
                 .any(|i| [&b"?"[..], b"?:", b"=", b"??"].contains(&tokens[i].get_content()));
             // edge cases: is_null() followed/preceded by ==, ===, !=, !==, <>, (int-or-other-casting)

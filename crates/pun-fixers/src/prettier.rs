@@ -119,7 +119,7 @@ fn resources_in(dir: &Path) -> Result<PathBuf> {
 fn start(probe: Option<&[&str]>) -> Result<Worker> {
     let project_root = std::env::current_dir()?; // Project::path() is getcwd()
     let dir = resources()?;
-    let mut node = Command::new("node");
+    let mut node = Command::new(runtime_binary(&project_root));
     if let Some(packages) = probe {
         node.arg("--require")
             .arg(dir.join("probe.cjs"))
@@ -130,6 +130,14 @@ fn start(probe: Option<&[&str]>) -> Result<Worker> {
         .arg(dir.join("prettierrc.json"))
         .current_dir(&project_root);
     spawn(node)
+}
+
+/// `NodePackageManager::detect($projectRoot)->runtimeBinary()`: Bun for a project with a Bun lock file, else Node.
+fn runtime_binary(project_root: &Path) -> &'static str {
+    match project_root.join("bun.lock").exists() || project_root.join("bun.lockb").exists() {
+        true => "bun",
+        false => "node",
+    }
 }
 
 fn spawn(mut command: Command) -> Result<Worker> {

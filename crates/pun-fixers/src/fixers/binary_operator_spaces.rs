@@ -504,7 +504,7 @@ impl BinaryOperatorSpacesFixer {
             if tokens[index].equals(",", true) {
                 let mut i = index;
                 while i < end_at - 1 {
-                    if tokens[i - 1].get_content().contains(&b'\n') {
+                    if tokens[i].get_content().contains(&b'\n') {
                         new_line_found_since_last_placeholder = true;
                         break;
                     }

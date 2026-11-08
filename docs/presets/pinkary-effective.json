@@ -1,6 +1,6 @@
 {
-    "pint": "cef1b260c611f92e66902d678092e26932c9ea00",
-    "php_cs_fixer": "3.95.17",
+    "pint": "006bd7825eb01daf92959d060b89cd9514fe4253",
+    "php_cs_fixer": "3.95.25",
     "config": "pinkary/pint.json",
     "preset": "laravel",
     "whitespace": {
@@ -336,6 +336,10 @@
         {
             "name": "Pint/laravel_blade",
             "class": "App\\Fixers\\LaravelBlade\\Fixer"
+        },
+        {
+            "name": "Pint/prettier_cache_fingerprint",
+            "class": "App\\Fixers\\PrettierCacheFingerprint"
         }
     ],
     "fixer_count": 147,

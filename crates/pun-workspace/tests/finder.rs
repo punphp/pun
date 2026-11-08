@@ -390,16 +390,22 @@ fn git_selection_matches_pint() {
     );
     let ours = |sel: &GitSelect| listing(&root, git_paths(&load(&root, None).unwrap(), sel));
     // Not a repository.
-    assert!(pint(&root, &["--dirty"]).is_err() || pint(&root, &["--dirty"]).unwrap().1 == 0);
-    // Pint swallows the "only available when using Git" abort: nothing selected.
-    for sel in [
-        GitSelect::Dirty,
-        GitSelect::Diff("main".into()),
-        GitSelect::Staged,
-        GitSelect::Since("main".into()),
+    assert!(
+        pint(&root, &["--dirty"])
+            .unwrap_err()
+            .contains("The [--dirty] option is only available when using Git.")
+    );
+    // Pint aborts `--dirty` and `--diff` with "only available when using Git"; `--since` does too, naming itself.
+    for (sel, flag) in [
+        (GitSelect::Dirty, "dirty"),
+        (GitSelect::Diff("main".into()), "diff"),
+        (GitSelect::Since("main".into()), "since"),
     ] {
-        assert_eq!(ours(&sel).unwrap(), (BTreeSet::new(), 0));
+        let message = format!("The [--{flag}] option is only available when using Git.");
+        assert_eq!(ours(&sel).unwrap_err(), message);
     }
+    // `--staged` outside git: nothing staged, an empty run.
+    assert_eq!(ours(&GitSelect::Staged).unwrap(), (BTreeSet::new(), 0));
 
     git(&root, &["init", "-q"]);
     git(&root, &["add", "."]);
@@ -430,9 +436,16 @@ fn git_selection_matches_pint() {
         ours(&GitSelect::Diff("main".into())),
         pint(&root, &["--diff=main"])
     );
+    // An unknown branch fails `git diff`: Pint aborts with its box.
+    let message = ours(&GitSelect::Diff("nope".into())).unwrap_err();
     assert_eq!(
-        ours(&GitSelect::Diff("nope".into())),
+        message,
+        "The [--diff] option is only available when using Git."
+    );
+    assert!(
         pint(&root, &["--diff=nope"])
+            .unwrap_err()
+            .contains(&message)
     );
     git(&root, &["add", "app/Clean.php"]);
     let staged = ours(&GitSelect::Staged).unwrap();

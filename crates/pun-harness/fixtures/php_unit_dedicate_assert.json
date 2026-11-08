@@ -2,7 +2,7 @@
     "fixer": "php_unit_dedicate_assert",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDedicateAssertFixerTest.php",
-    "case_count": 112,
+    "case_count": 109,
     "tests": [
         {
             "method": "testFix",
@@ -544,6 +544,27 @@
                 },
                 {
                     "provider": "provideFixCases",
+                    "key": "do not fix - assertSame with a single argument",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - count inside an expression",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(2, count($array) - 1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - sizeof in other constructs",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    Foo::assertSame(1, sizeof($a));\n                    $this->assertSame(1, sizeof2(2));\n                    $this->assertSame(1, sizeof::foo);\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
                     "key": "count - assert same",
                     "args": [
                         "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
@@ -748,70 +769,28 @@
                     "provider": "provideFixCases",
                     "key": "count - do not fix 4",
                     "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1);\n    }\n}\n"
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"count\");\n    }\n}\n"
                     ]
                 },
                 {
                     "provider": "provideFixCases",
                     "key": "sizeof - do not fix 4",
                     "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1);\n    }\n}\n"
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"sizeof\");\n    }\n}\n"
                     ]
                 },
                 {
                     "provider": "provideFixCases",
                     "key": "count - do not fix 5",
                     "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"count\");\n    }\n}\n"
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->test(); // $this->assertSame($b, count($a));\n    }\n}\n"
                     ]
                 },
                 {
                     "provider": "provideFixCases",
                     "key": "sizeof - do not fix 5",
                     "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"sizeof\");\n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "count - do not fix 6",
-                    "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->test(); // $this->assertSame($b, count($a));\n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "sizeof - do not fix 6",
-                    "args": [
                         "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->test(); // $this->assertSame($b, sizeof($a));\n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "count - do not fix 7",
-                    "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(2, count($array) - 1);\n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "sizeof - do not fix 7",
-                    "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(2, count($array) - 1);\n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "count - do not fix 8",
-                    "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    Foo::assertSame(1, sizeof($a));\n                    $this->assertSame(1, sizeof2(2));\n                    $this->assertSame(1, sizeof::foo);\n                \n    }\n}\n"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "sizeof - do not fix 8",
-                    "args": [
-                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    Foo::assertSame(1, sizeof($a));\n                    $this->assertSame(1, sizeof2(2));\n                    $this->assertSame(1, sizeof::foo);\n                \n    }\n}\n"
                     ]
                 },
                 {

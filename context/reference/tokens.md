@@ -1,6 +1,6 @@
 # pun-tokens
 
-Rust port of PHP-CS-Fixer's token layer (`PhpCsFixer\Tokenizer`, pinned at v3.95.17, the
+Rust port of PHP-CS-Fixer's token layer (`PhpCsFixer\Tokenizer`, pinned at v3.95.25, the
 version bundled in the oracle Pint). Package `punphp-tokens`, imported as `pun_tokens`.
 
 ## Public API

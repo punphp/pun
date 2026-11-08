@@ -2,7 +2,7 @@
     "fixer": "list_syntax",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ListNotation\\ListSyntaxFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ListNotation/ListSyntaxFixerTest.php",
-    "case_count": 33,
+    "case_count": 31,
     "tests": [
         {
             "method": "testFix",
@@ -119,21 +119,13 @@
                     "provider": "provideFixCases",
                     "key": 9,
                     "args": [
-                        "<?php [$a, $b,, [$c, $d]] = $a;",
-                        "<?php list($a, $b,, list($c, $d)) = $a;"
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": 10,
-                    "args": [
                         "<?php [&$a, $b] = $a;",
                         "<?php list(&$a, $b) = $a;"
                     ]
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 11,
+                    "key": 10,
                     "args": [
                         "<?php [&$a,/* */&$b] = $a;",
                         "<?php list(&$a,/* */&$b) = $a;"
@@ -141,7 +133,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 12,
+                    "key": 11,
                     "args": [
                         "<?php [&$a, $b,, [&$c, $d]] = $a;",
                         "<?php list(&$a, $b,, list(&$c, $d)) = $a;"
@@ -250,17 +242,6 @@
                     "provider": "provideFixCases",
                     "key": "to long - 9",
                     "args": [
-                        "<?php list($a, $b,, list($c, $d)) = $a;",
-                        "<?php [$a, $b,, [$c, $d]] = $a;",
-                        {
-                            "syntax": "long"
-                        }
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": "to long - 10",
-                    "args": [
                         "<?php list(&$a, $b) = $a;",
                         "<?php [&$a, $b] = $a;",
                         {
@@ -270,7 +251,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": "to long - 11",
+                    "key": "to long - 10",
                     "args": [
                         "<?php list(&$a,/* */&$b) = $a;",
                         "<?php [&$a,/* */&$b] = $a;",
@@ -281,7 +262,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": "to long - 12",
+                    "key": "to long - 11",
                     "args": [
                         "<?php list(&$a, $b,, list(&$c, $d)) = $a;",
                         "<?php [&$a, $b,, [&$c, $d]] = $a;",

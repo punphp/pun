@@ -26,4 +26,15 @@ $factory = (new PhpCsFixer\FixerFactory)
     ->useRuleSet($ruleSet)
     ->setWhitespacesConfig(new PhpCsFixer\WhitespacesFixerConfig($config->getIndent(), $config->getLineEnding()));
 
+// Pint's FixerFactory decorates the fixers that rewrite imports so they skip Blade templates (SkipBladeFilesFixer,
+// LaravelBlade\NoUnusedImportsFixer); the exporters report the PHP-CS-Fixer fixer they run on ".php" files.
+function pint_unwrap(PhpCsFixer\Fixer\FixerInterface $fixer): PhpCsFixer\Fixer\FixerInterface
+{
+    while ($fixer instanceof App\Fixers\LaravelBlade\SkipBladeFilesFixer || $fixer instanceof App\Fixers\LaravelBlade\NoUnusedImportsFixer) {
+        $fixer = (fn () => $this->fixer)->call($fixer);
+    }
+
+    return $fixer;
+}
+
 return [$pint, $config, $factory, $preset];

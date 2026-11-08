@@ -13,7 +13,7 @@ $configPath = $argv[1] ?? null;
 
 $src = realpath($pint.'/vendor/friendsofphp/php-cs-fixer/src').'/';
 $fixers = [];
-foreach ($factory->getFixers() as $fixer) {
+foreach (array_map(pint_unwrap(...), $factory->getFixers()) as $fixer) {
     $file = (new ReflectionClass($fixer))->getFileName();
     $fixers[] = [
         'name' => $fixer->getName(),

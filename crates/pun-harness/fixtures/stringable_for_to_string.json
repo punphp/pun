@@ -2,7 +2,7 @@
     "fixer": "stringable_for_to_string",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\StringableForToStringFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/StringableForToStringFixerTest.php",
-    "case_count": 36,
+    "case_count": 34,
     "tests": [
         {
             "method": "testFix",
@@ -206,29 +206,13 @@
                     "provider": "provideFixCases",
                     "key": 24,
                     "args": [
-                        "<?php\n            namespace FooNamespace;\n            class Test implements \\Stringable, Foo\\Stringable\\Bar\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n        ",
-                        "<?php\n            namespace FooNamespace;\n            class Test implements Foo\\Stringable\\Bar\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n        "
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": 25,
-                    "args": [
-                        "<?php\n            namespace FooNamespace;\n            class Test implements \\Stringable, \\Foo\\Stringable\\Bar\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n        ",
-                        "<?php\n            namespace FooNamespace;\n            class Test implements \\Foo\\Stringable\\Bar\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n        "
-                    ]
-                },
-                {
-                    "provider": "provideFixCases",
-                    "key": 26,
-                    "args": [
                         "<?php class Foo implements \\Stringable, FooInterface\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n            ",
                         "<?php class Foo implements FooInterface\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n            "
                     ]
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 27,
+                    "key": 25,
                     "args": [
                         "<?php class Foo extends Bar implements \\Stringable\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n            ",
                         "<?php class Foo extends Bar\n            {\n                public function __toString() { return \"Foo\"; }\n            }\n            "
@@ -236,7 +220,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 28,
+                    "key": 26,
                     "args": [
                         "<?php class Foo implements \\Stringable\n            {\n                public function __TOSTRING() { return \"Foo\"; }\n            }\n            ",
                         "<?php class Foo\n            {\n                public function __TOSTRING() { return \"Foo\"; }\n            }\n            "
@@ -244,7 +228,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 29,
+                    "key": 27,
                     "args": [
                         "<?php\n                namespace Foo;\n                use Bar;\n                class Baz implements \\Stringable, Stringable {\n                    public function __toString() { return \"\"; }\n                }\n            ",
                         "<?php\n                namespace Foo;\n                use Bar;\n                class Baz implements Stringable {\n                    public function __toString() { return \"\"; }\n                }\n            "
@@ -252,7 +236,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 30,
+                    "key": 28,
                     "args": [
                         "<?php new class implements \\Stringable {\n                public function __construct() {}\n                public function __toString() {}\n            };\n            ",
                         "<?php new class {\n                public function __construct() {}\n                public function __toString() {}\n            };\n            "
@@ -260,7 +244,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 31,
+                    "key": 29,
                     "args": [
                         "<?php new class() implements \\Stringable {\n                public function __construct() {}\n                public function __toString() {}\n            };\n            ",
                         "<?php new class() {\n                public function __construct() {}\n                public function __toString() {}\n            };\n            "
@@ -268,7 +252,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 32,
+                    "key": 30,
                     "args": [
                         "<?php\n            class Foo1 implements \\Stringable { public function __toString() { return \"1\"; } }\n            class Foo2 { public function __noString() { return \"2\"; } }\n            class Foo3 implements \\Stringable { public function __toString() { return \"3\"; } }\n            class Foo4 { public function __noString() { return \"4\"; } }\n            class Foo5 { public function __noString() { return \"5\"; } }\n            ",
                         "<?php\n            class Foo1 { public function __toString() { return \"1\"; } }\n            class Foo2 { public function __noString() { return \"2\"; } }\n            class Foo3 { public function __toString() { return \"3\"; } }\n            class Foo4 { public function __noString() { return \"4\"; } }\n            class Foo5 { public function __noString() { return \"5\"; } }\n            "
@@ -276,7 +260,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 33,
+                    "key": 31,
                     "args": [
                         "<?php\n                namespace Foo { class C implements \\Stringable, I { public function __toString() { return \"\"; } }}\n                namespace Bar { class C implements \\Stringable, I { public function __toString() { return \"\"; } }}\n                namespace Baz { class C implements I, \\Stringable { public function __toString() { return \"\"; } }}\n                namespace Qux { class C implements \\Stringable, I { public function __toString() { return \"\"; } }}\n            ;\n            ",
                         "<?php\n                namespace Foo { class C implements I { public function __toString() { return \"\"; } }}\n                namespace Bar { class C implements \\Stringable, I { public function __toString() { return \"\"; } }}\n                namespace Baz { class C implements I, \\Stringable { public function __toString() { return \"\"; } }}\n                namespace Qux { class C implements I { public function __toString() { return \"\"; } }}\n            ;\n            "
@@ -284,7 +268,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 34,
+                    "key": 32,
                     "args": [
                         "<?php\n                namespace Foo { use Stringable as Stringy; class C {} }\n                namespace Bar { class C implements \\Stringable, Stringy { public function __toString() { return \"\"; } }}\n            ;\n            ",
                         "<?php\n                namespace Foo { use Stringable as Stringy; class C {} }\n                namespace Bar { class C implements Stringy { public function __toString() { return \"\"; } }}\n            ;\n            "
@@ -292,7 +276,7 @@
                 },
                 {
                     "provider": "provideFixCases",
-                    "key": 35,
+                    "key": 33,
                     "args": [
                         "<?php\n            namespace Foo;\n            use Stringable;\n            class Bar {\n                public function foo() {\n                    new class () implements Stringable {\n                        public function __toString() { return \"\"; }\n                    };\n                }\n            }\n        "
                     ]

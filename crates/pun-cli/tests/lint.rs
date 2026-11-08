@@ -152,7 +152,9 @@ fn fix_off_keeps_a_rule_report_only() {
     assert_eq!(read(&d, "a.php"), "<?php\n\n$a = !true;\n");
     assert_eq!(
         lines,
-        ["a.php:3:6 lint/complexity/no-negated-boolean-literal Use `false` instead of negating a boolean literal."]
+        [
+            "a.php:3:6 lint/complexity/no-negated-boolean-literal Use `false` instead of negating a boolean literal."
+        ]
     );
     assert_eq!(code, Some(1));
 }
@@ -453,7 +455,7 @@ fn problems_in_every_report() {
     assert_eq!(
         plain(&d, &["-v", "--format=json"], &[]),
         (
-            r#"{"about":"PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.","files":[{"name":"a.php","appliedFixers":["lint\/strings\/no-single-argument-sprintf","lint\/security\/no-eval"]}],"time":{"total":0},"memory":0}"#.into(),
+            r#"{"about":"PHP CS Fixer 3.95.25 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.","files":[{"name":"a.php","appliedFixers":["lint\/strings\/no-single-argument-sprintf","lint\/security\/no-eval"]}],"time":{"total":0},"memory":0}"#.into(),
             Some(1)
         )
     );

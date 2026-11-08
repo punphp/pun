@@ -16,7 +16,7 @@ if (in_array('--gitlab', $argv, true)) {
     exit;
 }
 $factory = (new PhpCsFixer\FixerFactory)->registerBuiltInFixers()->registerCustomFixers($config->getCustomFixers());
-foreach ($factory->getFixers() as $f) {
+foreach (array_map(pint_unwrap(...), $factory->getFixers()) as $f) {
     $out[$f->getName()] = [
         'priority' => $f->getPriority(),
         'risky' => $f->isRisky(),

@@ -55,41 +55,11 @@
         "expected": "<div class=\"a\">x</div>"
     },
     {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "<div>\n@verbatim @foo(\n    a\n) @endverbatim\n@php(foo(\n    1\n))\n@php $a = foo(\n    1\n); @endphp\n@if(\n    $a\n)\n@foo(match ($x) {\n    1 => 2\n})\n@foo($f(1)(\n    2\n), 1 + (\n    3\n))\n@foo(\n    [1, 2], // c (\n    # d (\n    #[Attr]\n    /* e (\n    */\n    <<<EOT\n    x (\n    EOT\n)\n@foo(\n    <<<\"EOT\"\n    x\n      EOTX\n    EOT\n)\n@foo(<<< EOT\n    y\nEOT, <<<\n)\n@bar(`x` \"y\\\"\" \n    1\n)\n@foo(\"abc\n</div>",
-        "expected": "<div>\n@verbatim @foo(\n    a\n) @endverbatim\n@php(foo(\n    1,\n))\n@php $a = foo(\n    1\n); @endphp\n@if(\n    $a\n)\n@foo(match ($x) {\n    1 => 2\n})\n@foo($f(1)(\n    2,\n), 1 + (\n    3\n))\n@foo(\n    [1, 2], // c (\n    # d (\n    #[Attr]\n    /* e (\n    */\n    <<<EOT\n    x (\n    EOT,\n)\n@foo(\n    <<<\"EOT\"\n    x\n      EOTX\n    EOT,\n)\n@foo(<<< EOT\n    y\nEOT, <<<,\n)\n@bar(`x` \"y\\\"\" \n    1,\n)\n@foo(\"abc\n</div>"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@verbatim @foo(\n    a,\n)",
-        "expected": "@verbatim @foo(\n    a,\n)"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@php @foo(\n    a\n)",
-        "expected": "@php @foo(\n    a\n)"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@foo(<<<EOT",
-        "expected": "@foo(<<<EOT"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@foo(\n    1, // x",
-        "expected": "@foo(\n    1, // x"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "<?php echo 1; @foo(\n  1\n) <?php x {{-- y {!! z {{ w @@a b@c @ @foo (\n    1\n)",
-        "expected": "<?php echo 1; @foo(\n  1\n) <?php x {{-- y {!! z {{ w @@a b@c @ @foo (\n    1\n)"
-    },
-    {
         "formatter": "EmbeddedBladeMasker",
         "input": "<div>__PINT_BLADE_0__</div>\n<script>{{ $first }}\nconst a = \"{{ $x }}\"; const b = 'a\\'b';\nx@@y; a@b.c; @ ; @php(foo(1)) @php $a = 1; @endphp\n@if($a) @if($b) x@@y a@b @ z @endif @foo(1) y @endif\n@empty($a) z @endempty\n@empty x\nconst c = `t {{ $y }}`;\n@json($a)\n{{-- comment --}}\n</script>\n<style>\na { color: {{ $c }}; }\n{{ $d }}\n.x { @if($e) b: c; @endif }\n</style>\n<script>@php(foo(</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>'unterminated {{ $q }}</script>",
-        "expected": "<div>__PINT_BLADE_0__</div>\n<script>__PINT_BLADE_1__;\nconst a = __PINT_BLADE_2__; const b = 'a\\'b';\nx@@y; a@b.c; @ ; __PINT_BLADE_3__; __PINT_BLADE_4__\n__PINT_BLADE_5__;\n__PINT_BLADE_6__;\n@empty x\nconst c = __PINT_BLADE_7__;\n@json($a)\n__PINT_BLADE_8__;\n</script>\n<style>\na { color: __PINT_BLADE_9__; }\n--pint-blade-10: 1;\n.x { --pint-blade-11: 1; }\n</style>\n<script>__PINT_BLADE_12__;</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>__PINT_BLADE_13__</script>",
+        "expected": "<div>__PINT_BLADE_0__</div>\n<script>__PINT_BLADE_1__;\nconst a = __PINT_BLADE_2__; const b = 'a\\'b';\nxzzy; a@b.c; @ ; __PINT_BLADE_3__; __PINT_BLADE_4__\n__PINT_BLADE_5__;\n__PINT_BLADE_6__;\n@empty x\nconst c = __PINT_BLADE_7__;\n@json($a)\n__PINT_BLADE_8__;\n</script>\n<style>\na { color: __PINT_BLADE_9__; }\n--pint-blade-10: 1;\n.x { --pint-blade-11: 1; }\n</style>\n<script>__PINT_BLADE_12__;</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>__PINT_BLADE_13__</script>",
         "post_input": "x __PINT_BLADE_1__ __PINT_BLADE_1__",
-        "expected_post": "<div>__PINT_BLADE_0__</div>\n<script>{{ $first }}\nconst a = \"{{ $x }}\"; const b = 'a\\'b';\nx@@y; a@b.c; @ ; @php(foo(1)) @php $a = 1; @endphp\n@if($a) @if($b) x@@y a@b @ z @endif @foo(1) y @endif\n@empty($a) z @endempty\n@empty x\nconst c = `t {{ $y }}`;\n@json($a)\n{{-- comment --}}\n</script>\n<style>\na { color: {{ $c }}; }\n{{ $d }}\n.x { @if($e) b: c; @endif }\n</style>\n<script>@php(foo(</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>'unterminated {{ $q }}</script>"
+        "expected_post": null
     },
     {
         "formatter": "StripSensitiveLeadingBlankLines",
@@ -217,16 +187,6 @@
         "expected": "x\n<div"
     },
     {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@foo(<<<EOT\nx\nEOT",
-        "expected": "@foo(<<<EOT\nx\nEOT"
-    },
-    {
-        "formatter": "DirectiveTrailingCommas",
-        "input": "@foo(<<<EOT\nx\n  EOT",
-        "expected": "@foo(<<<EOT\nx\n  EOT"
-    },
-    {
         "formatter": "NotOperatorSpacing",
         "input": "<script>",
         "expected": "<script>"
@@ -266,5 +226,47 @@
         "formatter": "PhpBlockFormatting",
         "input": "@foo(1 /* ( */)",
         "expected": "@foo(1 /* ( */)"
+    },
+    {
+        "formatter": "EscapedDirectiveSpacing",
+        "input": "<p>Text @@if x and a@@b and c@@d</p>\n",
+        "expected": "<p>Text @@if x and a@@b and c@@d</p>\n",
+        "post_input": "<p>Text@@if x and a@@b and c @@d</p>\n",
+        "expected_post": "<p>Text @@if x and a@@b and c @@d</p>\n"
+    },
+    {
+        "formatter": "AlpineMaskPatterns",
+        "input": "<input x-mask=\"9999-999\" x-mask.dynamic=a x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = 'aa' >\n",
+        "expected": "<input x-mask=\"pm0_____\" x-mask.dynamic=pm1_ x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = 'pm2_' >\n",
+        "post_input": "<input x-mask=\"9999-999\" x-mask.dynamic=a x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = 'aa' >\n",
+        "expected_post": null
+    },
+    {
+        "formatter": "AlpineMaskPatterns",
+        "input": "<input x-mask=\"9999-999\" x-mask.dynamic=a x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = 'aa' >\n",
+        "expected": "<input x-mask=\"pm0_____\" x-mask.dynamic=pm1_ x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = 'pm2_' >\n",
+        "post_input": "<input x-mask=\"pm0_____\" x-mask.dynamic=pm1_ x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = \"pm2_\">\n",
+        "expected_post": "<input x-mask=\"9999-999\" x-mask.dynamic=a x-mask:dynamic=\"$money($input)\" data-x-mask=\"1\"><input X-MASK = \"aa\">\n"
+    },
+    {
+        "formatter": "AlpineMaskPatterns",
+        "input": "<p>pm0_ x-mask=\"pm0_\"</p>\n",
+        "expected": "<p>pm0_ x-mask=\"pm0__\"</p>\n",
+        "post_input": "<p>pm0_ x-mask=\"pm0_\"</p>\n",
+        "expected_post": null
+    },
+    {
+        "formatter": "EmbeddedBladeMasker",
+        "input": "<script>\nlet a = \"x@@y\"; @@if b @@endif\nlet c = \"@@ {{ $d }} @@\";\n</script>\n<style>.a{content:\"@@\"}</style>\nzz 0z\n",
+        "expected": "<script>\nlet a = \"x0zzy\"; zzzif b zzzendif\nlet c = __PINT_BLADE_0__;\n</script>\n<style>.a{content:\"0zz\"}</style>\nzz 0z\n",
+        "post_input": "<script>\nlet a = \"x@@y\"; @@if b @@endif\nlet c = \"@@ {{ $d }} @@\";\n</script>\n<style>.a{content:\"@@\"}</style>\nzz 0z\n",
+        "expected_post": null
+    },
+    {
+        "formatter": "EmbeddedBladeMasker",
+        "input": "<script>\nlet a = \"x@@y\"; @@if b @@endif\nlet c = \"@@ {{ $d }} @@\";\n</script>\n<style>.a{content:\"@@\"}</style>\nzz 0z\n",
+        "expected": "<script>\nlet a = \"x0zzy\"; zzzif b zzzendif\nlet c = __PINT_BLADE_0__;\n</script>\n<style>.a{content:\"0zz\"}</style>\nzz 0z\n",
+        "post_input": "<script>\nlet a = \"x0zzy\"; zzzif b zzzendif\nlet c = __PINT_BLADE_0__;\n</script>\n<style>.a{content:\"0zz\"}</style>\nzz 0z\n",
+        "expected_post": "<script>\nlet a = \"x@@y\"; @@if b @@endif\nlet c = \"@@ {{ $d }} @@\";\n</script>\n<style>.a{content:\"@@\"}</style>\nzz 0z\n"
     }
 ]

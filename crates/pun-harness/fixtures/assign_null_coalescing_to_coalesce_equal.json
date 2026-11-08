@@ -2,7 +2,7 @@
     "fixer": "assign_null_coalescing_to_coalesce_equal",
     "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\AssignNullCoalescingToCoalesceEqualFixerTest",
     "test_file": "php-cs-fixer/tests/Fixer/Operator/AssignNullCoalescingToCoalesceEqualFixerTest.php",
-    "case_count": 34,
+    "case_count": 36,
     "tests": [
         {
             "method": "testFix",
@@ -211,6 +211,21 @@
                     "key": "do not fix",
                     "args": [
                         "<?php\n                $a = 1 + $a ?? $b;\n                $b + $a = $a ?? 1;\n                $b = $a ?? 1;\n                $b = $a ?? $b;\n                $d = $a + $c ; $c ?? $c;\n                $a = ($a ?? $b) && $c; // just to be sure\n                $a = (string) $a ?? 1;\n                $a = 1 ?? $a;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix, no \";\", \"?\" nor close tag after \"??\"",
+                    "args": [
+                        "<?php\n                foreach ($a ?? [] as $b) {}\n                while ($a ?? false) {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "assignment, no \";\", \"?\" nor close tag after \"??\"",
+                    "args": [
+                        "<?php if ($a ??= 1) {}",
+                        "<?php if ($a = $a ?? 1) {}"
                     ]
                 },
                 {

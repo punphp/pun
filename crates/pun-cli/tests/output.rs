@@ -964,7 +964,7 @@ fn gitlab_custom_rule() {
     );
     assert_eq!(
         v[0]["content"]["body"],
-        "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.\nCheck performed with a custom rule."
+        "PHP CS Fixer 3.95.25 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.\nCheck performed with a custom rule."
     );
     // md5("t.phpPun/no_only")
     assert_eq!(v[0]["fingerprint"], "147051f627619bd7f4d79ce3046a3395");
@@ -1018,6 +1018,9 @@ fn prettier_preflight_like_pint() {
     );
     let mut flag = tree();
     flag.push(("bun.lock", ""));
+    // A Bun lock file runs the probe with Bun (Pint 1.32), which would otherwise resolve the packages from its global
+    // auto-install cache.
+    flag.push(("bunfig.toml", "[install]\nauto = \"disable\"\n"));
     cx.same_abort(
         &flag,
         &["--blade", "--test"],
@@ -1060,7 +1063,7 @@ fn prettier_preflight_like_pint() {
     let mut old = t.clone();
     let manifests: Vec<(String, String)> = [
         ("prettier", "2.1.0"),
-        ("prettier-plugin-blade", "3.2.9"),
+        ("prettier-plugin-blade", "3.3.9"),
         ("prettier-plugin-tailwindcss", "0.9.1"),
     ]
     .iter()
@@ -1076,10 +1079,10 @@ fn prettier_preflight_like_pint() {
     .collect();
     old.extend(manifests.iter().map(|(a, b)| (a.as_str(), b.as_str())));
     old.push(("yarn.lock", ""));
-    // ^3.2.2 takes 3.2.9; ^0.8.0 stops before 0.9.0.
-    cx.same_abort(&old, &["--test"], PLAIN, "✖ `format/laravel/blade` needs newer prettier packages: prettier 2.1.0 (needs ^3.8.4), prettier-plugin-tailwindcss 0.9.1 (needs ^0.8.0)\n  update them: yarn add -D prettier@^3.8.4 prettier-plugin-tailwindcss@^0.8.0\n");
+    // ^3.3.3 takes 3.3.9; ^0.8.1 stops before 0.9.0.
+    cx.same_abort(&old, &["--test"], PLAIN, "✖ `format/laravel/blade` needs newer prettier packages: prettier 2.1.0 (needs ^3.9.6), prettier-plugin-tailwindcss 0.9.1 (needs ^0.8.1)\n  update them: yarn add -D prettier@^3.9.6 prettier-plugin-tailwindcss@^0.8.1\n");
     cx.same_abort(&old, &["--test", "--format=json"], PLAIN, "");
-    // No Node.js on PATH.
+    // No Node.js (or Bun) on PATH.
     let bin = scratch("out", "nonode");
     for b in ["php", "sh"] {
         std::os::unix::fs::symlink(which(b), bin.join(b)).unwrap();
@@ -1088,7 +1091,7 @@ fn prettier_preflight_like_pint() {
         path: Some(bin.to_str().unwrap()),
         ..PLAIN
     };
-    cx.same_abort(&t, &["--test"], no_node, "✖ `format/laravel/blade` needs Node.js, and there is none on PATH\n  install Node.js, or turn `format/laravel/blade` off in pun.toml\n");
+    cx.same_abort(&t, &["--test"], no_node, "✖ `format/laravel/blade` needs a JavaScript runtime (Node.js or Bun), and there is none on PATH\n  install Node.js or Bun, or turn `format/laravel/blade` off in pun.toml\n");
     cx.same_abort(&t, &["--test", "--format=json"], no_node, "");
 }
 

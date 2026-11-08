@@ -1,9 +1,9 @@
-//! Pint's EnsurePrettierIsConfigured: the Node and Prettier checks `Pint/laravel_blade` needs before a run.
+//! Pint's EnsurePrettierIsConfigured: the JavaScript runtime and Prettier checks `Pint/laravel_blade` needs before a run.
 use crate::report::Abort;
 use std::path::Path;
 
 /// EnsurePrettierIsConfigured, run before anything else when pint.json sets `"Pint/laravel_blade": true` (or
-/// `--blade`): Node must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
+/// `--blade`): the JavaScript runtime (Bun for a project with a Bun lock file, else Node) must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
 /// from the project at the required versions. Returns the abort (Pint's message and box) when it would abort.
 /// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
 pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
@@ -11,19 +11,19 @@ pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
         return None;
     }
     const REQUIRED: [(&str, &str); 3] = [
-        ("prettier", "^3.8.4"),
-        ("prettier-plugin-blade", "^3.2.2"),
-        ("prettier-plugin-tailwindcss", "^0.8.0"),
+        ("prettier", "^3.9.6"),
+        ("prettier-plugin-blade", "^3.3.3"),
+        ("prettier-plugin-tailwindcss", "^0.8.1"),
     ];
     // The preload prints the version probe before the same Node process starts loading Prettier.
     let probes = pun_fixers::prettier::probe(&REQUIRED.map(|r| r.0));
     let Some(probes) = probes else {
         let mut abort = Abort::pint(
-            "The rules enabled in your pint configuration require Node.js to be installed.",
-            Some("install Node.js, or turn `format/laravel/blade` off in pun.toml".into()),
+            "The rules enabled in your pint configuration require a JavaScript runtime (Node.js or Bun) to be installed.",
+            Some("install Node.js or Bun, or turn `format/laravel/blade` off in pun.toml".into()),
         );
         abort.error.message =
-            "`format/laravel/blade` needs Node.js, and there is none on PATH".into();
+            "`format/laravel/blade` needs a JavaScript runtime (Node.js or Bun), and there is none on PATH".into();
         return Some(abort);
     };
     let manager = if root.join("bun.lock").exists() || root.join("bun.lockb").exists() {

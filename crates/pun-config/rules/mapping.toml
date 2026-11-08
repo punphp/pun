@@ -35,7 +35,7 @@
 
 [meta]
 schema = 2
-upstream = { php-cs-fixer = "3.95.17", pint = "1.30 (oracle .oracle/pint)", rector = "2.6.1", rector-laravel = "driftingly/rector-laravel 2.5.0", pest-plugin-rector = "5.x-dev@1a4b6b7", rector-phpunit = "dev-main@e68085d (bundled with Rector 2.6.1)", phpstan = "2.3.1", phpstan-strict-rules = "2.0.12", phpstan-deprecation-rules = "2.0.5", larastan = "3.10.0", mago = "1.57.0" }
+upstream = { php-cs-fixer = "3.95.25", pint = "1.32.1 (oracle .oracle/pint)", rector = "2.6.1", rector-laravel = "driftingly/rector-laravel 2.5.0", pest-plugin-rector = "5.x-dev@1a4b6b7", rector-phpunit = "dev-main@e68085d (bundled with Rector 2.6.1)", phpstan = "2.3.1", phpstan-strict-rules = "2.0.12", phpstan-deprecation-rules = "2.0.5", larastan = "3.10.0", mago = "1.57.0" }
 ecosystems = ["laravel", "pest", "phpunit", "doctrine"]
 sets = ["dead-code", "modernize", "code-quality", "types", "early-return", "privatization", "naming", "coding-style"]
 presets = { format = ["laravel", "psr12", "empty"], analyse = ["basic", "essential", "recommended", "strict", "max"] }
@@ -2139,6 +2139,7 @@ yoda_style = { pun = "format/control-flow/yoda", risky = false, pint_presets = [
 [upstream.pint]
 "Pint/laravel_blade" = { pun = "format/laravel/blade", options = "same", status = "decided" }
 "Pint/phpdoc_type_annotations_only" = { pun = "lint/laravel/require-phpdoc-types-only", options = "same", status = "decided" }
+"Pint/prettier_cache_fingerprint" = { drop = "a no-op that carries Prettier package versions into Pint's cache signature; Pun has no cache", status = "decided" }
 
 [upstream.pun]
 "Pun/final_controller" = { pun = "lint/laravel/require-final-controller", options = "same", status = "decided" }

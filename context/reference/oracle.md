@@ -7,10 +7,10 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 
 | component | version | ref |
 |---|---|---|
-| PHP | 8.5.11 (system, NTS) | |
+| PHP | 8.5.12 (system, NTS) | |
 | Composer | 2.10.3 | |
-| laravel/pint | 1.29.3, `dev-feat/blade-support` (what Pinkary's composer.lock pins) | `cef1b260c611f92e66902d678092e26932c9ea00` |
-| friendsofphp/php-cs-fixer | v3.95.17 (bundled in Pint's PHAR and its composer.lock) | `0ee88422118f3cc59c8c3def222ba7f1493b6d5b` |
+| laravel/pint | v1.32.1 (the latest release; it ships the Blade formatter and `Pint/phpdoc_type_annotations_only`) | `006bd7825eb01daf92959d060b89cd9514fe4253` |
+| friendsofphp/php-cs-fixer | v3.95.25 (bundled in Pint's PHAR and its composer.lock) | `2cdfc1f3daf173d83a1ebb6177949b58c95de6ff` |
 | rector/rector | 2.6.1 (what Pinkary's composer.lock pins; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
 | phpstan/phpstan for Rector | 2.2.7 (both Rector oracle locks and Pinkary's lock; separate from the analyse oracle's 2.3.1) | |
 | rectorphp/rector-src | 2.6.1 (source and `rules-tests/` fixtures in `.oracle/rector`) | `16be33c1c2364d51038752a299fce01043d42576` |
@@ -20,15 +20,19 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | prettier / prettier-plugin-blade / prettier-plugin-tailwindcss | 3.9.10 / 3.3.3 / 0.8.1 (only for `Pint/laravel_blade`, installed into `corpus/pinkary/node_modules`) | |
 | Node | v22.23.3 (system) | |
 
-- Oracle binary: `php .oracle/pint/builds/pint` (the committed PHAR, which is what Pinkary runs).
+- Oracle binary: `php .oracle/pint/builds/pint` (the PHAR committed at the tag).
 - Pint source with dev deps: `.oracle/pint` (used by `scripts/pint-boot.php` to resolve configs).
 - PHP-CS-Fixer directly: `php .oracle/php-cs-fixer/php-cs-fixer` (source checkout with `tests/`
   and PHPUnit, at the bundled ref). The copy inside Pint is `.oracle/pint/vendor/friendsofphp/php-cs-fixer`.
 - Rector: `php .oracle/rector-bin/vendor/bin/rector process --config <rector.php>` (see "Rector" below). Rule
   sources and fixtures: `.oracle/rector/rules/` and `.oracle/rector/rules-tests/`.
 - Pint overrides `PhpCsFixer\FixerFactory` (`.oracle/pint/overrides/FixerFactory.php`) to register
-  two custom fixers: `Pint/laravel_blade` (Prettier via Node) and `Pint/phpdoc_type_annotations_only`
-  (priority 56, not enabled by any preset).
+  three custom fixers: `Pint/laravel_blade` (Prettier via Node, or Bun in a project with a Bun lock file),
+  `Pint/phpdoc_type_annotations_only` (priority 56, not enabled by any preset) and `Pint/prettier_cache_fingerprint`
+  (a no-op that carries the Prettier package versions into the cache signature; Pun has no port, nothing enables it).
+  The override also wraps `no_unused_imports`, `fully_qualified_strict_types`, `global_namespace_import` and
+  `declare_strict_types` so they skip `*.blade.php` files (Pun: `BLADE_UNSAFE` in `pun-format`). Pint 1.32 caches
+  results (`setUsingCache(true)`, cache file in the system temp dir); it changes no output.
 
 ## Scripts
 
@@ -120,6 +124,9 @@ Intentional differences:
   Pun doesn't print it (cli-parity.sh strips it before comparing).
 - Missing prettier packages for `Pint/laravel_blade`: interactive Pint asks whether to install them; Pun always
   takes the non-interactive answer (no) and aborts with Pint's message.
+- Cache: Pint 1.32 caches (`setUsingCache(true)`) and writes PHP-CS-Fixer's cache file to `--cache-file`, pint.json's
+  `cache-file` or the system temp dir. The file records the PHP runtime's version, and Pun has no cache, so Pun writes
+  no such file; every run checks every file. Output is the same: a dry run caches no file that needs fixing.
 - Exceptions other than Pint's `abort()` (unreadable path, bad config) are rendered by Symfony with an
   "In File.php line N:" header naming PHP source; Pun prints the message without that box.
 

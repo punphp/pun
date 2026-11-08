@@ -138,20 +138,9 @@ fn php_int(s: &str) -> usize {
         })
 }
 
-/// OutputFormatter::escape.
+/// OutputFormatter::escape (symfony/console 7.4.18: every `<` and `>`, even after a backslash).
 pub(crate) fn escape(text: &str) -> String {
-    static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"([^\\]|^)([<>])").unwrap());
-    let mut out = Vec::with_capacity(text.len() + 8);
-    let mut last = 0;
-    let b = text.as_bytes();
-    for c in RE.captures_iter(b).flatten() {
-        let (g1, g2) = (c.get(1).unwrap(), c.get(2).unwrap());
-        out.extend_from_slice(&b[last..g1.end()]);
-        out.push(b'\\');
-        out.extend_from_slice(g2.as_bytes());
-        last = g2.end();
-    }
-    out.extend_from_slice(&b[last..]);
+    let mut out = text.replace('<', "\\<").replace('>', "\\>").into_bytes();
     // escapeTrailingBackslash: trailing backslashes become NULs, which format() turns back into backslashes.
     let n = out.iter().rev().take_while(|&&c| c == b'\\').count();
     if n > 0 {
@@ -404,7 +393,8 @@ mod tests {
     fn escapes_like_symfony() {
         // OutputFormatter::escape("…") under PHP.
         assert_eq!(escape("<?xml a=\"<b>\"?>"), "\\<?xml a=\"\\<b\\>\"?\\>");
-        assert_eq!(escape("a<<b \\<c>"), "a\\<<b \\<c\\>");
+        assert_eq!(escape("a<<b \\<c>"), "a\\<\\<b \\\\<c\\>");
+        assert_eq!(format(&escape("a \\<b>"), true), "a \\<b>");
         assert_eq!(escape("x\\\\"), "x\0\0");
         assert_eq!(format(&escape("<a> x\\"), true), "<a> x\\");
     }

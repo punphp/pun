@@ -153,7 +153,7 @@ fn origin(thrown: Thrown, nested: bool) -> (&'static str, u32, &'static str, boo
         ),
         Thrown::NotWritable => at(
             "vendor/friendsofphp/php-cs-fixer/src/Runner/Runner.php",
-            732,
+            736,
             "Symfony\\Component\\Filesystem\\Exception\\IOException",
         ),
         Thrown::NotEnabled => at(
@@ -163,7 +163,7 @@ fn origin(thrown: Thrown, nested: bool) -> (&'static str, u32, &'static str, boo
         ),
         Thrown::Analysing => at(
             "vendor/friendsofphp/php-cs-fixer/src/Runner/Runner.php",
-            598,
+            602,
             "RuntimeException",
         ),
         Thrown::UndefinedArrayKey => at(

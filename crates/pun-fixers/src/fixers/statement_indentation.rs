@@ -252,6 +252,7 @@ impl StatementIndentationFixer {
             if is_property_start || token.is_given_kind(BLOCK_SIGNATURE_FIRST_TOKENS) {
                 let mut last_whitespace_index: Option<usize> = None;
                 let mut closing_parenthesis_index: Option<usize> = None;
+                let mut ternary_level = 0;
 
                 end_index = index + 1;
                 let max = tokens.count();
@@ -279,7 +280,18 @@ impl StatementIndentationFixer {
                     ) {
                         break;
                     }
+                    if end_token.equals("?", true) {
+                        ternary_level += 1;
+                        end_index += 1;
+                        continue;
+                    }
                     if end_token.equals(":", true) {
+                        // a ternary's colon, not a block start
+                        if ternary_level > 0 {
+                            ternary_level -= 1;
+                            end_index += 1;
+                            continue;
+                        }
                         if token.is_given_kind(&[T_CASE, T_DEFAULT]) {
                             case_block_starts.insert(end_index);
                         } else {

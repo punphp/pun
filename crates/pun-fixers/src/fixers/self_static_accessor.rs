@@ -98,12 +98,12 @@ fn fix_classy(tokens: &mut Tokens, index: usize) -> usize {
         if !tokens[index].is_kind(Kind::T_STATIC) {
             continue;
         }
-        let static_index = index;
-        index = tokens.get_next_meaningful_token(index).unwrap();
-        if !tokens[index].is_kind(Kind::T_DOUBLE_COLON) {
+        let next_index = tokens.get_next_meaningful_token(index).unwrap();
+        if !tokens[next_index].is_kind(Kind::T_DOUBLE_COLON) {
             continue;
         }
-        tokens.set(static_index, Token::new(Kind::T_STRING, b"self".to_vec()));
+        tokens.set(index, Token::new(Kind::T_STRING, b"self".to_vec()));
+        index = next_index;
     }
     index
 }

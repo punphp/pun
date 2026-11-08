@@ -112,7 +112,8 @@ impl ClassDefinitionFixer {
             tokens.get_prev_non_whitespace(def.open, None).unwrap()
         };
         if def.anonymous_class && !self.inline_constructor_arguments {
-            if !tokens[end].equals(")", true) {
+            // anonymous class with `extends` and/or `implements`
+            while !tokens[end].equals(")", true) && !tokens[end].is_kind(T_CLASS) {
                 let start = tokens.get_prev_meaningful_token(end).unwrap();
                 self.make_classy_definition_single_line(tokens, start, end);
                 end = start;
