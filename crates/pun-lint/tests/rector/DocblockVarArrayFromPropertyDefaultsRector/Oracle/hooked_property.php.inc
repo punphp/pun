@@ -6,15 +6,3 @@ class SomeClass
         set => $value;
     }
 }
------
-<?php
-
-class SomeClass
-{
-    /**
-     * @var string[]
-     */
-    public array $items = ['a'] {
-        set => $value;
-    }
-}

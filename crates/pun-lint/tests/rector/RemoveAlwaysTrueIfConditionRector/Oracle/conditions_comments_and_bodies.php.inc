@@ -116,7 +116,7 @@ final class Runner
         // inside
         echo 1;
         echo 2;
-        if ($n > 2) {
+        if (is_int($n) && $n > 2) {
             echo 3;
         } else {
             echo 4;

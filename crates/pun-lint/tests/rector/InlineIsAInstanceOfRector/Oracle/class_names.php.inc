@@ -82,7 +82,7 @@ final class C extends Unknown
         $e = is_a($o, parent::class);
         $f = is_a($open->foo(), Open::class);
         $g = is_a($open->bar(), Open::class);
-        $h = is_a($n ?? $open, Open::class);
+        $h = ($n ?? $open) instanceof \App\Open;
         $i = ($open ?? $n) instanceof \App\Open;
         $j = is_a($open ?? $open, Open::class);
         $k = $o instanceof \App\C;

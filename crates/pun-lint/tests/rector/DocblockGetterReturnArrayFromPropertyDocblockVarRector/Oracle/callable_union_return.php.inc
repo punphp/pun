@@ -27,7 +27,7 @@ final class SomeClass
     private array $items = [];
 
     /**
-     * @return array<int, callable(int $a, string &...$b=):((int|string))>
+     * @return array<int, callable(int $a, string &...$b=): (int|string)>
      */
     public function getItems(): array
     {

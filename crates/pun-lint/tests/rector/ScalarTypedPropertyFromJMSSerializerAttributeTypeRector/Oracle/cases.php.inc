@@ -100,7 +100,7 @@ final class Scalars
     #[Type('mixed')]
     private $mixed;
     #[Type('list')]
-    private $list;
+    private ?array $list = null;
     #[Type('array-key')]
     private $key;
     #[Type('callable')]

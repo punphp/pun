@@ -244,11 +244,6 @@ abstract class Base
 
 class Child extends Base
 {
-    public function fails(): never
-    {
-        parent::fails();
-    }
-
     public function union(string|int $a)
     {
         parent::union($a);

@@ -64,7 +64,7 @@ final class NativeHashes
         return count($a);
     }
 
-    public function split(string $s)
+    public function split(string $s): array|false
     {
         return preg_split('/,/', $s);
     }

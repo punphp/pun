@@ -16,8 +16,5 @@ final class Keyed
      */
     private array $map = ['a' => 1, 'b' => 2];
 
-    /**
-     * @var array<int, array<string, float>>
-     */
     protected array $nested = [['x' => 1.5]];
 }

@@ -31,11 +31,11 @@ test('a', function (array $list, iterable $it, string $s, $untyped, \Traversable
     expect($list)->toContainOnlyInstancesOf(User::class);
     expect($it)->toContainOnlyInstancesOf(User::class);
     expect($s)->each->toBeInstanceOf(User::class);
-    expect($untyped)->toContainOnlyInstancesOf(User::class);
+    expect($untyped)->each->toBeInstanceOf(User::class);
     expect($t)->toContainOnlyInstancesOf(User::class);
-    expect($c)->toContainOnlyInstancesOf(User::class);
+    expect($c)->each->toBeInstanceOf(User::class);
     expect($ai)->toContainOnlyInstancesOf(User::class);
-    expect($undefined)->toContainOnlyInstancesOf(User::class);
+    expect($undefined)->each->toBeInstanceOf(User::class);
     expect($list)->not->each->toBeInstanceOf(User::class);
     expect($list)->each->not->toBeInstanceOf(User::class);
     expect($list)->each->toBeInstanceOf(User::class, 'x');

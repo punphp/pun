@@ -1,10 +1,15 @@
 //! Rector's own fixtures for the rules built on Rector's type comparison (`TypeComparator`, `StaticTypeMapper`) and
 //! for `RemoveUnusedVariableAssignRector`,
-//! copied verbatim from rector-src 2.6.1 (`.oracle/rector`, rules-tests/...) into tests/rector/<Rector class>/Fixture,
-//! with the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`,
+//! copied verbatim from rector-src 2.8.4 (`.oracle/rector`, rules-tests/...) into tests/rector/<Rector class>/Fixture,
+//! with the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.8.4 (`.oracle/rector-ecosystem`,
 //! the rule alone, `phpVersion(80400)` unless the test says otherwise) wrote for them. Each one must pass as
 //! `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text edits must give the
 //! expected bytes before format too.
+//!
+//! RemoveUnusedVariableAssignRector/Pun/statements.php.inc: Rector 2.8.4 reruns the rule on the same AST until it
+//! stops changing, and keeps `$ref = 2;` after removing the closure that took `$ref` by reference, as the variable keeps
+//! the `IS_BYREF_VAR` attribute set when the file was parsed; Pun's next fix round parses the new source, finds no
+//! reference and removes the assignment.
 
 mod lint_c;
 

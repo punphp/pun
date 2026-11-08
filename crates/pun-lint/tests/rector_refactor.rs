@@ -1,13 +1,25 @@
-//! Rector 2.6.1's own fixtures for the ported `refactor` codemods and the other Rector rules of the batch, copied verbatim from rector-src (rules-tests/...)
+//! Rector 2.8.4's own fixtures for the ported `refactor` codemods and the other Rector rules of the batch, copied verbatim from rector-src (rules-tests/...)
 //! into tests/rector/<Rector class>/Fixture, with the fixture's `Source/` classes. Each rule is configured through
 //! `Rule::configure` with the options `pun migrate` writes for the fixture's config/configured_rule.php. Oracle/ holds
-//! extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`, the rule alone with the same configuration,
+//! extra inputs with what Rector 2.8.4 (`.oracle/rector-ecosystem`, the rule alone with the same configuration,
 //! `phpVersion(80400)`) wrote for them; Pun/ holds the cases where Pun keeps the meaning or valid code where Rector
 //! does not, each with its reason in the file. RenameCastRector's `fixture.php.inc` is left out: it casts with
 //! `(real)`, which PHP 8.0 removed and Mago's parser rejects, so no file of it can be linted; Oracle/casts covers the
 //! rest of it. RenameMethodRector's Fixture/Enum/rename_enum_method.php.inc is Fixture/Enum_rename_enum_method.php.inc,
 //! the runner reading one directory. A fixture must pass as `pun lint --fix == expected` and
 //! `format(pun lint --fix) == format(expected)` with format being the laravel preset.
+//!
+//! Not yet re-derived from Rector 2.8.4: most of RenameClassRector/Oracle* and AnnotationToAttributeRector/Oracle* hold
+//! what Rector 2.6.1 wrote. Rector 2.8.4 prints a changed docblock with phpdoc-parser's format-preserving `Printer`
+//! and reads Doctrine annotations with phpdoc-parser's own parser (`NodeDecorator/DoctrineAnnotationDecorator`),
+//! which Pun does not port yet; on those cases its output differs (context/plan/lint.md). The oracle run of both
+//! rules autoloads the rule's Stubs/ as well as Source/: without the Doctrine classes there, Rector leaves every
+//! annotation alone. Re-derived so far: RenameClassRector/Oracle/doc_callable_templates.php.inc, doc_type_callable.php.inc,
+//! OracleAutoImportNames/doc_type_callable.php.inc and AnnotationToAttributeRector/Oracle/values_more.php.inc; the
+//! `callable<T of ...>` line of RenameClassRector/Oracle/doc_printing.php.inc and OracleAutoImportNames/doc_printing.php.inc
+//! and the `A5` line of OracleAutoImportNames/doc_type_alias_types.php.inc; `C5` of
+//! AnnotationToAttributeRector/Oracle/strings_more.php.inc and `C1` of values_edge.php.inc (an annotation with a
+//! single-quoted value stays, rector-src 9a6fdb061a).
 
 mod lint_c;
 
@@ -16,7 +28,7 @@ use mago_syntax::cst::Node;
 use pun_lint::rules::{
     AddOverrideAttribute, AnnotationToAttribute, NoExtraArguments, PreferClassNameConstant,
     RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClass, RenameClassConstant,
-    RenameConstant, RenameFunction, RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant,
+    RenameConstant, RenameFunction, RenameMethod, ReplaceFunctionWithConstant,
     ReplaceFunctionWithNew, ReplaceFunctionWithStatic, RequireStrictInArray,
 };
 use pun_lint::{Linter, Rule};
@@ -188,7 +200,7 @@ fn rename_cast() {
     );
 }
 
-/// What Rector 2.6.1 wrote with `RenameCast` `Bool_` 2 to 1, `Int_` 1 to 2, `String_` 2 to 1 and `Double` 2 to 1: the
+/// What Rector 2.8.4 wrote with `RenameCast` `Bool_` 2 to 1, `Int_` 1 to 2, `String_` 2 to 1 and `Double` 2 to 1: the
 /// other kind of each spelling, `(int)` printed as it was.
 #[test]
 fn rename_cast_kinds() {
@@ -345,47 +357,6 @@ fn add_override_attribute_to_overridden_properties() {
     assert!(found.is_empty());
 }
 
-/// config/configured_rule.php: `SomeClass` with all four methods, `Container` with `get` only, each `ObjectType` as
-/// `pun migrate` writes it.
-#[test]
-fn array_dim_fetch_to_method_call() {
-    let object =
-        |class: &str| json!({"class-name": class, "current-ancestors": [], "method-cache": []});
-    check(
-        ReplaceArrayAccess::default,
-        json!({"items": [
-            {"object-type": object("SomeClass"), "method": "get", "set-method": "set", "exists-method": "has", "unset-method": "unset"},
-            {"object-type": object("Container"), "method": "get"},
-        ]}),
-        "ArrayDimFetchToMethodCallRector",
-    );
-    rejects(
-        ReplaceArrayAccess::default(),
-        &[
-            (
-                json!({"items": [{"method": "get"}]}),
-                "each of `items` needs `object-type`",
-            ),
-            (
-                json!({"items": [{"object-type": "A", "method": "get"}]}),
-                "`object-type` must be a table with a `class-name`",
-            ),
-            (
-                json!({"items": [{"object-type": {"class-name": 1}, "method": "get"}]}),
-                "`object-type` must be a table with a `class-name`",
-            ),
-            (
-                json!({"items": [{"object-type": {"class-name": "A", "x": 1}, "method": "get"}]}),
-                "unknown key `x` in `object-type`; it takes `class-name`",
-            ),
-            (
-                json!({"items": [{"object-type": {"class-name": "A"}, "method": "get", "set-method": 1}]}),
-                "`set-method` must be a string",
-            ),
-        ],
-    );
-}
-
 /// config/configured_rule.php.
 #[test]
 fn rename_method() {
@@ -434,7 +405,7 @@ fn rename_method() {
     );
 }
 
-/// What Rector 2.6.1 wrote for this code with `MethodCallRename('App\\Child', 'old', 'new')` and
+/// What Rector 2.8.4 wrote for this code with `MethodCallRename('App\\Child', 'old', 'new')` and
 /// `MethodCallRenameWithArrayKey('App\\K', 'a', 'b', 3)`: an interface keeps a method its rename class's parent
 /// interface declares, and an integer key is read as written.
 #[test]
@@ -467,7 +438,7 @@ fn remove_extra_parameters() {
     );
 }
 
-/// What Rector 2.6.1 wrote with `RenameFunctionRector` `['strlen' => 'STRLEN']` and `RenameConstantRector`
+/// What Rector 2.8.4 wrote with `RenameFunctionRector` `['strlen' => 'STRLEN']` and `RenameConstantRector`
 /// `['my_const' => 'MY_CONST']`: every spelling is renamed, and the one already written as the new name is left as it is
 /// (no report: the diff does not touch it).
 #[test]
@@ -511,10 +482,6 @@ fn unconfigured_rules_do_nothing() {
         (Box::new(RenameFunction::default()), "RenameFunctionRector"),
         (Box::new(RenameMethod::default()), "RenameMethodRector"),
         (
-            Box::new(ReplaceArrayAccess::default()),
-            "ArrayDimFetchToMethodCallRector",
-        ),
-        (
             Box::new(ReplaceFunctionWithConstant::default()),
             "FuncCallToConstFetchRector",
         ),
@@ -550,7 +517,7 @@ fn unconfigured_rules_do_nothing() {
     }
 }
 
-/// What Rector 2.6.1 wrote with `RemoveFuncCallArg('foo', 0)`: a first-class callable loses its `...`.
+/// What Rector 2.8.4 wrote with `RemoveFuncCallArg('foo', 0)`: a first-class callable loses its `...`.
 #[test]
 fn remove_func_call_arg_of_first_class_callable() {
     let options = json!({"items": [{"function": "foo", "argument-position": 0}]});
@@ -563,7 +530,7 @@ fn remove_func_call_arg_of_first_class_callable() {
     assert_eq!(fixed.source, "<?php\n\n$f = foo();\nfoo(2);\n");
 }
 
-/// What Rector 2.6.1 wrote with `RenameClassConstFetch('App\\A', 'x', 'X')`: the constant written another way is
+/// What Rector 2.8.4 wrote with `RenameClassConstFetch('App\\A', 'x', 'X')`: the constant written another way is
 /// renamed, the one already written as the new name and a dynamic `A::{$n}` stay (no report for them).
 #[test]
 fn rename_class_const_fetch_to_another_case() {
@@ -585,7 +552,7 @@ fn rename_class_const_fetch_to_another_case() {
     assert_eq!(fixed.source, code.replace("A::x", "A::X"));
 }
 
-/// RenameMethodRector/OracleConfigured/skips: what Rector 2.6.1 wrote with `MethodCallRename('App\\B', 'old', 'new')`,
+/// RenameMethodRector/OracleConfigured/skips: what Rector 2.8.4 wrote with `MethodCallRename('App\\B', 'old', 'new')`,
 /// `('App\\Suit', 'oldCase', 'newCase')` and `('App\\Q', 'old', 'new')`. A call stays when the receiver's class
 /// declares the old method (privately too) and has the new one, its own or an interface's; an enum case is matched
 /// on an enum named as written, not on `$class::Case`.
@@ -607,7 +574,7 @@ fn rename_method_skips() {
     assert_eq!(fixed.source, expected);
 }
 
-/// StringClassNameToClassConstantRector/OracleConfigured/patterns: what Rector 2.6.1 wrote with the skip patterns
+/// StringClassNameToClassConstantRector/OracleConfigured/patterns: what Rector 2.8.4 wrote with the skip patterns
 /// below, matched as `fnmatch` matches them (`[!...]`, `[^...]`, a leading `]`, ranges, `?`, an unclosed `[`).
 #[test]
 fn string_class_name_skip_patterns() {
@@ -638,7 +605,7 @@ fn string_class_name_skip_patterns() {
 /// Fixture/skip_rename_docblock_imported_by_last_group_use and skip_rename_docblock_via_same_namespace_by_last_group_in_namespace
 /// are FixtureUnformattable/: Pint (and so the laravel format) fails on their `use \Company2\{ Bar };`, so they run
 /// without the format step. Fixture/class_annotations_serializer_type
-/// is Oracle/: Rector 2.6.1 keeps `array<OldClass>` in the JMS `Type`, its pattern wanting a `b` after the old name.
+/// is Oracle/: Rector 2.8.4 keeps `array<OldClass>` in the JMS `Type`, its pattern wanting a `b` after the old name.
 #[test]
 fn rename_class() {
     let source = "Rector\\Tests\\Renaming\\Rector\\Name\\RenameClassRector\\Source\\";
@@ -845,6 +812,8 @@ fn annotation_to_attribute() {
         {"tag": "Symfony\\Component\\Validator\\Constraints\\Choice"},
         {"tag": "Symfony\\Component\\Validator\\Constraints\\Length"},
         {"tag": "Symfony\\Component\\Validator\\Constraints\\File"},
+        {"tag": format!("{source}Options\\ConstraintWithOptions")},
+        {"tag": format!("{source}Options\\ConstraintWithoutOptions")},
         {"tag": "Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\ParamConverter"},
         {"tag": format!("{source}UseAlias\\TestSmth")},
         {"tag": format!("{source}UseAlias\\TestOther")},

@@ -127,7 +127,7 @@ final class DocTest extends TestCase
     /**
      * Provides data.
      *
-     * @return \Iterator<int, string> the data
+     * @return \Iterator<int, string>   the data
      * @see Foo
      */
     public static function p2(): \Iterator
@@ -136,7 +136,7 @@ final class DocTest extends TestCase
     }
 
     /**
-     * @return \Iterator<int, string>
+     * @return  \Iterator<int, string>
      */
     public static function p3(): \Iterator
     {
@@ -158,7 +158,7 @@ final class DocTest extends TestCase
     }
 
     /**
-     * @return \Iterator<int, string>
+     * @return	\Iterator<int, string>
      */
     public static function p6(): \Iterator
     {

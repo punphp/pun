@@ -36,7 +36,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect($s)->toMatch('/a/');
     expect(preg_match('/a/', $s))->toBe(1, 'x');
     expect(preg_match('/a/', $i))->toBe(1);
-    expect($untyped)->toMatch('/a/');
+    expect(preg_match('/a/', $untyped))->toBe(1);
     expect($s)->toMatch($pattern);
     expect($s)->toMatch('/a/');
     expect($s)->toMatch('/a/');

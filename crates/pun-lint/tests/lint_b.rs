@@ -1,6 +1,6 @@
 //! Rector's own fixtures for the rules of lint-b's groups (style, classes, functions, phpdoc, security and the PHP
 //! upgrade groups), laid out as tests/rector.rs describes: tests/rector/<Rector class>/Fixture copied verbatim from
-//! rector-src 2.6.1 (`.oracle/rector`, rules-tests/...), Oracle/ with what Rector 2.6.1 (`.oracle/rector-bin`, the
+//! rector-src 2.8.4 (`.oracle/rector`, rules-tests/...), Oracle/ with what Rector 2.8.4 (`.oracle/rector-bin`, the
 //! rule alone, `withPhpVersion(80400)` unless the test says otherwise) wrote, and Pun/ for the cases where Pun keeps
 //! the meaning but not Rector's bytes (expected derived by hand). Each must pass as
 //! `format(pun lint --fix) == format(expected)` with the laravel preset; the raw bytes are checked too.
@@ -32,6 +32,17 @@ fn fixtures(rector: &str) -> Vec<(PathBuf, String, String)> {
     assert!(!paths.is_empty(), "no fixtures in {}", root.display());
     paths
         .into_iter()
+        .filter(|path| {
+            // Pun lints only UTF-8 files, so it leaves any other alone: such a fixture must expect no change.
+            let bytes = std::fs::read(path).unwrap();
+            let utf8 = std::str::from_utf8(&bytes).is_ok();
+            assert!(
+                utf8 || !bytes.windows(6).any(|w| w == b"-----\n"),
+                "{} is not UTF-8 but expects a change",
+                path.display()
+            );
+            utf8
+        })
         .map(|path| {
             let content = std::fs::read_to_string(&path)
                 .unwrap()

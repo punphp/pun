@@ -10,8 +10,8 @@ test('counts', function () {
 <?php
 
 test('counts', function () {
-    expect($a)->toHaveCount(1)
-        ->and($b)->toHaveCount(2);
+    expect(count($a))->toBe(1)
+        ->and(count($b))->toBe(2);
 });
 
 ?>

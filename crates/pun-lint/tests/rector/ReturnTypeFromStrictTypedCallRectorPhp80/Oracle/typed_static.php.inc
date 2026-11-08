@@ -41,12 +41,12 @@ class Maybe
         return 1;
     }
 
-    public function viaMaybe(): ?self
+    public function viaMaybe(): ?static
     {
         return $this->maybe();
     }
 
-    public function viaEither(): self|int
+    public function viaEither(): static|int
     {
         return $this->either();
     }

@@ -30,7 +30,8 @@ final class Cover14Test extends TestCase
 
     /**
      * Text.
-     * @depends testA
+
+     * @depends testA
      */
     public function testCarriageReturn($a): void
     {
@@ -87,14 +88,15 @@ final class Cover14Test extends TestCase
 
     /**
      * Text.
-     * @depends testA
+
+     * @depends testA
      */
     public function testCarriageReturn($a): void
     {
     }
 
     /**
-      Text.
+           Text.
     */
     #[\PHPUnit\Framework\Attributes\DataProvider('provide')]
     public function testUnstarred($a): void

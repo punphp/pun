@@ -30,7 +30,7 @@ final class MyDate extends \DateTime
 
 final class Probe
 {
-    public function tentative(MyDate $d)
+    public function tentative(MyDate $d): int
     {
         return $d->getTimestamp();
     }

@@ -34,7 +34,7 @@ use PHPUnit\Framework\TestCase;
 
 final class AliasedVarTest extends TestCase
 {
-    /** @var (\PHPUnit\Framework\MockObject\MockObject & \DateTime) */
+    /** @var \PHPUnit\Framework\MockObject\MockObject&\DateTime */
     private \PHPUnit\Framework\MockObject\MockObject $clock;
     /** @var Mock */
     private \PHPUnit\Framework\MockObject\MockObject $mock;

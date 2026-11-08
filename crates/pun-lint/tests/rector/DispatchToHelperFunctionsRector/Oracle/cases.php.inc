@@ -84,7 +84,7 @@ class Job
     public function again()
     {
         dispatch(new static(1));
-        dispatch_sync(new self());
+        dispatch_sync(new static());
     }
 }
 
@@ -92,7 +92,7 @@ class ChildJob extends Job
 {
     public function more()
     {
-        dispatch(new parent(b: 2));
+        dispatch(new static(b: 2));
     }
 }
 

@@ -80,7 +80,7 @@ use Foo\Bar;
 final class Runner
 {
     /**
-     * @return null|Foo\Baz|Bar
+     * @return Bar|Foo\Baz|null
      */
     public function classes(int $n)
     {

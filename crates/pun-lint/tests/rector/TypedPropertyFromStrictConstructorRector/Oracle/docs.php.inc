@@ -137,20 +137,27 @@ class B
 
     /**
      * The config.
+     *
+     * @var array
      */
-    protected array $config;
+    protected $config;
 
     /**
      * @var array<string, mixed>
      */
-    protected array $options;
+    protected $options;
 
     /**
      * The name.
+     *
+     * @var string|null
      */
-    protected ?string $name;
+    protected $name;
 
-    protected int $count;
+    /**
+     * @var int
+     */
+    protected $count;
 
     /**
      * The alias.
@@ -168,20 +175,24 @@ class B
 
     /**
      * Some callback.
+     *
+     * @var \Closure|null
      */
-    protected ?\Closure $closure;
+    protected $closure;
 
-    protected string $inline;
+    /** @var string */
+    protected $inline;
 
     /**
+     * @var string
      * @deprecated
      */
-    protected string $deprecated;
+    protected $deprecated;
 
     /**
      * @var string[]
      */
-    protected array $list;
+    protected $list;
 
     /**
      * @var bool
@@ -207,7 +218,7 @@ class B
     /**
      * @var \Illuminate\Contracts\Foundation\Application|\Closure
      */
-    protected \Illuminate\Contracts\Foundation\Application $wider;
+    protected $wider;
 
     public function __construct(Application $app, array $config, array $options, ?string $name, int $count, App2 $aliased, callable $callback, ?\Closure $closure, string $inline, string $deprecated, array $list, bool $pub, int $pub2, int $pub3, int $unknown, Application $wider)
     {

@@ -38,15 +38,6 @@ function classLast(bool $pick)
 
     return item();
 }
-
-function redundantObject(bool $pick)
-{
-    if ($pick) {
-        return item();
-    }
-
-    return anyObject();
-}
 -----
 <?php
 
@@ -87,13 +78,4 @@ function classLast(bool $pick): int|\ReturnContractUnion\Item
     }
 
     return item();
-}
-
-function redundantObject(bool $pick)
-{
-    if ($pick) {
-        return item();
-    }
-
-    return anyObject();
 }

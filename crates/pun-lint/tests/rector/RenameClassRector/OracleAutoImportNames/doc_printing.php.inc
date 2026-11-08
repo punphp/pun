@@ -62,7 +62,7 @@ class A
     public $c;
 
     /**
-     * @var callable<T of \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\OldClass>(T): void
+     * @var callable<T of NewClass>(T): void
      */
     public $d;
 

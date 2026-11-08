@@ -1,6 +1,6 @@
-//! Rector's own fixtures for the ported `types` rules that add parameter types, copied verbatim from rector-src 2.6.1
+//! Rector's own fixtures for the ported `types` rules that add parameter types, copied verbatim from rector-src 2.8.4
 //! (`.oracle/rector`, rules-tests/...) into tests/rector/<Rector class>/Fixture, with the classes they use in
-//! Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`, the rule alone,
+//! Source/. Oracle/ holds extra inputs with what Rector 2.8.4 (`.oracle/rector-ecosystem`, the rule alone,
 //! `phpVersion(80400)`) wrote for them; Pun/ holds the cases where Pun keeps the meaning but not Rector's bytes. Each
 //! one must pass as `format(pun lint --fix) == format(expected)`, and the text edits must give the expected bytes.
 
@@ -13,7 +13,7 @@ use pun_lint::rules::{
     AddParamTypeArrayReduce,
     AddParamTypeArrowDimFetch, AddParamTypeDataProvider, AddParamTypeDimFetchKey, AddParamTypeIterableMethodCall,
     AddParamTypeMethodCall, AddParamTypeSplFixedArray,
-    AddParamTypeParentCall, AddParamTypeProperty,
+    AddParamTypeProperty,
     AddParamTypeVariableCall, PreferNarrowParamType,
 };
 
@@ -66,11 +66,6 @@ fn add_arrow_function_param_array_where_dim_fetch() {
 #[test]
 fn add_param_type_spl_fixed_array() {
     check(AddParamTypeSplFixedArray, "AddParamTypeSplFixedArrayRector");
-}
-
-#[test]
-fn param_type_by_parent_call_type() {
-    check(AddParamTypeParentCall, "ParamTypeByParentCallTypeRector");
 }
 
 #[test]

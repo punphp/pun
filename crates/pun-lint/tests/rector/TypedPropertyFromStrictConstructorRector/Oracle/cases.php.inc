@@ -113,7 +113,7 @@ enum Status: string { case A = 'a'; }
 
 class A
 {
-    protected \Illuminate\Contracts\Foundation\Application $app;
+    protected $app;
     /**
      * @var \App\Model
      */

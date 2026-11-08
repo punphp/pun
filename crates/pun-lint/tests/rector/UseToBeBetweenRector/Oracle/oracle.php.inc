@@ -31,8 +31,8 @@ test('a', function (int $i, float $f, string $s, $untyped, int|string $mixed) {
     expect($i)->toBeBetween(1, 10);
     expect($f)->toBeBetween(1.5, 2.5);
     expect($s >= 'a' && $s <= 'z')->toBeTrue();
-    expect($untyped)->toBeBetween(1, 10);
-    expect($mixed)->toBeBetween(1, 10);
+    expect($untyped >= 1 && $untyped <= 10)->toBeTrue();
+    expect($mixed >= 1 && $mixed <= 10)->toBeTrue();
     expect($i >= 1 and $i <= 10)->toBeTrue();
     expect($i > 1 && $i <= 10)->toBeTrue();
     expect($i >= 1 && $i < 10)->toBeTrue();

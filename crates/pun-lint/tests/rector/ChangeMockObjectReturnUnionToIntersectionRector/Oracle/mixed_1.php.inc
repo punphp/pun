@@ -64,7 +64,7 @@ use PHPUnit\Framework\TestCase;
 final class SomeTest extends TestCase
 {
     /**
-     * @return Foo[]&MockObject the mock
+     * @return  Foo[]&MockObject   the mock
      */
     private function a()
     {

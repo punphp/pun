@@ -25,9 +25,6 @@ final class LegacyArray
         return array('a', 'b');
     }
 
-    /**
-     * @return array{}
-     */
     public function empty()
     {
         return array();

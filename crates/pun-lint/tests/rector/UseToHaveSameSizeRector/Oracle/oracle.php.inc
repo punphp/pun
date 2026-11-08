@@ -41,7 +41,7 @@ test('a', function (array $a, array $b, string $s, $untyped, iterable $it) {
     expect($a)->toHaveSameSize($b);
     expect($a)->toHaveSameSize($b);
     expect(count($s))->toBe(count($b));
-    expect($untyped)->toHaveSameSize($b);
+    expect(count($untyped))->toBe(count($b));
     expect($it)->toHaveSameSize($b);
     expect($a)->toHaveSameSize($s);
     expect(count($a))->toBe(3);
@@ -58,7 +58,7 @@ test('a', function (array $a, array $b, string $s, $untyped, iterable $it) {
         ->toHaveSameSize($b);
     expect($a)->toHaveSameSize($b);
     expect($s)->toHaveCount(count($b));
-    expect($untyped)->toHaveSameSize($b);
+    expect($untyped)->toHaveCount(count($b));
     expect($a)->toHaveSameSize($b);
     expect($a)->toHaveCount(3);
     expect($a)->toHaveCount(count($b), 'x');

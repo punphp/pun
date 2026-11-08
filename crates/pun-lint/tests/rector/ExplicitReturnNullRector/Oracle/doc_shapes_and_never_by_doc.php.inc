@@ -194,7 +194,7 @@ final class Runner
 
 trait Shared
 {
-    /** @return Oracle\ExplicitNull3\Shared|null */
+    /** @return \Oracle\ExplicitNull3\Shared|null */
     public function a(int $n)
     {
         if ($n) {
@@ -208,7 +208,7 @@ enum Suit
 {
     case A;
 
-    /** @return Oracle\ExplicitNull3\Suit|null */
+    /** @return \Oracle\ExplicitNull3\Suit|null */
     public function b(int $n)
     {
         if ($n) {

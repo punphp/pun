@@ -44,7 +44,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect(filter_var($s))->not->toBeFalse();
     expect($s)->toBeUrl();
     expect(filter_var($i, FILTER_VALIDATE_URL))->not->toBeFalse();
-    expect($untyped)->toBeUrl();
+    expect(filter_var($untyped, FILTER_VALIDATE_URL))->not->toBeFalse();
     expect($s)->toBeUrl();
     expect($s)->toBeUrl();
     expect($s)->each->toBeUrl();

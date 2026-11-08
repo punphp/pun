@@ -10,7 +10,7 @@ class SomeClass
 class SomeClass
 {
     /**
-     * @var class-string<\SomeClass>[]
+     * @var array<int, class-string<\SomeClass>>
      */
     private array $items = [self::class];
 }

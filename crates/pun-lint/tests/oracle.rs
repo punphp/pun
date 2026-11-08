@@ -1,4 +1,4 @@
-//! Cases beyond Rector's fixtures. Each tests/oracle/*.php.inc is an input, `-----`, and what Rector 2.6.1
+//! Cases beyond Rector's fixtures. Each tests/oracle/*.php.inc is an input, `-----`, and what Rector 2.8.4
 //! (`.oracle/rector-bin`, `rector process` with the rule and `withPhpVersion(80400)`) wrote for it.
 
 use std::path::Path;

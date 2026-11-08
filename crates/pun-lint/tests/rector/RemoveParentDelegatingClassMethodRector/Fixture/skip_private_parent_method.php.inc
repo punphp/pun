@@ -1,8 +1,8 @@
 <?php
 
-namespace Rector\Tests\DeadCode\Rector\ClassMethod\RemoveParentDelegatingClassMethodRector\Fixture;
+namespace Rector\Tests\DeadCode\Rector\Class_\RemoveParentDelegatingClassMethodRector\Fixture;
 
-use Rector\Tests\DeadCode\Rector\ClassMethod\RemoveParentDelegatingClassMethodRector\Source\SomeParentWithPrivateMethod;
+use Rector\Tests\DeadCode\Rector\Class_\RemoveParentDelegatingClassMethodRector\Source\SomeParentWithPrivateMethod;
 
 final class SkipPrivateParentMethod extends SomeParentWithPrivateMethod
 {

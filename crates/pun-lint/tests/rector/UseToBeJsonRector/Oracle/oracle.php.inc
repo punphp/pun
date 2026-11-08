@@ -39,7 +39,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect($s)->toBeJson();
     expect($s)->toBeJson();
     expect(json_decode($i) !== null)->toBeTrue();
-    expect($untyped)->toBeJson();
+    expect(json_decode($untyped) !== null)->toBeTrue();
     expect($s)->toBeJson();
     expect(JSON_DECODE($s) !== null)->toBeTrue();
     expect(json_decode() !== null)->toBeTrue();

@@ -225,7 +225,7 @@ class User extends Model
     }
 
     /**
-     * @return One
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Account, $this>
      */
     public function aliased(): One
     {
@@ -269,6 +269,9 @@ class User extends Model
         return $this->hasManyThrough(Account::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<\App\Models\Account, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
+     */
     public function morphMany(): MorphToMany
     {
         return $this->morphToMany(Account::class, 'taggable');
@@ -304,8 +307,10 @@ class User extends Model
         return $this->hasMany(Account::class);
     }
 
-    /** Accounts.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Account, $this> */
+    /**
+     * Accounts.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Account, $this>
+     */
     public function oneLineText(): HasMany
     {
         return $this->hasMany(Account::class);

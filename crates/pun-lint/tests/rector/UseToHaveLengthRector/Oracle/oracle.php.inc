@@ -31,8 +31,8 @@ test('a', function (string $s, int $i, $untyped, ?string $maybe) {
     expect($s)->toHaveLength(5);
     expect($s)->toHaveLength(5);
     expect(strlen($i))->toBe(5);
-    expect($untyped)->toHaveLength(5);
-    expect($maybe)->toHaveLength(5);
+    expect(strlen($untyped))->toBe(5);
+    expect(strlen($maybe))->toBe(5);
     expect(STRLEN($s))->toBe(5);
     expect($s)->toHaveLength(5);
     expect(strlen())->toBe(5);

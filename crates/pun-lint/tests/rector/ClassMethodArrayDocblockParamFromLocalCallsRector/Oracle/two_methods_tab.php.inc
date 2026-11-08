@@ -35,8 +35,10 @@ final class TwoMethodsTab
 	{
 	}
 
-	/** Second.
-     * @param bool[] $flags */
+	/**
+     * Second.
+     * @param bool[] $flags
+     */
     private function second(array $flags): void
 	{
 	}

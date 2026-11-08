@@ -36,13 +36,13 @@ final class Items
      */
     public function run(array $a, array $b, array $c)
     {
-        array_any($a, function ($x) {
+        array_any($a, function (array $x) {
             return $x !== [];
         });
         array_any($b, function (array $x) {
             return $x !== [];
         });
-        array_any($c, function ($x) {
+        array_any($c, function (array $x) {
             return $x !== [];
         });
     }

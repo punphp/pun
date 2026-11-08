@@ -93,7 +93,7 @@ function f($x) {
     try { $x(); } catch (\Throwable $e) { throw new E18('m', 1, null); }
     try { $x(); } catch (\Throwable $e) { throw new E19('m', 1, null); }
     try { $x(); } catch (\Throwable $e) { throw new E20('m', 1); }
-    try { $x(); } catch (\Throwable $e) { throw new \ErrorException('m', 1, $e); }
+    try { $x(); } catch (\Throwable $e) { throw new \ErrorException('m', 1, $e, $e, $e, $e); }
     try { $x(); } catch (\Throwable $e) { throw new \ErrorException('m', $e->getCode(), previous: $e); }
     try { $x(); } catch (\Throwable $e) { throw new \ErrorException(code: 3, message: 'm', previous: $e); }
 }

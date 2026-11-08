@@ -18,7 +18,7 @@ interface Shape {}
 function check(object $o, ?Shape $maybe, string $class)
 {
     if ($o instanceof \Shape) {
-        return is_a($maybe ?? $o, Shape::class) && $o instanceof $class;
+        return ($maybe ?? $o) instanceof \Shape && $o instanceof $class;
     }
 
     return is_a($o, 'Shape');

@@ -85,7 +85,7 @@ namespace App\Models {
 
         /**
          * The roles.
-         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Account, $this>
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Account, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
          */
         public function roles(): BelongsToMany
         {

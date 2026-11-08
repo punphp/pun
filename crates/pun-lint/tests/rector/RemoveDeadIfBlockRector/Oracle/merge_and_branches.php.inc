@@ -42,8 +42,10 @@ class A
 {
     public function run($a, $b, $c)
     {
-        if (!$a && $b) {
+        if ($a) {
+        } elseif ($b) {
             echo 1;
+
             // note
             echo 2;
         } elseif ($c) {

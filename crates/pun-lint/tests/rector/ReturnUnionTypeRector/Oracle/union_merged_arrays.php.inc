@@ -62,7 +62,7 @@ final class MergeProbe
         };
     }
 
-    public function d(bool $b, array $a)
+    public function d(bool $b, array $a): array|int
     {
         if ($b) {
             return [];

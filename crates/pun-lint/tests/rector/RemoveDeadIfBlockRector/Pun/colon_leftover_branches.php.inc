@@ -17,9 +17,5 @@ function f($a, $b, $c) {
     } elseif ($c) {
         echo 2;
     }
-    if (!$a && $b) {
-        echo 1;
-    } else {
-        echo 2;
-    }
+    if ($a): elseif ($b): echo 1; else: echo 2; endif;
 }

@@ -29,30 +29,3 @@ test('c4', function () {
     expect($a['y'])->toBe(2);
     foo();
 });
------
-<?php
-
-test('c1', function () {
-    // first
-    expect($a)->toMatchArray(['x' => 1, 'y' => 2]);
-    foo();
-});
-
-test('c2', function () {
-    // second
-    expect($a)->toMatchArray(['x' => 1, 'y' => 2]);
-    foo();
-});
-
-test('c3', function () {
-    foo();
-    // third
-    expect($a)->toMatchArray(['x' => 1, 'y' => 2]);
-});
-
-test('c4', function () {
-    expect($b)->toMatchArray(['x' => 1, 'y' => 2]);
-    // fourth
-    expect($a)->toMatchArray(['x' => 1, 'y' => 2]);
-    foo();
-});

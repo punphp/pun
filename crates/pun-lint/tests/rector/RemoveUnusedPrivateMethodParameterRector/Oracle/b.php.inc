@@ -98,6 +98,7 @@ class B
     }
 
     /**
+     *
      * @return void
      */
     private function three($a)

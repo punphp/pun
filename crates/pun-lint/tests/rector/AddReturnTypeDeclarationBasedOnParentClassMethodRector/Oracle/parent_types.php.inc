@@ -191,17 +191,17 @@ final class Square extends Base implements Shape, \Countable, \JsonSerializable,
         return 1;
     }
 
-    public function count()
+    public function count(): int
     {
         return 0;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [];
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator([]);
     }

@@ -113,7 +113,7 @@ final class C extends Base
     public $enabled;
     public $list;
     /**
-     * @var null|\App\Item
+     * @var \App\Item|null
      */
     public $either;
     protected $typed;

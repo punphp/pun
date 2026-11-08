@@ -51,16 +51,16 @@ final class Items
      */
     public function run(array $a, array $b, array $c, array $d, array $e, array $f)
     {
-        array_map(function ($x) {
+        array_map(function (array $x) {
             return $x;
         }, $a);
         array_map(function (array $x) {
             return $x;
         }, $b);
-        array_map(function ($x) {
+        array_map(function (array $x) {
             return $x;
         }, $c);
-        array_map(function ($x) {
+        array_map(function (?array $x) {
             return $x;
         }, $d);
         array_map(function (array $x) {

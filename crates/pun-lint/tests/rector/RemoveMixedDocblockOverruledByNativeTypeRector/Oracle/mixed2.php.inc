@@ -47,6 +47,7 @@ class A
      * @param  string  $key
      * @param  bool  $strict
      * @return bool
+     *
      * @throws \RuntimeException
      */
     public function stackContains(string $key, mixed $value, bool $strict = false): bool
@@ -64,6 +65,7 @@ class A
     }
 
     /**
+     *
      * @throws \RuntimeException
      */
     public function three(mixed $value): bool

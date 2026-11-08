@@ -31,8 +31,8 @@ test('a', function (array $list, iterable $it, string $s, $untyped, \Countable $
     expect($list)->toHaveCount(3);
     expect($it)->toHaveCount(3);
     expect(count($s))->toBe(3);
-    expect($untyped)->toHaveCount(3);
-    expect($c)->toHaveCount(3);
+    expect(count($untyped))->toEqual(3);
+    expect(count($c))->toBe(3);
     expect($ao)->toHaveCount(3);
     expect($list)->toHaveCount(3);
     expect($list)->toHaveCount(3);

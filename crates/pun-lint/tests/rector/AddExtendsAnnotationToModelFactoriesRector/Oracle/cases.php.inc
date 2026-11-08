@@ -131,8 +131,10 @@ class A extends Factory
     protected $model = User::class;
 }
 
-/** Makes users.
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User> */
+/**
+ * Makes users.
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ */
 class B extends Factory
 {
     protected $model = User::class;

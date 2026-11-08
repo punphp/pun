@@ -18,7 +18,7 @@ final class SomeClass
 final class SomeClass
 {
     /**
-     * @var \ArrayObject<int, \SomeClass>[]
+     * @var array<int, \ArrayObject<int, \SomeClass>>
      */
     private array $items = [];
 

@@ -36,13 +36,13 @@ final class Items
      */
     public function run(array $a, array $b, array $c)
     {
-        array_filter($a, function ($x) {
+        array_filter($a, function (array $x) {
             return $x !== [];
         });
         array_filter($b, function (array $x) {
             return $x !== [];
         });
-        array_filter($c, function ($x) {
+        array_filter($c, function (array $x) {
             return $x !== [];
         });
     }

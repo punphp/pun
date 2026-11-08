@@ -78,7 +78,6 @@ function ifTrailingComment($a)
     } else {
         return 2;
     }
-    echo 'reached?';
 }
 
 function viaElseIf($a)

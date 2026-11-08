@@ -18,7 +18,7 @@ final class SomeClass
 final class SomeClass
 {
     /**
-     * @var class-string<ArrayObject<int, string>>[]
+     * @var array<int, class-string<\ArrayObject<int, string>>>
      */
     private array $items = [];
 

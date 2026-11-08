@@ -58,7 +58,7 @@ function run(TestResponse $response, ?TestResponse $maybe, bool $flag, int $code
     $response->assertGone()->assertStatus(422);
     $response->assertInternalServerError();
     $response->assertServiceUnavailable();
-    $response->assertStatus(201);
+    $response->assertCreated();
     $response->assertStatus('200');
     $response->assertStatus($code);
     $response->assertStatus(200.0);

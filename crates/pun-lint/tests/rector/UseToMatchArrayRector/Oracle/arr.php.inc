@@ -41,7 +41,8 @@ test('a', function () {
 });
 
 test('b', function () {
-    expect($r->json())->toMatchArray(['a' => 1, 'b' => 2]);
+    expect($r->json()['a'], 'm')->toBe(1);
+    expect($r->json()['b'])->TOBE(2);
 });
 
 test('c', function () {
@@ -52,5 +53,6 @@ test('c', function () {
 
 test('d', function () {
     expect($data['a'])->not->toBe(1);
-    expect($data)->toMatchArray(['a' => 1, 'b' => 2]);
+    expect($data['a'])->toBe(1);
+    expect($data['b'])->toBe(2);
 });

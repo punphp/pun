@@ -28,7 +28,7 @@ class SomeClass
     }
 
     /**
-     * @param array<string, int>|array<string, string> $items
+     * @param array<string, int|string> $items
      */
     private function run(array $items): void
     {

@@ -25,7 +25,7 @@ enum Suit
 final class EnumCases
 {
     /**
-     * @return array<int, Suit::Hearts|string>
+     * @return array<int, string|\Suit::Hearts>
      */
     public function run()
     {

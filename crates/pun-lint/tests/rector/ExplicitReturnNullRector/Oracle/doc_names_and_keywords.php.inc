@@ -39,7 +39,7 @@ final class Runner
     public function a(int $n) { if ($n) { return 1; }
     return null; }
 
-    /** @return Oracle\ExplicitNull2\Runner|null */
+    /** @return \Oracle\ExplicitNull2\Runner|null */
     public function b(int $n) { if ($n) { return 1; }
     return null; }
 

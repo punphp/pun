@@ -77,8 +77,8 @@ final class GetterDnf extends GetterParent
 {
     private (\QualityPropertyContracts\GetterLeft&\QualityPropertyContracts\GetterRight)|null $nullableIntersection = null;
     private parent $parent;
-    private false|\QualityPropertyContracts\GetterParent $falseOrClass;
-    private true|\QualityPropertyContracts\GetterParent $trueOrClass;
+    private bool|\QualityPropertyContracts\GetterParent $falseOrClass;
+    private bool|\QualityPropertyContracts\GetterParent $trueOrClass;
     private $onlyNull;
 
     public function getIntersection(): (GetterLeft&GetterRight)|null

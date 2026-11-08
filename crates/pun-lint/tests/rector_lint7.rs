@@ -1,5 +1,5 @@
 //! Upstream fixtures for the lint 7 small rules, laid out as in tests/rector.rs: Fixture/ verbatim from rector-src
-//! 2.6.1, Oracle/ with what Rector 2.6.1 (`.oracle/rector-bin`, the rule alone) wrote. Each must pass as
+//! 2.8.4, Oracle/ with what Rector 2.8.4 (`.oracle/rector-bin`, the rule alone) wrote. Each must pass as
 //! `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`.
 //!
 //! tests/lint7_report/<group>/<name>/*.php.inc is an input, `-----`, and what the upstream tool reported for it, one
@@ -330,19 +330,9 @@ fn mago_prefer_anonymous_migration() {
 
 #[test]
 fn simplify_useless_variable() {
-    let linter = only(NoUselessVariable::default());
+    let linter = only(NoUselessVariable);
     run(&linter, "SimplifyUselessVariableRector/Fixture");
     run(&linter, "SimplifyUselessVariableRector/Oracle");
-    let mut rule = NoUselessVariable::default();
-    assert!(rule.configure(&serde_json::json!(null)).is_ok());
-    assert!(rule.configure(&serde_json::json!({"other": true})).is_err());
-    assert!(rule.configure(&serde_json::json!(true)).is_err());
-    rule.configure(&serde_json::json!({"only-direct-assign": true}))
-        .unwrap();
-    run(
-        &only(rule),
-        "SimplifyUselessVariableRector/FixtureSkipConcat",
-    );
 }
 
 #[test]
@@ -369,17 +359,6 @@ fn remove_null_named_arg_on_null_default_param() {
         &only(NoNullDefaultNamedArgument),
         "RemoveNullNamedArgOnNullDefaultParamRector/Oracle",
     );
-}
-
-#[test]
-fn add_param_string_type_from_sprintf_use() {
-    let linter = only(AddParamTypeSprintf);
-    run_with_sources(
-        &linter,
-        "AddParamStringTypeFromSprintfUseRector/Fixture",
-        &["AddParamStringTypeFromSprintfUseRector/Source/SomeParentClass.php"],
-    );
-    run(&linter, "AddParamStringTypeFromSprintfUseRector/Oracle");
 }
 
 #[test]
@@ -545,7 +524,7 @@ fn rules_ignore_nodes_outside_their_targets() {
             &["lint7_report/laravel/prefer-anonymous-migration"],
         ),
         (
-            || Box::new(NoUselessVariable::default()),
+            || Box::new(NoUselessVariable),
             &["rector/SimplifyUselessVariableRector"],
         ),
         (
@@ -555,10 +534,6 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoNullDefaultNamedArgument),
             &["rector/RemoveNullNamedArgOnNullDefaultParamRector"],
-        ),
-        (
-            || Box::new(AddParamTypeSprintf),
-            &["rector/AddParamStringTypeFromSprintfUseRector"],
         ),
         (
             || Box::new(NoUnusedConstructorParam),
@@ -616,10 +591,6 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoUnusedPrivateMethod),
             &["rector/RemoveUnusedPrivateMethodRector/Fixture"],
-        ),
-        (
-            || Box::new(NoUselessConstructor),
-            &["rector/RemoveParentDelegatingConstructorRector/Fixture"],
         ),
         (
             || Box::new(NoUselessOverride),

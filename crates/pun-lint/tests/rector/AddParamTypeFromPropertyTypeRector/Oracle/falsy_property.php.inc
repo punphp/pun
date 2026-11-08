@@ -66,7 +66,7 @@ final class Connection
 
     protected bool $typed = false;
 
-    public function falsy(array|null|bool|int|float|string $value = true)
+    public function falsy(array|bool|int|float|string|null $value = true)
     {
         if (! $this->modified) {
             $this->modified = $value;
@@ -78,7 +78,7 @@ final class Connection
         $this->other = $value;
     }
 
-    public function nullCheck($value)
+    public function nullCheck(null $value)
     {
         if ($this->third === null) {
             $this->third = $value;

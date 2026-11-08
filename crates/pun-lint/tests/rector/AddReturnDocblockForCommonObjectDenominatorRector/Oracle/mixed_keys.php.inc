@@ -29,7 +29,7 @@ final class Other {}
 final class SomeClass
 {
     /**
-     * @return array<string|int, \App\Base>
+     * @return array<int|string, \App\Base>
      */
     public function run(): array
     {

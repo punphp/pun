@@ -31,7 +31,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect($s)->toBeLowercase();
     expect(strtolower($i) === $i)->toBeTrue();
     expect($i === strtolower($i))->toBeTrue();
-    expect($untyped)->toBeLowercase();
+    expect(strtolower($untyped) === $untyped)->toBeTrue();
     expect(strtolower($s) === $other)->toBeTrue();
     expect(strtolower($s) == $s)->toBeTrue();
     expect(strtolower($s) === $s)->toBeFalse();
@@ -40,7 +40,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect($s)->toBeLowercase();
     expect(strtolower() === $s)->toBeTrue();
     expect(strtolower($s) === strtolower($s))->toBeTrue();
-    expect($a -> b)->toBeLowercase();
+    expect(strtolower($a->b) === $a -> b)->toBeTrue();
     expect($a)->and($s)->toBeLowercase();
     expect($s)->toBeLowercase();
     expect($s)->toBeBool()->toBeLowercase();

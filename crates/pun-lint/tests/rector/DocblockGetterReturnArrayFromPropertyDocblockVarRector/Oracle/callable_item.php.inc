@@ -23,7 +23,7 @@ final class SomeClass
     private array $items = [];
 
     /**
-     * @return array<int, callable(int):string>
+     * @return array<int, callable(int): string>
      */
     public function getItems(): array
     {

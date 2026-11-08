@@ -40,22 +40,22 @@ class Moment extends \DateTime
 
 final class Propagated
 {
-    public function ternary(Moment $m, bool $flag)
+    public function ternary(Moment $m, bool $flag): int
     {
         return $flag ? $m->getTimestamp() : time();
     }
 
-    public function short(Moment $m)
+    public function short(Moment $m): int
     {
         return $m->getTimestamp() ?: 0;
     }
 
-    public function parenthesized(Moment $m)
+    public function parenthesized(Moment $m): int
     {
         return ($m->getTimestamp());
     }
 
-    public function scaled(Moment $m)
+    public function scaled(Moment $m): int
     {
         return $m->getTimestamp() * 1000;
     }

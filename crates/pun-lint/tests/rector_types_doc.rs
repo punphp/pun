@@ -1,6 +1,6 @@
-//! Rector's own fixtures for the ported docblock `types` rules (Rector 2.6.1, rules-tests/TypeDeclarationDocblocks and
+//! Rector's own fixtures for the ported docblock `types` rules (Rector 2.8.4, rules-tests/TypeDeclarationDocblocks and
 //! the docblock rules of rules-tests/TypeDeclaration), copied verbatim into tests/rector/<Rector class>/Fixture with
-//! the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (the rule alone,
+//! the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.8.4 (the rule alone,
 //! `phpVersion(80400)`) wrote for them. Each must give the expected bytes, and the same after the laravel preset's
 //! format.
 //!
@@ -10,6 +10,15 @@
 //! PHP 8.0, as their config sets. NarrowWideUnionReturnTypeRector/Stubs holds the vendor classes the cases name (the
 //! monolog/monolog classes rector-src's test vendor has, and the Oracle cases' packages), under a `vendor/` path so they
 //! count as vendor code, and the composer.json the rule reads: Source/composer.json's requires, and those packages.
+//!
+//! Pun/ holds the cases where Pun keeps the meaning but not Rector's bytes, its expected output derived by hand. Rector
+//! 2.8.4 prints a changed docblock with phpdoc-parser's format-preserving `Printer`, which Pun does not port (it
+//! prints as Rector 2.6.1's `PhpDocInfoPrinter` did; context/plan/lint.md). The two differ on the Pun/ cases of
+//! DocblockReturnArrayFromDirectArrayInstanceRector and ClassMethodArrayDocblockParamFromLocalCallsRector: Rector
+//! starts a tag it adds with the line break before the doc's last line, so after an empty ` *` line or on lines
+//! without a space after `*` it writes `*@return` where Pun writes ` * @return`; it keeps an empty last line after
+//! the new tag, where Pun drops it; it keeps the spacing between a changed type and its description (`$items-desc`,
+//! `array<...>   the items`), where Pun writes one space; and in a doc without `*` lines it writes ` *  @return`.
 
 mod lint_c;
 

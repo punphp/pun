@@ -45,7 +45,6 @@ final class SomeTest extends TestCase
      * @author x
      *
      *   more author
-     *
      */
     #[\PHPUnit\Framework\Attributes\Ticket('
    123')]

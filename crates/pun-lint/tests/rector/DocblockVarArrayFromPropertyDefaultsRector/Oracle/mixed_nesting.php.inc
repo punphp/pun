@@ -10,7 +10,7 @@ class SomeClass
 class SomeClass
 {
     /**
-     * @var array<string, array<string|int>>
+     * @var array<string, int[]|string[]>
      */
     private array $items = ['a' => [1], 'b' => ['x']];
 }

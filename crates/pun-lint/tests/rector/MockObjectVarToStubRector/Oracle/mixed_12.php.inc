@@ -53,16 +53,16 @@ use PHPUnit\Framework\TestCase;
 
 final class SomeTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\Stub $i comment */
+    /** @var  \PHPUnit\Framework\MockObject\Stub   $i   comment */
     private Stub $i;
 
-    /** @var \PHPUnit\Framework\MockObject\Stub|Foo $j text */
+    /** @var \PHPUnit\Framework\MockObject\Stub | Foo  $j  text */
     private Stub $j;
 
     /** @phpstan-var MockObject */
     private Stub $k;
 
-    /** @var Foo&\PHPUnit\Framework\MockObject\Stub */
+    /** @var Foo & \PHPUnit\Framework\MockObject\Stub */
     private Stub $l;
 
     /**

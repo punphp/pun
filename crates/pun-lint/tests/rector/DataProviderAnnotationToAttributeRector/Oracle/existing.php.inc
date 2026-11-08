@@ -57,9 +57,7 @@ final class DpAttrTest extends TestCase
     {
     }
 
-    /**
-     * @dataProvider()
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('')]
     public function testEmpty(int $a): void
     {
     }

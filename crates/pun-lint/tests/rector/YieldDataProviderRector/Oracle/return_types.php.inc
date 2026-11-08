@@ -2285,13 +2285,13 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | string)> */
+    /** @return \Iterator<int, int|string> */
     public static function p22(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | float | int | string)> */
+    /** @return \Iterator<int, bool|float|int|string> */
     public static function p23(): \Iterator
     {
         yield [1];
@@ -2321,13 +2321,13 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<mixed>> */
+    /** @return \Iterator<int, mixed[]> */
     public static function p28(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, non-empty-array<mixed>> */
+    /** @return \Iterator<int, non-empty-array> */
     public static function p29(): \Iterator
     {
         yield [1];
@@ -2375,19 +2375,19 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int>> */
+    /** @return \Iterator<int, int[]> */
     public static function p37(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<string>> */
+    /** @return \Iterator<int, string[]> */
     public static function p38(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, int>> */
+    /** @return \Iterator<int, int[]> */
     public static function p39(): \Iterator
     {
         yield [1];
@@ -2399,37 +2399,37 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, string>> */
+    /** @return \Iterator<int, string[]> */
     public static function p41(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int>> */
+    /** @return \Iterator<int, int[]> */
     public static function p42(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<(int | string), int>> */
+    /** @return \Iterator<int, array<int|string, int>> */
     public static function p43(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<(int | string), int>> */
+    /** @return \Iterator<int, array<int|string, int>> */
     public static function p44(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<mixed>> */
+    /** @return \Iterator<int, mixed[]> */
     public static function p45(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, mixed>> */
+    /** @return \Iterator<int, mixed[]> */
     public static function p46(): \Iterator
     {
         yield [1];
@@ -2441,13 +2441,13 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<\Some\Other>> */
+    /** @return \Iterator<int, \Some\Other[]> */
     public static function p48(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, \Some\Other>> */
+    /** @return \Iterator<int, \Some\Other[]> */
     public static function p49(): \Iterator
     {
         yield [1];
@@ -2459,55 +2459,55 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, array<int, string>>> */
+    /** @return \Iterator<int, array<int, string[]>> */
     public static function p51(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, array<string>>> */
+    /** @return \Iterator<int, array<int, string[]>> */
     public static function p52(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<array<string>>> */
+    /** @return \Iterator<int, string[][]> */
     public static function p53(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<string, array<string>>> */
+    /** @return \Iterator<int, array<string, string[]>> */
     public static function p54(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int>> */
+    /** @return \Iterator<int, int[]> */
     public static function p55(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<string>> */
+    /** @return \Iterator<int, string[]> */
     public static function p56(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<mixed>> */
+    /** @return \Iterator<int, mixed[]> */
     public static function p57(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<\Some\Other>> */
+    /** @return \Iterator<int, \Some\Other[]> */
     public static function p58(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<array<int>>> */
+    /** @return \Iterator<int, int[][]> */
     public static function p59(): \Iterator
     {
         yield [1];
@@ -2531,7 +2531,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, list<array<string>>> */
+    /** @return \Iterator<int, list<string[]>> */
     public static function p63(): \Iterator
     {
         yield [1];
@@ -2591,133 +2591,133 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | null)> */
+    /** @return \Iterator<int, int|null> */
     public static function p73(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | null)> */
+    /** @return \Iterator<int, \Some\Other|null> */
     public static function p74(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | null)> */
+    /** @return \Iterator<int, int|null> */
     public static function p75(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | null)> */
+    /** @return \Iterator<int, int|null> */
     public static function p76(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | string)> */
+    /** @return \Iterator<int, int|string> */
     public static function p77(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | string)> */
+    /** @return \Iterator<int, int|string> */
     public static function p78(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | string | null)> */
+    /** @return \Iterator<int, int|string|null> */
     public static function p79(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | string)> */
+    /** @return \Iterator<int, \Some\Other|string> */
     public static function p80(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | string)> */
+    /** @return \Iterator<int, \Some\Other|string> */
     public static function p81(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\Bar | \Some\Other)> */
+    /** @return \Iterator<int, \App\Tests\Bar|\Some\Other> */
     public static function p82(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\Bar | \Some\Other)> */
+    /** @return \Iterator<int, \App\Tests\Bar|\Some\Other> */
     public static function p83(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | int)> */
+    /** @return \Iterator<int, bool|int> */
     public static function p84(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (float | int)> */
+    /** @return \Iterator<int, float|int> */
     public static function p85(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (float | int)> */
+    /** @return \Iterator<int, float|int> */
     public static function p86(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<mixed> | null)> */
+    /** @return \Iterator<int, mixed[]|null> */
     public static function p87(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<string> | null)> */
+    /** @return \Iterator<int, string[]|null> */
     public static function p88(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<string> | null)> */
+    /** @return \Iterator<int, string[]|null> */
     public static function p89(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<int> | string)> */
+    /** @return \Iterator<int, int[]|string> */
     public static function p90(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<string> | int)> */
+    /** @return \Iterator<int, string[]|int> */
     public static function p91(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | string)> */
+    /** @return \Iterator<int, int|string> */
     public static function p92(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | true)> */
+    /** @return \Iterator<int, int|true> */
     public static function p93(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (string | false)> */
+    /** @return \Iterator<int, string|false> */
     public static function p94(): \Iterator
     {
         yield [1];
@@ -2735,7 +2735,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\Exception | null)> */
+    /** @return \Iterator<int, \App\Tests\Exception|null> */
     public static function p97(): \Iterator
     {
         yield [1];
@@ -2818,7 +2818,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int<0, max>, array<int, string>> */
+    /** @return \Iterator<int<0, max>, string[]> */
     public static function p113(): \Iterator
     {
         yield [1];
@@ -2836,61 +2836,61 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<string, array<(int | string), mixed>> */
+    /** @return \Iterator<string, array<int|string, mixed>> */
     public static function p116(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<mixed>> */
+    /** @return \Iterator<int|string, mixed[]> */
     public static function p117(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<mixed>> */
+    /** @return \Iterator<int|string, mixed[]> */
     public static function p118(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<mixed>> */
+    /** @return \Iterator<int|string, mixed[]> */
     public static function p119(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, array<mixed>> */
+    /** @return \Iterator<string, mixed[]> */
     public static function p120(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<mixed>> */
+    /** @return \Iterator<int|string, mixed[]> */
     public static function p121(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<mixed>> */
+    /** @return \Iterator<int|string, mixed[]> */
     public static function p122(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, array<string>> */
+    /** @return \Iterator<string, string[]> */
     public static function p123(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<string>> */
+    /** @return \Iterator<int|string, string[]> */
     public static function p124(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), \Some\Other> */
+    /** @return \Iterator<int|string, \Some\Other> */
     public static function p125(): \Iterator
     {
         yield [1];
@@ -2914,7 +2914,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, string> desc with  spaces */
+    /** @return \Iterator<int, string>  desc with  spaces */
     public static function p129(): \Iterator
     {
         yield [1];
@@ -2932,7 +2932,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<int, string>> */
+    /** @return \Iterator<int|string, string[]> */
     public static function p132(): \Iterator
     {
         yield [1];
@@ -2943,199 +2943,199 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (string | null)> */
+    /** @return \Iterator<int, string|null> */
     public static function p134(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, (int | string | null)> */
+    /** @return \Iterator<string, int|string|null> */
     public static function p135(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, (int | string)> */
+    /** @return \Iterator<string, int|string> */
     public static function p136(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, (\Some\Other | int | null)> */
+    /** @return \Iterator<string, int|\Some\Other|null> */
     public static function p137(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<string, (\Foo | \Some\Other)> */
+    /** @return \Iterator<string, \Foo|\Some\Other> */
     public static function p138(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | array<int>)> */
+    /** @return \Iterator<int, int[]|\Some\Other> */
     public static function p139(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | bool)> */
+    /** @return \Iterator<int, bool|\Some\Other> */
     public static function p140(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | bool)> */
+    /** @return \Iterator<int, bool|\Some\Other> */
     public static function p141(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\Aaa | bool)> */
+    /** @return \Iterator<int, \App\Tests\Aaa|bool> */
     public static function p142(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\Aaa | int)> */
+    /** @return \Iterator<int, \App\Tests\Aaa|int> */
     public static function p143(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Aaa | int)> */
+    /** @return \Iterator<int, \Aaa|int> */
     public static function p144(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, list<(\Some\Other | int)>> */
+    /** @return \Iterator<int, list<int|\Some\Other>> */
     public static function p145(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, (\Some\Other | int)>> */
+    /** @return \Iterator<int, int[]|\Some\Other[]> */
     public static function p146(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<(int | null)>> */
+    /** @return \Iterator<int, int[]|null[]> */
     public static function p147(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<int, (int | null)>> */
+    /** @return \Iterator<int, int[]|null[]> */
     public static function p148(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, list<(int | null)>> */
+    /** @return \Iterator<int, list<int|null>> */
     public static function p149(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<(int | null)>> */
+    /** @return \Iterator<int, int[]|null[]> */
     public static function p150(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<string, (\Some\Other | null)>> */
+    /** @return \Iterator<int, array<string, \Some\Other|null>> */
     public static function p151(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<int> | null)> */
+    /** @return \Iterator<int, int[]|null> */
     public static function p152(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (list<int> | null)> */
+    /** @return \Iterator<int, list<int>|null> */
     public static function p153(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<string> | int)> */
+    /** @return \Iterator<int, string[]|int> */
     public static function p154(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (float | string)> */
+    /** @return \Iterator<int, float|string> */
     public static function p155(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (float | string)> */
+    /** @return \Iterator<int, float|string> */
     public static function p156(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | string)> */
+    /** @return \Iterator<int, bool|string> */
     public static function p157(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | string)> */
+    /** @return \Iterator<int, bool|string> */
     public static function p158(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | null)> */
+    /** @return \Iterator<int, bool|null> */
     public static function p159(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | null)> */
+    /** @return \Iterator<int, bool|null> */
     public static function p160(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (true | null)> */
+    /** @return \Iterator<int, true|null> */
     public static function p161(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (false | null)> */
+    /** @return \Iterator<int, false|null> */
     public static function p162(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | false | null)> */
+    /** @return \Iterator<int, int|false|null> */
     public static function p163(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (string | true)> */
+    /** @return \Iterator<int, string|true> */
     public static function p164(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | int | null)> */
+    /** @return \Iterator<int, int|\Some\Other|null> */
     public static function p165(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Some\Other | null)> */
+    /** @return \Iterator<int, \Some\Other|null> */
     public static function p166(): \Iterator
     {
         yield [1];
@@ -3159,25 +3159,25 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (iterable | null)> */
+    /** @return \Iterator<int, iterable|null> */
     public static function p170(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (object | null)> */
+    /** @return \Iterator<int, object|null> */
     public static function p171(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (callable | null)> */
+    /** @return \Iterator<int, callable|null> */
     public static function p172(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (resource | null)> */
+    /** @return \Iterator<int, resource|null> */
     public static function p173(): \Iterator
     {
         yield [1];
@@ -3189,91 +3189,91 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, non-empty-list<(int | null)>> */
+    /** @return \Iterator<int, non-empty-list<int|null>> */
     public static function p175(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, iterable<(int | null)>> */
+    /** @return \Iterator<int, iterable<int|null>> */
     public static function p176(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (class-string<\Some\Other> | null)> */
+    /** @return \Iterator<int, class-string<\Some\Other>|null> */
     public static function p177(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\App\Tests\DocsTest | null)> */
+    /** @return \Iterator<int, \App\Tests\DocsTest|null> */
     public static function p178(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (static | null)> */
+    /** @return \Iterator<int, static|null> */
     public static function p179(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (numeric-string | null)> */
+    /** @return \Iterator<int, numeric-string|null> */
     public static function p180(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (non-empty-string | null)> */
+    /** @return \Iterator<int, non-empty-string|null> */
     public static function p181(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\DateTimeInterface | string)> */
+    /** @return \Iterator<int, \DateTimeInterface|string> */
     public static function p182(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\alpha | \Zeta)> */
+    /** @return \Iterator<int, \alpha|\Zeta> */
     public static function p183(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\alpha | \Zeta)> */
+    /** @return \Iterator<int, \alpha|\Zeta> */
     public static function p184(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, ($this | null)> */
+    /** @return \Iterator<int, $this|null> */
     public static function p185(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (class-string | null)> */
+    /** @return \Iterator<int, class-string|null> */
     public static function p186(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (iterable<int> | null)> */
+    /** @return \Iterator<int, iterable<int>|null> */
     public static function p187(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (list | null)> */
+    /** @return \Iterator<int, list|null> */
     public static function p188(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (non-empty-array<mixed> | null)> */
+    /** @return \Iterator<int, non-empty-array|null> */
     public static function p189(): \Iterator
     {
         yield [1];
@@ -3291,7 +3291,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | null)> */
+    /** @return \Iterator<int, int|null> */
     public static function p192(): \Iterator
     {
         yield [1];
@@ -3351,13 +3351,13 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (int | true)> */
+    /** @return \Iterator<int, int|true> */
     public static function p202(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (iterable<string, int> | null)> */
+    /** @return \Iterator<int, iterable<string, int>|null> */
     public static function p203(): \Iterator
     {
         yield [1];
@@ -3369,43 +3369,43 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<\Some\Other> | null)> */
+    /** @return \Iterator<int, \Some\Other[]|null> */
     public static function p205(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (list<int> | null)> */
+    /** @return \Iterator<int, list<int>|null> */
     public static function p206(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (non-empty-list<int> | null)> */
+    /** @return \Iterator<int, non-empty-list<int>|null> */
     public static function p207(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (bool | float | int | string | null)> */
+    /** @return \Iterator<int, bool|float|int|string|null> */
     public static function p208(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (\Foo | \Some\Other | null)> */
+    /** @return \Iterator<int, \Foo|\Some\Other|null> */
     public static function p209(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<array<string>>> */
+    /** @return \Iterator<int, string[][]> */
     public static function p210(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (array<string> | null)> */
+    /** @return \Iterator<int, string[]|null> */
     public static function p211(): \Iterator
     {
         yield [1];
@@ -3458,7 +3458,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p221(): \Iterator
     {
         yield [1];
@@ -3476,31 +3476,31 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p224(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p225(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), mixed> */
+    /** @return \Iterator<int|string, mixed> */
     public static function p226(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int<0, max>, array<string>> */
+    /** @return \Iterator<int<0, max>, string[]> */
     public static function p227(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p228(): \Iterator
     {
         yield [1];
@@ -3512,13 +3512,13 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), \Some\Other> */
+    /** @return \Iterator<int|string, \Some\Other> */
     public static function p230(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), \Foo\Bar> */
+    /** @return \Iterator<int|string, \Foo\Bar> */
     public static function p231(): \Iterator
     {
         yield [1];
@@ -3544,7 +3544,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), mixed> */
+    /** @return \Iterator<int|string, mixed> */
     public static function p236(): \Iterator
     {
         yield [1];
@@ -3567,7 +3567,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), array<int>> */
+    /** @return \Iterator<int|string, int[]> */
     public static function p240(): \Iterator
     {
         yield [1];
@@ -3579,25 +3579,25 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p242(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), mixed> */
+    /** @return \Iterator<int|string, mixed> */
     public static function p243(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, (string | null)> */
+    /** @return \Iterator<int, string|null> */
     public static function p244(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), \App\Tests\DocsTest> */
+    /** @return \Iterator<int|string, \App\Tests\DocsTest> */
     public static function p245(): \Iterator
     {
         yield [1];
@@ -3615,19 +3615,19 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<int, array<string>> */
+    /** @return \Iterator<int, string[]> */
     public static function p248(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<int, array<(int | string), string>> */
+    /** @return \Iterator<int, array<int|string, string>> */
     public static function p249(): \Iterator
     {
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), string> */
+    /** @return \Iterator<int|string, string> */
     public static function p250(): \Iterator
     {
         yield [1];
@@ -3669,7 +3669,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), mixed> */
+    /** @return \Iterator<int|string, mixed> */
     public static function p257(): \Iterator
     {
         yield [1];
@@ -3699,7 +3699,7 @@ final class DocsTest extends TestCase
         yield [1];
     }
 
-    /** @return \Iterator<(int | string), mixed> */
+    /** @return \Iterator<int|string, mixed> */
     public static function p262(): \Iterator
     {
         yield [1];

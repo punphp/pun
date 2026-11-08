@@ -118,7 +118,7 @@ function dynamic($cls): \App\Thing
 
 class Maker
 {
-    public function make($x): self|\App\Thing
+    public function make($x): static|\App\Thing
     {
         if ($x) {
             return new static();

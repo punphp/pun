@@ -23,7 +23,7 @@ final class SomeClass
     }
 
     /**
-     * @return array<string|int, string|int>
+     * @return array<int|string, int|string>
      */
     public function constant()
     {

@@ -21,7 +21,7 @@ class Base
 final class SomeClass extends Base
 {
     /**
-     * @param (\Countable & \Traversable)[]|null[] $items
+     * @param (\Countable&\Traversable)[]|null[] $items
      */
     public function run(array $items): void
     {
