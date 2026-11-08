@@ -4,7 +4,7 @@
 //! of Larastan's SchemaAggregator and ModelPropertyHelper.
 //!
 //! Expected: tests/fixtures/laravel/expected.json, PHPStan 2.3.5 + Larastan 3.14.0's own dumps on a copy of Pinkary
-//! (`scripts/analyse-spike.py oracle`), for `parseModelCastsMethod` false (Larastan's default) and true. Mago's type
+//! (`scripts/export-laravel-fixture.py`), for `parseModelCastsMethod` false (Larastan's default) and true. Mago's type
 //! is read back with pun-phpstan's type-string resolver and printed with PHPStan's `describe()`.
 
 use std::collections::BTreeMap;

@@ -151,7 +151,7 @@ semantic setters and hook skips remains in effect.
 
 The public Laravel regression extends `fixtures/laravel/app/Probe.php` with direct, arrow and ordinary
 closure reads of `LinkUntagged::$url`. The model has no property annotation, so the migration-backed hook
-must supply its type. `scripts/analyse-spike.py oracle <disposable-pinkary-copy>` captures four `string`
+must supply its type. `scripts/export-laravel-fixture.py <disposable-pinkary-copy>` captures four `string`
 dumps under both `parseModelCastsMethod` settings. Before selective dispatch, both Laravel tests fail:
 the direct read is `string`, but both gathered results and the closure body read are `mixed`.
 

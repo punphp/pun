@@ -276,7 +276,7 @@ Assistant's calls in the engine spike (Build 0, 2026-10-17; the plan was silent)
   attributes keep Mago's `mixed`, and the test names them.
 - Where Mago's analyser panics on a debug assertion, `run_mago()` skips that file, as `rules::infer` already does.
 - The coverage verdict counts a PHPStan error as found when a Mago issue of a code mapped to the same Pun rule is in
-  the same file within 10 lines, or a code reviewed by hand as the same check (`SAME_CHECK` in scripts/analyse-spike.py).
+  the same file within 10 lines, or a code reviewed by hand as the same check (`SAME_CHECK` in the Build 0 spike script, since removed).
 - tests/fixtures/rules/gaps.txt was out of date at 915534e (3 listed cases pass, 5 unlisted fail since 138dab1's
   trait-context change). The spike updates the list so the suite is green, with the reason; fixing them is Build 3.
   Analyse 3a fixed the 5 (assistant's calls, where the port stops short of PHPStan: `@method` tags count only for

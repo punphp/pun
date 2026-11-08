@@ -13,7 +13,7 @@ use App\Models\NoTable;
 use App\Models\PollVoteUntagged;
 use App\Models\Third;
 
-/** The model attributes Larastan types, one dumpType() per line; `scripts/analyse-spike.py oracle` runs PHPStan on it. */
+/** The model attributes Larastan types, one dumpType() per line; `scripts/export-laravel-fixture.py` runs PHPStan on it. */
 function probe(
     Link $l,
     LinkUntagged $u,
