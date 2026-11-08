@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 fn pty(dir: &Path, keys: &str) -> String {
     let (out, code) = common::pty::pty(dir, "migrate", keys, &[("NO_COLOR", "1")]);
     assert_eq!(code, Some(0), "{out}");
-    common::pty::strip_ansi(&out)
+    common::strip_ansi(&out)
 }
 
 fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {

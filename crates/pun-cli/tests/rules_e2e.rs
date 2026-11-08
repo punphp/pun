@@ -6,8 +6,6 @@
 //! own output, under its Pun ID) or the same syntax error.
 
 mod common;
-#[path = "common/prettier.rs"]
-mod prettier;
 
 use rayon::prelude::*;
 use serde_json::Value;
@@ -50,7 +48,7 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
 #[test]
 fn every_rule_matches_pint() {
     let cases: Vec<Value> = serde_json::from_str(include_str!("e2e/rules.json")).unwrap();
-    let node_modules = prettier::node_modules();
+    let node_modules = common::prettier::node_modules();
     let failures: Vec<_> = cases.par_iter().enumerate().flat_map(|(i, case)| {
         let mut failures = Vec::new();
         let rule = case["rule"].as_str().unwrap();

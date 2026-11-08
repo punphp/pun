@@ -209,7 +209,7 @@ impl Cx {
                 want.files.keys(),
                 got.files.keys(),
             );
-            assert_eq!(common::strip_sgr(&got.stderr), pun, "{args:?}");
+            assert_eq!(common::strip_ansi(&got.stderr), pun, "{args:?}");
             // Without a summary (an abort before any file), Pint's stdout is the box alone.
             if !want.stdout.starts_with("named: ") {
                 want.stdout = String::new();
@@ -585,7 +585,7 @@ fn staged_and_since_match_pint_on_the_same_files() {
     // An unknown ref aborts like Pint's `--diff=nope`, naming `--since`.
     let got = cx.ours(DIVERGED, "", &["--since=nope"], b"");
     assert_eq!(
-        (common::strip_sgr(&got.stderr), got.code),
+        (common::strip_ansi(&got.stderr), got.code),
         (
             "x The [--since] option is only available when using Git.\n".into(),
             Some(2)

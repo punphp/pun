@@ -5,8 +5,6 @@
 //! oracle. Pun-only behaviour (`--explain`, `config`, unported rules, no pun.toml) is checked by hand-derived
 //! expectations at the end.
 mod common;
-#[path = "common/prettier.rs"]
-mod prettier;
 
 use common::{PUN, migrate, oracle, scratch, write_files};
 
@@ -351,7 +349,7 @@ fn matches_pint() {
 #[test]
 fn blade_like_pint() {
     let Some(oracle) = oracle() else { return };
-    let Some(modules) = prettier::node_modules() else {
+    let Some(modules) = common::prettier::node_modules() else {
         eprintln!("skipping: no prettier in crates/pun-fixers/node_modules (bun install there)");
         return;
     };

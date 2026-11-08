@@ -1,7 +1,5 @@
 //! Real Node/Prettier process lifetime through the CLI, in addition to the oracle output tests.
 mod common;
-#[path = "common/prettier.rs"]
-mod prettier;
 
 use std::io::{Read, Write};
 use std::path::Path;
@@ -43,7 +41,7 @@ impl Drop for Running {
 }
 
 fn project(name: &str) -> Option<std::path::PathBuf> {
-    let modules = prettier::node_modules()?;
+    let modules = common::prettier::node_modules()?;
     let dir = common::project(
         "prettier-worker",
         name,

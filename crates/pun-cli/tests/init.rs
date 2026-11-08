@@ -43,7 +43,7 @@ fn loaded(d: &Path) -> (String, Vec<String>, AnalysePreset) {
 /// prompts whatever `NO_COLOR` says).
 fn tty(d: &Path, keys: &str) -> (String, Option<i32>) {
     let (out, code) = common::pty::pty(d, "init", keys, ENV);
-    (common::pty::strip_ansi(&out), code)
+    (common::strip_ansi(&out), code)
 }
 
 const NEXT: &str = "\n  ✔ Wrote pun.toml\n\n  Done. Run `pun check` any time; `pun check --fix` before you commit.\n  Add `pun check` to CI and your composer scripts.\n";
