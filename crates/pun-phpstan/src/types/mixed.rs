@@ -137,7 +137,9 @@ pub(super) fn intersection(a: &Type, b: &Type) -> Option<Type> {
     };
     if positive.is_some_and(|positive| is_super_type_of(positive, b).yes()) {
         return Some(match excluded.as_ref() {
-            Type::SubtractedObject { excluded, .. } => intersect(vec![b.clone(), (**excluded).clone()]),
+            Type::SubtractedObject { excluded, .. } => {
+                intersect(vec![b.clone(), (**excluded).clone()])
+            }
             _ => Type::Never(NeverKind::Implicit),
         });
     }

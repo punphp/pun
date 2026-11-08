@@ -95,14 +95,22 @@ impl Method<'_> {
 
     pub(super) fn variants(&self) -> Variants {
         match self {
-            Method::User { f, declaring, name, .. } => {
+            Method::User {
+                f, declaring, name, ..
+            } => {
                 let mut v = Variants::of(f);
                 for a in &mut v.all {
                     let storage = declaring.declaring_method_ids.get(name);
                     a.class = Some(declaring.name.to_string());
                     a.callee = Some(super::params::UserCallee {
-                        class: Some(storage.map_or(declaring.name, |id| id.get_class_name()).to_string()),
-                        name: storage.map_or(f.name, |id| id.get_method_name()).to_string(),
+                        class: Some(
+                            storage
+                                .map_or(declaring.name, |id| id.get_class_name())
+                                .to_string(),
+                        ),
+                        name: storage
+                            .map_or(f.name, |id| id.get_method_name())
+                            .to_string(),
                         reflected_name: name.to_string(),
                     });
                 }
@@ -229,12 +237,15 @@ fn declared<'a>(
         // the class's method, which the patch materialised in the class's slot
         if k.methods.contains(lower)
             && let Some(f) = codebase.get_method(k.name.as_bytes(), lower.as_bytes())
-            && f.flags.contains(mago_codex::metadata::flags::MetadataFlags::PATCH)
+            && f.flags
+                .contains(mago_codex::metadata::flags::MetadataFlags::PATCH)
             && codebase
                 .get_declaring_method_class(k.name.as_bytes(), lower.as_bytes())
                 .is_some_and(|d| d.as_bytes().eq_ignore_ascii_case(k.name.as_bytes()))
             && k.direct_trait_names().any(|t| {
-                codebase.get_class_like(t.as_bytes()).is_some_and(|t| t.methods.contains(lower))
+                codebase
+                    .get_class_like(t.as_bytes())
+                    .is_some_and(|t| t.methods.contains(lower))
             })
         {
             return Some(user(c, k, f, *lower));
@@ -297,9 +308,23 @@ fn user<'a>(
     f: &'a FunctionLikeMetadata,
     name: mago_word::Word,
 ) -> Method<'a> {
-    let visibility = c.codebase.get_method_visibility(declaring.name.as_bytes(), name.as_bytes())
-        .unwrap_or_else(|| f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility));
-    let original_name = c.codebase.get_method_original_name(declaring.name.as_bytes(), name.as_bytes())
+    let visibility = c
+        .codebase
+        .get_method_visibility(declaring.name.as_bytes(), name.as_bytes())
+        .unwrap_or_else(|| {
+            f.method_metadata
+                .as_ref()
+                .map_or(Visibility::Public, |m| m.visibility)
+        });
+    let original_name = c
+        .codebase
+        .get_method_original_name(declaring.name.as_bytes(), name.as_bytes())
         .unwrap_or(f.original_name);
-    Method::User { declaring, f, name, original_name, visibility }
+    Method::User {
+        declaring,
+        f,
+        name,
+        original_name,
+        visibility,
+    }
 }

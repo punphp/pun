@@ -11,7 +11,11 @@ use pun_phpstan::ignore::Error;
 use crate::Project;
 use crate::codebase::Sources;
 
-pub(crate) fn unused_traits(project: &Project, codebase: &CodebaseMetadata, sources: &Sources) -> Vec<Error> {
+pub(crate) fn unused_traits(
+    project: &Project,
+    codebase: &CodebaseMetadata,
+    sources: &Sources,
+) -> Vec<Error> {
     if project.level < 4 || project.only_files {
         return Vec::new();
     }

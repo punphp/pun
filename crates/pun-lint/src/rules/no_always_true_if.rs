@@ -97,7 +97,10 @@ fn change(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>])
     if any_node(chain[0], &|n| match n {
         Node::Inline(inline) | Node::Statement(Statement::Inline(inline)) => {
             let value = inline.value;
-            let value = value.strip_prefix(b"\r\n".as_slice()).or_else(|| value.strip_prefix(b"\n".as_slice())).unwrap_or(value);
+            let value = value
+                .strip_prefix(b"\r\n".as_slice())
+                .or_else(|| value.strip_prefix(b"\n".as_slice()))
+                .unwrap_or(value);
             !value.is_empty()
         }
         _ => false,

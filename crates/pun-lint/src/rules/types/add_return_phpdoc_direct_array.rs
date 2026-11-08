@@ -7,11 +7,11 @@
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::Type;
 
+use super::class_scope;
 use super::docblock::{FunctionLike, doc_report, referenced_classes};
 use super::facts::facts;
 use super::never::has_parent_class_method;
 use super::silent_void::Place;
-use super::{class_scope};
 use crate::rules::phpdoc_writer::type_mapper::{generalize_constant_array, is_useful_array_tag};
 use crate::rules::phpdoc_writer::{TypeNode, expr_type};
 use crate::{Context, Report, Rule};
@@ -71,7 +71,8 @@ impl Rule for AddReturnPhpdocDirectArray {
         };
         // `shouldSkipEmptyArray()`: `@return array{}` is too narrow, but a bare `@return array` becomes `mixed[]`
         if empty {
-            if !matches!(info.return_tag().map(|t| &t.ty), Some(TypeNode::Identifier(name)) if name == "array") {
+            if !matches!(info.return_tag().map(|t| &t.ty), Some(TypeNode::Identifier(name)) if name == "array")
+            {
                 return;
             }
             info.set_return_type(TypeNode::Array {

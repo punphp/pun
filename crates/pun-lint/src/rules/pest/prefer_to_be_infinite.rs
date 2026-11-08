@@ -34,7 +34,8 @@ impl Rule for PreferToBeInfinite {
             "toBeInfinite",
             |values| match values {
                 [value]
-                    if (type_is(ctx, value, Is::Float) == Trinary::Yes || type_is(ctx, value, Is::Integer) == Trinary::Yes) =>
+                    if (type_is(ctx, value, Is::Float) == Trinary::Yes
+                        || type_is(ctx, value, Is::Integer) == Trinary::Yes) =>
                 {
                     Some((*value, vec![]))
                 }

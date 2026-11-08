@@ -366,7 +366,11 @@ impl Rule for AddDoctrineRepositoryReturnType {
 
 /// `resolveEntityClassnameFromPhpDoc`: the entity of the class doc's first `@extends EntityRepository<Entity, ...>`,
 /// when it is one name that no `@template` of the doc declares.
-fn entity_from_doc(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<String> {
+fn entity_from_doc(
+    ctx: &crate::Context<'_>,
+    node: Node<'_, '_>,
+    ancestors: &[Node<'_, '_>],
+) -> Option<String> {
     let doc = Annotated::of(ctx, node, ancestors)?.doc?;
     let mut extends: Option<&str> = None;
     let mut templates: Vec<&str> = Vec::new();

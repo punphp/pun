@@ -7,9 +7,9 @@
 //! takes the type Mago gives it.
 
 mod add_allow_mock_objects_attribute;
+mod add_closure_return_type_from_assert;
 mod add_data_provider_allow_mock_objects;
 mod add_data_provider_iterator_return_type;
-mod add_closure_return_type_from_assert;
 mod add_depended_test_return_type;
 mod add_instanceof_assert;
 mod add_mock_intersection_param;
@@ -97,6 +97,7 @@ mod require_string_assert_argument;
 pub(crate) use crate::rules::rector_batch5::resolve_class_name as resolve;
 pub(crate) use crate::rules::rector_code_quality::text;
 pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;
+pub use add_closure_return_type_from_assert::AddClosureReturnTypeFromAssert;
 pub use add_data_provider_allow_mock_objects::AddDataProviderAllowMockObjects;
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
@@ -156,7 +157,6 @@ pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
 pub use prefer_property_assertions::PreferPropertyAssertions;
-pub use add_closure_return_type_from_assert::AddClosureReturnTypeFromAssert;
 pub use prefer_requires_attribute::PreferRequiresAttribute;
 pub use prefer_same_for_scalars::PreferSameForScalars;
 pub use prefer_simple_callback_assert::PreferSimpleCallbackAssert;
@@ -1057,7 +1057,12 @@ pub(crate) fn block_anew(
 /// php-parser's `pMaybeMultiline` over items whose source spans are `items` (the first starts after `from`), printed
 /// at the indent `indent`: the items joined with `, `, or, when one has comments before it, each item on a line of its
 /// own one level deeper after its comments, without a trailing comma, and a line break before the closing token.
-pub(crate) fn maybe_multiline(ctx: &crate::Context<'_>, from: usize, items: &[Span], indent: &str) -> String {
+pub(crate) fn maybe_multiline(
+    ctx: &crate::Context<'_>,
+    from: usize,
+    items: &[Span],
+    indent: &str,
+) -> String {
     let source = ctx.source;
     use crate::rules::rector_stmts::{previous_token_end, tokens};
     let mut from = from;

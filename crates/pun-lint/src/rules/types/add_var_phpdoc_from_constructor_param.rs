@@ -6,8 +6,7 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::Type;
 
 use super::docblock::{
-    assignments, class_members, docs_report, is_array_hint, method, properties,
-    this_property,
+    assignments, class_members, docs_report, is_array_hint, method, properties, this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
 use crate::rules::phpdoc_writer::{DocTarget, decorate_var, expr_type};

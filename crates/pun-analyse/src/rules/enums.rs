@@ -249,12 +249,10 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
         TAtomic::Scalar(TScalar::String(TString {
             literal: Some(TStringLiteral::Value(v)),
             ..
-        })) => Some(Type::ConstString(
-            v.as_bytes().to_vec(),
-        )),
-        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => Some(
-            Type::ConstString(value.as_bytes().to_vec()),
-        ),
+        })) => Some(Type::ConstString(v.as_bytes().to_vec())),
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => {
+            Some(Type::ConstString(value.as_bytes().to_vec()))
+        }
         TAtomic::Scalar(TScalar::Bool(b)) => b.value.map(Type::ConstBool),
         TAtomic::Null => Some(Type::Null),
         TAtomic::Reference(TReference::Member {

@@ -6,7 +6,9 @@ use std::cell::RefCell;
 
 use mago_span::HasSpan;
 use mago_syntax::cst::{Function, Method};
-use pun_phpstan::types::{Conditional, Signature, Subject, Type, is_super_type_of, recommended_level};
+use pun_phpstan::types::{
+    Conditional, Signature, Subject, Type, is_super_type_of, recommended_level,
+};
 
 use super::{Checker, declared};
 
@@ -31,8 +33,12 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
-    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else {
+        return;
+    };
     let errors = declared::with_classes(c, || check(&declared::method(c, m, declaring, context)));
     for (identifier, message) in errors {
         c.report(m.span(), identifier, message, None);
@@ -51,7 +57,11 @@ fn predicate(sig: &Signature) -> bool {
     if !sig.params.iter().any(|p| p.name == name[1..]) {
         return false;
     }
-    let (yes, no) = if c.negated { (&c.otherwise, &c.then) } else { (&c.then, &c.otherwise) };
+    let (yes, no) = if c.negated {
+        (&c.otherwise, &c.then)
+    } else {
+        (&c.then, &c.otherwise)
+    };
     let branch = |t: &Type| match t {
         Type::ConstBool(b) => Some(Some(*b)),
         _ if t.is_boolean().yes() => Some(None),
@@ -101,7 +111,10 @@ fn has_template(t: &Type) -> bool {
 fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
     let found = RefCell::new(Vec::new());
     for (_, ty, out, closure_this) in &sig.params {
-        for t in [Some(ty), out.as_ref(), closure_this.as_ref()].into_iter().flatten() {
+        for t in [Some(ty), out.as_ref(), closure_this.as_ref()]
+            .into_iter()
+            .flatten()
+        {
             conditionals(t, &found);
         }
     }
@@ -126,7 +139,10 @@ fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
             Subject::Parameter(name) => {
                 let name = &name[1..];
                 let Some((_, ty, ..)) = sig.params.iter().find(|p| p.0 == name) else {
-                    errors.push(("parameter.notFound", format!("Conditional return type references unknown parameter ${name}.")));
+                    errors.push((
+                        "parameter.notFound",
+                        format!("Conditional return type references unknown parameter ${name}."),
+                    ));
                     continue;
                 };
                 ty.clone()
@@ -135,11 +151,13 @@ fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
         let target = &conditional.target;
         // (an OffsetAccessType subject of a template resolves as its bound's offset type)
         let resolved = match &subject {
-            Type::OffsetAccess(..) => match pun_phpstan::resolve::resolve_late(&subject.resolve_to_bounds()) {
-                // ponytail: an offset Pun's resolver leaves unresolved is not checked
-                Type::OffsetAccess(..) => continue,
-                t => t,
-            },
+            Type::OffsetAccess(..) => {
+                match pun_phpstan::resolve::resolve_late(&subject.resolve_to_bounds()) {
+                    // ponytail: an offset Pun's resolver leaves unresolved is not checked
+                    Type::OffsetAccess(..) => continue,
+                    t => t,
+                }
+            }
             _ => subject.clone(),
         };
         let is = is_super_type_of(target, &resolved);
@@ -149,7 +167,11 @@ fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
         let level = recommended_level(&subject, Some(target));
         let always = is.yes() != conditional.negated;
         errors.push((
-            if always { "conditionalType.alwaysTrue" } else { "conditionalType.alwaysFalse" },
+            if always {
+                "conditionalType.alwaysTrue"
+            } else {
+                "conditionalType.alwaysFalse"
+            },
             format!(
                 "Condition \"{} {} {}\" in conditional return type is always {}.",
                 subject.describe(level),

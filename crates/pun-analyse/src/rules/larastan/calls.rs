@@ -282,7 +282,9 @@ fn called_on_model<'arena>(c: &Checker<'_, 'arena>, class: &Expression<'arena>) 
     match class {
         Expression::Identifier(id) => is_a(c, c.names.get(&id.span()), MODEL),
         // `self`, `static` and `parent`: Scope::resolveName()
-        Expression::Self_(_) | Expression::Static(_) => c.class_scope().is_some_and(|k| is_a(c, k.name.as_bytes(), MODEL)),
+        Expression::Self_(_) | Expression::Static(_) => c
+            .class_scope()
+            .is_some_and(|k| is_a(c, k.name.as_bytes(), MODEL)),
         Expression::Parent(_) => c
             .class_scope()
             .and_then(|k| k.direct_parent_class)

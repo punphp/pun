@@ -33,9 +33,7 @@ impl Rule for PreferToBeList {
             "array_is_list",
             "toBeList",
             |values| match values {
-                [value] if type_is(ctx, value, Is::Array) == Trinary::Yes => {
-                    Some((*value, vec![]))
-                }
+                [value] if type_is(ctx, value, Is::Array) == Trinary::Yes => Some((*value, vec![])),
                 _ => None,
             },
             out,

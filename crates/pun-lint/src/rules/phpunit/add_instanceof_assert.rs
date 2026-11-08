@@ -79,11 +79,18 @@ impl Rule for AddInstanceofAssertForArgument {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        run(node, ancestors, ctx, out, false, &|stmt, collection, dynamic| {
-            matched_argument(ctx, stmt, collection, dynamic)
-                .into_iter()
-                .collect()
-        });
+        run(
+            node,
+            ancestors,
+            ctx,
+            out,
+            false,
+            &|stmt, collection, dynamic| {
+                matched_argument(ctx, stmt, collection, dynamic)
+                    .into_iter()
+                    .collect()
+            },
+        );
     }
 }
 
@@ -173,7 +180,9 @@ fn asserted_variable<'a>(statement: &'a Statement<'a>, static_calls: bool) -> Op
     };
     let (method, arguments) = match e.expression {
         Expression::Call(Call::Method(call)) => (&call.method, &call.argument_list),
-        Expression::Call(Call::StaticMethod(call)) if static_calls => (&call.method, &call.argument_list),
+        Expression::Call(Call::StaticMethod(call)) if static_calls => {
+            (&call.method, &call.argument_list)
+        }
         _ => return None,
     };
     let ClassLikeMemberSelector::Identifier(name) = method else {
@@ -207,7 +216,11 @@ fn dynamic_assign_classes(ctx: &Context<'_>, statement: &Statement<'_>, out: &mu
         _ => return,
     }
     let facts = facts(ctx);
-    for atomic in facts.full_type(node_span(assignment.rhs)).iter().flat_map(|t| t.types.iter()) {
+    for atomic in facts
+        .full_type(node_span(assignment.rhs))
+        .iter()
+        .flat_map(|t| t.types.iter())
+    {
         object_class_names(atomic, out);
     }
 }
@@ -458,7 +471,12 @@ fn is_object_type(t: &TUnion) -> bool {
 /// The edit that puts the asserts before the statement at `i` of `list`, as php-parser's format-preserving printer
 /// inserts statements: each on a line of its own after the statement before, at that statement's indent, or before
 /// the first statement and its comments, each followed by a line break to its indent.
-fn insert_before(ctx: &crate::Context<'_>, list: &List<'_>, i: usize, asserts: &[&Collected]) -> Edit {
+fn insert_before(
+    ctx: &crate::Context<'_>,
+    list: &List<'_>,
+    i: usize,
+    asserts: &[&Collected],
+) -> Edit {
     let source = ctx.source;
     let indent_of = |pos: usize| {
         let width: usize = line_indent(source, pos)

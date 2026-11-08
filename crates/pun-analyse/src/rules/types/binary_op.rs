@@ -66,8 +66,12 @@ fn assign_op(op: &AssignmentOperator) -> Option<Op> {
 /// The operands the rule reads.
 pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
     match e {
-        Expression::Binary(b) if binary_op(&b.operator).is_some() => spans.extend([b.lhs.span(), b.rhs.span()]),
-        Expression::Assignment(a) if assign_op(&a.operator).is_some() => spans.extend([a.lhs.span(), a.rhs.span()]),
+        Expression::Binary(b) if binary_op(&b.operator).is_some() => {
+            spans.extend([b.lhs.span(), b.rhs.span()]);
+        }
+        Expression::Assignment(a) if assign_op(&a.operator).is_some() => {
+            spans.extend([a.lhs.span(), a.rhs.span()]);
+        }
         Expression::Pipe(p) => spans.extend([p.input.span(), p.callable.span()]),
         _ => {}
     }
@@ -79,12 +83,19 @@ const FALSE: Type = Type::ConstBool(false);
 /// `getConstantScalarTypes()`: the constant scalars a type is a union of (`bool` is `true|false`).
 fn constant_scalars(t: &Type) -> Option<Vec<&Type>> {
     match t {
-        Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::Null => Some(vec![t]),
+        Type::ConstInt(_)
+        | Type::ConstFloat(_)
+        | Type::ConstString(_)
+        | Type::ConstBool(_)
+        | Type::Null => Some(vec![t]),
         Type::Bool => Some(vec![&TRUE, &FALSE]),
-        Type::Union(ts) => ts.iter().map(constant_scalars).try_fold(Vec::new(), |mut all, one| {
-            all.extend(one?);
-            Some(all)
-        }),
+        Type::Union(ts) => ts
+            .iter()
+            .map(constant_scalars)
+            .try_fold(Vec::new(), |mut all, one| {
+                all.extend(one?);
+                Some(all)
+            }),
         _ => None,
     }
 }
@@ -94,7 +105,10 @@ fn number(t: &Type) -> f64 {
     match t {
         Type::ConstInt(i) => *i as f64,
         Type::ConstFloat(f) => *f,
-        Type::ConstString(s) => std::str::from_utf8(s).ok().and_then(|s| s.trim().parse().ok()).unwrap_or(0.0),
+        Type::ConstString(s) => std::str::from_utf8(s)
+            .ok()
+            .and_then(|s| s.trim().parse().ok())
+            .unwrap_or(0.0),
         Type::ConstBool(b) => f64::from(u8::from(*b)),
         _ => 0.0,
     }
@@ -110,12 +124,23 @@ fn pow_fails(base: &Type, exponent: &Type) -> bool {
         Type::Resource | Type::Closure(_) | Type::Callable(_) | Type::Iterable(..) => true,
         _ if base.is_array().yes() => true,
         _ if !is_super_type_of(&Type::ObjectWithoutClass, base).no() => {
-            matches!(exponent, Type::Never(_)) || is_super_type_of(&Type::ObjectWithoutClass, exponent).no()
+            matches!(exponent, Type::Never(_))
+                || is_super_type_of(&Type::ObjectWithoutClass, exponent).no()
         }
         // ExponentiateHelper
         _ => match exponent {
             Type::Union(ts) => ts.iter().any(|t| pow_fails(base, t)),
-            _ => !is_super_type_of(&Type::Union(vec![Type::Int, Type::Float, Type::String, Type::Bool, Type::Null]), exponent).yes(),
+            _ => !is_super_type_of(
+                &Type::Union(vec![
+                    Type::Int,
+                    Type::Float,
+                    Type::String,
+                    Type::Bool,
+                    Type::Null,
+                ]),
+                exponent,
+            )
+            .yes(),
         },
     }
 }
@@ -135,8 +160,7 @@ fn fails(op: Op, l: &Type, r: &Type, sm: StrictMixed) -> bool {
     }
     // (a never operand, whose result is never, is no type to check)
     // ponytail: more than CALCULATE_SCALARS_LIMIT (128) pairs of constant scalars are evaluated all the same
-    if let (Some(ls), Some(rs)) = (constant_scalars(l), constant_scalars(r))
-    {
+    if let (Some(ls), Some(rs)) = (constant_scalars(l), constant_scalars(r)) {
         let bitwise = matches!(op, Op::BitAnd | Op::BitOr | Op::BitXor);
         return ls.iter().any(|a| {
             rs.iter().any(|b| {
@@ -152,7 +176,9 @@ fn fails(op: Op, l: &Type, r: &Type, sm: StrictMixed) -> bool {
             })
         });
     }
-    let zero = |t: &Type| constant_scalars(t).is_some_and(|ts| ts.iter().any(|t| !num(t) && number(t) == 0.0));
+    let zero = |t: &Type| {
+        constant_scalars(t).is_some_and(|ts| ts.iter().any(|t| !num(t) && number(t) == 0.0))
+    };
     let common = |l: &Type, r: &Type| l.is_array().yes() || r.is_array().yes() || num(l) || num(r);
     match op {
         // (a `mixed` operand, which the level checks only as a StrictMixedType, is no MixedType here)
@@ -173,8 +199,17 @@ fn fails(op: Op, l: &Type, r: &Type, sm: StrictMixed) -> bool {
             if (la.yes() && ra.maybe()) || (la.maybe() && ra.yes()) {
                 return false;
             }
-            let plusable = Type::Union(vec![Type::String, Type::Float, Type::Int, Type::array(mixed(), mixed()), Type::Bool]);
-            let (lp, rp) = (is_super_type_of(&plusable, l).yes(), is_super_type_of(&plusable, r).yes());
+            let plusable = Type::Union(vec![
+                Type::String,
+                Type::Float,
+                Type::Int,
+                Type::array(mixed(), mixed()),
+                Type::Bool,
+            ]);
+            let (lp, rp) = (
+                is_super_type_of(&plusable, l).yes(),
+                is_super_type_of(&plusable, r).yes(),
+            );
             !(la.maybe() && ra.maybe() && lp && rp) && common(l, r)
         }
         _ => common(l, r),
@@ -191,20 +226,33 @@ fn checked(c: &Checker, e: &Expression, op: Op, sm: StrictMixed) -> Option<Type>
     c.find_type_to_check(e, &callback).ty
 }
 
-fn check(c: &mut Checker, op: Op, left: &Expression, right: &Expression, sigil: Span, identifier: &str) {
+fn check(
+    c: &mut Checker,
+    op: Op,
+    left: &Expression,
+    right: &Expression,
+    sigil: Span,
+    identifier: &str,
+) {
     if c.level < 2 {
         return;
     }
     let error = declared::with_classes(c, || {
         let sm = StrictMixed::default();
-        let (Some(l), Some(r)) = (checked(c, left, op, sm), checked(c, right, op, sm)) else { return false };
+        let (Some(l), Some(r)) = (checked(c, left, op, sm), checked(c, right, op, sm)) else {
+            return false;
+        };
         // the GMP and BcMath\Number operator extensions type the operations of those objects
         let extension = |t: &Type| {
-            ["GMP", "BcMath\\Number"].iter().any(|k| is_super_type_of(&Type::Object((*k).into(), vec![], false), t).yes())
+            ["GMP", "BcMath\\Number"]
+                .iter()
+                .any(|k| is_super_type_of(&Type::Object((*k).into(), vec![], false), t).yes())
         };
         !extension(&l) && !extension(&r) && fails(op, &l, &r, sm)
     });
-    let (Some(l), Some(r)) = (c.phpstan_type(left), c.phpstan_type(right)) else { return };
+    let (Some(l), Some(r)) = (c.phpstan_type(left), c.phpstan_type(right)) else {
+        return;
+    };
     if !error {
         return;
     }
@@ -229,7 +277,13 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
     }
 }
 
-
 pub(in super::super) fn pipe(c: &mut Checker, p: &Pipe) {
-    check(c, Op::Pipe, p.input, p.callable, p.operator, "binaryOp.invalid");
+    check(
+        c,
+        Op::Pipe,
+        p.input,
+        p.callable,
+        p.operator,
+        "binaryOp.invalid",
+    );
 }

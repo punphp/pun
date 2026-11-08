@@ -84,7 +84,9 @@ fn level_0() {
 fn check_class_case_sensitivity() {
     let keep = |i: &str| CLASS_NAME_CHECK.contains(&i);
     let mut project = Project::from_config(&root(), &config("phpstan-level2").parameters);
-    project.options.insert(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY);
+    project
+        .options
+        .insert(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY);
     let got = keys(run(&project).unwrap(), &keep);
     assert_eq!(got, expected("phpstan-level2", &keep));
 }
@@ -99,10 +101,9 @@ fn case_options(neon: &str) {
         ..Options::for_project(&dir)
     })
     .unwrap();
-    let expected: Value = serde_json::from_slice(
-        &std::fs::read(root.join(format!("expected-{neon}.json"))).unwrap(),
-    )
-    .unwrap();
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join(format!("expected-{neon}.json"))).unwrap())
+            .unwrap();
     assert!(expected["general"].as_array().unwrap().is_empty());
     let prefix = format!("{dir}/");
     let mut got: Vec<_> = analyse(&root, &config)

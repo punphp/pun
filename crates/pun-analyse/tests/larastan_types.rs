@@ -60,7 +60,11 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
     let configs = test["configs"].as_array().unwrap();
     assert_eq!(configs.len(), 1, "{}", test["test"]);
     let config = resolve(&Options {
-        config: Some(root.join(configs[0].as_str().unwrap()).to_string_lossy().into_owned()),
+        config: Some(
+            root.join(configs[0].as_str().unwrap())
+                .to_string_lossy()
+                .into_owned(),
+        ),
         // `-l 8`, so the level's parameters resolve too (`checkThisOnly` is off from level 2)
         level: Some("8".to_string()),
         ..Options::for_project(&root.to_string_lossy())
@@ -74,8 +78,16 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
     let mut runs: Vec<(Vec<PathBuf>, BTreeSet<&str>)> = Vec::new();
     for case in test["cases"].as_array().unwrap() {
         let file = root.join(case["file"].as_str().unwrap());
-        let names: BTreeSet<&str> = case["declares"].as_array().unwrap().iter().map(|n| n.as_str().unwrap()).collect();
-        match runs.iter_mut().find(|(_, declared)| declared.is_disjoint(&names)) {
+        let names: BTreeSet<&str> = case["declares"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|n| n.as_str().unwrap())
+            .collect();
+        match runs
+            .iter_mut()
+            .find(|(_, declared)| declared.is_disjoint(&names))
+        {
             Some((files, declared)) => {
                 files.push(file);
                 declared.extend(names);
@@ -92,7 +104,11 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
             by_file
                 .entry(file)
                 .or_default()
-                .extend(found(std::iter::once((e.line, e.identifier.as_str(), e.message.as_str()))));
+                .extend(found(std::iter::once((
+                    e.line,
+                    e.identifier.as_str(),
+                    e.message.as_str(),
+                ))));
         }
     }
     by_file
@@ -102,7 +118,8 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
 fn larastan_type_tests() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan-types");
     // PUN_LARASTAN_TYPES_ROOT: the full Larastan checkout the fixture was cut from, which must give the same result
-    let root = std::env::var_os("PUN_LARASTAN_TYPES_ROOT").map_or_else(|| dir.join("root"), PathBuf::from);
+    let root =
+        std::env::var_os("PUN_LARASTAN_TYPES_ROOT").map_or_else(|| dir.join("root"), PathBuf::from);
     let gaps: BTreeSet<String> = std::fs::read_to_string(dir.join("gaps.txt"))
         .unwrap()
         .lines()
@@ -128,16 +145,17 @@ fn larastan_type_tests() {
                 )
             }));
             let got = got.get(file).cloned().unwrap_or_default();
-            let mut compare = |name: String, want: Found, got: Found, count: &mut (usize, usize), n: usize| {
-                count.1 += n;
-                if want == got {
-                    count.0 += n;
-                } else {
-                    let missing: Vec<_> = want.difference(&got).collect();
-                    let extra: Vec<_> = got.difference(&want).collect();
-                    failing.insert(name, format!("  missing {missing:?}\n  extra   {extra:?}"));
-                }
-            };
+            let mut compare =
+                |name: String, want: Found, got: Found, count: &mut (usize, usize), n: usize| {
+                    count.1 += n;
+                    if want == got {
+                        count.0 += n;
+                    } else {
+                        let missing: Vec<_> = want.difference(&got).collect();
+                        let extra: Vec<_> = got.difference(&want).collect();
+                        failing.insert(name, format!("  missing {missing:?}\n  extra   {extra:?}"));
+                    }
+                };
             let Some(asserts) = case["asserts"].as_array() else {
                 compare(file.to_string(), want, got, &mut counts[2], 1);
                 continue;
@@ -147,16 +165,36 @@ fn larastan_type_tests() {
                 *lines.entry(line.as_i64().unwrap()).or_default() += 1;
             }
             let at = |errors: &Found, line: i64| -> Found {
-                errors.iter().filter(|(l, id, _)| *l == line && is_assertion(id)).cloned().collect()
+                errors
+                    .iter()
+                    .filter(|(l, id, _)| *l == line && is_assertion(id))
+                    .cloned()
+                    .collect()
             };
             for (&line, &n) in &lines {
-                compare(format!("{file}:{line}"), at(&want, line), at(&got, line), &mut counts[0], n);
+                compare(
+                    format!("{file}:{line}"),
+                    at(&want, line),
+                    at(&got, line),
+                    &mut counts[0],
+                    n,
+                );
             }
             // assertion errors off the gathered lines count with the file's other errors
             let other = |errors: &Found| -> Found {
-                errors.iter().filter(|(l, id, _)| !is_assertion(id) || !lines.contains_key(l)).cloned().collect()
+                errors
+                    .iter()
+                    .filter(|(l, id, _)| !is_assertion(id) || !lines.contains_key(l))
+                    .cloned()
+                    .collect()
             };
-            compare(file.to_string(), other(&want), other(&got), &mut counts[1], 1);
+            compare(
+                file.to_string(),
+                other(&want),
+                other(&got),
+                &mut counts[1],
+                1,
+            );
         }
     }
     let [asserts, others, integration] = counts;
@@ -172,10 +210,16 @@ fn larastan_type_tests() {
     assert!(asserts.1 >= 1390, "only {} assertions", asserts.1);
     let failing_names: BTreeSet<String> = failing.keys().cloned().collect();
     let fixed: Vec<_> = gaps.difference(&failing_names).collect();
-    let new: Vec<_> = failing.iter().filter(|(name, _)| !gaps.contains(*name)).collect();
+    let new: Vec<_> = failing
+        .iter()
+        .filter(|(name, _)| !gaps.contains(*name))
+        .collect();
     assert!(
         fixed.is_empty() && new.is_empty(),
         "fixed (remove from gaps.txt): {fixed:#?}\nnew failures:\n{}",
-        new.iter().map(|(name, diff)| format!("{name}\n{diff}")).collect::<Vec<_>>().join("\n")
+        new.iter()
+            .map(|(name, diff)| format!("{name}\n{diff}"))
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }

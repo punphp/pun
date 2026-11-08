@@ -38,7 +38,6 @@ pub(crate) fn add_hint(param: &FunctionLikeParameter<'_>, declaration: &str) -> 
     Edit::new(Span::new(at, at), format!("{declaration} "))
 }
 
-
 /// Whether PHPStan's type is a `MixedType`: Mago's union holds `mixed` (a union with `mixed` is `mixed` in PHPStan).
 pub(crate) fn is_mixed(t: &TUnion) -> bool {
     t.types.is_empty() || t.types.iter().any(|a| matches!(a, TAtomic::Mixed(_)))
@@ -63,7 +62,12 @@ pub(crate) fn param_declaration_in(
     order: &[String],
 ) -> Option<String> {
     let expanded = expand(&t.types)?;
-    declaration_of(normalize_bool(union_order(&expanded)), codebase, php_version, order)
+    declaration_of(
+        normalize_bool(union_order(&expanded)),
+        codebase,
+        php_version,
+        order,
+    )
 }
 
 /// [`param_declaration`] of the members of a union in the order given (PHPStan's `UnionType` as Rector builds it,
@@ -74,7 +78,12 @@ pub(crate) fn param_declaration_unsorted(
     php_version: u32,
 ) -> Option<String> {
     let expanded = expand(types)?;
-    declaration_of(normalize_bool(expanded.iter().collect()), codebase, php_version, &[])
+    declaration_of(
+        normalize_bool(expanded.iter().collect()),
+        codebase,
+        php_version,
+        &[],
+    )
 }
 
 fn declaration_of(
@@ -136,14 +145,27 @@ fn declaration_of(
             let object = many.iter().any(|n| n == "object");
             let iterable = many.iter().any(|n| n == "iterable");
             many.retain(|n| {
-                !(object && (n.starts_with('\\') || n == "self" || n == "static" || n.contains('&'))) && !(iterable && n == "array")
+                !(object
+                    && (n.starts_with('\\') || n == "self" || n == "static" || n.contains('&')))
+                    && !(iterable && n == "array")
             });
             // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
-            let plain: Vec<String> = many.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
-            many.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            let plain: Vec<String> = many
+                .iter()
+                .filter(|n| !n.contains('&'))
+                .map(|n| n.to_ascii_lowercase())
+                .collect();
+            many.retain(|n| {
+                !n.contains('&')
+                    || !n
+                        .split('&')
+                        .any(|part| plain.contains(&part.to_ascii_lowercase()))
+            });
             match many.as_slice() {
                 [one] => return Some(one.clone()),
-                [a, b] if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') => {
+                [a, b]
+                    if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') =>
+                {
                     let other = if a == "null" { b } else { a };
                     if other != "false" && other != "true" {
                         return Some(format!("?{other}"));
@@ -169,11 +191,16 @@ fn declaration_of(
 
 /// Sort the class names of `names` among their own slots by where `order` names them; the rest stay put.
 fn order_classes(names: &mut [String], order: &[String]) {
-    let slots: Vec<usize> = (0..names.len()).filter(|&i| names[i].starts_with('\\')).collect();
+    let slots: Vec<usize> = (0..names.len())
+        .filter(|&i| names[i].starts_with('\\'))
+        .collect();
     let mut classes: Vec<String> = slots.iter().map(|&i| names[i].clone()).collect();
     classes.sort_by_key(|n| {
         let short = n.rsplit('\\').next().unwrap_or(n).to_ascii_lowercase();
-        order.iter().position(|o| *o == short).unwrap_or(order.len())
+        order
+            .iter()
+            .position(|o| *o == short)
+            .unwrap_or(order.len())
     });
     for (slot, class) in slots.into_iter().zip(classes) {
         names[slot] = class;
@@ -210,16 +237,17 @@ pub(crate) fn constant_values<'ast, 'arena>(
     values: &[TUnion],
 ) -> Option<Vec<TAtomic>> {
     use mago_syntax::cst::ArrayElement;
-    let flat: Vec<TAtomic> = values.iter().flat_map(|v| v.types.iter().cloned()).collect();
+    let flat: Vec<TAtomic> = values
+        .iter()
+        .flat_map(|v| v.types.iter().cloned())
+        .collect();
     // a variable last assigned a literal with the same values
     let source = assigned(ancestors, expr);
     let expr = if std::ptr::eq(source, expr) {
         expr
     } else {
         match constant_values(facts, ancestors, source, values) {
-            Some(types) if types.len() == flat.len()
-                && types.iter().all(|t| flat.contains(t)) =>
-            {
+            Some(types) if types.len() == flat.len() && types.iter().all(|t| flat.contains(t)) => {
                 return Some(types);
             }
             _ => expr,
@@ -232,7 +260,14 @@ pub(crate) fn constant_values<'ast, 'arena>(
     };
     // the values of a literal in the order written; a spread (`...$a`) takes Mago's order
     let written: Option<Vec<&Expression<'_>>> = elements.and_then(|elements| {
-        elements.iter().map(|e| match e { ArrayElement::KeyValue(e) => Some(e.value), ArrayElement::Value(e) => Some(e.value), _ => None }).collect()
+        elements
+            .iter()
+            .map(|e| match e {
+                ArrayElement::KeyValue(e) => Some(e.value),
+                ArrayElement::Value(e) => Some(e.value),
+                _ => None,
+            })
+            .collect()
     });
     if let Some(written) = written {
         let mut out = Vec::new();
@@ -334,7 +369,9 @@ fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
             Some("self".to_string())
         }
         // `TypeCombinator::intersect()` keeps of `A&B` the one that is a subtype of the other
-        TAtomic::Object(TObject::Named(named)) if !named.is_this && !named.is_static && named.intersection_types.is_some() => {
+        TAtomic::Object(TObject::Named(named))
+            if !named.is_this && !named.is_static && named.intersection_types.is_some() =>
+        {
             let plain = |n: &mago_codex::ttype::atomic::object::named::TNamedObject| {
                 let mut n = n.clone();
                 n.intersection_types = None;
@@ -356,14 +393,27 @@ fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
             let kept: Vec<_> = all.iter().filter(narrower).cloned().collect();
             let (first, rest) = kept.split_first()?;
             let mut first = first.clone();
-            first.intersection_types = (!rest.is_empty())
-                .then(|| Box::new(rest.iter().map(|r| TAtomic::Object(TObject::Named(r.clone()))).collect()));
-            atomic_declaration(&TAtomic::Object(TObject::Named(first)), codebase, php_version)
+            first.intersection_types = (!rest.is_empty()).then(|| {
+                Box::new(
+                    rest.iter()
+                        .map(|r| TAtomic::Object(TObject::Named(r.clone())))
+                        .collect(),
+                )
+            });
+            atomic_declaration(
+                &TAtomic::Object(TObject::Named(first)),
+                codebase,
+                php_version,
+            )
         }
         TAtomic::Object(TObject::Named(named)) if named.is_static => {
             let mut plain = named.clone();
             plain.is_static = false;
-            atomic_declaration(&TAtomic::Object(TObject::Named(plain)), codebase, php_version)
+            atomic_declaration(
+                &TAtomic::Object(TObject::Named(plain)),
+                codebase,
+                php_version,
+            )
         }
         _ => atomic_declaration(t, codebase, php_version),
     }
@@ -375,7 +425,8 @@ pub(crate) fn own_static(t: &TAtomic, class: Option<&str>) -> TAtomic {
     match t {
         TAtomic::Object(TObject::Named(named)) if named.is_static || named.is_this => {
             let mut this = named.clone();
-            this.is_this = class.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(named.name.as_bytes()));
+            this.is_this =
+                class.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(named.name.as_bytes()));
             this.is_static = false;
             TAtomic::Object(TObject::Named(this))
         }
@@ -401,7 +452,10 @@ pub(crate) fn array_shape_of(
 ) -> Option<ArrayShape> {
     // `array_slice($array, 0)` with a positive length or none keeps a non-empty array non-empty
     if let Some(sliced) = head_slice(expr)
-        && matches!(array_shape_of(facts, ancestors, sliced), Some(ArrayShape::General(None)))
+        && matches!(
+            array_shape_of(facts, ancestors, sliced),
+            Some(ArrayShape::General(None))
+        )
     {
         return Some(ArrayShape::General(None));
     }
@@ -413,7 +467,10 @@ pub(crate) fn array_shape_of(
         _ => Vec::new(),
     };
     if facts.is_untyped(span)
-        || literal.iter().filter_map(|e| e.get_value()).any(|v| facts.is_untyped(crate::syntax::node_span(v)))
+        || literal
+            .iter()
+            .filter_map(|e| e.get_value())
+            .any(|v| facts.is_untyped(crate::syntax::node_span(v)))
     {
         return None;
     }
@@ -424,10 +481,16 @@ pub(crate) fn array_shape_of(
             .any(|a| matches!(a, TAtomic::Array(a) if a.is_non_empty()))
     });
     if cased_explode(ancestors, expr) {
-        return Some(ArrayShape::General(Some(TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))));
+        return Some(ArrayShape::General(Some(TUnion::from_vec(vec![
+            TAtomic::Scalar(TScalar::string()),
+        ]))));
     }
     if non_empty_call(expr) {
-        let item = if let Some(ArrayShape::General(Some(item))) = array_shape(t, false) { accessory_string(&item) } else { None };
+        let item = if let Some(ArrayShape::General(Some(item))) = array_shape(t, false) {
+            accessory_string(&item)
+        } else {
+            None
+        };
         return Some(ArrayShape::General(item));
     }
     array_shape(t, !native_non_empty || emptiness_checked(ancestors, expr))
@@ -437,22 +500,28 @@ pub(crate) fn array_shape_of(
 /// as in Mago (an early return on it leaves it non-empty).
 fn emptiness_checked(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     use mago_syntax::cst::{UnaryPrefixOperator, Variable};
-    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr) else { return false };
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr)
+    else {
+        return false;
+    };
     let Some(scope) = ancestors.iter().rev().find(|a| {
-        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
+        matches!(
+            a,
+            Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
+        )
     }) else {
         return false;
     };
     let at = crate::syntax::node_span(expr).start;
-    let is_it = |e: &Expression<'_>| {
-        matches!(crate::syntax::unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == variable.name)
-    };
+    let is_it = |e: &Expression<'_>| matches!(crate::syntax::unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == variable.name);
     let mut checked = false;
     traverse(*scope, &mut |node| {
         checked |= crate::syntax::node_span(&node).end <= at
             && match node {
                 Node::EmptyConstruct(e) => is_it(e.value),
-                Node::UnaryPrefix(u) => matches!(u.operator, UnaryPrefixOperator::Not(_)) && is_it(u.operand),
+                Node::UnaryPrefix(u) => {
+                    matches!(u.operator, UnaryPrefixOperator::Not(_)) && is_it(u.operand)
+                }
                 _ => false,
             };
         Flow::Continue
@@ -476,9 +545,15 @@ fn accessory_string(item: &TUnion) -> Option<TUnion> {
 /// array<int, string|int|null>`), each a lowercase short name, with `array` for an array type and `string` for a
 /// class string: PHPStan keeps a declared union in the order written, where Mago sorts it. `None` where the property
 /// is not one array or a member is not a plain type.
-fn declared_items(facts: &Facts, ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<Vec<String>> {
+fn declared_items(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+) -> Option<Vec<String>> {
     use mago_syntax::cst::{Access, ClassLikeMemberSelector, Variable};
-    let Expression::Access(Access::Property(fetch)) = crate::syntax::unparenthesize(expr) else { return None };
+    let Expression::Access(Access::Property(fetch)) = crate::syntax::unparenthesize(expr) else {
+        return None;
+    };
     let (Expression::Variable(Variable::Direct(this)), ClassLikeMemberSelector::Identifier(name)) =
         (crate::syntax::unparenthesize(fetch.object), &fetch.property)
     else {
@@ -488,19 +563,28 @@ fn declared_items(facts: &Facts, ancestors: &[Node<'_, '_>], expr: &Expression<'
         return None;
     }
     let class = super::class_scope(ancestors)?.name?;
-    let property = facts.documented().get_declaring_property(class.as_bytes(), &[b"$", name.value].concat())?;
+    let property = facts
+        .documented()
+        .get_declaring_property(class.as_bytes(), &[b"$", name.value].concat())?;
     let span = property.type_metadata.as_ref()?.span;
     let source = facts.source_of(span.file_id)?;
-    let text = source.get(span.start.offset as usize..span.end.offset as usize)?.trim();
+    let text = source
+        .get(span.start.offset as usize..span.end.offset as usize)?
+        .trim();
     let item = match text.strip_suffix("[]") {
         Some(item) => item.trim().trim_start_matches('(').trim_end_matches(')'),
         None => {
             let lists = ["array", "list", "non-empty-array", "non-empty-list"];
-            let (_, rest) = text.split_once('<').filter(|(head, _)| lists.contains(&head.trim().to_ascii_lowercase().as_str()))?;
+            let (_, rest) = text
+                .split_once('<')
+                .filter(|(head, _)| lists.contains(&head.trim().to_ascii_lowercase().as_str()))?;
             top_level(rest.strip_suffix('>')?, ',').pop()?
         }
     };
-    top_level(item, '|').into_iter().map(declared_member).collect()
+    top_level(item, '|')
+        .into_iter()
+        .map(declared_member)
+        .collect()
 }
 
 /// `text` split at each `separator` outside brackets.
@@ -525,7 +609,11 @@ fn top_level(text: &str, separator: char) -> Vec<&str> {
 /// A member of a docblock union as [`declared_items`] names it.
 fn declared_member(member: &str) -> Option<String> {
     let lower = member.to_ascii_lowercase();
-    if lower.ends_with("[]") || ["array<", "list<", "non-empty-array<", "non-empty-list<"].iter().any(|p| lower.starts_with(p)) {
+    if lower.ends_with("[]")
+        || ["array<", "list<", "non-empty-array<", "non-empty-list<"]
+            .iter()
+            .any(|p| lower.starts_with(p))
+    {
         return Some("array".to_string());
     }
     if member.contains(['<', '(', '{', '&', ' ', '\'', '"']) {
@@ -556,7 +644,9 @@ pub(crate) fn item_declaration(
     let declaration = param_declaration(item, &facts.codebase, php_version)?;
     let names: Vec<&str> = declaration.split('|').collect();
     let key = |n: &str| n.rsplit('\\').next().unwrap_or(n).to_ascii_lowercase();
-    let Some(order) = declared_items(facts, ancestors, expr) else { return Some(declaration) };
+    let Some(order) = declared_items(facts, ancestors, expr) else {
+        return Some(declaration);
+    };
     if names.len() < 2 {
         return Some(declaration);
     }
@@ -576,7 +666,11 @@ pub(crate) fn item_declaration(
             ordered.push(n);
         }
     }
-    Some(if ordered.len() == names.len() { ordered.join("|") } else { declaration })
+    Some(if ordered.len() == names.len() {
+        ordered.join("|")
+    } else {
+        declaration
+    })
 }
 
 /// The array of `array_slice($array, 0)` or `array_slice($array, 0, $n)` with a positive literal `$n`.
@@ -584,14 +678,18 @@ fn head_slice<'a>(expr: &'a Expression<'a>) -> Option<&'a Expression<'a>> {
     use crate::rules::lint_b_helpers::value;
     use crate::rules::rector_code_quality::named;
     use mago_syntax::cst::{Call, Literal};
-    let Expression::Call(Call::Function(call)) = crate::syntax::unparenthesize(expr) else { return None };
+    let Expression::Call(Call::Function(call)) = crate::syntax::unparenthesize(expr) else {
+        return None;
+    };
     let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(value).collect();
     let int = |i: usize| match args.get(i).map(|e| crate::syntax::unparenthesize(e)) {
         Some(Expression::Literal(Literal::Integer(i))) => i.value,
         _ => None,
     };
-    (named(call, "array_slice") && int(1) == Some(0) && (args.len() == 2 || int(2).is_some_and(|n| n > 0)))
-        .then(|| args[0])
+    (named(call, "array_slice")
+        && int(1) == Some(0)
+        && (args.len() == 2 || int(2).is_some_and(|n| n > 0)))
+    .then(|| args[0])
 }
 
 /// The function, method or closure around the code, or the file for code outside any.
@@ -599,7 +697,12 @@ fn code_scope<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>]) -> Option<Node<'as
     ancestors
         .iter()
         .rev()
-        .find(|a| matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)))
+        .find(|a| {
+            matches!(
+                a,
+                Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
+            )
+        })
         .or(ancestors.first())
         .copied()
 }
@@ -610,8 +713,13 @@ fn assigned<'ast, 'arena>(
     expr: &'ast Expression<'arena>,
 ) -> &'ast Expression<'arena> {
     use mago_syntax::cst::{AssignmentOperator, Variable};
-    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr) else { return expr };
-    let Some(scope) = code_scope(ancestors) else { return expr };
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr)
+    else {
+        return expr;
+    };
+    let Some(scope) = code_scope(ancestors) else {
+        return expr;
+    };
     let at = crate::syntax::node_span(expr).start;
     let mut value = expr;
     traverse(scope, &mut |node| {
@@ -633,7 +741,10 @@ fn assigned<'ast, 'arena>(
 /// Not where a `str_contains()`, `str_starts_with()` or `str_ends_with()` of the haystack proves the delimiter is
 /// there: the extension then gives an unsealed constant array. PHPStan finds that call only by its fully qualified
 /// name, so an unqualified one counts outside a namespace only (checked with Rector 2.8.4).
-fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Expression<'arena>) -> bool {
+fn cased_explode<'ast, 'arena>(
+    ancestors: &[Node<'ast, 'arena>],
+    expr: &'ast Expression<'arena>,
+) -> bool {
     use crate::rules::lint_b_helpers::value;
     use crate::rules::rector_code_quality::named;
     use mago_syntax::cst::{Call, FunctionCall, Identifier, Variable};
@@ -643,17 +754,28 @@ fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Exp
             _ => None,
         }
     }
-    let Some(call) = call_of(assigned(ancestors, expr)).filter(|c| named(c, "explode")) else { return false };
+    let Some(call) = call_of(assigned(ancestors, expr)).filter(|c| named(c, "explode")) else {
+        return false;
+    };
     let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(value).collect();
-    let [_, haystack] = args.as_slice() else { return false };
+    let [_, haystack] = args.as_slice() else {
+        return false;
+    };
     let cased = call_of(assigned(ancestors, haystack)).is_some_and(|c| {
-        ["strtolower", "mb_strtolower", "strtoupper", "mb_strtoupper"].iter().any(|n| named(c, n))
+        ["strtolower", "mb_strtolower", "strtoupper", "mb_strtoupper"]
+            .iter()
+            .any(|n| named(c, n))
     });
     if !cased {
         return false;
     }
-    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(haystack) else { return true };
-    let Some(scope) = code_scope(ancestors) else { return true };
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(haystack)
+    else {
+        return true;
+    };
+    let Some(scope) = code_scope(ancestors) else {
+        return true;
+    };
     let global = !ancestors.iter().any(|a| matches!(a, Node::Namespace(_)));
     let mut proven = false;
     traverse(scope, &mut |node| {
@@ -723,16 +845,25 @@ fn array_shape(t: &TUnion, non_empty: bool) -> Option<ArrayShape> {
     if let [one] = arrays.as_slice() {
         return one_array_shape(one, non_empty);
     }
-    if non_empty && arrays.iter().all(|a| matches!(one_array_shape(a, true), Some(ArrayShape::General(None)))) {
+    if non_empty
+        && arrays
+            .iter()
+            .all(|a| matches!(one_array_shape(a, true), Some(ArrayShape::General(None))))
+    {
         return Some(ArrayShape::General(None));
     }
-    let shapes: Vec<ArrayShape> = arrays.iter().map(|a| one_array_shape(a, false)).collect::<Option<_>>()?;
+    let shapes: Vec<ArrayShape> = arrays
+        .iter()
+        .map(|a| one_array_shape(a, false))
+        .collect::<Option<_>>()?;
     if shapes.iter().all(|s| matches!(s, ArrayShape::Constant(_))) {
         return None;
     }
     let mut items: Vec<TAtomic> = Vec::new();
     for shape in &shapes {
-        let Some(item) = item_type(shape) else { continue };
+        let Some(item) = item_type(shape) else {
+            continue;
+        };
         for a in item.types.iter() {
             if !items.contains(a) {
                 items.push(a.clone());
@@ -751,15 +882,23 @@ fn one_array_shape(array: &TArray, non_empty: bool) -> Option<ArrayShape> {
                 ArrayShape::Constant(known.values().map(|(_, v)| v.clone()).collect())
             }
             Some(_) => return None,
-            None if list.non_empty && non_empty => ArrayShape::General(accessory_string(&list.element_type)),
+            None if list.non_empty && non_empty => {
+                ArrayShape::General(accessory_string(&list.element_type))
+            }
             None => ArrayShape::General(Some((*list.element_type).clone())),
         },
         TArray::Keyed(keyed) => match (&keyed.known_items, &keyed.parameters) {
-            (known, None) => {
-                ArrayShape::Constant(known.iter().flat_map(|k| k.values()).map(|(_, v)| v.clone()).collect())
-            }
+            (known, None) => ArrayShape::Constant(
+                known
+                    .iter()
+                    .flat_map(|k| k.values())
+                    .map(|(_, v)| v.clone())
+                    .collect(),
+            ),
             (Some(_), Some(_)) => return None,
-            (None, Some((_, value))) if keyed.non_empty && non_empty => ArrayShape::General(accessory_string(value)),
+            (None, Some((_, value))) if keyed.non_empty && non_empty => {
+                ArrayShape::General(accessory_string(value))
+            }
             (None, Some((_, value))) => ArrayShape::General(Some((**value).clone())),
         },
     })
@@ -798,8 +937,17 @@ pub(crate) fn constant_values_union(types: &[TAtomic]) -> Vec<TAtomic> {
         _ => None,
     };
     // the arrays come after the other types
-    let mut out: Vec<TAtomic> = types.iter().filter(|t| kind(t).is_none() && !matches!(t, TAtomic::Array(_))).cloned().collect();
-    out.extend(types.iter().filter(|t| matches!(t, TAtomic::Array(_))).cloned());
+    let mut out: Vec<TAtomic> = types
+        .iter()
+        .filter(|t| kind(t).is_none() && !matches!(t, TAtomic::Array(_)))
+        .cloned()
+        .collect();
+    out.extend(
+        types
+            .iter()
+            .filter(|t| matches!(t, TAtomic::Array(_)))
+            .cloned(),
+    );
     let mut kinds: Vec<u8> = Vec::new();
     for k in types.iter().filter_map(kind) {
         if !kinds.contains(&k) {

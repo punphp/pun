@@ -9,7 +9,8 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    AssignmentOperator, BinaryOperator, Closure, Expression, FunctionLikeParameter, Identifier, Node, NodeKind,
+    AssignmentOperator, BinaryOperator, Closure, Expression, FunctionLikeParameter, Identifier,
+    Node, NodeKind,
 };
 use pun_problem::{Edit, Safety};
 
@@ -39,7 +40,6 @@ impl Rule for AddParamTypeArrayReduce {
         true
     }
 
-
     fn targets(&self) -> Option<&'static [NodeKind]> {
         Some(&[NodeKind::FunctionCall])
     }
@@ -51,7 +51,9 @@ impl Rule for AddParamTypeArrayReduce {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         if !named(call, "array_reduce") {
             return;
         }
@@ -60,11 +62,16 @@ impl Rule for AddParamTypeArrayReduce {
             return;
         }
         let args = args(call);
-        let Some(Expression::Closure(closure)) = args.get(1).map(|a| unparenthesize(value(a))) else {
+        let Some(Expression::Closure(closure)) = args.get(1).map(|a| unparenthesize(value(a)))
+        else {
             return;
         };
-        let Some(returned) = closure_return(&facts, value(args[1])) else { return };
-        let value_type = array_shape_of(&facts, ancestors, value(args[0])).as_ref().and_then(item_type);
+        let Some(returned) = closure_return(&facts, value(args[1])) else {
+            return;
+        };
+        let value_type = array_shape_of(&facts, ancestors, value(args[0]))
+            .as_ref()
+            .and_then(item_type);
         let mut carry: Option<Vec<TAtomic>> = Some(returned.types.to_vec());
         if returns_untyped_param(closure, value_type.is_some())
             || (args.get(2).is_none() && returns_param_sum(closure))
@@ -72,23 +79,36 @@ impl Rule for AddParamTypeArrayReduce {
             carry = None;
         } else if let Some(initial) = args.get(2) {
             carry = type_of(&facts, value(initial)).and_then(|initial| combine(initial, returned));
-        } else if value_type.as_ref().is_some_and(is_general_int) && returns_carry_math_on_item(closure)
+        } else if value_type.as_ref().is_some_and(is_general_int)
+            && returns_carry_math_on_item(closure)
             && let Some(types) = carry.as_mut()
         {
             // resolveCommonMath(): `TypeCombinator::union($leftNumberType, $rightNumberType)` of `mixed`'s
             // `int|float` with the item's `int`, where the repeated `int` takes the later place: `float|int`
             types.sort_by_key(|a| !matches!(a, TAtomic::Scalar(TScalar::Float(_))));
         }
-        let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
+        let params: Vec<&FunctionLikeParameter<'_>> =
+            closure.parameter_list.parameters.iter().collect();
         let mut edits: Vec<Edit> = Vec::new();
         if let (Some(param), Some(t)) = (params.get(1), value_type) {
             // PHPStan keeps a docblock union in the order written, where Mago sorts it
             let order = doc_order(ctx, ancestors);
             let position = |a: &TAtomic| {
-                let name = param_declaration_unsorted(std::slice::from_ref(a), &facts.codebase, ctx.php_version)
-                    .unwrap_or_default();
-                let short = name.rsplit('\\').next().unwrap_or(&name).to_ascii_lowercase();
-                order.iter().position(|o| *o == short).unwrap_or(order.len())
+                let name = param_declaration_unsorted(
+                    std::slice::from_ref(a),
+                    &facts.codebase,
+                    ctx.php_version,
+                )
+                .unwrap_or_default();
+                let short = name
+                    .rsplit('\\')
+                    .next()
+                    .unwrap_or(&name)
+                    .to_ascii_lowercase();
+                order
+                    .iter()
+                    .position(|o| *o == short)
+                    .unwrap_or(order.len())
             };
             let mut types = t.types.to_vec();
             types.sort_by_key(|a| position(a));
@@ -112,7 +132,13 @@ impl Rule for AddParamTypeArrayReduce {
 /// `getType($closure)->getReturnType()`: the return type of the closure's signature.
 fn closure_return<'f>(facts: &'f Facts, closure: &Expression<'_>) -> Option<&'f TUnion> {
     let t = type_of(facts, closure)?;
-    t.types.iter().find_map(|a| if let TAtomic::Callable(TCallable::Signature(s)) = a { s.return_type.as_deref() } else { None })
+    t.types.iter().find_map(|a| {
+        if let TAtomic::Callable(TCallable::Signature(s)) = a {
+            s.return_type.as_deref()
+        } else {
+            None
+        }
+    })
 }
 
 /// Whether the closure returns one of its untyped parameters, never reassigned: PHPStan's return type is then `mixed`
@@ -133,11 +159,17 @@ fn returns_untyped_param(closure: &Closure<'_>, value_known: bool) -> bool {
     let mut reassigned: Vec<&[u8]> = Vec::new();
     traverse(Node::Block(&closure.body), &mut |node| {
         match node {
-            Node::Return(r) => returned.extend(r.value.and_then(|v| {
-                untyped.iter().copied().find(|name| is_variable(v, name))
-            })),
+            Node::Return(r) => returned.extend(
+                r.value
+                    .and_then(|v| untyped.iter().copied().find(|name| is_variable(v, name))),
+            ),
             Node::Assignment(a) if matches!(a.operator, AssignmentOperator::Assign(_)) => {
-                reassigned.extend(untyped.iter().copied().find(|name| is_variable(a.lhs, name)));
+                reassigned.extend(
+                    untyped
+                        .iter()
+                        .copied()
+                        .find(|name| is_variable(a.lhs, name)),
+                );
             }
             _ => {}
         }
@@ -158,7 +190,11 @@ fn returns_param_sum(closure: &Closure<'_>) -> bool {
         .filter(|p| p.hint.is_none())
         .map(|p| p.variable.name)
         .collect();
-    let is_param = |e: &Expression<'_>| untyped.iter().any(|name| is_variable(unparenthesize(e), name));
+    let is_param = |e: &Expression<'_>| {
+        untyped
+            .iter()
+            .any(|name| is_variable(unparenthesize(e), name))
+    };
     let mut found = false;
     traverse(Node::Block(&closure.body), &mut |node| {
         if let Node::Return(r) = node
@@ -182,8 +218,11 @@ fn is_general_int(t: &TUnion) -> bool {
 /// Whether the closure returns `$carry - $item` or `$carry * $item` of its untyped parameters: PHPStan's
 /// getMinusType()/getMulType() of the `mixed` carry and the item go through resolveCommonMath().
 fn returns_carry_math_on_item(closure: &Closure<'_>) -> bool {
-    let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
-    let [carry, item, ..] = params.as_slice() else { return false };
+    let params: Vec<&FunctionLikeParameter<'_>> =
+        closure.parameter_list.parameters.iter().collect();
+    let [carry, item, ..] = params.as_slice() else {
+        return false;
+    };
     if carry.hint.is_some() || item.hint.is_some() {
         return false;
     }
@@ -191,7 +230,10 @@ fn returns_carry_math_on_item(closure: &Closure<'_>) -> bool {
     traverse(Node::Block(&closure.body), &mut |node| {
         if let Node::Return(r) = node
             && let Some(Expression::Binary(b)) = r.value.map(unparenthesize)
-            && matches!(b.operator, BinaryOperator::Subtraction(_) | BinaryOperator::Multiplication(_))
+            && matches!(
+                b.operator,
+                BinaryOperator::Subtraction(_) | BinaryOperator::Multiplication(_)
+            )
             && is_variable(unparenthesize(b.lhs), carry.variable.name)
             && is_variable(unparenthesize(b.rhs), item.variable.name)
         {
@@ -205,11 +247,17 @@ fn returns_carry_math_on_item(closure: &Closure<'_>) -> bool {
 /// `resolveFunctionLikeReflectionFromCall() instanceof NativeFunctionReflection`: `array_reduce` is PHP's own, not a
 /// function of the current namespace that shadows it.
 fn is_native(facts: &Facts, ancestors: &[Node<'_, '_>], function: &Expression<'_>) -> bool {
-    if matches!(function, Expression::Identifier(Identifier::FullyQualified(_))) {
+    if matches!(
+        function,
+        Expression::Identifier(Identifier::FullyQualified(_))
+    ) {
         return true;
     }
-    namespace_of(ancestors)
-        .is_none_or(|ns| !facts.codebase.function_exists(format!("{ns}\\array_reduce").as_bytes()))
+    namespace_of(ancestors).is_none_or(|ns| {
+        !facts
+            .codebase
+            .function_exists(format!("{ns}\\array_reduce").as_bytes())
+    })
 }
 
 /// `refactorParameter()`: the type for an untyped parameter, unless it is `mixed` or has no declaration.
@@ -251,7 +299,11 @@ fn sort_key(a: &TAtomic) -> (u8, i128, String) {
     match a {
         TAtomic::Null => (4, 0, String::new()),
         TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => (3, 0, String::new()),
-        TAtomic::Scalar(s) if s.is_literal_value() => (1, s.get_literal_int_value().map_or(0, i128::from), String::new()),
+        TAtomic::Scalar(s) if s.is_literal_value() => (
+            1,
+            s.get_literal_int_value().map_or(0, i128::from),
+            String::new(),
+        ),
         other => (2, 0, mago_codex::ttype::TType::get_id(other).to_string()),
     }
 }

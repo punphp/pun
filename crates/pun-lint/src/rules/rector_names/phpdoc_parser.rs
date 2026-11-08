@@ -777,7 +777,10 @@ pub(crate) fn unescape_string(token: &str) -> Vec<u8> {
 pub(crate) fn print_string(value: &[u8], written: &str) -> Option<String> {
     if written.starts_with('\'') {
         let value = String::from_utf8_lossy(value);
-        return Some(format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'")));
+        return Some(format!(
+            "'{}'",
+            value.replace('\\', "\\\\").replace('\'', "\\'")
+        ));
     }
     // `addcslashes($value, "\n\r\t\f\v\$\"\\")`
     let mut escaped = Vec::new();
@@ -1244,7 +1247,9 @@ pub(crate) fn has_single_quoted(content: &str) -> bool {
     let mut open = Vec::new();
     for (i, tok) in toks.iter().enumerate() {
         match tok.ty {
-            t::OPEN_PARENTHESES | t::OPEN_CURLY_BRACKET | t::OPEN_SQUARE_BRACKET => open.push(tok.ty),
+            t::OPEN_PARENTHESES | t::OPEN_CURLY_BRACKET | t::OPEN_SQUARE_BRACKET => {
+                open.push(tok.ty);
+            }
             t::CLOSE_PARENTHESES | t::CLOSE_CURLY_BRACKET | t::CLOSE_SQUARE_BRACKET => {
                 open.pop();
             }
@@ -1252,7 +1257,9 @@ pub(crate) fn has_single_quoted(content: &str) -> bool {
                 let key = open.last() == Some(&t::OPEN_CURLY_BRACKET)
                     && i > 0
                     && matches!(toks[i - 1].ty, t::OPEN_CURLY_BRACKET | t::COMMA)
-                    && toks.get(i + 1).is_some_and(|next| matches!(next.ty, t::EQUAL | t::COLON));
+                    && toks
+                        .get(i + 1)
+                        .is_some_and(|next| matches!(next.ty, t::EQUAL | t::COLON));
                 if !key {
                     return true;
                 }

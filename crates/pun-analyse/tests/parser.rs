@@ -49,8 +49,14 @@ fn configured_ignores(
     let config = root.0.join("config.neon");
     std::fs::write(&config, neon).unwrap();
     let mut parameters = Array::new();
-    parameters.set("allConfigFiles".into(), Php::Array(Array::list([Php::str(config.to_str().unwrap())])));
-    parameters.set("currentWorkingDirectory".into(), Php::str(root.0.to_str().unwrap()));
+    parameters.set(
+        "allConfigFiles".into(),
+        Php::Array(Array::list([Php::str(config.to_str().unwrap())])),
+    );
+    parameters.set(
+        "currentWorkingDirectory".into(),
+        Php::str(root.0.to_str().unwrap()),
+    );
     pun_phpstan::ignore::IgnoredErrors::new(entries, true).with_config_files(&parameters)
 }
 
@@ -138,15 +144,31 @@ fn parser_errors_survive_rule_filters_and_configured_ignores() {
     let found: Vec<_> = analysis
         .errors
         .iter()
-        .map(|e| (std::path::Path::new(&e.file).file_name().unwrap().to_str().unwrap(), e.identifier.as_str(), e.line, e.can_be_ignored))
+        .map(|e| {
+            (
+                std::path::Path::new(&e.file)
+                    .file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap(),
+                e.identifier.as_str(),
+                e.line,
+                e.can_be_ignored,
+            )
+        })
         .collect();
     assert_eq!(
         found,
-        [("attribute.php", "phpstan.parse", 2, false), ("config.neon", "ignore.unmatched", 5, false)]
+        [
+            ("attribute.php", "phpstan.parse", 2, false),
+            ("config.neon", "ignore.unmatched", 5, false)
+        ]
     );
     assert_eq!(
         analysis.general,
-        ["Error message \"'\\self' is an invalid class name on line 2\" cannot be ignored, use excludePaths instead."]
+        [
+            "Error message \"'\\self' is an invalid class name on line 2\" cannot be ignored, use excludePaths instead."
+        ]
     );
 }
 

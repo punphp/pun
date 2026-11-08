@@ -6,8 +6,8 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    func_call, function_name, identifier, is_expect_chain, is_name, matcher_subject, method_call,
-    rename, subject_holder, type_is, Is, Trinary,
+    Is, Trinary, func_call, function_name, identifier, is_expect_chain, is_name, matcher_subject,
+    method_call, rename, subject_holder, type_is,
 };
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};

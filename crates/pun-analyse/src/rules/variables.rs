@@ -362,7 +362,11 @@ pub(super) fn allow_target(expr: &Expression, out: &mut HashSet<Span>) {
 
 /// MutatingScope::isUndefinedExpressionAllowed() compares node keys: while the target chain of `expr` (and of the
 /// earlier operands in `names`) is allowed, an equal variable elsewhere in `expr`, such as an offset, is too.
-fn allow_named<'arena>(expr: &Expression<'arena>, names: &mut Vec<&'arena [u8]>, out: &mut HashSet<Span>) {
+fn allow_named<'arena>(
+    expr: &Expression<'arena>,
+    names: &mut Vec<&'arena [u8]>,
+    out: &mut HashSet<Span>,
+) {
     struct Named<'n, 'arena>(&'n [&'arena [u8]], &'n mut HashSet<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Named<'_, 'arena> {
         fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, (): &mut ()) {
@@ -626,7 +630,10 @@ fn single_variable(
     if name == "this" && c.this_defined() {
         return;
     }
-    if c.on(crate::rules::Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED) && matches!(name, "argc" | "argv") && main {
+    if c.on(crate::rules::Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED)
+        && matches!(name, "argc" | "argv")
+        && main
+    {
         return;
     }
     let message = match certainty {
@@ -659,7 +666,9 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
         for name in names {
             let adjective = match scope.get(&name) {
                 Tri::No => "undefined",
-                Tri::Maybe if c.on(crate::rules::Switches::CHECK_MAYBE_UNDEFINED_VARIABLES) => "possibly undefined",
+                Tri::Maybe if c.on(crate::rules::Switches::CHECK_MAYBE_UNDEFINED_VARIABLES) => {
+                    "possibly undefined"
+                }
                 _ => continue,
             };
             errors.push((
@@ -677,7 +686,11 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
 fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
     let strings = ty.constant_strings();
     if !strings.is_empty() {
-        out.extend(strings.into_iter().map(|s| String::from_utf8_lossy(&s).into_owned()));
+        out.extend(
+            strings
+                .into_iter()
+                .map(|s| String::from_utf8_lossy(&s).into_owned()),
+        );
         return;
     }
     for array in ty.constant_arrays() {

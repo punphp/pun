@@ -15,7 +15,9 @@ pub(super) fn check(c: &mut Checker, node: &PropertyNode) {
         return;
     }
     let name = &node.name[1..];
-    let k = c.class_scope().expect("a property is walked inside its class-like");
+    let k = c
+        .class_scope()
+        .expect("a property is walked inside its class-like");
     let class = c.display(k);
     let property = String::from_utf8_lossy(name);
     for hook in node.hooks {
@@ -25,23 +27,34 @@ pub(super) fn check(c: &mut Checker, node: &PropertyNode) {
         if hook.name.value.eq_ignore_ascii_case(b"get") {
             let mut reads = Reads { name, found: false };
             match body {
-                PropertyHookConcreteBody::Expression(e) => reads.walk_expression(e.expression, &mut ()),
+                PropertyHookConcreteBody::Expression(e) => {
+                    reads.walk_expression(e.expression, &mut ());
+                }
                 PropertyHookConcreteBody::Block(b) => reads.walk_block(b, &mut ()),
             }
             if !reads.found {
-                let message = format!("Get hook for non-virtual property {class}::${property} does not read its value.");
+                let message = format!(
+                    "Get hook for non-virtual property {class}::${property} does not read its value."
+                );
                 report(c, hook, "propertyGetHook.noRead", message);
             }
             // only the first `get` hook
             break;
         }
     }
-    for hook in node.hooks.iter().filter(|h| h.name.value.eq_ignore_ascii_case(b"set")) {
+    for hook in node
+        .hooks
+        .iter()
+        .filter(|h| h.name.value.eq_ignore_ascii_case(b"set"))
+    {
         // a short `set => expr` body assigns its value
         let PropertyHookBody::Concrete(PropertyHookConcreteBody::Block(b)) = &hook.body else {
             continue;
         };
-        let mut flow = Flow { name, ends: Vec::new() };
+        let mut flow = Flow {
+            name,
+            ends: Vec::new(),
+        };
         let mut end = Some(Tri::No);
         for s in &b.statements {
             let Some(before) = end else {
@@ -60,7 +73,9 @@ pub(super) fn check(c: &mut Checker, node: &PropertyNode) {
         };
         if !has.yes() {
             let always = if has.maybe() { "always " } else { "" };
-            let message = format!("Set hook for non-virtual property {class}::${property} does not {always}assign value to it.");
+            let message = format!(
+                "Set hook for non-virtual property {class}::${property} does not {always}assign value to it."
+            );
             report(c, hook, "propertySetHook.noAssign", message);
         }
     }
@@ -150,7 +165,11 @@ impl Flow<'_> {
             s if terminates(s) => None,
             Statement::Block(b) => self.statements(b.statements.as_slice(), Some(state)),
             Statement::If(i) => {
-                let state = if self.assigns_expression(i.condition) { Tri::Yes } else { state };
+                let state = if self.assigns_expression(i.condition) {
+                    Tri::Yes
+                } else {
+                    state
+                };
                 let mut branches: Vec<Option<Tri>> = Vec::new();
                 let has_else = match &i.body {
                     IfBody::Statement(b) => {
@@ -158,14 +177,23 @@ impl Flow<'_> {
                         for e in &b.else_if_clauses {
                             branches.push(self.body(e.statement, state));
                         }
-                        b.else_clause.as_ref().map(|e| branches.push(self.body(e.statement, state))).is_some()
+                        b.else_clause
+                            .as_ref()
+                            .map(|e| branches.push(self.body(e.statement, state)))
+                            .is_some()
                     }
                     IfBody::ColonDelimited(b) => {
                         branches.push(self.statements(b.statements.as_slice(), Some(state)));
                         for e in &b.else_if_clauses {
                             branches.push(self.statements(e.statements.as_slice(), Some(state)));
                         }
-                        b.else_clause.as_ref().map(|e| branches.push(self.statements(e.statements.as_slice(), Some(state)))).is_some()
+                        b.else_clause
+                            .as_ref()
+                            .map(|e| {
+                                branches
+                                    .push(self.statements(e.statements.as_slice(), Some(state)));
+                            })
+                            .is_some()
                     }
                 };
                 if !has_else {
@@ -177,21 +205,27 @@ impl Flow<'_> {
             Statement::While(w) => {
                 let after = match &w.body {
                     WhileBody::Statement(b) => self.body(b, state),
-                    WhileBody::ColonDelimited(b) => self.statements(b.statements.as_slice(), Some(state)),
+                    WhileBody::ColonDelimited(b) => {
+                        self.statements(b.statements.as_slice(), Some(state))
+                    }
                 };
                 Some(after.map_or(state, |a| merge(a, state)))
             }
             Statement::For(l) => {
                 let after = match &l.body {
                     ForBody::Statement(b) => self.body(b, state),
-                    ForBody::ColonDelimited(b) => self.statements(b.statements.as_slice(), Some(state)),
+                    ForBody::ColonDelimited(b) => {
+                        self.statements(b.statements.as_slice(), Some(state))
+                    }
                 };
                 Some(after.map_or(state, |a| merge(a, state)))
             }
             Statement::Foreach(l) => {
                 let after = match &l.body {
                     ForeachBody::Statement(b) => self.body(b, state),
-                    ForeachBody::ColonDelimited(b) => self.statements(b.statements.as_slice(), Some(state)),
+                    ForeachBody::ColonDelimited(b) => {
+                        self.statements(b.statements.as_slice(), Some(state))
+                    }
                 };
                 Some(after.map_or(state, |a| merge(a, state)))
             }
@@ -201,13 +235,19 @@ impl Flow<'_> {
     }
 
     fn assigns(&self, s: &Statement) -> bool {
-        let mut a = Assigns { name: self.name, found: false };
+        let mut a = Assigns {
+            name: self.name,
+            found: false,
+        };
         a.walk_statement(s, &mut ());
         a.found
     }
 
     fn assigns_expression(&self, e: &Expression) -> bool {
-        let mut a = Assigns { name: self.name, found: false };
+        let mut a = Assigns {
+            name: self.name,
+            found: false,
+        };
         a.walk_expression(e, &mut ());
         a.found
     }

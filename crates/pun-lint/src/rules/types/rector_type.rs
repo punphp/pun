@@ -79,10 +79,12 @@ pub(crate) fn get_type<'f>(facts: &'f Facts, expr: &Expression<'_>) -> RectorTyp
         }
         // PHPStan 2.3 types the left side with its `null` (`?Foo` is a union), so `$nullable ?? $other` is PHPStan's
         // own type of the whole
-        Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => union_typeable(
-            get_type(facts, b.lhs).shape(),
-            get_type(facts, b.rhs).shape(),
-        ),
+        Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
+            union_typeable(
+                get_type(facts, b.lhs).shape(),
+                get_type(facts, b.rhs).shape(),
+            )
+        }
         _ => false,
     };
     if built { RectorType::Built } else { scope() }

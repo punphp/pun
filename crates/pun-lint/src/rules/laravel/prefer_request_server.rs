@@ -39,7 +39,10 @@ impl Rule for PreferRequestServer {
             return;
         }
         let span = node_span(access);
-        if is_written(span, ancestors) || is_by_ref_argument(ctx, span, ancestors) || in_string(ancestors) {
+        if is_written(span, ancestors)
+            || is_by_ref_argument(ctx, span, ancestors)
+            || in_string(ancestors)
+        {
             return;
         }
         out.push(replace(

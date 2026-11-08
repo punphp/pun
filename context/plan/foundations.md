@@ -11,8 +11,7 @@ crate via `scripts/coverage.sh`), parity and fuzz; cargo-dist release on tags. C
 in `.oracle/` (reference/oracle.md); 7 corpus projects (`corpus/manifest.toml`).
 
 **Build.**
-1. Get CI on main green: coverage is red (pun-analyse at 97.59%), rustfmt is red (about 3,300 diffs; ../PLAN.md
-   §3 Foundations), and runs get cancelled by the next push.
+1. Get CI on main green: coverage is red (pun-analyse at 97.59%), and runs get cancelled by the next push.
 2. Update AGENTS.md when the new design lands: rule names, no delegate mode, and "output must match upstream" narrowed
    to exit codes and machine formats.
 

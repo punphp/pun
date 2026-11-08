@@ -6,8 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 
 use super::MAGIC;
 use super::docblock::{
-    class_members, class_name, docs_report, is_array_hint, method_statements, methods,
-    properties, returned_this_property,
+    class_members, class_name, docs_report, is_array_hint, method_statements, methods, properties,
+    returned_this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
 use crate::rules::phpdoc_writer::{DocTarget, decorate_var};

@@ -1,9 +1,9 @@
 //! MissingReturnRule (`return.missing`, `return.never`) on each function-like body's ExecutionEndNodes.
 
-use mago_span::{HasSpan, Span};
-use mago_syntax::cst::*;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, NeverKind, Type, intersect, is_super_type_of, union};
 
 use super::super::missing_types::declaring;
@@ -35,11 +35,22 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
         return;
     };
     // (a method is walked in its class, a trait's in the using class)
-    let Some(context) = c.class_scope() else { return };
-    let Some(declaring) = declaring(c, m.span()) else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
+    let Some(declaring) = declaring(c, m.span()) else {
+        return;
+    };
     let name = method_name(c, m);
     let native = m.return_type_hint.is_some();
-    let ret = declared::with_classes(c, || late(c, &declared::method(c, m, declaring, context).ret, Some(context), !native));
+    let ret = declared::with_classes(c, || {
+        late(
+            c,
+            &declared::method(c, m, declaring, context).ret,
+            Some(context),
+            !native,
+        )
+    });
     let d = Declared {
         description: format!("Method {}::{name}()", c.display(context)),
         ret,
@@ -54,7 +65,9 @@ pub(in super::super) fn closure(c: &mut Checker, f: &Closure) {
         return;
     };
     let class = c.class_scope();
-    let ret = declared::with_classes(c, || late(c, &declared::native(c, &hint.hint, class), class, false));
+    let ret = declared::with_classes(c, || {
+        late(c, &declared::native(c, &hint.hint, class), class, false)
+    });
     let d = Declared {
         description: "Anonymous function".to_string(),
         ret,
@@ -79,9 +92,16 @@ pub(in super::super) fn get_hooks(
             continue;
         };
         // (a property is walked in its class)
-        let Some(context) = c.class_scope() else { return };
+        let Some(context) = c.class_scope() else {
+            return;
+        };
         let ret = declared::with_classes(c, || {
-            late(c, &declared::property(c, hint, at, &name[1..], context), Some(context), hint.is_none())
+            late(
+                c,
+                &declared::property(c, hint, at, &name[1..], context),
+                Some(context),
+                hint.is_none(),
+            )
         });
         let d = Declared {
             description: format!(
@@ -101,7 +121,10 @@ pub(super) fn method_name(c: &Checker, m: &Method) -> String {
     c.renamed
         .as_ref()
         .filter(|(span, _)| *span == m.span())
-        .map_or_else(|| String::from_utf8_lossy(m.name.value).into_owned(), |(_, n)| n.clone())
+        .map_or_else(
+            || String::from_utf8_lossy(m.name.value).into_owned(),
+            |(_, n)| n.clone(),
+        )
 }
 
 /// The return type as the function reflection gives it: `resolveLateResolvableTypes()` (a conditional type is
@@ -111,7 +134,8 @@ pub(super) fn method_name(c: &Checker, m: &Method) -> String {
 pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, phpdoc: bool) -> Type {
     let go = |t: &Type| late(c, t, class, phpdoc);
     let own = |scope: &str| {
-        !scope.starts_with("class ") || class.is_some_and(|k| scope == format!("class {}", declared::original_name(k)))
+        !scope.starts_with("class ")
+            || class.is_some_and(|k| scope == format!("class {}", declared::original_name(k)))
     };
     match t {
         Type::LateArrayShape(shape) => go(&shape.resolve()),
@@ -121,10 +145,16 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
         // ponytail: a template's OffsetAccessType is not resolved to its bound's offset type
         Type::OffsetAccess(..) => Type::Error,
         // a KeyOfType / ValueOfType of a template, resolved now
-        Type::Object(name, args, _) if (name == "key-of" || name == "value-of") && args.len() == 1 => {
+        Type::Object(name, args, _)
+            if (name == "key-of" || name == "value-of") && args.len() == 1 =>
+        {
             pun_phpstan::resolve::key_or_value_of(&go(&args[0]), name == "value-of")
         }
-        Type::Object(name, args, exact) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect(), *exact),
+        Type::Object(name, args, exact) => Type::Object(
+            c.reflected_name(name.as_bytes()),
+            args.iter().map(go).collect(),
+            *exact,
+        ),
         Type::Static(_, args) if phpdoc && let Some(k) = class => {
             let args = args.iter().map(go).collect();
             let name = c.reflected_name(k.name.as_bytes());
@@ -134,7 +164,10 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
                 Type::Static(name, args)
             }
         }
-        Type::Static(name, args) => Type::Static(c.reflected_name(name.as_bytes()), args.iter().map(go).collect()),
+        Type::Static(name, args) => Type::Static(
+            c.reflected_name(name.as_bytes()),
+            args.iter().map(go).collect(),
+        ),
         t => t.traverse(&go),
     }
 }
@@ -159,9 +192,11 @@ fn contains_null(t: &Type) -> bool {
 /// `getTemplateType(Generator::class, 'TReturn')`, `None` for ErrorType.
 pub(super) fn generator_return(t: &Type) -> Option<Type> {
     match t {
-        Type::Object(name, args, _) if name.eq_ignore_ascii_case("Generator") => {
-            Some(args.get(3).cloned().unwrap_or_else(pun_phpstan::types::mixed))
-        }
+        Type::Object(name, args, _) if name.eq_ignore_ascii_case("Generator") => Some(
+            args.get(3)
+                .cloned()
+                .unwrap_or_else(pun_phpstan::types::mixed),
+        ),
         Type::Never(_) => Some(Type::Never(NeverKind::Implicit)),
         _ => None,
     }
@@ -175,7 +210,8 @@ fn check(c: &mut Checker, b: &Block, parent: Span, d: Declared) {
         contents: &c.file.contents,
         codebase: Some(c.codebase),
     };
-    let (_, ends) = results.execution_ends(&list(b.statements.as_slice()), parent, Some(b.right_brace));
+    let (_, ends) =
+        results.execution_ends(&list(b.statements.as_slice()), parent, Some(b.right_brace));
     for end in ends {
         if end.flow.always {
             continue;
@@ -210,7 +246,10 @@ fn check(c: &mut Checker, b: &Block, parent: Span, d: Declared) {
         if !d.native && c.level < 2 && contains_null(&ret) {
             continue;
         }
-        if matches!(ret, Type::Never(NeverKind::Explicit | NeverKind::NonAccepting)) {
+        if matches!(
+            ret,
+            Type::Never(NeverKind::Explicit | NeverKind::NonAccepting)
+        ) {
             let message = format!(
                 "{} should always throw an exception or terminate script execution but doesn't do that.",
                 d.description

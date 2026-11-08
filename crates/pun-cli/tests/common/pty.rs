@@ -9,7 +9,11 @@ pub(crate) fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
 }
 
 /// `pun args` with `env` set as well.
-pub(crate) fn pun_with(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, Option<i32>) {
+pub(crate) fn pun_with(
+    dir: &Path,
+    args: &[&str],
+    env: &[(&str, &str)],
+) -> (String, String, Option<i32>) {
     run(Command::new(super::PUN).args(args), dir, env)
 }
 
@@ -28,7 +32,12 @@ fn run(cmd: &mut Command, dir: &Path, env: &[(&str, &str)]) -> (String, String, 
 /// `pun args` (shell words) on a pseudo-terminal, typing `keys` (printf escapes) once it is up, with `env` set. The
 /// output with `\r` removed, and the exit code. util-linux `script` runs a command string (`-c`); BSD `script` (macOS)
 /// takes the command as its arguments.
-pub(crate) fn pty(dir: &Path, args: &str, keys: &str, env: &[(&str, &str)]) -> (String, Option<i32>) {
+pub(crate) fn pty(
+    dir: &Path,
+    args: &str,
+    keys: &str,
+    env: &[(&str, &str)],
+) -> (String, Option<i32>) {
     let pun = format!("{} {args}", super::PUN);
     let script = if cfg!(target_os = "linux") {
         format!("script -qec '{pun}' /dev/null")

@@ -2,8 +2,8 @@
 //! pattern (`PregMatchParameterOutTypeExtension`, `PregMatchTypeSpecifyingExtension`, `RegexArrayShapeMatcher`).
 
 mod groups;
-mod parser;
 mod matcher;
+mod parser;
 mod types;
 
 use mago_analyzer::plugin::PluginRegistry;

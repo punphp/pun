@@ -89,7 +89,8 @@ pub fn detect(root: &Path) -> Result<Composer> {
     let mut out = Composer::default();
     if let Some(json) = read(&root.join("composer.json"), &mut out.sources)? {
         out.php = php_require(&json)?;
-        out.platform_php = (json.pointer("/config/platform/php").and_then(Value::as_str)).map(str::to_string);
+        out.platform_php =
+            (json.pointer("/config/platform/php").and_then(Value::as_str)).map(str::to_string);
     }
     if let Some(lock) = read(&root.join("composer.lock"), &mut out.sources)? {
         for key in ["packages", "packages-dev"] {

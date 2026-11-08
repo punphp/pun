@@ -67,8 +67,9 @@ impl Rule for PreferScopeAttribute {
             let private = (method.modifiers.iter()).any(|m| matches!(m, Modifier::Private(_)));
             if has_method(ctx, &class_name, &new_name)
                 || (!private
-                    && class_scope(&scope)
-                        .is_none_or(|c| has_parent_class_method(&facts(ctx), &c, method.name.value)))
+                    && class_scope(&scope).is_none_or(|c| {
+                        has_parent_class_method(&facts(ctx), &c, method.name.value)
+                    }))
                 || has_attribute(&scope, &method.attribute_lists, SCOPE)
             {
                 continue;

@@ -9,7 +9,8 @@ use std::sync::Arc;
 use common::fixture;
 use pun_phpstan::phpdoc;
 use pun_phpstan::resolve::{
-    Scope, const_expr, has_global_alias, key_or_value_of, resolve_in, resolve_late, resolve_str, with_type_aliases,
+    Scope, const_expr, has_global_alias, key_or_value_of, resolve_in, resolve_late, resolve_str,
+    with_type_aliases,
 };
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
@@ -132,13 +133,26 @@ fn class(name: &str) -> Option<Arc<Class>> {
             ..class(name, &[], Vec::new(), &[("X", "1")], HashMap::new())
         })),
         "PunProbe\\Backed" | "PunProbe\\One" => {
-            let values: &[(&str, &str)] = if name.ends_with("Backed") { &[("A", "'a'"), ("B", "'b'")] } else { &[("X", "1")] };
+            let values: &[(&str, &str)] = if name.ends_with("Backed") {
+                &[("A", "'a'"), ("B", "'b'")]
+            } else {
+                &[("X", "1")]
+            };
             Some(Arc::new(Class {
                 cases: values.iter().map(|(n, _)| n.to_string()).collect(),
-                case_values: values.iter().map(|(n, v)| (n.to_string(), v.to_string())).collect(),
+                case_values: values
+                    .iter()
+                    .map(|(n, v)| (n.to_string(), v.to_string()))
+                    .collect(),
                 is_enum: true,
                 is_final: true,
-                ..class(name, &["UnitEnum", "BackedEnum"], Vec::new(), &[], HashMap::new())
+                ..class(
+                    name,
+                    &["UnitEnum", "BackedEnum"],
+                    Vec::new(),
+                    &[],
+                    HashMap::new(),
+                )
             }))
         }
         "PunProbe\\Tr" => Some(Arc::new(Class {
@@ -210,7 +224,10 @@ impl Scope for Late {
             "G" => "array<int, string>",
             _ => return None,
         };
-        Some(resolve_str(&format!("__template<{name}, 'function probe()', {bound}>"), None))
+        Some(resolve_str(
+            &format!("__template<{name}, 'function probe()', {bound}>"),
+            None,
+        ))
     }
 }
 
@@ -315,7 +332,8 @@ fn project_iterables_and_ancestors() {
                 Type::Object(name, args, _) => symbols::lookup(name)
                     .and_then(|c| ancestor_args(&c, "PunProbe\\Coll", args))
                     .map(|args| {
-                        Type::Object("PunProbe\\Coll".to_string(), args, false).describe(Level::Precise)
+                        Type::Object("PunProbe\\Coll".to_string(), args, false)
+                            .describe(Level::Precise)
                     }),
                 _ => None,
             };
@@ -420,14 +438,26 @@ fn object_class_names() {
         // composition: TypeCombinator can otherwise erase the unnamed object before the query runs.
         let f = fixture("type-object-class-names-compounds.json");
         for row in f.as_array().unwrap() {
-            let types: Vec<_> = row["types"].as_array().unwrap().iter().map(|input| {
-                resolve_in(&phpdoc::parse(input.as_str().unwrap()).unwrap(), &InNamespace)
-            }).collect();
+            let types: Vec<_> = row["types"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|input| {
+                    resolve_in(
+                        &phpdoc::parse(input.as_str().unwrap()).unwrap(),
+                        &InNamespace,
+                    )
+                })
+                .collect();
             let ty = match row["kind"].as_str().unwrap() {
                 "template" => Type::Template(Box::new(pun_phpstan::types::Template {
                     scope: "function classConstants()".into(),
                     name: "T".into(),
-                    bound: if types.len() == 1 { types[0].clone() } else { Type::Union(types) },
+                    bound: if types.len() == 1 {
+                        types[0].clone()
+                    } else {
+                        Type::Union(types)
+                    },
                     default: None,
                     argument: false,
                 })),
@@ -436,7 +466,12 @@ fn object_class_names() {
                 "intersection" => Type::Intersection(types),
                 other => panic!("unknown oracle constructor {other}"),
             };
-            let want: Vec<_> = row["names"].as_array().unwrap().iter().map(|n| n.as_str().unwrap()).collect();
+            let want: Vec<_> = row["names"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|n| n.as_str().unwrap())
+                .collect();
             assert_eq!(ty.object_class_names(), want, "{row}");
         }
     });

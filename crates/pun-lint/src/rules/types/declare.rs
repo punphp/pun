@@ -82,8 +82,7 @@ pub(crate) fn return_declaration<'a>(
     }
     names.sort_by_key(|n| {
         let key = order_key(n);
-        order.iter().position(|o| *o == key)
-            .unwrap_or(order.len())
+        order.iter().position(|o| *o == key).unwrap_or(order.len())
     });
     // a DNF type (PHP 8.2) wraps each intersection of a union in parentheses
     if (names.len() > 1 || nullable) && names.iter().any(|n| n.contains('&')) {
@@ -344,13 +343,26 @@ pub(crate) fn union_declaration(
             let mut kept: Vec<&String> = many
                 .iter()
                 .filter(|n| {
-                    !(object && (n.starts_with('\\') || n.contains('&') || *n == "self" || *n == "static"))
+                    !(object
+                        && (n.starts_with('\\')
+                            || n.contains('&')
+                            || *n == "self"
+                            || *n == "static"))
                         && !(iterable && *n == "array")
                 })
                 .collect();
             // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
-            let plain: Vec<String> = kept.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
-            kept.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            let plain: Vec<String> = kept
+                .iter()
+                .filter(|n| !n.contains('&'))
+                .map(|n| n.to_ascii_lowercase())
+                .collect();
+            kept.retain(|n| {
+                !n.contains('&')
+                    || !n
+                        .split('&')
+                        .any(|part| plain.contains(&part.to_ascii_lowercase()))
+            });
             // the other members in order, `null` last
             kept.sort_by_key(|n| *n == "null");
             if let [one] = kept.as_slice() {

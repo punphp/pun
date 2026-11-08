@@ -40,7 +40,10 @@ fn instance(t: &Type, class: &str) -> bool {
 
 /// `isNumberType()`: the expression is (possibly) an int or float, as the level checks it.
 fn is_number(c: &Checker, e: &Expression, full: &Type) -> bool {
-    let Some(t) = c.find_type_to_check(e, &|t| is_super_type_of(&number(), t).yes()).ty else {
+    let Some(t) = c
+        .find_type_to_check(e, &|t| is_super_type_of(&number(), t).yes())
+        .ty
+    else {
         return false;
     };
     if t != *full {
@@ -48,7 +51,10 @@ fn is_number(c: &Checker, e: &Expression, full: &Type) -> bool {
     }
     // `$acceptedType->equals($type->toNumber())`: SimpleXMLElement, GMP and numeric-string cast to `float|int`
     let numeric_string = matches!(&t, Type::Intersection(ts) if ts.contains(&Type::Accessory(Accessory::NumericString)));
-    !is_super_type_of(&number(), &t).no() || numeric_string || instance(&t, "SimpleXMLElement") || instance(&t, "GMP")
+    !is_super_type_of(&number(), &t).no()
+        || numeric_string
+        || instance(&t, "SimpleXMLElement")
+        || instance(&t, "GMP")
 }
 
 fn nullable_object_or_array(t: &Type) -> bool {
@@ -57,7 +63,10 @@ fn nullable_object_or_array(t: &Type) -> bool {
     }
     is_super_type_of(&Type::Union(vec![Type::ObjectWithoutClass, Type::Null]), t).yes()
         || is_super_type_of(
-            &Type::Union(vec![Type::array(pun_phpstan::types::mixed(), pun_phpstan::types::mixed()), Type::Null]),
+            &Type::Union(vec![
+                Type::array(pun_phpstan::types::mixed(), pun_phpstan::types::mixed()),
+                Type::Null,
+            ]),
             t,
         )
         .yes()
@@ -100,8 +109,11 @@ pub(in super::super) fn binary(c: &mut Checker, b: &Binary) {
     if !error {
         return;
     }
-    let (l, r) = declared::with_classes(c, || (left.describe(Level::Value), right.describe(Level::Value)));
-    let message = format!("Comparison operation \"{sigil}\" between {l} and {r} results in an error.");
+    let (l, r) = declared::with_classes(c, || {
+        (left.describe(Level::Value), right.describe(Level::Value))
+    });
+    let message =
+        format!("Comparison operation \"{sigil}\" between {l} and {r} results in an error.");
     let identifier = IDENTIFIERS
         .iter()
         .find(|i| i.strip_suffix(".invalid") == Some(name))

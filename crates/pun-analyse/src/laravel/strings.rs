@@ -75,7 +75,10 @@ pub(super) fn singular(word: &str) -> String {
     let lower = word.to_ascii_lowercase();
     if lower.ends_with("ies") && word.len() > 3 {
         format!("{}y", &word[..word.len() - 3])
-    } else if ["xes", "ches", "sses", "shes"].iter().any(|s| lower.ends_with(s)) {
+    } else if ["xes", "ches", "sses", "shes"]
+        .iter()
+        .any(|s| lower.ends_with(s))
+    {
         word[..word.len() - 2].to_string()
     } else if lower.ends_with('s') && !lower.ends_with("ss") {
         word[..word.len() - 1].to_string()

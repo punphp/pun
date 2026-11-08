@@ -63,7 +63,10 @@ pub(super) fn previous_token_end(ctx: &Context<'_>, from: usize, pos: usize) -> 
         return from;
     };
     let mut end = token.end;
-    if token.kind == TokenKind::OpenTag && ctx.source.as_bytes().get(end) == Some(&b'\n') && end < pos {
+    if token.kind == TokenKind::OpenTag
+        && ctx.source.as_bytes().get(end) == Some(&b'\n')
+        && end < pos
+    {
         end += 1;
     }
     end
@@ -584,8 +587,7 @@ fn tokens_with_comments(source: &str, span: Span) -> Vec<(TokenKind, String)> {
 /// Whether two lists print the same with their comments (Rector's `BetterStandardPrinter::print` on two `stmts`).
 pub(super) fn same_with_comments(ctx: &crate::Context<'_>, a: &List<'_>, b: &List<'_>) -> bool {
     let source = ctx.source;
-    tokens_with_comments(source, printed(ctx, a))
-        == tokens_with_comments(source, printed(ctx, b))
+    tokens_with_comments(source, printed(ctx, a)) == tokens_with_comments(source, printed(ctx, b))
 }
 
 /// The span php-parser prints for a list: the statements with the comments before the first and the trailing `Nop`.

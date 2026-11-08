@@ -125,9 +125,9 @@ fn closure_this_is_test_case(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], inde
     }) else {
         return false;
     };
-    let Some(position) = (call.argument_list.arguments.iter())
-        .position(|a| matches!(a, Argument::Positional(_)) && node_span(unparenthesize(a.value())) == span)
-    else {
+    let Some(position) = (call.argument_list.arguments.iter()).position(|a| {
+        matches!(a, Argument::Positional(_)) && node_span(unparenthesize(a.value())) == span
+    }) else {
         return false;
     };
     let Some(name) = crate::rules::rector_batch5::called_function_name(ancestors, call.function)
@@ -135,8 +135,8 @@ fn closure_this_is_test_case(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], inde
         return false;
     };
     let facts = crate::rules::types::facts::facts(ctx);
-    let namespaced = (crate::rules::types::names::class_imports(ancestors).0)
-        .filter(|_| !name.contains('\\'));
+    let namespaced =
+        (crate::rules::types::names::class_imports(ancestors).0).filter(|_| !name.contains('\\'));
     let documented = facts.documented();
     let Some(function) = namespaced
         .and_then(|ns| documented.get_function(format!("{ns}\\{name}").as_bytes()))
@@ -150,9 +150,11 @@ fn closure_this_is_test_case(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], inde
     };
     !this.type_union.types.is_empty()
         && this.type_union.types.iter().all(|t| match t {
-            TAtomic::Object(TObject::Named(n)) => {
-                is_a(ctx, &String::from_utf8_lossy(n.name.as_bytes()), &[TEST_CASE])
-            }
+            TAtomic::Object(TObject::Named(n)) => is_a(
+                ctx,
+                &String::from_utf8_lossy(n.name.as_bytes()),
+                &[TEST_CASE],
+            ),
             // the codebase keeps a docblock class name unexpanded
             TAtomic::Reference(TReference::Symbol { name, .. }) => {
                 is_a(ctx, &String::from_utf8_lossy(name.as_bytes()), &[TEST_CASE])

@@ -67,7 +67,12 @@ fn declared_variance(t: &Template) -> Variance {
         return Invariant;
     };
     symbols::lookup(class)
-        .and_then(|k| k.templates.iter().find(|x| x.name == t.name).map(|x| Variance::of(x.variance)))
+        .and_then(|k| {
+            k.templates
+                .iter()
+                .find(|x| x.name == t.name)
+                .map(|x| Variance::of(x.variance))
+        })
         .unwrap_or(Invariant)
 }
 
@@ -82,7 +87,12 @@ fn referenced<'t>(ty: &'t Type, position: Variance, out: &mut Vec<(&'t Template,
                 return args.iter().for_each(|a| referenced(a, position, out));
             }
             let templates: Vec<Variance> = symbols::lookup(class)
-                .map(|k| k.templates.iter().map(|t| Variance::of(t.variance)).collect())
+                .map(|k| {
+                    k.templates
+                        .iter()
+                        .map(|t| Variance::of(t.variance))
+                        .collect()
+                })
                 .unwrap_or_default();
             for (i, arg) in args.iter().enumerate() {
                 let (effective, arg) = match arg {
@@ -100,7 +110,10 @@ fn referenced<'t>(ty: &'t Type, position: Variance, out: &mut Vec<(&'t Template,
             referenced(v, co, out);
         }
         Type::ConstArray(a) => {
-            a.keys.iter().chain(&a.values).for_each(|t| referenced(t, co, out));
+            a.keys
+                .iter()
+                .chain(&a.values)
+                .for_each(|t| referenced(t, co, out));
             if let Some((k, v)) = &a.unsealed {
                 referenced(k, co, out);
                 referenced(v, co, out);
@@ -185,13 +198,23 @@ fn parameters_acceptor(
         declared::with_classes(c, || {
             let s = signature(c);
             for (name, ty, out_ty, _) in &s.params {
-                check(Contravariant, ty, &format!("in parameter {name} of {subject}"), &mut found);
+                check(
+                    Contravariant,
+                    ty,
+                    &format!("in parameter {name} of {subject}"),
+                    &mut found,
+                );
                 if let Some(out_ty) = out_ty {
                     let context = format!("in param-out type of parameter {name} of {subject}");
                     check(Covariant, out_ty, &context, &mut found);
                 }
             }
-            check(Covariant, &s.ret, &format!("in return type of {subject}"), &mut found);
+            check(
+                Covariant,
+                &s.ret,
+                &format!("in return type of {subject}"),
+                &mut found,
+            );
         });
         errors.extend(found.into_iter().map(|m| ("generics.variance", m)));
     }
@@ -206,7 +229,14 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
         return;
     }
     let subject = format!("function {}()", c.resolved_span(f.name.span));
-    parameters_acceptor(c, f.span(), "function", &subject, |c| declared::function(c, f), false);
+    parameters_acceptor(
+        c,
+        f.span(),
+        "function",
+        &subject,
+        |c| declared::function(c, f),
+        false,
+    );
 }
 
 /// MethodSignatureVarianceRule (`method` is the name the method is analysed under).
@@ -215,22 +245,44 @@ pub(super) fn method(c: &mut Checker, m: &Method, method: &str) {
         return;
     }
     let (k, display) = c.member_scope();
-    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else {
+        return;
+    };
     let skip = m.modifiers.contains_private() || method.eq_ignore_ascii_case("__construct");
     let subject = format!("method {display}::{method}()");
-    parameters_acceptor(c, m.span(), "method", &subject, |c| declared::method(c, m, declaring, k), skip);
+    parameters_acceptor(
+        c,
+        m.span(),
+        "method",
+        &subject,
+        |c| declared::method(c, m, declaring, k),
+        skip,
+    );
 }
 
 /// `hasRestrictedWriteAccess()`: a read-only property (natively or by PHPDoc), a `private(set)` one, or one with
 /// hooks but no `set` hook.
-fn restricted(c: &Checker, modifiers: &[Modifier], hooks: &[PropertyHook], by_phpdoc: bool) -> bool {
+fn restricted(
+    c: &Checker,
+    modifiers: &[Modifier],
+    hooks: &[PropertyHook],
+    by_phpdoc: bool,
+) -> bool {
     by_phpdoc
-        || modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_) | Modifier::PrivateSet(_)))
+        || modifiers
+            .iter()
+            .any(|m| matches!(m, Modifier::Readonly(_) | Modifier::PrivateSet(_)))
         || c.decls.last().is_some_and(|d| d.is_readonly)
         || (!hooks.is_empty() && !hooks.iter().any(|h| h.name.value == b"set"))
 }
 
-fn property_check(c: &mut Checker, at: Span, name: &[u8], position: Variance, ty: impl FnOnce(&Checker) -> Type) {
+fn property_check(
+    c: &mut Checker,
+    at: Span,
+    name: &[u8],
+    position: Variance,
+    ty: impl FnOnce(&Checker) -> Type,
+) {
     let (_, display) = c.member_scope();
     let mut found = Vec::new();
     declared::with_classes(c, || {
@@ -267,12 +319,17 @@ pub(super) fn promoted(c: &mut Checker, m: &Method) {
     // PhpDocsResolver::getPhpDocs()'s `$isReadOnly`: the class is immutable, or the constructor's own PHPDoc has a
     // `@readonly` tag
     let by_phpdoc = c.decls.last().is_some_and(|d| d.immutable_doc)
-        || c.decls.last().and_then(|d| d.parent.clone()).is_some_and(|p| c.class_immutable(&p, 0))
+        || c.decls
+            .last()
+            .and_then(|d| d.parent.clone())
+            .is_some_and(|p| c.class_immutable(&p, 0))
         || declared::doc_at(c, m.span()).is_some_and(|(_, entry, _)| {
             super::declarations::has_tag(&entry.names, super::declarations::READONLY_TAGS)
         });
     let (k, _) = c.member_scope();
-    let Some(declaring) = super::missing_types::declaring(c, m.span()) else { return };
+    let Some(declaring) = super::missing_types::declaring(c, m.span()) else {
+        return;
+    };
     for (i, p) in m.parameter_list.parameters.iter().enumerate() {
         let hooks = p.hooks.as_ref().map_or(&[][..], |h| h.hooks.as_slice());
         if (p.modifiers.is_empty() && hooks.is_empty()) || p.modifiers.contains_private() {

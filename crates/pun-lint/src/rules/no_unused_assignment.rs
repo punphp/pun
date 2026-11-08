@@ -42,7 +42,6 @@ impl Rule for NoUnusedAssignment {
         Some(&[NodeKind::ExpressionStatement])
     }
 
-
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,

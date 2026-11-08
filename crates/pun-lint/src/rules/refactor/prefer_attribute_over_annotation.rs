@@ -43,7 +43,6 @@ impl Rule for AnnotationToAttribute {
         true
     }
 
-
     fn configure(&mut self, options: &Value) -> Result<(), String> {
         self.configs.clear();
         for item in items(options)? {
@@ -200,8 +199,7 @@ impl AnnotationToAttribute {
                 {
                     continue;
                 }
-                let Some(doc_comment) =
-                    crate::rules::lint_b_doc::Doc::of(ctx, &ancestors, start)
+                let Some(doc_comment) = crate::rules::lint_b_doc::Doc::of(ctx, &ancestors, start)
                 else {
                     continue;
                 };
@@ -470,17 +468,30 @@ fn constructor_parameters(ctx: &Context<'_>, class: &str) -> Vec<(String, bool)>
 /// parameter.
 fn foldable_parameters(ctx: &Context<'_>, class: &str) -> Option<Vec<String>> {
     let facts = facts(ctx);
-    let constructor = facts.codebase.get_method(class.as_bytes(), b"__construct")?;
+    let constructor = facts
+        .codebase
+        .get_method(class.as_bytes(), b"__construct")?;
     let mut names = Vec::new();
     let mut has_options = false;
     for p in &constructor.parameters {
         if p.flags.is_variadic() {
             return None;
         }
-        let name = p.name.0.as_str().unwrap_or_default().trim_start_matches('$').to_string();
+        let name = p
+            .name
+            .0
+            .as_str()
+            .unwrap_or_default()
+            .trim_start_matches('$')
+            .to_string();
         if name == "options" {
             has_options = p.type_metadata.as_ref().is_none_or(|t| {
-                t.type_union.types.iter().any(|a| matches!(a, TAtomic::Array(_) | TAtomic::Iterable(_) | TAtomic::Mixed(_)))
+                t.type_union.types.iter().any(|a| {
+                    matches!(
+                        a,
+                        TAtomic::Array(_) | TAtomic::Iterable(_) | TAtomic::Mixed(_)
+                    )
+                })
             });
         }
         names.push(name);

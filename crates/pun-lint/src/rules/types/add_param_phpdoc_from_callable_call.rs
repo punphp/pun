@@ -3,7 +3,9 @@
 //! declared `array` that is passed to `array_walk()`, `array_map()`, `usort()` or `array_filter()` with a closure
 //! whose parameter is typed gets `@param Type[]`.
 
-use mago_syntax::cst::{Argument, Call, Expression, FunctionLikeParameterList, Hint, Node, NodeKind};
+use mago_syntax::cst::{
+    Argument, Call, Expression, FunctionLikeParameterList, Hint, Node, NodeKind,
+};
 use pun_phpstan::types::{Type, mixed, union};
 
 use super::docblock::{FunctionLike, class_name, doc_report, is_array_hint, variable_name};
@@ -73,7 +75,11 @@ impl Rule for AddParamPhpdocFromCallableCall {
                 return;
             };
             let written = String::from_utf8_lossy(id.value());
-            let short = written.rsplit('\\').next().unwrap_or(&written).to_ascii_lowercase();
+            let short = written
+                .rsplit('\\')
+                .next()
+                .unwrap_or(&written)
+                .to_ascii_lowercase();
             if written.trim_start_matches('\\').contains('\\') {
                 return;
             }
@@ -116,7 +122,11 @@ impl Rule for AddParamPhpdocFromCallableCall {
         }
         let mut changed = false;
         for (name, types) in params_with_type {
-            let t = if types.len() > 1 { union(types) } else { types.into_iter().next().unwrap() };
+            let t = if types.len() > 1 {
+                union(types)
+            } else {
+                types.into_iter().next().unwrap()
+            };
             let variadic = f
                 .parameters
                 .parameters
@@ -148,7 +158,10 @@ fn callback_param_type(
     if params.is_empty() || params.len() > 2 {
         return None;
     }
-    let hints: Vec<&Hint<'_>> = params.iter().map(|p| p.hint.as_ref()).collect::<Option<_>>()?;
+    let hints: Vec<&Hint<'_>> = params
+        .iter()
+        .map(|p| p.hint.as_ref())
+        .collect::<Option<_>>()?;
     if let [first, second] = hints.as_slice() {
         let text = |h: &Hint<'_>| {
             let span = node_span(h);
@@ -172,7 +185,9 @@ fn hint_type(scope: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<Type> {
         Hint::Bool(_) => Type::Bool,
         Hint::Array(_) => Type::array(mixed(), mixed()),
         // (`void`, `never` and `static` are no parameter types)
-        Hint::Mixed(_) | Hint::Void(_) | Hint::Never(_) | Hint::Static(_) => Type::Mixed { explicit: true },
+        Hint::Mixed(_) | Hint::Void(_) | Hint::Never(_) | Hint::Static(_) => {
+            Type::Mixed { explicit: true }
+        }
         Hint::Null(_) => Type::Null,
         Hint::True(_) => Type::ConstBool(true),
         Hint::False(_) => Type::ConstBool(false),
@@ -180,13 +195,16 @@ fn hint_type(scope: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<Type> {
         Hint::Callable(_) => Type::Callable(None),
         Hint::Parenthesized(p) => hint_type(scope, p.hint)?,
         // `IntersectionTypeNodeMapper`
-        Hint::Intersection(i) => Type::Intersection(vec![hint_type(scope, i.left)?, hint_type(scope, i.right)?]),
+        Hint::Intersection(i) => {
+            Type::Intersection(vec![hint_type(scope, i.left)?, hint_type(scope, i.right)?])
+        }
         Hint::Object(_) => Type::ObjectWithoutClass,
         Hint::Nullable(n) => union(vec![hint_type(scope, n.hint)?, Type::Null]),
         // `UnionTypeNodeMapper`
-        Hint::Union(u) => {
-            create_mixed_passed_or_union_type(&[hint_type(scope, u.left)?, hint_type(scope, u.right)?], true)
-        }
+        Hint::Union(u) => create_mixed_passed_or_union_type(
+            &[hint_type(scope, u.left)?, hint_type(scope, u.right)?],
+            true,
+        ),
         // `NameNodeMapper`: `self` of a class is a `SelfStaticType`, printed `$this`
         Hint::Self_(_) => Type::This(class_name(scope)?),
         // `ParentStaticType`, printed `static`
@@ -195,7 +213,11 @@ fn hint_type(scope: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<Type> {
 }
 
 /// `CallLike::getArg($name, $position)`.
-fn get_arg<'a>(args: &[&'a Argument<'a>], name: &str, position: usize) -> Option<&'a Expression<'a>> {
+fn get_arg<'a>(
+    args: &[&'a Argument<'a>],
+    name: &str,
+    position: usize,
+) -> Option<&'a Expression<'a>> {
     args.iter().enumerate().find_map(|(i, a)| match a {
         Argument::Named(n) if n.name.value == name.as_bytes() => Some(n.value),
         Argument::Positional(p) if i == position && p.ellipsis.is_none() => Some(p.value),
@@ -206,7 +228,10 @@ fn get_arg<'a>(args: &[&'a Argument<'a>], name: &str, position: usize) -> Option
 /// `traverseNodesWithCallable()` that does not go into classes and functions.
 fn visit<'ast, 'arena>(node: Node<'ast, 'arena>, f: &mut dyn FnMut(Node<'ast, 'arena>)) {
     node.visit_children(|child| {
-        if matches!(child, Node::Class(_) | Node::AnonymousClass(_) | Node::Function(_)) {
+        if matches!(
+            child,
+            Node::Class(_) | Node::AnonymousClass(_) | Node::Function(_)
+        ) {
             return;
         }
         f(child);

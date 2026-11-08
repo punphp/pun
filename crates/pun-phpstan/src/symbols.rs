@@ -68,14 +68,28 @@ impl AllowedConstantsResult<'_> {
 impl ParameterAllowedConstants {
     /// `ParameterAllowedConstants::check()`: user aliases are deliberately not compared by value.
     pub fn check<'a>(&self, constants: &'a [ConstantReflection]) -> AllowedConstantsResult<'a> {
-        let names: Vec<_> = constants.iter().filter(|c| c.builtin).map(|c| c.name.as_str()).collect();
+        let names: Vec<_> = constants
+            .iter()
+            .filter(|c| c.builtin)
+            .map(|c| c.name.as_str())
+            .collect();
         AllowedConstantsResult {
-            disallowed: constants.iter().filter(|c| c.builtin && !self.constants.contains(&c.name)).collect(),
+            disallowed: constants
+                .iter()
+                .filter(|c| c.builtin && !self.constants.contains(&c.name))
+                .collect(),
             violated_groups: if self.bitmask {
-                self.exclusive_groups.iter().filter_map(|group| {
-                    let matched: Vec<_> = names.iter().copied().filter(|name| group.iter().any(|c| c == name)).collect();
-                    (matched.len() >= 2).then_some(matched)
-                }).collect()
+                self.exclusive_groups
+                    .iter()
+                    .filter_map(|group| {
+                        let matched: Vec<_> = names
+                            .iter()
+                            .copied()
+                            .filter(|name| group.iter().any(|c| c == name))
+                            .collect();
+                        (matched.len() >= 2).then_some(matched)
+                    })
+                    .collect()
             } else {
                 Vec::new()
             },
@@ -345,9 +359,16 @@ fn read_class(v: RawClass) -> Class {
             .into_iter()
             .map(|(name, (bound, default))| Template {
                 // (a template is declared invariant, covariant or contravariant)
-                variance: variances.iter().find(|(n, _)| *n == name).map_or("invariant", |(_, v)| {
-                    if v == "covariant" { "covariant" } else { "contravariant" }
-                }),
+                variance: variances.iter().find(|(n, _)| *n == name).map_or(
+                    "invariant",
+                    |(_, v)| {
+                        if v == "covariant" {
+                            "covariant"
+                        } else {
+                            "contravariant"
+                        }
+                    },
+                ),
                 name,
                 bound,
                 default,
@@ -372,7 +393,11 @@ fn read_class(v: RawClass) -> Class {
                 if f.name.to_ascii_lowercase().starts_with(PREFIX) {
                     f.name = f.name[PREFIX.len()..].to_string();
                 }
-                (k.strip_prefix(PREFIX).map_or_else(|| k.clone(), str::to_string), f)
+                (
+                    k.strip_prefix(PREFIX)
+                        .map_or_else(|| k.clone(), str::to_string),
+                    f,
+                )
             })
             .collect(),
         iterable: v.iterable,

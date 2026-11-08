@@ -10,10 +10,16 @@ use super::conditions::{finite, loose, scalar};
 use super::node_name;
 
 pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
-    if !c.toggled.on.contains(crate::rules::driver::Toggles::FINITE_HAYSTACK) {
+    if !c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::FINITE_HAYSTACK)
+    {
         return;
     }
-    let Expression::Identifier(id) = call.function else { return };
+    let Expression::Identifier(id) = call.function else {
+        return;
+    };
     let name = String::from_utf8_lossy(node_name(c.names, id)).to_ascii_lowercase();
     let (needle_arg, haystack_arg) = match name.as_str() {
         "in_array" | "array_search" => (0, 1),
@@ -28,10 +34,13 @@ pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
         if c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN) {
             c.phpstan_type(e)
         } else {
-            c.phpstan_type_in(e, &c.native_types).or_else(|| constant_expression(e).then(|| c.phpstan_type(e)).flatten())
+            c.phpstan_type_in(e, &c.native_types)
+                .or_else(|| constant_expression(e).then(|| c.phpstan_type(e)).flatten())
         }
     };
-    let (Some(needle), Some(haystack)) = (ty(args[needle_arg].value()), ty(args[haystack_arg].value())) else {
+    let (Some(needle), Some(haystack)) =
+        (ty(args[needle_arg].value()), ty(args[haystack_arg].value()))
+    else {
         return;
     };
     let arrays = haystack.constant_arrays();
@@ -39,7 +48,9 @@ pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
         return;
     }
     let strict = if args.len() >= 3 {
-        let Some(strict) = ty(args[2].value()) else { return };
+        let Some(strict) = ty(args[2].value()) else {
+            return;
+        };
         is_true(&strict)
     } else {
         Tri::No
@@ -68,18 +79,31 @@ pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
     if !any_possible_match && name == "in_array" {
         return;
     }
-    let verb = if strict.no() { "equal to" } else { "identical to" };
+    let verb = if strict.no() {
+        "equal to"
+    } else {
+        "identical to"
+    };
     for (_, value, reasons, another) in dead {
         if any_possible_match && another {
             continue;
         }
         let (value, needle) = declared::with_classes(c, || {
-            (value.describe(recommended_level(&value, None)), needle.describe(recommended_level(&needle, None)))
+            (
+                value.describe(recommended_level(&value, None)),
+                needle.describe(recommended_level(&needle, None)),
+            )
         });
         let tip = match reasons.as_slice() {
             [] => None,
             [reason] => Some(reason.clone()),
-            reasons => Some(reasons.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+            reasons => Some(
+                reasons
+                    .iter()
+                    .map(|r| format!("• {r}"))
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            ),
         };
         c.report(
             call.span(),
@@ -92,7 +116,9 @@ pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
 
 /// `count(getFiniteTypes())`, with ConstantArrayType's product of its values' finite types (at most 128).
 fn finite_count(c: &Checker, t: &Type) -> usize {
-    let Type::ConstArray(a) = t else { return finite(c, t).len() };
+    let Type::ConstArray(a) = t else {
+        return finite(c, t).len();
+    };
     if a.unsealed.is_some() {
         return 0;
     }
@@ -116,12 +142,16 @@ pub(super) fn constant_expression(e: &Expression) -> bool {
         Expression::Literal(_) | Expression::ConstantAccess(_) => true,
         Expression::Access(Access::ClassConstant(_)) => true,
         Expression::Array(a) => a.elements.iter().all(|e| match e {
-            ArrayElement::KeyValue(kv) => constant_expression(kv.key) && constant_expression(kv.value),
+            ArrayElement::KeyValue(kv) => {
+                constant_expression(kv.key) && constant_expression(kv.value)
+            }
             ArrayElement::Value(v) => constant_expression(v.value),
             _ => false,
         }),
         Expression::LegacyArray(a) => a.elements.iter().all(|e| match e {
-            ArrayElement::KeyValue(kv) => constant_expression(kv.key) && constant_expression(kv.value),
+            ArrayElement::KeyValue(kv) => {
+                constant_expression(kv.key) && constant_expression(kv.value)
+            }
             ArrayElement::Value(v) => constant_expression(v.value),
             _ => false,
         }),
@@ -133,8 +163,14 @@ pub(super) fn constant_expression(e: &Expression) -> bool {
 fn is_true(t: &Type) -> Tri {
     match t {
         Type::ConstBool(b) => Tri::from(*b),
-        Type::Union(ts) => ts.iter().map(is_true).reduce(|a, b| if a == b { a } else { Tri::Maybe }).unwrap_or(Tri::No),
-        Type::Bool | Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::StrictMixed => Tri::Maybe,
+        Type::Union(ts) => ts
+            .iter()
+            .map(is_true)
+            .reduce(|a, b| if a == b { a } else { Tri::Maybe })
+            .unwrap_or(Tri::No),
+        Type::Bool | Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::StrictMixed => {
+            Tri::Maybe
+        }
         _ => Tri::No,
     }
 }
@@ -197,11 +233,13 @@ fn equal(c: &Checker, left: &Type, right: &Type) -> (Tri, Vec<String>) {
 /// MixedType::isSuperTypeOf()'s reason for a value its subtracted type already removed.
 fn super_reasons(a: &Type, b: &Type) -> Vec<String> {
     match a {
-        Type::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, b).yes() => vec![format!(
-            "Type {} has already been eliminated from {}.",
-            excluded.describe(Level::Precise),
-            a.describe(Level::TypeOnly)
-        )],
+        Type::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, b).yes() => {
+            vec![format!(
+                "Type {} has already been eliminated from {}.",
+                excluded.describe(Level::Precise),
+                a.describe(Level::TypeOnly)
+            )]
+        }
         _ => Vec::new(),
     }
 }

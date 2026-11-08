@@ -220,14 +220,35 @@ impl StrictRules {
         };
         let mut rules = StrictRules::empty();
         rules.set(StrictRules::CLOSURE_USES_THIS, on("closureUsesThis"));
-        rules.set(StrictRules::REQUIRE_PARENT_CONSTRUCTOR_CALL, on("requireParentConstructorCall"));
-        rules.set(StrictRules::MATCHING_INHERITED_METHOD_NAMES, on("matchingInheritedMethodNames"));
-        rules.set(StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD, on("dynamicCallOnStaticMethod"));
-        rules.set(StrictRules::BOOLEANS_IN_CONDITIONS, on("booleansInConditions"));
-        rules.set(StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS, on("numericOperandsInArithmeticOperators"));
-        rules.set(StrictRules::BOOLEANS_IN_LOOP_CONDITIONS, on("booleansInLoopConditions"));
+        rules.set(
+            StrictRules::REQUIRE_PARENT_CONSTRUCTOR_CALL,
+            on("requireParentConstructorCall"),
+        );
+        rules.set(
+            StrictRules::MATCHING_INHERITED_METHOD_NAMES,
+            on("matchingInheritedMethodNames"),
+        );
+        rules.set(
+            StrictRules::DYNAMIC_CALL_ON_STATIC_METHOD,
+            on("dynamicCallOnStaticMethod"),
+        );
+        rules.set(
+            StrictRules::BOOLEANS_IN_CONDITIONS,
+            on("booleansInConditions"),
+        );
+        rules.set(
+            StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS,
+            on("numericOperandsInArithmeticOperators"),
+        );
+        rules.set(
+            StrictRules::BOOLEANS_IN_LOOP_CONDITIONS,
+            on("booleansInLoopConditions"),
+        );
         rules.set(StrictRules::USELESS_CAST, on("uselessCast"));
-        rules.set(StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE, on("switchConditionsMatchingType"));
+        rules.set(
+            StrictRules::SWITCH_CONDITIONS_MATCHING_TYPE,
+            on("switchConditionsMatchingType"),
+        );
         rules
     }
 }
@@ -283,32 +304,71 @@ impl Exceptions {
     fn from_params(params: &Array) -> Exceptions {
         let d = Exceptions::default();
         let exceptions = params.get_str("exceptions").and_then(Value::as_array);
-        let check = exceptions.and_then(|e| e.get_str("check")).and_then(Value::as_array);
+        let check = exceptions
+            .and_then(|e| e.get_str("check"))
+            .and_then(Value::as_array);
         let mut checks = d.checks;
         let mut flag = |a: Option<&Array>, k: &str, which: ExceptionChecks| {
             if let Some(Value::Bool(b)) = a.and_then(|a| a.get_str(k)) {
                 checks.set(which, *b);
             }
         };
-        flag(exceptions, "implicitThrows", ExceptionChecks::IMPLICIT_THROWS);
-        flag(exceptions, "reportUncheckedExceptionDeadCatch", ExceptionChecks::REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH);
-        flag(check, "missingCheckedExceptionInThrows", ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS);
-        flag(check, "tooWideThrowType", ExceptionChecks::TOO_WIDE_THROW_TYPE);
-        flag(check, "tooWideImplicitThrowType", ExceptionChecks::TOO_WIDE_IMPLICIT_THROW_TYPE);
-        flag(check, "throwTypeCovariance", ExceptionChecks::THROW_TYPE_COVARIANCE);
+        flag(
+            exceptions,
+            "implicitThrows",
+            ExceptionChecks::IMPLICIT_THROWS,
+        );
+        flag(
+            exceptions,
+            "reportUncheckedExceptionDeadCatch",
+            ExceptionChecks::REPORT_UNCHECKED_EXCEPTION_DEAD_CATCH,
+        );
+        flag(
+            check,
+            "missingCheckedExceptionInThrows",
+            ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS,
+        );
+        flag(
+            check,
+            "tooWideThrowType",
+            ExceptionChecks::TOO_WIDE_THROW_TYPE,
+        );
+        flag(
+            check,
+            "tooWideImplicitThrowType",
+            ExceptionChecks::TOO_WIDE_IMPLICIT_THROW_TYPE,
+        );
+        flag(
+            check,
+            "throwTypeCovariance",
+            ExceptionChecks::THROW_TYPE_COVARIANCE,
+        );
         flag(
             Some(params),
             "checkTooWideThrowTypesInProtectedAndPublicMethods",
             ExceptionChecks::CHECK_TOO_WIDE_THROW_TYPES_IN_PROTECTED_AND_PUBLIC_METHODS,
         );
-        let list = |k: &str, default: Vec<String>| match exceptions.and_then(|e| e.get_str(k)).and_then(Value::as_array) {
-            Some(a) => a.values().filter_map(Value::as_str).map(str::to_string).collect(),
+        let list = |k: &str, default: Vec<String>| match exceptions
+            .and_then(|e| e.get_str(k))
+            .and_then(Value::as_array)
+        {
+            Some(a) => a
+                .values()
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect(),
             None => default,
         };
         Exceptions {
             checks,
-            unchecked_exception_regexes: list("uncheckedExceptionRegexes", d.unchecked_exception_regexes),
-            unchecked_exception_classes: list("uncheckedExceptionClasses", d.unchecked_exception_classes),
+            unchecked_exception_regexes: list(
+                "uncheckedExceptionRegexes",
+                d.unchecked_exception_regexes,
+            ),
+            unchecked_exception_classes: list(
+                "uncheckedExceptionClasses",
+                d.unchecked_exception_classes,
+            ),
             checked_exception_regexes: list("checkedExceptionRegexes", d.checked_exception_regexes),
             checked_exception_classes: list("checkedExceptionClasses", d.checked_exception_classes),
         }
@@ -423,43 +483,145 @@ impl Project {
             _ => 0,
         };
         let mut options = ProjectOptions::empty();
-        options.set(ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE, toggle("magicDirInInclude"));
-        options.set(ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING, flag("usePathConstantsAsConstantString"));
-        options.set(ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, flag("reportIgnoresWithoutComments"));
-        options.set(ProjectOptions::REPORT_UNMATCHED_IGNORES, report_unmatched_ignores);
+        options.set(
+            ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE,
+            toggle("magicDirInInclude"),
+        );
+        options.set(
+            ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING,
+            flag("usePathConstantsAsConstantString"),
+        );
+        options.set(
+            ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS,
+            flag("reportIgnoresWithoutComments"),
+        );
+        options.set(
+            ProjectOptions::REPORT_UNMATCHED_IGNORES,
+            report_unmatched_ignores,
+        );
         // config.neon's false, which config.level2.neon turns on
-        options.set(ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, flag("checkClassCaseSensitivity"));
-        options.set(ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY, flag("checkInternalClassCaseSensitivity"));
-        options.set(ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE, toggle("checkImportedClassNameCase"));
-        options.set(ProjectOptions::CHECK_FUNCTION_NAME_CASE, flag("checkFunctionNameCase"));
-        options.set(ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED, flag("cliArgumentsVariablesRegistered"));
-        options.set(ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, flag("checkMaybeUndefinedVariables"));
-        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))));
-        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))));
-        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK, !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))));
-        options.set(ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES, toggle("checkGenericIterableClasses"));
+        options.set(
+            ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+            flag("checkClassCaseSensitivity"),
+        );
+        options.set(
+            ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY,
+            flag("checkInternalClassCaseSensitivity"),
+        );
+        options.set(
+            ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE,
+            toggle("checkImportedClassNameCase"),
+        );
+        options.set(
+            ProjectOptions::CHECK_FUNCTION_NAME_CASE,
+            flag("checkFunctionNameCase"),
+        );
+        options.set(
+            ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED,
+            flag("cliArgumentsVariablesRegistered"),
+        );
+        options.set(
+            ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            flag("checkMaybeUndefinedVariables"),
+        );
+        options.set(
+            ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS,
+            !matches!(
+                params.get_str("polluteScopeWithLoopInitialAssignments"),
+                Some(Value::Bool(false))
+            ),
+        );
+        options.set(
+            ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH,
+            !matches!(
+                params.get_str("polluteScopeWithAlwaysIterableForeach"),
+                Some(Value::Bool(false))
+            ),
+        );
+        options.set(
+            ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK,
+            !matches!(
+                params.get_str("polluteScopeWithBlock"),
+                Some(Value::Bool(false))
+            ),
+        );
+        options.set(
+            ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES,
+            toggle("checkGenericIterableClasses"),
+        );
         options.set(ProjectOptions::INTERNAL_TAG, toggle("internalTag"));
-        options.set(ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, toggle("newStaticInAbstractClassStaticMethod"));
+        options.set(
+            ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD,
+            toggle("newStaticInAbstractClassStaticMethod"),
+        );
         options.set(ProjectOptions::BLEEDING_EDGE, toggle("bleedingEdge"));
         options.set(ProjectOptions::UNUSED_LABEL, toggle("unusedLabel"));
-        options.set(ProjectOptions::SWITCH_CONDITION, toggle("switchConditionAlwaysFalse"));
-        options.set(ProjectOptions::SORT_WITHOUT_EFFECT, toggle("sortWithoutEffect"));
-        options.set(ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, toggle("checkNonStringableDynamicAccess"));
-        options.set(ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE, toggle("reportMethodPurityOverride"));
-        options.set(ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR, toggle("assignToByRefForeachExpr"));
-        options.set(ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES, toggle("checkDynamicConstantNameValues"));
-        options.set(ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR, toggle("checkDateIntervalConstructor"));
-        options.set(ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS, toggle("checkParameterCastableToNumberFunctions"));
-        options.set(ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES, toggle("checkPrintfParameterTypes"));
-        options.set(ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES, flag("checkStrictPrintfPlaceholderTypes"));
-        options.set(ProjectOptions::FINITE_TYPES_IN_HAYSTACK, toggle("finiteTypesInHaystack"));
+        options.set(
+            ProjectOptions::SWITCH_CONDITION,
+            toggle("switchConditionAlwaysFalse"),
+        );
+        options.set(
+            ProjectOptions::SORT_WITHOUT_EFFECT,
+            toggle("sortWithoutEffect"),
+        );
+        options.set(
+            ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS,
+            toggle("checkNonStringableDynamicAccess"),
+        );
+        options.set(
+            ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE,
+            toggle("reportMethodPurityOverride"),
+        );
+        options.set(
+            ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR,
+            toggle("assignToByRefForeachExpr"),
+        );
+        options.set(
+            ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES,
+            toggle("checkDynamicConstantNameValues"),
+        );
+        options.set(
+            ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR,
+            toggle("checkDateIntervalConstructor"),
+        );
+        options.set(
+            ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS,
+            toggle("checkParameterCastableToNumberFunctions"),
+        );
+        options.set(
+            ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES,
+            toggle("checkPrintfParameterTypes"),
+        );
+        options.set(
+            ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES,
+            flag("checkStrictPrintfPlaceholderTypes"),
+        );
+        options.set(
+            ProjectOptions::FINITE_TYPES_IN_HAYSTACK,
+            toggle("finiteTypesInHaystack"),
+        );
         options.set(ProjectOptions::UNUSED_VARIABLE, toggle("unusedVariable"));
-        options.set(ProjectOptions::UNUSED_PARAMETERS, toggle("unusedParameters"));
+        options.set(
+            ProjectOptions::UNUSED_PARAMETERS,
+            toggle("unusedParameters"),
+        );
         options.set(ProjectOptions::NEW_ON_NON_OBJECT, toggle("newOnNonObject"));
-        options.set(ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES, flag("checkUninitializedProperties"));
-        options.set(ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE, flag("checkMissingCallableSignature"));
-        options.set(ProjectOptions::DEPRECATION_RULES, flag("deprecationRulesInstalled"));
-        options.set(ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE, toggle("reportPreciseLineForUnusedFunctionParameter"));
+        options.set(
+            ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES,
+            flag("checkUninitializedProperties"),
+        );
+        options.set(
+            ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE,
+            flag("checkMissingCallableSignature"),
+        );
+        options.set(
+            ProjectOptions::DEPRECATION_RULES,
+            flag("deprecationRulesInstalled"),
+        );
+        options.set(
+            ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE,
+            toggle("reportPreciseLineForUnusedFunctionParameter"),
+        );
         Project {
             options,
             analysed,
@@ -468,7 +630,8 @@ impl Project {
             php_version,
             current_working_directory: root.to_path_buf(),
             include_paths: vec![PathBuf::from(".")],
-            ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores).with_config_files(params),
+            ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores)
+                .with_config_files(params),
             level,
             check_function_argument_types: optional_flag("checkFunctionArgumentTypes"),
             check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
@@ -477,7 +640,9 @@ impl Project {
             check_explicit_mixed: optional_flag("checkExplicitMixed"),
             check_implicit_mixed: optional_flag("checkImplicitMixed"),
             treat_php_doc_types_as_certain: optional_flag("treatPhpDocTypesAsCertain"),
-            only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
+            only_files: strings(params, "paths")
+                .iter()
+                .all(|p| Path::new(p).is_file()),
             // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
             dynamic_constant_types: params
                 .get_str("dynamicConstantNames")
@@ -540,12 +705,21 @@ impl Project {
         options.set(ProjectOptions::CHECK_FUNCTION_NAME_CASE, false);
         options.set(ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED, true);
         options.set(ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, false);
-        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, true);
-        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, true);
+        options.set(
+            ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS,
+            true,
+        );
+        options.set(
+            ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH,
+            true,
+        );
         options.set(ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK, true);
         options.set(ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES, false);
         options.set(ProjectOptions::INTERNAL_TAG, false);
-        options.set(ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, false);
+        options.set(
+            ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD,
+            false,
+        );
         options.set(ProjectOptions::BLEEDING_EDGE, false);
         options.set(ProjectOptions::UNUSED_LABEL, false);
         options.set(ProjectOptions::SWITCH_CONDITION, false);
@@ -555,7 +729,10 @@ impl Project {
         options.set(ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR, false);
         options.set(ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES, false);
         options.set(ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR, false);
-        options.set(ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS, false);
+        options.set(
+            ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS,
+            false,
+        );
         options.set(ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES, false);
         options.set(ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES, false);
         options.set(ProjectOptions::FINITE_TYPES_IN_HAYSTACK, false);

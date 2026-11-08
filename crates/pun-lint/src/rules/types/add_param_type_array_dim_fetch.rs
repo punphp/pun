@@ -16,13 +16,14 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    Argument, AssignmentOperator, BinaryOperator, Call, ClassLikeMemberSelector, Expression, FunctionLikeParameterList,
-    Instantiation, MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
+    Argument, AssignmentOperator, BinaryOperator, Call, ClassLikeMemberSelector, Expression,
+    FunctionLikeParameterList, Instantiation, MethodBody, Modifier, Node, NodeKind,
+    UnaryPrefixOperator, Variable,
 };
 
+use super::add_param_type_method_call::walk;
 use super::class_scope;
 use super::facts::{Facts, facts};
-use super::add_param_type_method_call::walk;
 use super::has_parent_class_method;
 use super::param::{Flow, add_hint, traverse};
 use crate::rules::class_method::type_of;
@@ -30,8 +31,8 @@ use crate::rules::lint_b_helpers::value;
 use crate::rules::phpunit::string_value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
-use pun_problem::{Safety, Span};
 use crate::{Context, Report, Rule};
+use pun_problem::{Safety, Span};
 
 pub struct AddParamTypeArrayDimFetch;
 
@@ -66,7 +67,10 @@ impl Rule for AddParamTypeArrayDimFetch {
         };
         let facts = facts(ctx);
         if let Node::Method(m) = node
-            && !m.modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))
+            && !m
+                .modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Private(_)))
             && class_scope(ancestors)
                 .is_some_and(|scope| has_parent_class_method(&facts, &scope, m.name.value))
         {
@@ -106,7 +110,10 @@ impl Rule for AddParamTypeArrayDimFetch {
                 Expression::Call(Call::Function(f)) if named(f, "debug_backtrace"))));
         let mut edits = Vec::new();
         for (index, param) in params.parameters.iter().enumerate() {
-            if param.hint.is_some() || param.ellipsis.is_some() || (numeric_matches || frames) && index == 0 {
+            if param.hint.is_some()
+                || param.ellipsis.is_some()
+                || (numeric_matches || frames) && index == 0
+            {
                 continue;
             }
             if let Some(default) = &param.default_value
@@ -190,7 +197,10 @@ fn is_accessed_array_dim_fetch(
     traverse(body, &mut |node| {
         if let Node::MethodCall(c) = node
             && let ClassLikeMemberSelector::Identifier(method) = &c.method
-            && c.argument_list.arguments.iter().any(|a| is_variable(value(a), name))
+            && c.argument_list
+                .arguments
+                .iter()
+                .any(|a| is_variable(value(a), name))
             && type_of(facts, c.object).is_some_and(|t| asserts(facts, t, method.value))
         {
             asserted.push(node_span(c).end);
@@ -251,7 +261,11 @@ fn is_accessed_array_dim_fetch(
                 && !has_null(h)
             {
                 narrowed = TUnion::from_vec(
-                    i.types.iter().filter(|a| !matches!(a, TAtomic::Null)).cloned().collect(),
+                    i.types
+                        .iter()
+                        .filter(|a| !matches!(a, TAtomic::Null))
+                        .cloned()
+                        .collect(),
                 );
                 variable = Some(&narrowed);
             }
@@ -269,7 +283,11 @@ fn is_accessed_array_dim_fetch(
             && t.types.iter().any(|a| matches!(a, TAtomic::Null))
         {
             without_null = TUnion::from_vec(
-                t.types.iter().filter(|a| !matches!(a, TAtomic::Null)).cloned().collect(),
+                t.types
+                    .iter()
+                    .filter(|a| !matches!(a, TAtomic::Null))
+                    .cloned()
+                    .collect(),
             );
             variable = Some(&without_null);
         }
@@ -300,8 +318,13 @@ fn is_accessed_array_dim_fetch(
 
 /// Whether the method `method` of the object `t` asserts the type of an argument (`@phpstan-assert`).
 fn asserts(facts: &Facts, t: &TUnion, method: &[u8]) -> bool {
-    let [TAtomic::Object(TObject::Named(object))] = t.types.as_ref() else { return false };
-    facts.documented().get_declaring_method(object.name.as_bytes(), method).is_some_and(|m| !m.assertions.is_empty())
+    let [TAtomic::Object(TObject::Named(object))] = t.types.as_ref() else {
+        return false;
+    };
+    facts
+        .documented()
+        .get_declaring_method(object.name.as_bytes(), method)
+        .is_some_and(|m| !m.assertions.is_empty())
 }
 
 /// `shouldStop()`.
@@ -448,8 +471,12 @@ fn constant_arrays_are_union(arrays: &[&TArray]) -> bool {
     let mut items: Vec<&(bool, TUnion)> = Vec::new();
     for array in arrays {
         let own: Vec<&(bool, TUnion)> = match array {
-            TArray::Keyed(k) if k.parameters.is_none() => k.known_items.iter().flat_map(|i| i.values()).collect(),
-            TArray::List(l) if l.element_type.is_never() => l.known_elements.iter().flat_map(|i| i.values()).collect(),
+            TArray::Keyed(k) if k.parameters.is_none() => {
+                k.known_items.iter().flat_map(|i| i.values()).collect()
+            }
+            TArray::List(l) if l.element_type.is_never() => {
+                l.known_elements.iter().flat_map(|i| i.values()).collect()
+            }
             _ => return false,
         };
         // `TypeUtils::flattenTypes` splits it into `getAllArrays()`: with every key optional, one of them is empty
@@ -464,7 +491,9 @@ fn constant_arrays_are_union(arrays: &[&TArray]) -> bool {
         for a in v.types.iter() {
             let kind = match a {
                 // `TypeHasher` tells `ArrayType`s apart by their item type's precise description: `4` is not `5`
-                TAtomic::Scalar(s) if s.is_literal_value() && !s.is_bool() => a.get_id().to_string(),
+                TAtomic::Scalar(s) if s.is_literal_value() && !s.is_bool() => {
+                    a.get_id().to_string()
+                }
                 TAtomic::Scalar(s) if s.is_int() => "int".to_string(),
                 TAtomic::Scalar(s) if s.is_float() => "float".to_string(),
                 TAtomic::Scalar(s) if s.is_any_string() => "string".to_string(),
@@ -482,10 +511,22 @@ fn constant_arrays_are_union(arrays: &[&TArray]) -> bool {
 
 /// `isCalledWithArrayAccessArg()`: a method or static call in the class of the private method, named like it, passes
 /// an `ArrayAccess` object at `position` (all callers of a private method are in its class).
-fn is_called_with_array_access_arg(facts: &Facts, ancestors: &[Node<'_, '_>], method: &[u8], position: usize) -> bool {
+fn is_called_with_array_access_arg(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    method: &[u8],
+    position: usize,
+) -> bool {
     // `findClassOfMethod()`: the `Class_` (named or anonymous) whose methods hold it, not a trait or an enum
     let Some(class) = ancestors.iter().rev().find(|a| {
-        matches!(a, Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_))
+        matches!(
+            a,
+            Node::Class(_)
+                | Node::AnonymousClass(_)
+                | Node::Interface(_)
+                | Node::Trait(_)
+                | Node::Enum(_)
+        )
     }) else {
         return false;
     };

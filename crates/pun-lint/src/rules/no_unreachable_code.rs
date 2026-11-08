@@ -284,7 +284,9 @@ fn is_always_true(expr: &Expression<'_>) -> bool {
         Expression::Literal(Literal::Integer(i)) => i.value.is_some_and(|v| v != 0),
         Expression::ConstantAccess(c) => {
             let name = c.name.value();
-            name.strip_prefix(b"\\").unwrap_or(name).eq_ignore_ascii_case(b"true")
+            name.strip_prefix(b"\\")
+                .unwrap_or(name)
+                .eq_ignore_ascii_case(b"true")
         }
         _ => false,
     }

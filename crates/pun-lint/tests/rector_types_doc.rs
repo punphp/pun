@@ -26,15 +26,15 @@ use lint_c::{run_class, run_class_at, run_class_stubs, run_dirs};
 use mago_syntax::cst::Node;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    AddGetterReturnPhpdoc, AddParamPhpdocFromCallableCall, AddParamPhpdocFromDimFetch, AddParamPhpdocFromLocalCalls,
-    AddParamPhpdocFromReferenceAssign,
-    AddReturnPhpdocCommonObject, AddReturnPhpdocDimAssignedObject, AddReturnPhpdocDirectArray, AddReturnPhpdocJsonArray,
-    AddReturnPhpdocScalarArray, AddVarPhpdocFromConstructorParam, AddVarPhpdocFromDefault, AddVarPhpdocFromDimFetch,
-    AddVarPhpdocFromGetter, PreferGenericCollectionPhpdoc,
+    AddGetterReturnPhpdoc, AddParamPhpdocFromCallableCall, AddParamPhpdocFromDimFetch,
+    AddParamPhpdocFromLocalCalls, AddParamPhpdocFromReferenceAssign, AddReturnPhpdocCommonObject,
+    AddReturnPhpdocDimAssignedObject, AddReturnPhpdocDirectArray, AddReturnPhpdocJsonArray,
+    AddReturnPhpdocScalarArray, AddVarPhpdocFromConstructorParam, AddVarPhpdocFromDefault,
+    AddVarPhpdocFromDimFetch, AddVarPhpdocFromGetter, PreferGenericCollectionPhpdoc,
 };
 use pun_lint::rules::{
-    AddPrivateMethodArrayReturnType, AddReturnTypeFromGetRepository, AddReturnTypeFromNewArray, NoUnusedReturnType,
-    PreferSpecificReturnType,
+    AddPrivateMethodArrayReturnType, AddReturnTypeFromGetRepository, AddReturnTypeFromNewArray,
+    NoUnusedReturnType, PreferSpecificReturnType,
 };
 
 /// A rule called on every node, not only on its `targets()`.
@@ -65,96 +65,146 @@ fn check(rule: fn() -> Box<dyn Rule>, class: &str) {
 
 #[test]
 fn docblock_return_array_from_direct_array_instance() {
-    check(|| Box::new(AddReturnPhpdocDirectArray),
+    check(
+        || Box::new(AddReturnPhpdocDirectArray),
         "DocblockReturnArrayFromDirectArrayInstanceRector",
     );
 }
 
 #[test]
 fn docblock_getter_return_array_from_property_docblock_var() {
-    check(|| Box::new(AddGetterReturnPhpdoc), "DocblockGetterReturnArrayFromPropertyDocblockVarRector");
+    check(
+        || Box::new(AddGetterReturnPhpdoc),
+        "DocblockGetterReturnArrayFromPropertyDocblockVarRector",
+    );
 }
 
 #[test]
 fn add_param_array_docblock_based_on_callable_native_func_call() {
-    check(|| Box::new(AddParamPhpdocFromCallableCall), "AddParamArrayDocblockBasedOnCallableNativeFuncCallRector");
+    check(
+        || Box::new(AddParamPhpdocFromCallableCall),
+        "AddParamArrayDocblockBasedOnCallableNativeFuncCallRector",
+    );
 }
 
 #[test]
 fn add_param_array_docblock_from_dim_fetch_access() {
-    check(|| Box::new(AddParamPhpdocFromDimFetch), "AddParamArrayDocblockFromDimFetchAccessRector");
+    check(
+        || Box::new(AddParamPhpdocFromDimFetch),
+        "AddParamArrayDocblockFromDimFetchAccessRector",
+    );
 }
 
 #[test]
 fn add_param_array_docblock_from_assigns_param_to_param_reference() {
-    check(|| Box::new(AddParamPhpdocFromReferenceAssign), "AddParamArrayDocblockFromAssignsParamToParamReferenceRector");
+    check(
+        || Box::new(AddParamPhpdocFromReferenceAssign),
+        "AddParamArrayDocblockFromAssignsParamToParamReferenceRector",
+    );
 }
 
 #[test]
 fn add_return_docblock_for_common_object_denominator() {
-    check(|| Box::new(AddReturnPhpdocCommonObject), "AddReturnDocblockForCommonObjectDenominatorRector");
+    check(
+        || Box::new(AddReturnPhpdocCommonObject),
+        "AddReturnDocblockForCommonObjectDenominatorRector",
+    );
 }
 
 #[test]
 fn add_return_docblock_for_array_dim_assigned_object() {
-    check(|| Box::new(AddReturnPhpdocDimAssignedObject), "AddReturnDocblockForArrayDimAssignedObjectRector");
+    check(
+        || Box::new(AddReturnPhpdocDimAssignedObject),
+        "AddReturnDocblockForArrayDimAssignedObjectRector",
+    );
 }
 
 #[test]
 fn add_return_docblock_for_json_array() {
-    check(|| Box::new(AddReturnPhpdocJsonArray), "AddReturnDocblockForJsonArrayRector");
+    check(
+        || Box::new(AddReturnPhpdocJsonArray),
+        "AddReturnDocblockForJsonArrayRector",
+    );
 }
 
 #[test]
 fn add_return_docblock_for_scalar_array_from_assigns() {
-    check(|| Box::new(AddReturnPhpdocScalarArray), "AddReturnDocblockForScalarArrayFromAssignsRector");
+    check(
+        || Box::new(AddReturnPhpdocScalarArray),
+        "AddReturnDocblockForScalarArrayFromAssignsRector",
+    );
 }
 
 #[test]
 fn docblock_var_from_param_docblock_in_constructor() {
-    check(|| Box::new(AddVarPhpdocFromConstructorParam), "DocblockVarFromParamDocblockInConstructorRector");
+    check(
+        || Box::new(AddVarPhpdocFromConstructorParam),
+        "DocblockVarFromParamDocblockInConstructorRector",
+    );
 }
 
 #[test]
 fn docblock_var_array_from_property_defaults() {
-    check(|| Box::new(AddVarPhpdocFromDefault), "DocblockVarArrayFromPropertyDefaultsRector");
+    check(
+        || Box::new(AddVarPhpdocFromDefault),
+        "DocblockVarArrayFromPropertyDefaultsRector",
+    );
 }
 
 #[test]
 fn add_var_array_docblock_from_dim_fetch_assign() {
-    check(|| Box::new(AddVarPhpdocFromDimFetch), "AddVarArrayDocblockFromDimFetchAssignRector");
+    check(
+        || Box::new(AddVarPhpdocFromDimFetch),
+        "AddVarArrayDocblockFromDimFetchAssignRector",
+    );
 }
 
 #[test]
 fn docblock_var_array_from_getter_return() {
-    check(|| Box::new(AddVarPhpdocFromGetter), "DocblockVarArrayFromGetterReturnRector");
+    check(
+        || Box::new(AddVarPhpdocFromGetter),
+        "DocblockVarArrayFromGetterReturnRector",
+    );
 }
 
 #[test]
 fn narrow_array_collection_union_return_docblock() {
-    check(|| Box::new(PreferGenericCollectionPhpdoc), "NarrowArrayCollectionUnionReturnDocblockRector");
+    check(
+        || Box::new(PreferGenericCollectionPhpdoc),
+        "NarrowArrayCollectionUnionReturnDocblockRector",
+    );
 }
 
 #[test]
 fn class_method_array_docblock_param_from_local_calls() {
-    check(|| Box::new(AddParamPhpdocFromLocalCalls),
+    check(
+        || Box::new(AddParamPhpdocFromLocalCalls),
         "ClassMethodArrayDocblockParamFromLocalCallsRector",
     );
 }
 
 #[test]
 fn return_type_from_strict_new_array() {
-    check(|| Box::new(AddReturnTypeFromNewArray), "ReturnTypeFromStrictNewArrayRector");
+    check(
+        || Box::new(AddReturnTypeFromNewArray),
+        "ReturnTypeFromStrictNewArrayRector",
+    );
 }
 
 #[test]
 fn private_method_return_type_from_strict_new_array() {
-    check(|| Box::new(AddPrivateMethodArrayReturnType), "PrivateMethodReturnTypeFromStrictNewArrayRector");
+    check(
+        || Box::new(AddPrivateMethodArrayReturnType),
+        "PrivateMethodReturnTypeFromStrictNewArrayRector",
+    );
 }
 
 #[test]
 fn narrow_object_return_type() {
-    check(|| Box::new(PreferSpecificReturnType), "NarrowObjectReturnTypeRector");
+    check(
+        || Box::new(PreferSpecificReturnType),
+        "NarrowObjectReturnTypeRector",
+    );
 }
 
 #[test]
@@ -163,7 +213,12 @@ fn return_type_from_get_repository_docblock() {
         Box::new(AddReturnTypeFromGetRepository) as Box<dyn Rule>,
         Box::new(Everywhere(Box::new(AddReturnTypeFromGetRepository))),
     ] {
-        run_class_stubs(vec![rule], "ReturnTypeFromGetRepositoryDocblockRector", 80400, &["doctrine-stubs"]);
+        run_class_stubs(
+            vec![rule],
+            "ReturnTypeFromGetRepositoryDocblockRector",
+            80400,
+            &["doctrine-stubs"],
+        );
     }
 }
 
@@ -172,8 +227,10 @@ fn narrow_wide_union_return_type() {
     // the fixtures' config reads Source/composer.json and sets PHP 8.0; Stubs/composer.json has its requires and the
     // packages of the Oracle cases' vendor classes; Php84/ holds the cases of intersections, run at PHP 8.4
     let class = "NarrowWideUnionReturnTypeRector";
-    let composer_json =
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector").join(class).join("Stubs/composer.json");
+    let composer_json = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(class)
+        .join("Stubs/composer.json");
     let rule = || NoUnusedReturnType {
         composer_json: Some(composer_json.clone()),
     };

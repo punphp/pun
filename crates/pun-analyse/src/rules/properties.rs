@@ -6,8 +6,8 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
-use super::{Checker, overriding_property};
 use super::declarations::{READONLY_TAGS, has_tag};
+use super::{Checker, overriding_property};
 
 /// ClassPropertyNode.
 pub(super) struct PropertyNode<'n, 'arena> {
@@ -57,10 +57,15 @@ pub(super) fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>
     let tags = c.tags_before(p);
     let readonly_by_phpdoc = has_tag(&tags, READONLY_TAGS);
     let allowed_private_mutation = has_tag(&tags, ALLOW_PRIVATE_MUTATION_TAGS);
-    let (items, hooks, attributes): (Vec<&PropertyItem<'arena>>, &[PropertyHook<'arena>], _) = match p {
-        Property::Plain(p) => (p.items.iter().collect(), &[], p.attribute_lists.as_slice()),
-        Property::Hooked(h) => (vec![&h.item], h.hook_list.hooks.as_slice(), h.attribute_lists.as_slice()),
-    };
+    let (items, hooks, attributes): (Vec<&PropertyItem<'arena>>, &[PropertyHook<'arena>], _) =
+        match p {
+            Property::Plain(p) => (p.items.iter().collect(), &[], p.attribute_lists.as_slice()),
+            Property::Hooked(h) => (
+                vec![&h.item],
+                h.hook_list.hooks.as_slice(),
+                h.attribute_lists.as_slice(),
+            ),
+        };
     for item in items {
         let variable = item.variable();
         let node = PropertyNode {
@@ -119,7 +124,9 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, node: &PropertyNode<'_, 'arena>) {
     overriding_property::check(c, node, is_readonly);
     super::property_hooks::check(c, node);
     // isReadOnlyByPhpDoc(): a `@readonly` tag, or the class is immutable (its PHPDoc or a parent's)
-    let by_phpdoc = node.readonly_by_phpdoc || immutable_doc || parent.is_some_and(|p| c.class_immutable(&p, 0));
+    let by_phpdoc = node.readonly_by_phpdoc
+        || immutable_doc
+        || parent.is_some_and(|p| c.class_immutable(&p, 0));
     if let Some(decl) = node.decl {
         super::variance::property(c, node, decl, by_phpdoc);
     }

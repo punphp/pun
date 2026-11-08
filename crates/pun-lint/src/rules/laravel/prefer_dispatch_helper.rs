@@ -85,7 +85,10 @@ impl Rule for PreferDispatchHelper {
             kept_arguments(ctx.source, &call.argument_list, node_span(call).start).join(", ");
         out.push(replace(
             node_span(call),
-            format!("Use the `{helper}()` helper instead of the static `{}` method.", String::from_utf8_lossy(name)),
+            format!(
+                "Use the `{helper}()` helper instead of the static `{}` method.",
+                String::from_utf8_lossy(name)
+            ),
             format!("{helper}(new {written}({args}))"),
         ));
     }

@@ -91,7 +91,11 @@ const GAPS: &[u64] = &[78];
 
 fn compare(mut got: BTreeMap<u64, String>, mut want: BTreeMap<u64, String>) {
     for line in GAPS {
-        assert_ne!(got.remove(line), want.remove(line), "line {line} matches Larastan now: remove it from GAPS");
+        assert_ne!(
+            got.remove(line),
+            want.remove(line),
+            "line {line} matches Larastan now: remove it from GAPS"
+        );
     }
     assert_eq!(got, want);
 }

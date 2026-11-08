@@ -47,7 +47,12 @@ fn object(name: mago_word::Word) -> TUnion {
 }
 
 /// The ModelFactoryType of class `factory`, recorded for the call.
-fn factory_type(codebase: &CodebaseMetadata, invocation: &InvocationInfo<'_, '_, '_>, factory: &[u8], single: Single) -> Option<TUnion> {
+fn factory_type(
+    codebase: &CodebaseMetadata,
+    invocation: &InvocationInfo<'_, '_, '_>,
+    factory: &[u8],
+    single: Single,
+) -> Option<TUnion> {
     let k = codebase.get_class_like(factory)?;
     FACTORIES.with(|f| f.borrow_mut().insert(invocation.span(), single));
     Some(object(k.original_name))
@@ -86,7 +91,13 @@ pub(super) fn model_factory(
 fn factory_class(codebase: &CodebaseMetadata, model: &[u8]) -> Option<mago_word::Word> {
     let k = codebase.get_class_like(model)?;
     if codebase.method_exists(model, b"newFactory") {
-        let returned = super::forwards::method_type(codebase, model, &TNamedObject::new(k.original_name), b"newFactory", None);
+        let returned = super::forwards::method_type(
+            codebase,
+            model,
+            &TNamedObject::new(k.original_name),
+            b"newFactory",
+            None,
+        );
         let classes: Vec<_> = returned
             .iter()
             .flat_map(|t| t.types.iter())
@@ -101,16 +112,25 @@ fn factory_class(codebase: &CodebaseMetadata, model: &[u8]) -> Option<mago_word:
             .collect();
         if let [factory] = classes.as_slice()
             && is(codebase, factory.as_bytes(), FACTORY)
-            && codebase.get_class_like(factory.as_bytes()).is_some_and(|f| !f.flags.is_abstract())
+            && codebase
+                .get_class_like(factory.as_bytes())
+                .is_some_and(|f| !f.flags.is_abstract())
         {
             return Some(*factory);
         }
     }
     // `Factory::$namespace` and the app namespace `App\`
     let name = String::from_utf8_lossy(k.original_name.as_bytes()).into_owned();
-    let relative = name.strip_prefix("App\\Models\\").or_else(|| name.strip_prefix("App\\")).unwrap_or(&name);
+    let relative = name
+        .strip_prefix("App\\Models\\")
+        .or_else(|| name.strip_prefix("App\\"))
+        .unwrap_or(&name);
     let factory = format!("Database\\Factories\\{relative}Factory");
-    codebase.class_exists(factory.as_bytes()).then(|| codebase.get_class_like(factory.as_bytes()).map(|f| f.original_name))?
+    codebase.class_exists(factory.as_bytes()).then(|| {
+        codebase
+            .get_class_like(factory.as_bytes())
+            .map(|f| f.original_name)
+    })?
 }
 
 /// The receiver's ModelFactoryType: its `isSingleModel()`.
@@ -122,12 +142,24 @@ fn receiver_single(receiver: Option<Span>) -> Option<Single> {
 fn model_of(codebase: &CodebaseMetadata, factory: &TNamedObject) -> Option<TUnion> {
     let k = codebase.get_class_like(factory.name.as_bytes())?;
     let defining = codebase.get_class_like(FACTORY)?.name;
-    get_specialized_template_type(codebase, word("TModel"), defining, k, factory.type_parameters.as_deref())
+    get_specialized_template_type(
+        codebase,
+        word("TModel"),
+        defining,
+        k,
+        factory.type_parameters.as_deref(),
+    )
 }
 
 /// ModelFactoryMethodsClassReflectionExtension::hasMethod().
-pub(crate) fn has_magic_method(codebase: &CodebaseMetadata, factory: &TNamedObject, method: &str) -> bool {
-    let Some(model) = model_of(codebase, factory) else { return false };
+pub(crate) fn has_magic_method(
+    codebase: &CodebaseMetadata,
+    factory: &TNamedObject,
+    method: &str,
+) -> bool {
+    let Some(model) = model_of(codebase, factory) else {
+        return false;
+    };
     let model = model.types.iter().find_map(|t| match t {
         TAtomic::Object(TObject::Named(n)) => Some(n.name),
         _ => None,
@@ -136,12 +168,17 @@ pub(crate) fn has_magic_method(codebase: &CodebaseMetadata, factory: &TNamedObje
     let model_class = model_word.as_bytes();
     let uses_soft_deletes = codebase.class_uses_trait(model_class, SOFT_DELETES)
         || codebase.get_class_like(model_class).is_some_and(|k| {
-            k.all_parent_classes.iter().any(|p| codebase.class_uses_trait(p.as_bytes(), SOFT_DELETES))
+            k.all_parent_classes
+                .iter()
+                .any(|p| codebase.class_uses_trait(p.as_bytes(), SOFT_DELETES))
         });
     if method == "trashed" && uses_soft_deletes {
         return true;
     }
-    let Some(relationship) = method.strip_prefix("for").or_else(|| method.strip_prefix("has")) else {
+    let Some(relationship) = method
+        .strip_prefix("for")
+        .or_else(|| method.strip_prefix("has"))
+    else {
         return false;
     };
     let relationship = crate::laravel::camel(relationship);
@@ -157,7 +194,9 @@ pub(super) fn factory_method(
 ) -> Option<TUnion> {
     let codebase = context.codebase();
     let target = invocation.inner().target.get_method_context()?;
-    let mago_codex::ttype::expander::StaticClassType::Object(TObject::Named(factory)) = &target.class_type else {
+    let mago_codex::ttype::expander::StaticClassType::Object(TObject::Named(factory)) =
+        &target.class_type
+    else {
         return None;
     };
     let class = factory.name.as_bytes();
@@ -166,7 +205,13 @@ pub(super) fn factory_method(
     }
     let name = String::from_utf8_lossy(method).into_owned();
     let original = if codebase.method_exists(class, method) {
-        super::forwards::method_type(codebase, class, factory, method, Some((context, invocation)))?
+        super::forwards::method_type(
+            codebase,
+            class,
+            factory,
+            method,
+            Some((context, invocation)),
+        )?
     } else if has_magic_method(codebase, factory, &name) {
         object(codebase.get_class_like(class)?.original_name)
     } else {
@@ -180,7 +225,11 @@ pub(super) fn factory_method(
         "count" | "times" => {
             let argument = invocation.get_argument(0, &[b"count"])?;
             let ty = context.get_expression_type(argument)?;
-            let single = if ty.types.iter().all(|t| matches!(t, TAtomic::Scalar(TScalar::Integer(_)))) {
+            let single = if ty
+                .types
+                .iter()
+                .all(|t| matches!(t, TAtomic::Scalar(TScalar::Integer(_))))
+            {
                 Single::No
             } else if ty.types.iter().all(TAtomic::is_null) {
                 Single::Yes
@@ -190,7 +239,11 @@ pub(super) fn factory_method(
             return factory_type(codebase, invocation, class, single);
         }
         "create" | "createquietly" | "make" if single != Single::Maybe => {
-            let removed: &[u8] = if single == Single::Yes { ELOQUENT_COLLECTION } else { MODEL };
+            let removed: &[u8] = if single == Single::Yes {
+                ELOQUENT_COLLECTION
+            } else {
+                MODEL
+            };
             let kept: Vec<_> = original
                 .types
                 .iter()
@@ -209,4 +262,3 @@ pub(super) fn factory_method(
     }
     Some(original)
 }
-

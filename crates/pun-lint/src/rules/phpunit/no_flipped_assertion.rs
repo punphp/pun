@@ -93,7 +93,8 @@ fn is_flip_needed(first: &Expression<'_>, second: &Expression<'_>) -> bool {
         return true;
     }
     // e.g. assertSame($obj->getValues(), [$a, $b])
-    array_elements(second).is_some_and(|items| is_literal_array(items, true)) && is_computed_expr(first)
+    array_elements(second).is_some_and(|items| is_literal_array(items, true))
+        && is_computed_expr(first)
 }
 
 /// `isExpectedValue`: with `allow_variables`, a variable too (as an array's key or value, not inside a concatenation
@@ -115,7 +116,9 @@ fn is_expected_value(expr: &Expression<'_>, allow_variables: bool) -> bool {
                     | Expression::Parent(_)
             ) && new.argument_list.as_ref().is_none_or(|list| {
                 list.arguments.iter().all(|a| match a {
-                    Argument::Positional(p) => p.ellipsis.is_none() && is_expected_value(p.value, false),
+                    Argument::Positional(p) => {
+                        p.ellipsis.is_none() && is_expected_value(p.value, false)
+                    }
                     Argument::Named(_) => false,
                 })
             })
@@ -128,7 +131,9 @@ fn is_expected_value(expr: &Expression<'_>, allow_variables: bool) -> bool {
 }
 
 /// The items of a php-parser `Array_` (`[...]` or `array(...)`).
-fn array_elements<'a>(expr: &'a Expression<'a>) -> Option<&'a TokenSeparatedSequence<'a, ArrayElement<'a>>> {
+fn array_elements<'a>(
+    expr: &'a Expression<'a>,
+) -> Option<&'a TokenSeparatedSequence<'a, ArrayElement<'a>>> {
     match unparenthesize(expr) {
         Expression::Array(a) => Some(&a.elements),
         Expression::LegacyArray(a) => Some(&a.elements),
@@ -137,10 +142,14 @@ fn array_elements<'a>(expr: &'a Expression<'a>) -> Option<&'a TokenSeparatedSequ
 }
 
 /// `isLiteralArray`: no item unpacked, each key and value an expected value.
-fn is_literal_array(items: &TokenSeparatedSequence<'_, ArrayElement<'_>>, allow_variables: bool) -> bool {
+fn is_literal_array(
+    items: &TokenSeparatedSequence<'_, ArrayElement<'_>>,
+    allow_variables: bool,
+) -> bool {
     items.iter().all(|item| match item {
         ArrayElement::KeyValue(kv) => {
-            is_expected_value(kv.key, allow_variables) && is_expected_value(kv.value, allow_variables)
+            is_expected_value(kv.key, allow_variables)
+                && is_expected_value(kv.value, allow_variables)
         }
         ArrayElement::Value(v) => is_expected_value(v.value, allow_variables),
         ArrayElement::Variadic(_) | ArrayElement::Missing(_) => false,
@@ -151,9 +160,11 @@ fn is_literal_array(items: &TokenSeparatedSequence<'_, ArrayElement<'_>>, allow_
 fn is_computed_expr(expr: &Expression<'_>) -> bool {
     matches!(
         unparenthesize(expr),
-        Expression::Call(Call::Method(_) | Call::StaticMethod(_) | Call::Function(_) | Call::NullSafeMethod(_))
-            | Expression::Access(Access::Property(_) | Access::NullSafeProperty(_) | Access::StaticProperty(_))
-            | Expression::ArrayAccess(_)
+        Expression::Call(
+            Call::Method(_) | Call::StaticMethod(_) | Call::Function(_) | Call::NullSafeMethod(_)
+        ) | Expression::Access(
+            Access::Property(_) | Access::NullSafeProperty(_) | Access::StaticProperty(_)
+        ) | Expression::ArrayAccess(_)
     )
 }
 
@@ -186,7 +197,9 @@ fn is_scalar_value(expr: &Expression<'_>) -> bool {
         }
         Expression::Literal(_)
         | Expression::MagicConstant(_)
-        | Expression::CompositeString(CompositeString::Interpolated(_) | CompositeString::Document(_))
+        | Expression::CompositeString(
+            CompositeString::Interpolated(_) | CompositeString::Document(_),
+        )
         | Expression::ConstantAccess(_)
         | Expression::Access(Access::ClassConstant(_)) => true,
         _ => false,

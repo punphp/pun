@@ -33,18 +33,32 @@ fn native_may_be_null(c: &Checker, e: &Expression) -> bool {
         Expression::Call(Call::NullSafeMethod(m)) => (m.object, &m.method),
         _ => return false,
     };
-    let ClassLikeMemberSelector::Identifier(name) = method else { return false };
+    let ClassLikeMemberSelector::Identifier(name) = method else {
+        return false;
+    };
     let class = match unparen(object) {
         Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => c.class_scope(),
         object => c.type_of(object).and_then(|t| {
-            match t.types.iter().filter(|t| !t.is_null()).collect::<Vec<_>>().as_slice() {
-                [TAtomic::Object(TObject::Named(o))] => c.codebase.get_class_like(o.name.as_bytes()),
+            match t
+                .types
+                .iter()
+                .filter(|t| !t.is_null())
+                .collect::<Vec<_>>()
+                .as_slice()
+            {
+                [TAtomic::Object(TObject::Named(o))] => {
+                    c.codebase.get_class_like(o.name.as_bytes())
+                }
                 _ => None,
             }
         }),
     };
-    let Some(Method::User { f, .. }) = class.and_then(|k| members::method(c, k, name.value)) else { return false };
-    f.return_type_declaration_metadata.as_ref().is_none_or(|t| !c.to_phpstan(&t.type_union).is_null().no())
+    let Some(Method::User { f, .. }) = class.and_then(|k| members::method(c, k, name.value)) else {
+        return false;
+    };
+    f.return_type_declaration_metadata
+        .as_ref()
+        .is_none_or(|t| !c.to_phpstan(&t.type_union).is_null().no())
 }
 
 fn check(c: &mut Checker, t: Type, at: Span, kind: &str, add_tip: bool) {
@@ -68,7 +82,9 @@ pub(in super::super) fn property(c: &mut Checker, p: &NullSafePropertyAccess) {
     if super::super::property_access::undefined_allowed(c, p.span()) {
         return;
     }
-    let Some(t) = c.phpstan_type(p.object) else { return };
+    let Some(t) = c.phpstan_type(p.object) else {
+        return;
+    };
     let add_tip = native_may_be_null(c, p.object);
     check(c, t, p.property.span(), "property access", add_tip);
 }
@@ -76,7 +92,9 @@ pub(in super::super) fn property(c: &mut Checker, p: &NullSafePropertyAccess) {
 pub(in super::super) fn method(c: &mut Checker, m: &NullSafeMethodCall) {
     // The ordinary operand artifact belongs to the ensured plain twin. The rule's virtual node
     // instead carries the processed receiver, including originals from enclosing ensure devices.
-    let Some(full) = c.nullsafe_method_receiver_types.get(&m.span()) else { return };
+    let Some(full) = c.nullsafe_method_receiver_types.get(&m.span()) else {
+        return;
+    };
     let t = c.phpstan_type_from(m.object, full);
     let add_tip = native_may_be_null(c, m.object);
     check(c, t, m.method.span(), "method call", add_tip);

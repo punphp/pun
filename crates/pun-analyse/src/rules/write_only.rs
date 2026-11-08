@@ -31,19 +31,28 @@ pub(super) fn read(
     let property = [b"$", name.value].concat();
     // PhpClassReflectionExtension first: a native property is readable from its class unless it is virtual
     // without a `get` hook
-    let (declaring, readable) = if let Some((declaring, readable)) = c.native_readable(class, &property) {
-        (declaring, readable)
-    } else if c.allows_dynamic_properties(class)
-        && let Some(declaring) = class.magic_property_ids.get(&word(&property))
-        && let Some(tag) = c.codebase.get_magic_property(declaring.as_bytes(), &property)
-    {
-        let declaring = c.codebase.get_class_like(declaring.as_bytes()).map_or_else(String::new, |d| c.display(d));
-        (declaring, !tag.flags.is_writeonly())
-    } else {
-        return;
-    };
+    let (declaring, readable) =
+        if let Some((declaring, readable)) = c.native_readable(class, &property) {
+            (declaring, readable)
+        } else if c.allows_dynamic_properties(class)
+            && let Some(declaring) = class.magic_property_ids.get(&word(&property))
+            && let Some(tag) = c
+                .codebase
+                .get_magic_property(declaring.as_bytes(), &property)
+        {
+            let declaring = c
+                .codebase
+                .get_class_like(declaring.as_bytes())
+                .map_or_else(String::new, |d| c.display(d));
+            (declaring, !tag.flags.is_writeonly())
+        } else {
+            return;
+        };
     if !readable {
-        let message = format!("Property {declaring}::${} is not readable.", String::from_utf8_lossy(name.value));
+        let message = format!(
+            "Property {declaring}::${} is not readable.",
+            String::from_utf8_lossy(name.value)
+        );
         c.report(span, "property.writeOnly", message, None);
     }
 }

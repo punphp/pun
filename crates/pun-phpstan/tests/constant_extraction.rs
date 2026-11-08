@@ -50,8 +50,7 @@ fn constant_extraction_matches_phpstan_domains_templates_and_callable_offsets() 
             "list": format!("{:?}", a.is_list),
             "next": a.next_auto_indexes,
         })).collect();
-        let got =
-            json!({"input": row["input"], "strings": ty.constant_strings().into_iter().map(|s| String::from_utf8(s).unwrap()).collect::<Vec<_>>(), "arrays": arrays});
+        let got = json!({"input": row["input"], "strings": ty.constant_strings().into_iter().map(|s| String::from_utf8(s).unwrap()).collect::<Vec<_>>(), "arrays": arrays});
         if got != *row {
             failures.push(format!("{row}\nactual: {got}"));
         }

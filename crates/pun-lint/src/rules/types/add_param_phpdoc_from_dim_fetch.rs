@@ -51,8 +51,12 @@ impl Rule for AddParamPhpdocFromDimFetch {
             // `ArrayDimFetchFinder::findByVariableName()`: the dims of `$name[...]` reads
             let mut dims: Vec<Option<&Expression<'_>>> = Vec::new();
             find_scoped(node, &mut |n| match n {
-                Node::ArrayAccess(a) if variable_name(a.array) == Some(name.as_str()) => dims.push(Some(a.index)),
-                Node::ArrayAppend(a) if variable_name(a.array) == Some(name.as_str()) => dims.push(None),
+                Node::ArrayAccess(a) if variable_name(a.array) == Some(name.as_str()) => {
+                    dims.push(Some(a.index));
+                }
+                Node::ArrayAppend(a) if variable_name(a.array) == Some(name.as_str()) => {
+                    dims.push(None);
+                }
                 _ => {}
             });
             if dims.is_empty() {
@@ -61,18 +65,30 @@ impl Rule for AddParamPhpdocFromDimFetch {
             // skip for now, not to create more error on incompatible parent @param doc override
             if f.method.is_some() && !f.is_private() {
                 let facts = facts(ctx);
-                if class_scope(ancestors).is_none_or(|s| has_parent_class_method(&facts, &s, f.name_text)) {
+                if class_scope(ancestors)
+                    .is_none_or(|s| has_parent_class_method(&facts, &s, f.name_text))
+                {
                     continue;
                 }
             }
-            let keys: Vec<Option<Type>> = dims.into_iter().flatten().map(|d| expr_type(ctx, &scope, d)).collect();
+            let keys: Vec<Option<Type>> = dims
+                .into_iter()
+                .flatten()
+                .map(|d| expr_type(ctx, &scope, d))
+                .collect();
             // most likely not being read
             if keys.is_empty() {
                 continue;
             }
-            let key = if keys.iter().all(|k| k.as_ref().is_some_and(|k| k.is_string().yes())) {
+            let key = if keys
+                .iter()
+                .all(|k| k.as_ref().is_some_and(|k| k.is_string().yes()))
+            {
                 "string"
-            } else if keys.iter().all(|k| k.as_ref().is_some_and(|k| k.is_integer().yes())) {
+            } else if keys
+                .iter()
+                .all(|k| k.as_ref().is_some_and(|k| k.is_integer().yes()))
+            {
                 "int"
             } else {
                 continue;

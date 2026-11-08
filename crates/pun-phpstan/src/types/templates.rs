@@ -20,7 +20,11 @@ fn key(t: &Template) -> Key {
     (t.name.clone(), t.scope.clone())
 }
 
-fn merge(into: &mut Vec<(Key, Type)>, from: Vec<(Key, Type)>, combine: impl Fn(Type, Type) -> Option<Type>) {
+fn merge(
+    into: &mut Vec<(Key, Type)>,
+    from: Vec<(Key, Type)>,
+    combine: impl Fn(Type, Type) -> Option<Type>,
+) {
     for (k, t) in from {
         match into.iter_mut().find(|(o, _)| *o == k) {
             Some((_, old)) => {
@@ -40,7 +44,10 @@ fn narrowed(a: Type, b: Type) -> Option<Type> {
 
 impl TemplateMap {
     fn of(t: &Template, ty: Type) -> TemplateMap {
-        TemplateMap { types: vec![(key(t), ty)], ..Default::default() }
+        TemplateMap {
+            types: vec![(key(t), ty)],
+            ..Default::default()
+        }
     }
 
     /// `union()` and `benevolentUnion()`, an absorbed template giving way to the other side (`combine()`)
@@ -84,13 +91,23 @@ impl TemplateMap {
     fn lower_bound(self) -> TemplateMap {
         let mut lower = self.types;
         merge(&mut lower, self.lower, narrowed);
-        TemplateMap { lower, ..Default::default() }
+        TemplateMap {
+            lower,
+            ..Default::default()
+        }
     }
 
     /// `getTypes()`: each template's type, its lower bound when only that is known.
     pub fn types(&self) -> Vec<(&str, &str, &Type)> {
-        let lower = self.lower.iter().filter(|(k, _)| !self.types.iter().any(|(o, _)| o == k));
-        self.types.iter().chain(lower).map(|((n, s), t)| (n.as_str(), s.as_str(), t)).collect()
+        let lower = self
+            .lower
+            .iter()
+            .filter(|(k, _)| !self.types.iter().any(|(o, _)| o == k));
+        self.types
+            .iter()
+            .chain(lower)
+            .map(|((n, s), t)| (n.as_str(), s.as_str(), t))
+            .collect()
     }
 
     /// The type of template `name` of `scope` is an `AbsorbedTemplateArgumentType`.
@@ -99,14 +116,24 @@ impl TemplateMap {
     }
 
     fn get(&self, t: &Template) -> Option<&Type> {
-        self.types().into_iter().find(|(n, s, _)| *n == t.name && *s == t.scope).map(|(_, _, t)| t)
+        self.types()
+            .into_iter()
+            .find(|(n, s, _)| *n == t.name && *s == t.scope)
+            .map(|(_, _, t)| t)
     }
 }
 
 /// A template of a union, benevolent union or intersection is one (TemplateUnionType extends UnionType).
 fn bounded(t: &Type) -> &Type {
     match t {
-        Type::Template(tt) if matches!(tt.bound, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)) => &tt.bound,
+        Type::Template(tt)
+            if matches!(
+                tt.bound,
+                Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)
+            ) =>
+        {
+            &tt.bound
+        }
         t => t,
     }
 }
@@ -114,7 +141,9 @@ fn bounded(t: &Type) -> &Type {
 /// `$receivedType->inferTemplateTypesOn($pattern)` of a union, benevolent union or intersection received.
 fn on_received(pattern: &Type, received: &Type) -> Option<TemplateMap> {
     let fold = |ts: &[Type], f: fn(TemplateMap, TemplateMap) -> TemplateMap| {
-        ts.iter().map(|t| infer_template_types(pattern, t)).fold(TemplateMap::default(), f)
+        ts.iter()
+            .map(|t| infer_template_types(pattern, t))
+            .fold(TemplateMap::default(), f)
     };
     match bounded(received) {
         Type::Union(ts) => Some(fold(ts, TemplateMap::union)),
@@ -127,7 +156,9 @@ fn on_received(pattern: &Type, received: &Type) -> Option<TemplateMap> {
 /// `$pattern->inferTemplateTypes($received)`
 pub fn infer_template_types(pattern: &Type, received: &Type) -> TemplateMap {
     let fold = |ts: &[Type], f: fn(TemplateMap, TemplateMap) -> TemplateMap| {
-        ts.iter().map(|t| infer_template_types(t, received)).fold(TemplateMap::default(), f)
+        ts.iter()
+            .map(|t| infer_template_types(t, received))
+            .fold(TemplateMap::default(), f)
     };
     match pattern {
         Type::Template(t) => template(t, received),
@@ -141,7 +172,9 @@ pub fn infer_template_types(pattern: &Type, received: &Type) -> TemplateMap {
         | Type::Callable(Some(_))
         | Type::Closure(_)
         | Type::ClassString(Some(_))
-        | Type::ObjectShape(_) => on_received(pattern, received).unwrap_or_else(|| generic(pattern, received)),
+        | Type::ObjectShape(_) => {
+            on_received(pattern, received).unwrap_or_else(|| generic(pattern, received))
+        }
         Type::Object(_, args, _) if !args.is_empty() => {
             on_received(pattern, received).unwrap_or_else(|| generic(pattern, received))
         }
@@ -157,7 +190,9 @@ pub fn remove_final_by_keyword_overrides(t: &Type) -> Type {
     fn without_overrides(t: &Type) -> (Type, bool) {
         let changed = std::cell::Cell::new(matches!(t, Type::Object(_, _, true)));
         let mut t = t.clone();
-        if let Type::Object(_, _, exact) = &mut t { *exact = false; }
+        if let Type::Object(_, _, exact) = &mut t {
+            *exact = false;
+        }
         let t = t.traverse(&|inner| {
             let (inner, erased) = without_overrides(inner);
             changed.set(changed.get() || erased);
@@ -188,7 +223,11 @@ fn template(t: &Template, received: &Type) -> TemplateMap {
         Tri::Yes => TemplateMap::of(t, received.clone()).union(map),
         // BenevolentUnionType extends UnionType
         Tri::Maybe if let Type::Union(rs) | Type::Benevolent(rs) = received => {
-            let matching: Vec<Type> = rs.iter().filter(|r| is_super_type_of(&bound, r).yes()).cloned().collect();
+            let matching: Vec<Type> = rs
+                .iter()
+                .filter(|r| is_super_type_of(&bound, r).yes())
+                .cloned()
+                .collect();
             if matching.is_empty() {
                 return map;
             }
@@ -206,7 +245,11 @@ fn in_union(ts: &[Type], received: &Type) -> TemplateMap {
         // `toArrayOrTraversable()`
         Type::Iterable(k, v) => union(vec![
             Type::array((**k).clone(), (**v).clone()),
-            Type::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false),
+            Type::Object(
+                "Traversable".into(),
+                vec![(**k).clone(), (**v).clone()],
+                false,
+            ),
         ]),
         r => r.clone(),
     };
@@ -246,7 +289,8 @@ fn in_union(ts: &[Type], received: &Type) -> TemplateMap {
     if !map.types().is_empty() {
         return map;
     }
-    ts.iter().fold(map, |map, t| map.union(infer_template_types(t, &received)))
+    ts.iter()
+        .fold(map, |map, t| map.union(infer_template_types(t, &received)))
 }
 
 /// `getNakedTemplateType()`
@@ -261,29 +305,41 @@ fn naked(t: &Type) -> Option<&Template> {
 /// The inference of the generic types other than templates and unions, from a received type that is not a union.
 fn generic(pattern: &Type, received: &Type) -> TemplateMap {
     let pair = |k: &Type, v: &Type| {
-        infer_template_types(k, &received.iterable_key_type()).union(infer_template_types(v, &received.iterable_value_type()))
+        infer_template_types(k, &received.iterable_key_type())
+            .union(infer_template_types(v, &received.iterable_value_type()))
     };
     match pattern {
         Type::Array(k, v) if received.is_array().yes() => pair(k, v),
         Type::ConstArray(a) => match received {
             // ponytail: a key the received shape lacks is skipped, its unsealed extras are not matched
-            Type::ConstArray(b) => a.keys.iter().zip(&a.values).fold(TemplateMap::default(), |map, (k, v)| {
-                match b.keys.iter().position(|o| o == k) {
-                    Some(i) => map.union(infer_template_types(v, &b.values[i])),
-                    None => map,
-                }
-            }),
-            r if r.is_array().yes() => pair(&pattern.iterable_key_type(), &pattern.iterable_value_type()),
+            Type::ConstArray(b) => {
+                a.keys
+                    .iter()
+                    .zip(&a.values)
+                    .fold(TemplateMap::default(), |map, (k, v)| {
+                        match b.keys.iter().position(|o| o == k) {
+                            Some(i) => map.union(infer_template_types(v, &b.values[i])),
+                            None => map,
+                        }
+                    })
+            }
+            r if r.is_array().yes() => {
+                pair(&pattern.iterable_key_type(), &pattern.iterable_value_type())
+            }
             _ => TemplateMap::default(),
         },
         Type::Iterable(k, v) if received.is_iterable().yes() && !received.is_never() => pair(k, v),
-        Type::Callable(Some(s)) if received.is_callable().yes() => {
-            callable_signatures(received).iter().fold(TemplateMap::default(), |map, theirs| map.union(on_signature(s, theirs)))
-        }
+        Type::Callable(Some(s)) if received.is_callable().yes() => callable_signatures(received)
+            .iter()
+            .fold(TemplateMap::default(), |map, theirs| {
+                map.union(on_signature(s, theirs))
+            }),
         Type::Closure(s) if let Type::Closure(theirs) = received => on_signature(s, theirs),
         Type::ClassString(Some(inner)) => {
             let object = match received {
-                Type::ConstString(class) => Type::Object(String::from_utf8_lossy(class).into_owned(), vec![], false),
+                Type::ConstString(class) => {
+                    Type::Object(String::from_utf8_lossy(class).into_owned(), vec![], false)
+                }
                 Type::ClassString(Some(t)) => (**t).clone(),
                 r if r.is_class_string().yes() => {
                     let inner = match &**inner {
@@ -299,22 +355,30 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
         Type::Object(class, args, _) => {
             // ponytail: `$this` and enum cases (TypeWithClassName too) infer nothing
             let other = match received {
-                Type::Object(name, other, _) | Type::Static(name, other) => ancestor(name, other, class),
+                Type::Object(name, other, _) | Type::Static(name, other) => {
+                    ancestor(name, other, class)
+                }
                 _ => None,
             };
             let Some(other) = other else {
                 return TemplateMap::default();
             };
-            args.iter().enumerate().fold(TemplateMap::default(), |map, (i, a)| {
-                let o = other.get(i).cloned().unwrap_or(Type::Error);
-                map.union(infer_template_types(a, &o))
-            })
+            args.iter()
+                .enumerate()
+                .fold(TemplateMap::default(), |map, (i, a)| {
+                    let o = other.get(i).cloned().unwrap_or(Type::Error);
+                    map.union(infer_template_types(a, &o))
+                })
         }
         Type::ObjectShape(props) if let Type::ObjectShape(theirs) = received => {
-            props.iter().fold(TemplateMap::default(), |map, (name, t, _)| match theirs.iter().find(|(n, ..)| n == name) {
-                Some((_, o, _)) => map.union(infer_template_types(t, o)),
-                None => map,
-            })
+            props
+                .iter()
+                .fold(TemplateMap::default(), |map, (name, t, _)| {
+                    match theirs.iter().find(|(n, ..)| n == name) {
+                        Some((_, o, _)) => map.union(infer_template_types(t, o)),
+                        None => map,
+                    }
+                })
         }
         _ => TemplateMap::default(),
     }
@@ -340,14 +404,18 @@ pub(super) fn ancestor(name: &str, args: &[Type], class: &str) -> Option<Vec<Typ
 
 /// CallableType::inferTemplateTypesOnParametersAcceptor(): the parameters give lower bounds.
 fn on_signature(ours: &Signature, theirs: &Signature) -> TemplateMap {
-    let params = ours.params.iter().enumerate().fold(TemplateMap::default(), |map, (i, p)| {
-        let arg = match (theirs.params.get(i), &p.ty) {
-            (Some(o), _) => o.ty.clone(),
-            (None, t @ Type::Template(_)) => t.resolve_to_bounds(),
-            (None, _) => Type::Never(NeverKind::Implicit),
-        };
-        map.union(infer_template_types(&p.ty, &arg).lower_bound())
-    });
+    let params = ours
+        .params
+        .iter()
+        .enumerate()
+        .fold(TemplateMap::default(), |map, (i, p)| {
+            let arg = match (theirs.params.get(i), &p.ty) {
+                (Some(o), _) => o.ty.clone(),
+                (None, t @ Type::Template(_)) => t.resolve_to_bounds(),
+                (None, _) => Type::Never(NeverKind::Implicit),
+            };
+            map.union(infer_template_types(&p.ty, &arg).lower_bound())
+        });
     params.union(infer_template_types(&ours.ret, &theirs.ret))
 }
 

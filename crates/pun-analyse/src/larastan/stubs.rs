@@ -36,7 +36,11 @@ fn package(root: &Path) -> PathBuf {
         .ok()
         .and_then(|c| serde_json::from_str::<serde_json::Value>(&c).ok())
         .is_some_and(|c| c["name"] == "larastan/larastan");
-    if own && !installed.is_dir() { root.to_path_buf() } else { installed }
+    if own && !installed.is_dir() {
+        root.to_path_buf()
+    } else {
+        installed
+    }
 }
 
 /// The `*.stub` files below `dir`, by their path relative to `base`.

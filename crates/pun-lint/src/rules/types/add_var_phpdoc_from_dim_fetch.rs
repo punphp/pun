@@ -48,10 +48,14 @@ impl Rule for AddVarPhpdocFromDimFetch {
             // `hasNonAppendAssignToPropertyName()`: a keyed dim assign (`$this->prop['x'] = ...`) or a direct assign
             // carries a value type this rule does not read from bare appends; skip to avoid a too-narrow `@var`
             let non_append = methods(members).any(|m| {
-                assignments(Node::Method(m)).into_iter().any(|a| match a.lhs {
-                    Expression::ArrayAccess(access) => this_property(access.array) == Some(property.names[0]),
-                    lhs => this_property(lhs) == Some(property.names[0]),
-                })
+                assignments(Node::Method(m))
+                    .into_iter()
+                    .any(|a| match a.lhs {
+                        Expression::ArrayAccess(access) => {
+                            this_property(access.array) == Some(property.names[0])
+                        }
+                        lhs => this_property(lhs) == Some(property.names[0]),
+                    })
             });
             if non_append {
                 continue;
@@ -72,7 +76,11 @@ impl Rule for AddVarPhpdocFromDimFetch {
                 }
             }
             // nothing to add (or a type Pun does not map)
-            let Some(types) = types.into_iter().collect::<Option<Vec<Type>>>().filter(|t| !t.is_empty()) else {
+            let Some(types) = types
+                .into_iter()
+                .collect::<Option<Vec<Type>>>()
+                .filter(|t| !t.is_empty())
+            else {
                 continue;
             };
             let mut unique = uniquate_types(&types);

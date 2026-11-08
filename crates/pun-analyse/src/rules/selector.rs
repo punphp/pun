@@ -10,14 +10,31 @@ use super::params::{Acceptor, Arg, Counts, ParamType, Variants};
 use super::{Checker, declared};
 
 /// The variants of the built-in written `name` (lowercase, no leading `\`) for these arguments.
-pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variants: Variants) -> Variants {
+pub(super) fn select_from_args(
+    c: &Checker,
+    name: &str,
+    counts: &Counts,
+    variants: Variants,
+) -> Variants {
     let args = &counts.args;
     let Some(first) = args.first() else {
         return variants;
     };
     let ty = |a: &Arg| c.types.get(&a.value).map(|t| c.to_phpstan(t));
-    let param = |name: &str, t: Type| Param { name: name.into(), ty: t, optional: false, by_ref: false, variadic: false };
-    let callable = |params: Vec<Param>, ret: Type| Type::Callable(Some(Box::new(Signature { params, ret, templates: vec![] })));
+    let param = |name: &str, t: Type| Param {
+        name: name.into(),
+        ty: t,
+        optional: false,
+        by_ref: false,
+        variadic: false,
+    };
+    let callable = |params: Vec<Param>, ret: Type| {
+        Type::Callable(Some(Box::new(Signature {
+            params,
+            ret,
+            templates: vec![],
+        })))
+    };
     let overridden = match name {
         // ArrayMapArgVisitor: the arguments other than the callback, when there are any
         "array_map" if args.len() > 1 => {
@@ -34,7 +51,11 @@ pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variant
                     continue;
                 }
                 for array in constant_arrays(&t) {
-                    params.extend(array.into_iter().map(|v| param("item", v.iterable_value_type())));
+                    params.extend(
+                        array
+                            .into_iter()
+                            .map(|v| param("item", v.iterable_value_type())),
+                    );
                 }
             }
             Some((0, union(vec![callable(params, mixed()), Type::Null])))
@@ -47,7 +68,10 @@ pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variant
                 // ARRAY_FILTER_USE_KEY
                 Some(Type::ConstInt(2)) => vec![param("key", array.iterable_key_type())],
                 // ARRAY_FILTER_USE_BOTH
-                Some(Type::ConstInt(1)) => vec![param("item", array.iterable_value_type()), param("key", array.iterable_key_type())],
+                Some(Type::ConstInt(1)) => vec![
+                    param("item", array.iterable_value_type()),
+                    param("key", array.iterable_key_type()),
+                ],
                 _ => vec![param("item", array.iterable_value_type())],
             };
             Some((1, union(vec![callable(params, Type::Bool), Type::Null])))
@@ -57,7 +81,10 @@ pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variant
             let Some(array) = ty(first) else {
                 return variants;
             };
-            let mut params = vec![param("item", array.iterable_value_type()), param("key", array.iterable_key_type())];
+            let mut params = vec![
+                param("item", array.iterable_value_type()),
+                param("key", array.iterable_key_type()),
+            ];
             params.extend(args.get(2).and_then(ty).map(|t| param("arg", t)));
             Some((1, callable(params, mixed())))
         }
@@ -65,13 +92,19 @@ pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variant
             let Some(array) = ty(first) else {
                 return variants;
             };
-            let params = vec![param("value", array.iterable_value_type()), param("key", array.iterable_key_type())];
+            let params = vec![
+                param("value", array.iterable_value_type()),
+                param("key", array.iterable_key_type()),
+            ];
             Some((1, callable(params, Type::Bool)))
         }
         // CurlSetOptArgVisitor: the value's type from the option's
         "curl_setopt" if args.len() >= 3 => {
             let option = ty(&args[1]).unwrap_or_else(mixed);
-            let types: Option<Vec<Type>> = constant_scalars(&option).iter().map(|o| curl_option(c, o)).collect();
+            let types: Option<Vec<Type>> = constant_scalars(&option)
+                .iter()
+                .map(|o| curl_option(c, o))
+                .collect();
             types.filter(|ts| !ts.is_empty()).map(|ts| (2, union(ts)))
         }
         // CurlSetOptArrayArgVisitor: the options array's shape from its keys
@@ -99,18 +132,34 @@ pub(super) fn select_from_args(c: &Checker, name: &str, counts: &Counts, variant
 /// The first variant with parameter `p` typed `t`.
 fn with_type(c: &Checker, variants: Variants, p: usize, t: Type) -> Variants {
     let mut acceptor = variants.all.into_iter().next().expect("a variant");
-    if let (Some(described), Some(param_type)) = (acceptor.types.get_mut(p), acceptor.param_types.get_mut(p)) {
+    if let (Some(described), Some(param_type)) =
+        (acceptor.types.get_mut(p), acceptor.param_types.get_mut(p))
+    {
         *described = declared::with_classes(c, || t.describe(Level::TypeOnly));
         *param_type = ParamType::Typed(t);
     }
-    Variants { all: vec![acceptor], named: None }
+    Variants {
+        all: vec![acceptor],
+        named: None,
+    }
 }
 
 /// ClosureBindArgVisitor and ClosureBindToVarVisitor: `Closure::bind($var, $newThis)` (`p` 1) or
 /// `$var->bindTo($newThis)` (`p` 0) in a function-like whose parameter `$var` is `@param-closure-this` typed and keeps
 /// its original value at `at`: `$newThis` takes that type.
-pub(super) fn closure_bind(c: &Checker, var: &str, at: u32, p: usize, variants: Variants) -> Variants {
-    let function = c.var_tag_functions.last().and_then(|span| c.codebase.function_likes.iter().find(|(_, f)| f.span == *span));
+pub(super) fn closure_bind(
+    c: &Checker,
+    var: &str,
+    at: u32,
+    p: usize,
+    variants: Variants,
+) -> Variants {
+    let function = c.var_tag_functions.last().and_then(|span| {
+        c.codebase
+            .function_likes
+            .iter()
+            .find(|(_, f)| f.span == *span)
+    });
     let Some(((class, _), f)) = function else {
         return variants;
     };
@@ -120,18 +169,26 @@ pub(super) fn closure_bind(c: &Checker, var: &str, at: u32, p: usize, variants: 
     };
     // `ParameterVariableOriginalValueExpr`: no assignment to `$var` in the body before `at`
     // ponytail: a textual scan (the body from its first `{`); a by-reference use or `foreach (... as $var)` is missed
-    let source = String::from_utf8_lossy(&c.file.contents[f.span.start.offset as usize..at as usize]);
+    let source =
+        String::from_utf8_lossy(&c.file.contents[f.span.start.offset as usize..at as usize]);
     let body = &source[source.find('{').unwrap_or(source.len())..];
     let needle = format!("${var}");
     let assigned = body.match_indices(&needle).any(|(i, _)| {
         let rest = &body[i + needle.len()..];
         let rest = rest.trim_start();
         !rest.starts_with(|ch: char| ch.is_alphanumeric() || ch == '_')
-            && ["=", ".=", "+=", "-=", "*=", "/=", "%=", "**=", "??=", "&=", "|=", "^=", "<<=", ">>="]
-                .iter()
-                .any(|op| rest.starts_with(op) && !(*op == "=" && rest[1..].starts_with(['=', '>'])))
+            && [
+                "=", ".=", "+=", "-=", "*=", "/=", "%=", "**=", "??=", "&=", "|=", "^=", "<<=",
+                ">>=",
+            ]
+            .iter()
+            .any(|op| rest.starts_with(op) && !(*op == "=" && rest[1..].starts_with(['=', '>'])))
     });
-    if assigned { variants } else { with_type(c, variants, p, t) }
+    if assigned {
+        variants
+    } else {
+        with_type(c, variants, p, t)
+    }
 }
 
 /// `getConstantScalarTypes()` of an option or key type.
@@ -157,15 +214,23 @@ fn curl_option(c: &Checker, option: &Type) -> Option<Type> {
         return None;
     };
     let options = &c.natives.curl_options;
-    let (_, types) = options.iter().rev().find(|(v, _)| *v <= c.php_version).unwrap_or(&options[0]);
-    types.get(option).map(|t| pun_phpstan::resolve::resolve_str(t, None))
+    let (_, types) = options
+        .iter()
+        .rev()
+        .find(|(v, _)| *v <= c.php_version)
+        .unwrap_or(&options[0]);
+    types
+        .get(option)
+        .map(|t| pun_phpstan::resolve::resolve_str(t, None))
 }
 
 /// The values of each constant array `t` is (`getConstantArrays()`).
 fn constant_arrays(t: &Type) -> Vec<Vec<Type>> {
     match t {
         Type::ConstArray(a) => vec![a.values.clone()],
-        Type::Union(ts) if ts.iter().all(|t| matches!(t, Type::ConstArray(_))) => ts.iter().flat_map(constant_arrays).collect(),
+        Type::Union(ts) if ts.iter().all(|t| matches!(t, Type::ConstArray(_))) => {
+            ts.iter().flat_map(constant_arrays).collect()
+        }
         _ => vec![],
     }
 }
@@ -173,23 +238,39 @@ fn constant_arrays(t: &Type) -> Vec<Vec<Type>> {
 /// ImplodeArgVisitor: `(string $separator, array $array)` with two arguments (or the one named `array`), else
 /// `(array $separator)`.
 fn implode(c: &Checker, args: &[Arg], variants: Variants) -> Variants {
-    let acceptor = variants.named.and_then(|n| n.into_iter().next()).unwrap_or_else(|| variants.all.into_iter().next().expect("a variant"));
+    let acceptor = variants
+        .named
+        .and_then(|n| n.into_iter().next())
+        .unwrap_or_else(|| variants.all.into_iter().next().expect("a variant"));
     let array = Type::array(mixed(), mixed());
     let params: Vec<(String, Type)> = match acceptor.names.as_slice() {
         [first, second, ..] if args.len() > 1 || args[0].name.as_deref() == Some("array") => {
             vec![(first.clone(), Type::String), (second.clone(), array)]
         }
-        names => names.first().map(|first| (first.clone(), array)).into_iter().collect(),
+        names => names
+            .first()
+            .map(|first| (first.clone(), array))
+            .into_iter()
+            .collect(),
     };
     let n = params.len();
     let acceptor = Acceptor {
         optional: crate::bitset::BitSet::new(n),
         names: params.iter().map(|(name, _)| name.clone()).collect(),
-        types: params.iter().map(|(_, t)| declared::with_classes(c, || t.describe(Level::TypeOnly))).collect(),
+        types: params
+            .iter()
+            .map(|(_, t)| declared::with_classes(c, || t.describe(Level::TypeOnly)))
+            .collect(),
         variadics: crate::bitset::BitSet::new(n),
-        param_types: params.into_iter().map(|(_, t)| ParamType::Typed(t)).collect(),
+        param_types: params
+            .into_iter()
+            .map(|(_, t)| ParamType::Typed(t))
+            .collect(),
         by_ref: vec![ByRef::No; n],
         ..acceptor
     };
-    Variants { all: vec![acceptor], named: None }
+    Variants {
+        all: vec![acceptor],
+        named: None,
+    }
 }

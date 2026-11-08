@@ -8,7 +8,13 @@ const INT_MAX: u64 = 2147483647;
 /// `PrintfFormatParser::parse()` then `getRequiredArgumentsCount()`: how many arguments the format consumes, `None`
 /// when it throws ValueError. `h`/`H` are specifiers from PHP 8.0 (`supportsHhPrintfSpecifier()`).
 pub(super) fn printf_count(format: &[u8], hh: bool) -> Option<usize> {
-    Some(printf_uses(format, hh)?.iter().map(|u| u.index + 1).max().unwrap_or(0))
+    Some(
+        printf_uses(format, hh)?
+            .iter()
+            .map(|u| u.index + 1)
+            .max()
+            .unwrap_or(0),
+    )
 }
 
 /// One argument use of `PrintfFormatParser::parse()`.
@@ -60,16 +66,21 @@ pub(super) fn printf_uses(format: &[u8], hh: bool) -> Option<Vec<Use>> {
                 i += 1;
                 let width = argument_number(format, &mut i)?.unwrap_or_else(&mut next_argument);
                 pending.push((width, "width"));
-            } else if format.get(i).is_some_and(u8::is_ascii_digit) && self::number(format, &mut i) >= INT_MAX {
+            } else if format.get(i).is_some_and(u8::is_ascii_digit)
+                && self::number(format, &mut i) >= INT_MAX
+            {
                 return None;
             }
             if format.get(i) == Some(&b'.') {
                 i += 1;
                 if format.get(i) == Some(&b'*') {
                     i += 1;
-                    let precision = argument_number(format, &mut i)?.unwrap_or_else(&mut next_argument);
+                    let precision =
+                        argument_number(format, &mut i)?.unwrap_or_else(&mut next_argument);
                     pending.push((precision, "precision"));
-                } else if format.get(i).is_some_and(u8::is_ascii_digit) && self::number(format, &mut i) >= INT_MAX {
+                } else if format.get(i).is_some_and(u8::is_ascii_digit)
+                    && self::number(format, &mut i) >= INT_MAX
+                {
                     return None;
                 }
             }
@@ -85,7 +96,13 @@ pub(super) fn printf_uses(format: &[u8], hh: bool) -> Option<Vec<Use>> {
         let placeholder = format[percent..=i].to_vec();
         number += 1;
         for (index, kind) in pending.into_iter().chain([(argument, "value")]) {
-            uses.push(Use { index, kind, specifier, placeholder: placeholder.clone(), number });
+            uses.push(Use {
+                index,
+                kind,
+                specifier,
+                placeholder: placeholder.clone(),
+                number,
+            });
         }
         i += 1;
     }
@@ -94,7 +111,11 @@ pub(super) fn printf_uses(format: &[u8], hh: bool) -> Option<Vec<Use>> {
 
 /// `parseArgumentNumber()`: `Some(None)` without an `n$`, the zero-based index after one, `None` out of range.
 fn argument_number(format: &[u8], i: &mut usize) -> Option<Option<usize>> {
-    let end = *i + format[*i..].iter().take_while(|b| b.is_ascii_digit()).count();
+    let end = *i
+        + format[*i..]
+            .iter()
+            .take_while(|b| b.is_ascii_digit())
+            .count();
     if format.get(end) != Some(&b'$') {
         return Some(None);
     }

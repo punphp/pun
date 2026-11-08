@@ -24,13 +24,24 @@ fn check(neon: &str) {
         serde_json::from_slice(&std::fs::read(root.join(format!("expected-{neon}.json"))).unwrap())
             .unwrap();
     // New oracle exports retain ignorability too; keep the original fixtures' expectations unchanged.
-    let ignorability = expected["errors"].as_array().unwrap().iter().any(|e| e.get("ignorable").is_some());
+    let ignorability = expected["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|e| e.get("ignorable").is_some());
     let mut got: Vec<Key> = analyse(&root, &config)
         .unwrap()
         .into_iter()
         .map(|e| {
             let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
-            (file, e.line, e.identifier, e.message, e.tip, ignorability.then_some(e.can_be_ignored))
+            (
+                file,
+                e.line,
+                e.identifier,
+                e.message,
+                e.tip,
+                ignorability.then_some(e.can_be_ignored),
+            )
         })
         .collect();
     got.sort();
@@ -205,15 +216,20 @@ fn scanner_flags(source: &'static str, oracle: &str, resolved_globals: bool) {
         let argument = &attribute.arguments[0];
         let flags = if resolved_globals {
             infer_initializer(
-                &file, &names, &NamespaceScope::global(),
-                expressions.0[&argument.value_span.unwrap()], &codebase.constants, &HashMap::new(),
+                &file,
+                &names,
+                &NamespaceScope::global(),
+                expressions.0[&argument.value_span.unwrap()],
+                &codebase.constants,
+                &HashMap::new(),
             )
         } else {
             argument.value_type.clone()
-        }.and_then(|mut flags| {
-                expand_union(&codebase, &mut flags, &TypeExpansionOptions::default());
-                flags.get_single_literal_int_value()
-            });
+        }
+        .and_then(|mut flags| {
+            expand_union(&codebase, &mut flags, &TypeExpansionOptions::default());
+            flags.get_single_literal_int_value()
+        });
         let name = String::from_utf8_lossy(class.original_name.as_bytes());
         assert_eq!(flags.is_some(), !invalid.contains(name.as_ref()), "{name}");
         checked += 1;

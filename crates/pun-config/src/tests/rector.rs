@@ -236,7 +236,9 @@ fn carries_rule_configurations() {
     // lint/refactor/rename-function is ported, so it gets its line with the options.
     assert!(rule_meta_ported("lint/refactor/rename-function"));
     assert!(
-        text.contains("\n\"refactor/rename-function\" = { split = \"explode\", join = \"implode\" }\n"),
+        text.contains(
+            "\n\"refactor/rename-function\" = { split = \"explode\", join = \"implode\" }\n"
+        ),
         "{text}"
     );
     assert_eq!(done.on, 2);

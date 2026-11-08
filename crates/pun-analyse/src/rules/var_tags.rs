@@ -5,7 +5,6 @@
 use mago_span::{Position, Span};
 use pun_phpstan::types::{Template, Type};
 
-
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, FunctionScopeKind, declared, generics};
 
 pub(super) const IDENTIFIERS: &[&str] = &["varTag.unresolvableType", "varTag.trait"];
@@ -31,9 +30,12 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
         let template = Template {
             name: t.name.clone(),
             scope: described.clone(),
-            bound: t.bound.as_ref().map_or(Type::Mixed { explicit: false }, |b| {
-                pun_phpstan::resolve::resolve_in(b, &scope)
-            }),
+            bound: t
+                .bound
+                .as_ref()
+                .map_or(Type::Mixed { explicit: false }, |b| {
+                    pun_phpstan::resolve::resolve_in(b, &scope)
+                }),
             default: t
                 .default
                 .as_ref()
@@ -84,7 +86,10 @@ pub(super) fn check(c: &mut Checker, at: Span, names: Span) {
             };
             let mut unresolvable = false;
             super::type_aliases::each(&ty, &mut |t| {
-                unresolvable |= matches!(t, Type::Error | Type::Never(pun_phpstan::types::NeverKind::Implicit));
+                unresolvable |= matches!(
+                    t,
+                    Type::Error | Type::Never(pun_phpstan::types::NeverKind::Implicit)
+                );
             });
             if unresolvable {
                 errors.push((
@@ -99,7 +104,12 @@ pub(super) fn check(c: &mut Checker, at: Span, names: Span) {
             let messages = generics::GenericMessages::at(&s);
             let mut found = generics::Found::default();
             generics::generic_object_check(&ty, &messages, &mut found);
-            errors.extend(found.errors.into_iter().map(|(id, m, tip)| (at, id, m, tip)));
+            errors.extend(
+                found
+                    .errors
+                    .into_iter()
+                    .map(|(id, m, tip)| (at, id, m, tip)),
+            );
             for class in generics::referenced_classes(&ty) {
                 match pun_phpstan::symbols::lookup(&class) {
                     Some(k) if k.is_trait => errors.push((

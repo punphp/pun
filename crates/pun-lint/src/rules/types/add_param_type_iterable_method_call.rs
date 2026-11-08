@@ -10,7 +10,9 @@ use mago_codex::ttype::atomic::callable::{TCallable, TCallableSignature};
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::union::TUnion;
-use mago_syntax::cst::{Argument, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Hint, Node, NodeKind};
+use mago_syntax::cst::{
+    Argument, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Hint, Node, NodeKind,
+};
 use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts};
@@ -46,7 +48,9 @@ impl Rule for AddParamTypeIterableMethodCall {
             return;
         };
         let facts = facts(ctx);
-        let Some((class, key, value)) = type_of(&facts, call.object).and_then(|t| iterable_object(&facts, t)) else {
+        let Some((class, key, value)) =
+            type_of(&facts, call.object).and_then(|t| iterable_object(&facts, t))
+        else {
             return;
         };
         let Some(method) = facts.documented().get_method(class.as_bytes(), name.value) else {
@@ -55,12 +59,17 @@ impl Rule for AddParamTypeIterableMethodCall {
         let callables: Vec<Option<&TCallableSignature>> = method
             .parameters
             .iter()
-            .map(|p| p.type_metadata.as_ref().and_then(|t| first_callable(&t.type_union)))
+            .map(|p| {
+                p.type_metadata
+                    .as_ref()
+                    .and_then(|t| first_callable(&t.type_union))
+            })
             .collect();
         // methodSignatureUsesCallableWithIteratorTypes
         if !callables.iter().flatten().any(|c| {
             c.parameters.iter().any(|p| {
-                p.get_type_signature().is_some_and(|t| iterable_part(&class, t).is_some())
+                p.get_type_signature()
+                    .is_some_and(|t| iterable_part(&class, t).is_some())
             })
         }) {
             return;
@@ -72,7 +81,10 @@ impl Rule for AddParamTypeIterableMethodCall {
             .map(Argument::value)
             .collect();
         // callUsesClosures
-        if !args.iter().any(|v| matches!(unparenthesize(v), Expression::Closure(_))) {
+        if !args
+            .iter()
+            .any(|v| matches!(unparenthesize(v), Expression::Closure(_)))
+        {
             return;
         }
         let mut edits: Vec<Edit> = Vec::new();
@@ -84,9 +96,11 @@ impl Rule for AddParamTypeIterableMethodCall {
             let Some(Some(callable)) = callables.get(index) else {
                 continue;
             };
-            let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
+            let params: Vec<&FunctionLikeParameter<'_>> =
+                closure.parameter_list.parameters.iter().collect();
             for (i, callable_param) in callable.parameters.iter().enumerate() {
-                let (Some(param), Some(t)) = (params.get(i), callable_param.get_type_signature()) else {
+                let (Some(param), Some(t)) = (params.get(i), callable_param.get_type_signature())
+                else {
                     continue;
                 };
                 let new: Option<&TUnion> = match iterable_part(&class, t) {
@@ -94,7 +108,14 @@ impl Rule for AddParamTypeIterableMethodCall {
                     Some(Part::Key) => key.as_ref(),
                     None => continue,
                 };
-                edits.extend(refactor_parameter(&facts, ctx.source, ancestors, param, new, ctx.php_version));
+                edits.extend(refactor_parameter(
+                    &facts,
+                    ctx.source,
+                    ancestors,
+                    param,
+                    new,
+                    ctx.php_version,
+                ));
             }
         }
         if edits.is_empty() {
@@ -131,7 +152,11 @@ fn iterable_object(facts: &Facts, t: &TUnion) -> Option<(String, Option<TUnion>,
         [key, value] => (Some(key.clone()), value.clone()),
         _ => return None,
     };
-    Some((String::from_utf8_lossy(object.name.as_bytes()).into_owned(), key, value))
+    Some((
+        String::from_utf8_lossy(object.name.as_bytes()).into_owned(),
+        key,
+        value,
+    ))
 }
 
 /// `TypeUnwrapper::unwrapFirstCallableTypeFromUnionType`: the first callable of a union.
@@ -154,10 +179,15 @@ fn iterable_part(class: &str, t: &TUnion) -> Option<Part> {
         return None;
     };
     // a name no class has (`TValue`) is a reference to a symbol
-    let TAtomic::Reference(TReference::Symbol { name, .. }) = atomic else { return None };
+    let TAtomic::Reference(TReference::Symbol { name, .. }) = atomic else {
+        return None;
+    };
     let name = name.as_bytes();
     let name = String::from_utf8_lossy(name);
-    let namespace = |n: &str| n.rsplit_once('\\').map_or(String::new(), |(ns, _)| ns.to_string());
+    let namespace = |n: &str| {
+        n.rsplit_once('\\')
+            .map_or(String::new(), |(ns, _)| ns.to_string())
+    };
     if namespace(&name) != namespace(class) {
         return None;
     }
@@ -201,7 +231,10 @@ fn same_type(source: &str, ancestors: &[Node<'_, '_>], hint: &Hint<'_>, declarat
         Hint::Identifier(id) => format!("\\{}", resolve_class_name(ancestors, id)),
         other => {
             let span = node_span(other);
-            source.get(span.start..span.end).unwrap_or_default().to_string()
+            source
+                .get(span.start..span.end)
+                .unwrap_or_default()
+                .to_string()
         }
     };
     written.eq_ignore_ascii_case(declaration)

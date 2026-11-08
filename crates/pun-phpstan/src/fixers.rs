@@ -136,7 +136,9 @@ pub fn unmatched_ignore(code: &[u8], line: i64, identifier: Option<&str>) -> Opt
         }
         return match remove_comment_identifier(text, identifier) {
             CommentEdit::Missing => continue,
-            CommentEdit::Text(new_text) => Some(Fixed::Code(replace_comment(code, token, Some(&new_text)))),
+            CommentEdit::Text(new_text) => {
+                Some(Fixed::Code(replace_comment(code, token, Some(&new_text))))
+            }
             CommentEdit::Remove => Some(Fixed::Code(replace_comment(code, token, None))),
             CommentEdit::OtherContents => None,
         };
@@ -159,15 +161,25 @@ enum CommentEdit {
 /// `removeCommentIdentifier()`
 fn remove_comment_identifier(text: &[u8], identifier: &str) -> CommentEdit {
     let list_start = strpos(text, IGNORE_TAG, 0).unwrap_or(0) + IGNORE_TAG.len();
-    let Some((new_list, list_end)) = remove_identifier_from_list(&text[list_start..], identifier) else {
+    let Some((new_list, list_end)) = remove_identifier_from_list(&text[list_start..], identifier)
+    else {
         return CommentEdit::Missing;
     };
     if let Some(new_list) = new_list {
         return CommentEdit::Text([&text[..list_start], &new_list[..]].concat());
     }
-    let only_ignore = preg_match(r"~^(?://|#|/\*)\s*$~", &text[..list_start - IGNORE_TAG.len()])
-        && preg_match(r"~^\s*(?:\*/)?$~", &text[(list_start + list_end).min(text.len())..]);
-    if only_ignore { CommentEdit::Remove } else { CommentEdit::OtherContents }
+    let only_ignore = preg_match(
+        r"~^(?://|#|/\*)\s*$~",
+        &text[..list_start - IGNORE_TAG.len()],
+    ) && preg_match(
+        r"~^\s*(?:\*/)?$~",
+        &text[(list_start + list_end).min(text.len())..],
+    );
+    if only_ignore {
+        CommentEdit::Remove
+    } else {
+        CommentEdit::OtherContents
+    }
 }
 
 /// `removeIdentifierFromList()`: the new list (`None` when the identifier was the only one) and where the list ends;
@@ -264,7 +276,10 @@ fn remove_phpdoc_line_tag(text: &[u8], start_line: i64, line: i64) -> Option<boo
         if name != "@phpstan-ignore-line" && name != "@phpstan-ignore-next-line" {
             continue;
         }
-        let from = offsets.iter().find(|(n, _)| *n == name).map_or(0, |(_, o)| *o);
+        let from = offsets
+            .iter()
+            .find(|(n, _)| *n == name)
+            .map_or(0, |(_, o)| *o);
         let offset = strpos(text, name.as_bytes(), from)?;
         offsets.retain(|(n, _)| *n != name);
         offsets.push((name, offset + 1));
@@ -302,7 +317,10 @@ fn replace_comment(code: &[u8], token: &Token, new_text: Option<&[u8]>) -> Vec<u
     if !trim(before).is_empty() {
         start = line_start + rtrim_chars(before, b" \t").len();
     } else {
-        end += after.iter().take_while(|&&c| c == b' ' || c == b'\t').count();
+        end += after
+            .iter()
+            .take_while(|&&c| c == b' ' || c == b'\t')
+            .count();
     }
     [&code[..start], &code[end..]].concat()
 }

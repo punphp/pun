@@ -19,9 +19,19 @@ const LITERALS_LIMIT: usize = 100;
 
 const NEGATIVE_ASSERTIONS: &[&str] = &["#negativelookahead", "#negativelookbehind"];
 
-const ASSERTIONS: &[&str] = &["#lookahead", "#lookbehind", "#negativelookahead", "#negativelookbehind"];
+const ASSERTIONS: &[&str] = &[
+    "#lookahead",
+    "#lookbehind",
+    "#negativelookahead",
+    "#negativelookbehind",
+];
 
-const CONDITIONS: &[&str] = &["#namedcondition", "#absolutecondition", "#relativecondition", "#assertioncondition"];
+const CONDITIONS: &[&str] = &[
+    "#namedcondition",
+    "#absolutecondition",
+    "#relativecondition",
+    "#assertioncondition",
+];
 
 /// `RegexAlternation`; its id is its index in [`Walk::alternations`].
 #[derive(Clone, Debug)]
@@ -667,7 +677,9 @@ impl Walker<'_> {
                 walk.in_optional_quantification = true;
             }
             // repeating an atom that might match an empty string might match an empty string too
-            if !walk.in_optional_quantification && !self.is_maybe_empty_node(&children[0], &mut false) {
+            if !walk.in_optional_quantification
+                && !self.is_maybe_empty_node(&children[0], &mut false)
+            {
                 if min >= Some(1) {
                     walk.non_empty = Tri::Yes;
                 }

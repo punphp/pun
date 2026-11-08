@@ -9,11 +9,10 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_stubs};
 use pun_lint::Rule;
 use pun_lint::rules::{
-    AddParamTypeArrayAnyAll, AddParamTypeArrayDimFetch, AddParamTypeArrayFunction, AddParamTypeArrayMap,
-    AddParamTypeArrayReduce,
-    AddParamTypeArrowDimFetch, AddParamTypeDataProvider, AddParamTypeDimFetchKey, AddParamTypeIterableMethodCall,
-    AddParamTypeMethodCall, AddParamTypeSplFixedArray,
-    AddParamTypeProperty,
+    AddParamTypeArrayAnyAll, AddParamTypeArrayDimFetch, AddParamTypeArrayFunction,
+    AddParamTypeArrayMap, AddParamTypeArrayReduce, AddParamTypeArrowDimFetch,
+    AddParamTypeDataProvider, AddParamTypeDimFetchKey, AddParamTypeIterableMethodCall,
+    AddParamTypeMethodCall, AddParamTypeProperty, AddParamTypeSplFixedArray,
     AddParamTypeVariableCall, PreferNarrowParamType,
 };
 
@@ -94,14 +93,23 @@ fn add_param_type_based_on_phpunit_data_provider() {
         ("AddParamTypeBasedOnPHPUnitDataProviderRector", 70400),
         ("AddParamTypeBasedOnPHPUnitDataProviderRectorUnion", 80000),
     ] {
-        run_class_stubs(vec![Box::new(AddParamTypeDataProvider)], class, version, &["phpunit-stubs"]);
+        run_class_stubs(
+            vec![Box::new(AddParamTypeDataProvider)],
+            class,
+            version,
+            &["phpunit-stubs"],
+        );
     }
 }
 
 /// Rector's config sets PHP 8.0 (`UNION_TYPES`).
 #[test]
 fn add_closure_param_type_for_array_reduce() {
-    run_class_at(vec![Box::new(AddParamTypeArrayReduce)], "AddClosureParamTypeForArrayReduceRector", 80000);
+    run_class_at(
+        vec![Box::new(AddParamTypeArrayReduce)],
+        "AddClosureParamTypeForArrayReduceRector",
+        80000,
+    );
 }
 
 /// Rector's configs: `configured_rule.php` (Fixture) PHP 7.4 (`UNION_TYPES - 1`), `union_config.php` PHP 8.0,
@@ -110,14 +118,25 @@ fn add_closure_param_type_for_array_reduce() {
 #[test]
 fn add_method_call_based_strict_param_type_options() {
     let mut rule = AddParamTypeMethodCall::default();
-    assert!(rule.configure(&serde_json::json!({ "treatClassesAsFinal": true })).is_err());
-    assert!(rule.configure(&serde_json::json!({ "treat-classes-as-final": "yes" })).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({ "treatClassesAsFinal": true }))
+            .is_err()
+    );
+    assert!(
+        rule.configure(&serde_json::json!({ "treat-classes-as-final": "yes" }))
+            .is_err()
+    );
 }
 
 #[test]
 fn add_method_call_based_strict_param_type() {
     let base = "AddMethodCallBasedStrictParamTypeRector";
-    run_class_stubs(vec![Box::new(AddParamTypeMethodCall::default())], base, 70400, &["phpunit-stubs"]);
+    run_class_stubs(
+        vec![Box::new(AddParamTypeMethodCall::default())],
+        base,
+        70400,
+        &["phpunit-stubs"],
+    );
     let source = format!("rector/{base}/Source");
     for (suffix, version, treat_classes_as_final) in [
         ("Union", 80000, false),
@@ -144,8 +163,15 @@ fn add_method_call_based_strict_param_type() {
 fn add_closure_param_type_from_iterable_method_call() {
     for (class, version) in [
         ("AddClosureParamTypeFromIterableMethodCallRector", 80000),
-        ("AddClosureParamTypeFromIterableMethodCallRectorPhp74", 70400),
+        (
+            "AddClosureParamTypeFromIterableMethodCallRectorPhp74",
+            70400,
+        ),
     ] {
-        run_class_at(vec![Box::new(AddParamTypeIterableMethodCall)], class, version);
+        run_class_at(
+            vec![Box::new(AddParamTypeIterableMethodCall)],
+            class,
+            version,
+        );
     }
 }

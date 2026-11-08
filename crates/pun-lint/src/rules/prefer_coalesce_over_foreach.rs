@@ -83,13 +83,7 @@ impl Rule for PreferCoalesceOverForeach {
                         return;
                     }
                     let var = text(ctx, unparenthesize(assign.lhs));
-                    replace_run(
-                        ctx,
-                        &list,
-                        key,
-                        key,
-                        &format!("{var} = {fetch} ?? {var};"),
-                    )
+                    replace_run(ctx, &list, key, key, &format!("{var} = {fetch} ?? {var};"))
                 }
                 Inner::Return(value) => {
                     if !equal(ctx, target.value, value) {

@@ -27,7 +27,10 @@ fn larastan_app_extensions() {
     // extension.neon's parameter, which says Larastan is installed
     parameters.set(Key::from("noModelMake"), Parameter::Bool(true));
     let mut project = Project::from_config(&root, &parameters);
-    project.analysed = vec![root.join("app/Probe.php"), root.join("app/Console/Commands/ProbeCommand.php")];
+    project.analysed = vec![
+        root.join("app/Probe.php"),
+        root.join("app/Console/Commands/ProbeCommand.php"),
+    ];
     project.scanned = vec![
         root.join("laravel.php"),
         root.join("app/Models/User.php"),
@@ -37,7 +40,14 @@ fn larastan_app_extensions() {
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()
-        .map(|e| (e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string(), e.line, e.identifier, e.message))
+        .map(|e| {
+            (
+                e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string(),
+                e.line,
+                e.identifier,
+                e.message,
+            )
+        })
         .collect();
     let mut want: Vec<_> = oracle
         .as_array()

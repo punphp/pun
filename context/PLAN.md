@@ -18,15 +18,15 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
   Homebrew tap or install script is published (`publish = false` in every crate). plan/foundations.md §4.
 - **Green on main** (54df451, 2026-11-08): every crate's tests, all 174 analyse targets, harness on pinkary 799/799
   identical, `scripts/cli-parity.sh` identical, and `cargo clippy --workspace --all-targets -- -D warnings` clean.
+  `cargo fmt --all --check` is clean too (rustfmt.toml, default width).
   Format, lint and analyse output on pinkary and laravel-framework is byte-identical to 4c35f57.
 - **Test time:** `scripts/analyse-tests.sh` takes about 40 minutes on 8 cores (about 10 of them building). `levels`
   and `rules` run their cases in parallel (390 s and 160 s alone, against 92 and about 30 minutes before), and test
   builds compile dependencies at `opt-level = 2` with line tables only. One analyse target dir is about 56 GB.
 - **Priorities, in order:** (1) launch: `dist generate` to regenerate `.github/workflows/release.yml` (edited by hand),
-  check the archive names against the shim, tag, then submit the repo to Packagist once (§3 Step 5); (2) one
-  `cargo fmt` pass with a `rustfmt.toml` matching the code's existing line width, so CI's rustfmt step passes; (3) CI
-  re-enable; (4) finish analyse level 0 and levels 1-10; (5) the 24 new lint rules; (6) `pun check` in one pass;
-  (7) perf rounds with `scripts/bench.py`.
+  check the archive names against the shim, tag, then submit the repo to Packagist once (§3 Step 5); (2) CI
+  re-enable; (3) finish analyse level 0 and levels 1-10; (4) the 24 new lint rules; (5) `pun check` in one pass;
+  (6) perf rounds with `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable, the
   [phpstan-parameters] rows (§3), the docs origin for rule-page links (§3 Step 5).
 
@@ -440,7 +440,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 
 | Work | Status |
 | --- | --- |
-| rustfmt: `cargo fmt --all --check` reports about 3,300 diffs that predate the lint pass; add a rustfmt.toml for the code's line width and format the whole tree in one `style` commit | todo |
 | CI: get CI on main green, then re-enable it (disabled on GitHub 2026-10-18 by Pushpak: every agent push was billing a run; `gh workflow enable CI`) | todo |
 | tests: crates/pun-phpstan/tests/php.rs `php_helpers` fails on macOS on two error offsets (`/a)/` gives 2, PHP 1; `/(?<1a>x)/` gives 4, PHP 3); the linked pcre2 likely differs from PHP's PCRE2 | todo |
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |

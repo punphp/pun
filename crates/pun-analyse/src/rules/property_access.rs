@@ -131,7 +131,9 @@ impl Contexts<'_> {
         let mut root = unparen(e);
         loop {
             match root {
-                Expression::UnaryPrefix(u) if u.operator.is_reference() => root = unparen(u.operand),
+                Expression::UnaryPrefix(u) if u.operator.is_reference() => {
+                    root = unparen(u.operand);
+                }
                 Expression::ArrayAccess(a) => root = unparen(a.array),
                 Expression::ArrayAppend(a) => root = unparen(a.array),
                 _ => break,
@@ -226,7 +228,11 @@ fn fetch_guard(e: &Expression) -> Option<Guard> {
 }
 
 fn var_guard(var: &[u8], name: &[u8]) -> Guard {
-    Guard::Expr(format!("{}->{}", String::from_utf8_lossy(var), String::from_utf8_lossy(name)))
+    Guard::Expr(format!(
+        "{}->{}",
+        String::from_utf8_lossy(var),
+        String::from_utf8_lossy(name)
+    ))
 }
 
 /// The key of a variable an `isset()` of its offset gives a HasOffsetType.
@@ -332,7 +338,10 @@ fn static_fetch(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Opti
 
 fn static_key(p: &StaticPropertyAccess, resolve: &dyn Fn(&Identifier) -> String) -> Option<Guard> {
     let class = class_key(p.class, resolve)?;
-    Some(Guard::Expr(format!("{class}::{}", static_selector_key(&p.property)?)))
+    Some(Guard::Expr(format!(
+        "{class}::{}",
+        static_selector_key(&p.property)?
+    )))
 }
 
 /// Expression identity, not the selector's inferred names: writing `self::${$name}` does not define
@@ -345,14 +354,19 @@ fn static_selector_key(v: &Variable) -> Option<String> {
         Variable::Indirect(v) => match unparen(v.expression) {
             Expression::Variable(v) => Some(format!("${{{}}}", static_selector_key(v)?)),
             Expression::Literal(Literal::String(s)) => {
-                static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
-                    pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
-                });
+                static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> =
+                    std::sync::LazyLock::new(|| {
+                        pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$")
+                            .expect("identifier regexp")
+                    });
                 let value = s.value?;
                 Some(if IDENTIFIER.is_match(value).unwrap_or(false) {
                     format!("${}", String::from_utf8_lossy(value))
                 } else {
-                    format!("${{string({})}}", value.iter().map(|b| format!("{b:02x}")).collect::<String>())
+                    format!(
+                        "${{string({})}}",
+                        value.iter().map(|b| format!("{b:02x}")).collect::<String>()
+                    )
                 })
             }
             _ => None,
@@ -416,8 +430,7 @@ impl Checker<'_, '_> {
     // ArrayAccess, after which PHPStan describes `$this` as `ArrayAccess&C`
     pub(super) fn incremented(&mut self, operand: &Expression) {
         // Inc/dec also produces a PropertyAssignNode, for direct and expression names alike.
-        if let Expression::Access(Access::StaticProperty(p)) = unparen(operand)
-        {
+        if let Expression::Access(Access::StaticProperty(p)) = unparen(operand) {
             static_check(self, p);
         }
         if matches!(unparen(operand), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
@@ -448,7 +461,9 @@ impl Checker<'_, '_> {
     /// `hasExpressionType()` of `$object->name` (a variable's).
     pub(super) fn has_fetch_type(&self, object: &Expression, name: &str) -> bool {
         match unparen(object) {
-            Expression::Variable(Variable::Direct(v)) => self.guards.contains(&var_guard(v.name, name.as_bytes())),
+            Expression::Variable(Variable::Direct(v)) => {
+                self.guards.contains(&var_guard(v.name, name.as_bytes()))
+            }
             _ => false,
         }
     }
@@ -493,7 +508,15 @@ fn remember(c: &mut Checker, e: &Expression) {
 pub(super) fn read(c: &mut Checker, p: &PropertyAccess) {
     // checkStringCastableName() runs on every fetch, the assigned one too
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Property", p.object, false, "property.nameNotString");
+        super::types::dynamic_names::check(
+            c,
+            name,
+            true,
+            "Property",
+            p.object,
+            false,
+            "property.nameNotString",
+        );
     }
     if c.property_access.assigned.contains(&key(p.span())) {
         return;
@@ -534,7 +557,11 @@ pub(super) fn allows_dynamic_properties(c: &Checker, k: &ClassLikeMetadata) -> b
     allows_dynamic_properties_at(c, k, &mut HashSet::from([k.name]))
 }
 
-fn allows_dynamic_properties_at(c: &Checker, k: &ClassLikeMetadata, seen: &mut HashSet<mago_word::Word>) -> bool {
+fn allows_dynamic_properties_at(
+    c: &Checker,
+    k: &ClassLikeMetadata,
+    seen: &mut HashSet<mago_word::Word>,
+) -> bool {
     if k.kind == SymbolKind::Enum {
         return false;
     }
@@ -549,12 +576,19 @@ fn allows_dynamic_properties_at(c: &Checker, k: &ClassLikeMetadata, seen: &mut H
         return true;
     }
     // Only this class-like's own ObjectType requirements contribute dynamic capability, before readonly.
-    if super::require_tags::tag_types(c, k, super::require_tags::EXTENDS).into_iter().any(|ty| {
-        let pun_phpstan::types::Type::Object(name, _, _) = ty else { return false };
-        c.codebase.get_class_like(name.as_bytes()).is_some_and(|required| {
-            seen.insert(required.name) && allows_dynamic_properties_at(c, required, seen)
+    if super::require_tags::tag_types(c, k, super::require_tags::EXTENDS)
+        .into_iter()
+        .any(|ty| {
+            let pun_phpstan::types::Type::Object(name, _, _) = ty else {
+                return false;
+            };
+            c.codebase
+                .get_class_like(name.as_bytes())
+                .is_some_and(|required| {
+                    seen.insert(required.name) && allows_dynamic_properties_at(c, required, seen)
+                })
         })
-    }) {
+    {
         return true;
     }
     if k.flags.is_readonly() {
@@ -627,12 +661,15 @@ pub(super) fn has_instance_property(c: &Checker, k: &ClassLikeMetadata, property
 /// Larastan's `Illuminate\Http\Request` and `Illuminate\Support\Optional`.
 fn is_universal_object_crate(c: &Checker, k: &ClassLikeMetadata) -> bool {
     let larastan: &[&[u8]] = match c.larastan {
-        Some(_) => &[b"illuminate\\http\\request", b"illuminate\\support\\optional"],
+        Some(_) => &[
+            b"illuminate\\http\\request",
+            b"illuminate\\support\\optional",
+        ],
         None => &[],
     };
-    std::iter::once(b"stdclass".as_slice()).chain(larastan.iter().copied()).any(|crate_| {
-        k.name.as_bytes() == crate_ || k.all_parent_classes.contains(&word(crate_))
-    })
+    std::iter::once(b"stdclass".as_slice())
+        .chain(larastan.iter().copied())
+        .any(|crate_| k.name.as_bytes() == crate_ || k.all_parent_classes.contains(&word(crate_)))
 }
 
 fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
@@ -658,7 +695,17 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
         return; // ponytail: asymmetric visibility (`private(set)`) on a parent's property
     }
     // the class reflection extensions: a mixin's or a required class's property
-    if c.has_property(&pun_phpstan::types::Type::Object(String::from_utf8_lossy(class.name.as_bytes()).into_owned(), vec![], false), &property, false).yes() {
+    if c.has_property(
+        &pun_phpstan::types::Type::Object(
+            String::from_utf8_lossy(class.name.as_bytes()).into_owned(),
+            vec![],
+            false,
+        ),
+        &property,
+        false,
+    )
+    .yes()
+    {
         return;
     }
     // `isFinal()`: the keyword or `@final` (Mago's flag holds both); an anonymous class is final
@@ -732,7 +779,15 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
 /// AccessPropertiesRule on a nullsafe fetch, which it sees as a fetch on the object without `null`.
 pub(super) fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Property", p.object, true, "property.nameNotString");
+        super::types::dynamic_names::check(
+            c,
+            name,
+            true,
+            "Property",
+            p.object,
+            true,
+            "property.nameNotString",
+        );
     }
     let allowed = c.property_access.allowed.contains(&key(p.span()));
     super::types::property_fetch(c, p.span(), p.object, &p.property, true, allowed);
@@ -741,7 +796,15 @@ pub(super) fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
 /// AccessStaticPropertiesRule on one static property fetch.
 pub(super) fn static_read(c: &mut Checker, p: &StaticPropertyAccess) {
     if let Some(name) = super::types::dynamic_names::static_property(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Static property", p.class, false, "staticProperty.nameNotString");
+        super::types::dynamic_names::check(
+            c,
+            name,
+            true,
+            "Static property",
+            p.class,
+            false,
+            "staticProperty.nameNotString",
+        );
     }
     if c.property_access.assigned.contains(&key(p.span())) {
         return;
@@ -779,7 +842,8 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
 /// AccessStaticPropertiesCheck::processSingleProperty(); `property` includes its leading `$`.
 fn static_check_named(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
-    let at = super::types::dynamic_names::static_property(&p.property).unwrap_or_else(|| p.property.span());
+    let at = super::types::dynamic_names::static_property(&p.property)
+        .unwrap_or_else(|| p.property.span());
     let holder = match (unparen(p.class), c.class_scope()) {
         (e @ (Expression::Self_(_) | Expression::Static(_)), scope) => {
             let written = if matches!(e, Expression::Self_(_)) {
@@ -874,7 +938,10 @@ fn static_check_named(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]
             let named = StaticPropertyAccess {
                 class: p.class,
                 double_colon: p.double_colon,
-                property: Variable::Direct(DirectVariable { span: at, name: property }),
+                property: Variable::Direct(DirectVariable {
+                    span: at,
+                    name: property,
+                }),
             };
             return super::types::static_property_fetch(c, &named, property);
         }

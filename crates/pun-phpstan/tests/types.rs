@@ -108,7 +108,10 @@ fn signature_map_type_strings() {
 
 #[test]
 fn reflected_types() {
-    check("reflected-types.json", &[UNNORMALIZED, SIGNATURE_GAPS].concat());
+    check(
+        "reflected-types.json",
+        &[UNNORMALIZED, SIGNATURE_GAPS].concat(),
+    );
 }
 
 /// The type strings of one function's variants, each with what PHPStan's reflection describes it as.
@@ -312,7 +315,10 @@ const VERBOSITY_GAPS: &[&str] = &["Traversable<int>"];
 
 /// ponytail: a callable array's offsets (IntersectionType::hasOffsetValueType()) are not ported; checkOurKeys() sees a
 /// plain array's
-const ACCEPT_GAPS: &[(&str, &str)] = &[("array{ArrayIterator<int, string>, ArrayIterator<int, int>}", "callable&array")];
+const ACCEPT_GAPS: &[(&str, &str)] = &[(
+    "array{ArrayIterator<int, string>, ArrayIterator<int, int>}",
+    "callable&array",
+)];
 
 /// TemplateStrictMixedType::isAcceptedBy() (`isSubTypeOf()`): the same template of mixed accepts it, another maybe.
 #[test]
@@ -320,7 +326,10 @@ fn template_strict_mixed() {
     use pun_phpstan::types::{StrictMixed, Tri, accepts_with};
     let t = resolve_str("__template<T, 'function probe()', mixed>", None);
     let u = resolve_str("__template<U, 'function probe()', mixed>", None);
-    let sm = StrictMixed { explicit: true, implicit: true };
+    let sm = StrictMixed {
+        explicit: true,
+        implicit: true,
+    };
     assert_eq!(accepts_with(&t, &t, true, sm), Tri::Yes);
     assert_eq!(accepts_with(&u, &t, true, sm), Tri::Maybe);
 }
@@ -346,8 +355,17 @@ fn accepts() {
         let mut want = vec![level.unwrap().to_string()];
         if let Some(b) = b {
             let (bts, sm) = if b == "strict-mixed" {
-                let all = StrictMixed { explicit: true, implicit: true };
-                (vec![resolve_str("mixed", None), resolve_str("__template<T, 'function strictProbe()', mixed>", None)], all)
+                let all = StrictMixed {
+                    explicit: true,
+                    implicit: true,
+                };
+                (
+                    vec![
+                        resolve_str("mixed", None),
+                        resolve_str("__template<T, 'function strictProbe()', mixed>", None),
+                    ],
+                    all,
+                )
             } else {
                 (vec![resolve_str(b, ctx)], StrictMixed::default())
             };
@@ -364,10 +382,17 @@ fn accepts() {
             want.remove(0);
         }
         if got != want && !ACCEPT_GAPS.contains(&(a.unwrap(), b.unwrap_or(""))) {
-            failures.push(format!("{ctx:?} {} accepts {}: want {want:?}, got {got:?}", row[1], row[2]));
+            failures.push(format!(
+                "{ctx:?} {} accepts {}: want {want:?}, got {got:?}",
+                row[1], row[2]
+            ));
         }
     }
-    eprintln!("type-accepts.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    eprintln!(
+        "type-accepts.json: {}/{} match",
+        rows.len() - failures.len(),
+        rows.len()
+    );
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
@@ -381,11 +406,23 @@ fn casts() {
     for row in f.as_array().unwrap() {
         let (ctx, a) = (row[0].as_str(), row[1].as_str().unwrap());
         let (t, sm) = if a == "strict-mixed" {
-            (resolve_str("mixed", None), StrictMixed { explicit: true, implicit: false })
+            (
+                resolve_str("mixed", None),
+                StrictMixed {
+                    explicit: true,
+                    implicit: false,
+                },
+            )
         } else {
             (resolve_str(a, ctx), StrictMixed::default())
         };
-        let casts = [Cast::String, Cast::Number, Cast::Integer, Cast::Float, Cast::BitwiseNot];
+        let casts = [
+            Cast::String,
+            Cast::Number,
+            Cast::Integer,
+            Cast::Float,
+            Cast::BitwiseNot,
+        ];
         let got: Vec<bool> = casts.iter().map(|&c| cast_is_error(&t, c, sm)).collect();
         let want: Vec<bool> = (2..7).map(|i| row[i].as_bool().unwrap()).collect();
         if got != want || cast_is_error(&t, Cast::Boolean, sm) {
@@ -393,7 +430,10 @@ fn casts() {
         }
         let cloneable = format!("{:?}", t.is_cloneable());
         if row[7].as_str().is_some_and(|want| want != cloneable) {
-            failures.push(format!("{ctx:?} {a}: isCloneable() want {}, got {cloneable}", row[7]));
+            failures.push(format!(
+                "{ctx:?} {a}: isCloneable() want {}, got {cloneable}",
+                row[7]
+            ));
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
@@ -421,12 +461,24 @@ fn infer_template_types() {
         let (a, b) = (row[0].as_str().unwrap(), row[1].as_str().unwrap());
         let (at, bt) = (resolve_str(a, None), resolve_str(b, None));
         let map = infer_template_types(&at, &bt);
-        let mut got: Vec<(String, String)> = map.types().into_iter().map(|(n, _, t)| (n.to_string(), t.describe(Level::Precise))).collect();
+        let mut got: Vec<(String, String)> = map
+            .types()
+            .into_iter()
+            .map(|(n, _, t)| (n.to_string(), t.describe(Level::Precise)))
+            .collect();
         // what the arguments leave as `*ERROR*` is absorbed by a union member
-        assert!(map.types().into_iter().all(|(n, s, t)| (*t == Type::Error) == map.is_absorbed(n, s)));
+        assert!(
+            map.types()
+                .into_iter()
+                .all(|(n, s, t)| (*t == Type::Error) == map.is_absorbed(n, s))
+        );
         got.sort();
-        let want: Vec<(String, String)> =
-            row[2].as_object().unwrap().iter().map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string())).collect();
+        let want: Vec<(String, String)> = row[2]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string()))
+            .collect();
         let templates = std::cell::RefCell::new(Vec::<Template>::new());
         fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
             if let Type::Template(tt) = t {
@@ -439,12 +491,21 @@ fn infer_template_types() {
         }
         collect(&at, &templates);
         let templates = templates.into_inner();
-        let resolved = resolve_template_types(&at, &map.with_errors(&templates.iter().collect::<Vec<_>>())).describe(Level::Precise);
+        let resolved =
+            resolve_template_types(&at, &map.with_errors(&templates.iter().collect::<Vec<_>>()))
+                .describe(Level::Precise);
         if got != want || resolved != row[3].as_str().unwrap() {
-            failures.push(format!("{a} from {b}: want {want:?} {}, got {got:?} {resolved}", row[3]));
+            failures.push(format!(
+                "{a} from {b}: want {want:?} {}, got {got:?} {resolved}",
+                row[3]
+            ));
         }
     }
-    eprintln!("type-infer.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    eprintln!(
+        "type-infer.json: {}/{} match",
+        rows.len() - failures.len(),
+        rows.len()
+    );
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
@@ -457,13 +518,27 @@ fn accepts_reasons() {
     let mut failures = Vec::new();
     for row in rows {
         let (a, b) = (row[0].as_str().unwrap(), row[1].as_str().unwrap());
-        let got = accepts_reasons(&resolve_str(a, None), &resolve_str(b, None), true, StrictMixed::default());
-        let want: Vec<String> = row[2].as_array().unwrap().iter().map(|r| r.as_str().unwrap().to_string()).collect();
+        let got = accepts_reasons(
+            &resolve_str(a, None),
+            &resolve_str(b, None),
+            true,
+            StrictMixed::default(),
+        );
+        let want: Vec<String> = row[2]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|r| r.as_str().unwrap().to_string())
+            .collect();
         if got != want {
             failures.push(format!("{a} accepts {b}: want {want:?}, got {got:?}"));
         }
     }
-    eprintln!("type-reasons.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    eprintln!(
+        "type-reasons.json: {}/{} match",
+        rows.len() - failures.len(),
+        rows.len()
+    );
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
@@ -471,20 +546,29 @@ fn accepts_reasons() {
 /// negative controls with checked mixed nested in generic arguments.
 #[test]
 fn generic_comparisons() {
-    use pun_phpstan::types::{StrictMixed, accepts_with, accepts_reasons};
+    use pun_phpstan::types::{StrictMixed, accepts_reasons, accepts_with};
     let fixture = fixture("generic-comparisons.json");
     let mut failures = Vec::new();
     for row in fixture.as_array().unwrap() {
         let a = resolve_str(row[0].as_str().unwrap(), None);
         let received = resolve_str(row[1].as_str().unwrap(), None);
         let checked = row[2].as_bool().unwrap();
-        let flags = StrictMixed { explicit: checked, implicit: checked };
+        let flags = StrictMixed {
+            explicit: checked,
+            implicit: checked,
+        };
         let b = flags.transform(&received);
         let got = serde_json::json!([
-            row[0], row[1], row[2], format!("{:?}", is_super_type_of(&a, &b)),
-            format!("{:?}", accepts_with(&a, &received, true, flags)), accepts_reasons(&a, &received, true, flags),
+            row[0],
+            row[1],
+            row[2],
+            format!("{:?}", is_super_type_of(&a, &b)),
+            format!("{:?}", accepts_with(&a, &received, true, flags)),
+            accepts_reasons(&a, &received, true, flags),
         ]);
-        if got != *row { failures.push(format!("expected {row}\nreceived {got}")); }
+        if got != *row {
+            failures.push(format!("expected {row}\nreceived {got}"));
+        }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
@@ -525,7 +609,10 @@ fn constant_float_identity() {
 /// Per-object ClassReflection::asFinal(), not a change to the declaration or printed type identity.
 #[test]
 fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct() {
-    use pun_phpstan::types::{Template, Type, accepts, infer_template_types, intersect, mixed, to_phpdoc_fully_qualified, union};
+    use pun_phpstan::types::{
+        Template, Type, accepts, infer_template_types, intersect, mixed, to_phpdoc_fully_qualified,
+        union,
+    };
     use serde_json::json;
     use std::{cell::RefCell, collections::BTreeMap};
 
@@ -543,12 +630,24 @@ fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct()
         ("generic-broad", generic(false, object("Exception", false))),
         ("generic-exact", generic(true, object("Exception", false))),
         ("generic-nested", generic(true, object("Exception", true))),
-        ("excluded", Type::object_subtracted(object("Exception", true), object("RuntimeException", false))),
-        ("excluded-nested", Type::object_subtracted(object("Exception", true), object("RuntimeException", true))),
+        (
+            "excluded",
+            Type::object_subtracted(object("Exception", true), object("RuntimeException", false)),
+        ),
+        (
+            "excluded-nested",
+            Type::object_subtracted(object("Exception", true), object("RuntimeException", true)),
+        ),
         ("cased", object("exception", false)),
         ("cased-exact", object("exception", true)),
         ("final", object("Closure", false)),
-        ("receiver-conjunction", Type::Intersection(vec![object("Exception", true), Type::This("Exception".into())])),
+        (
+            "receiver-conjunction",
+            Type::Intersection(vec![
+                object("Exception", true),
+                Type::This("Exception".into()),
+            ]),
+        ),
     ]);
     fn observation(ty: &Type) -> serde_json::Value {
         fn collect(ty: &Type, exact: &RefCell<Vec<(String, bool)>>) {
@@ -579,28 +678,47 @@ fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct()
             "union": observation(&union(vec![a.clone(), b.clone()])),
             "intersection": observation(&intersect(vec![a.clone(), b.clone()])),
         });
-        if got != *row { failures.push(format!("want {row}\ngot {got}")); }
+        if got != *row {
+            failures.push(format!("want {row}\ngot {got}"));
+        }
     }
     for (name, want) in oracle["preserved"].as_object().unwrap() {
         let got = observation(&types[name.as_str()].traverse(&Clone::clone));
-        if got != *want { failures.push(format!("traversed {name}: want {want}\ngot {got}")); }
+        if got != *want {
+            failures.push(format!("traversed {name}: want {want}\ngot {got}"));
+        }
     }
     // `Printer::print($type->toPhpDocNode())` of PHPStan 2.3.5, which prints class names fully qualified
     for (name, want) in oracle["phpdoc"].as_object().unwrap() {
-        assert_eq!(to_phpdoc_fully_qualified(&types[name.as_str()]), want.as_str().unwrap(), "{name}");
+        assert_eq!(
+            to_phpdoc_fully_qualified(&types[name.as_str()]),
+            want.as_str().unwrap(),
+            "{name}"
+        );
     }
     let template = Type::Template(Box::new(Template {
-        name: "T".into(), scope: "function exact()".into(), bound: mixed(), default: None, argument: false,
+        name: "T".into(),
+        scope: "function exact()".into(),
+        bound: mixed(),
+        default: None,
+        argument: false,
     }));
     for (name, want) in oracle["inferred"].as_object().unwrap() {
         let inferred = infer_template_types(&template, &types[name.as_str()]);
         let got = observation(inferred.types()[0].2);
-        if got != *want { failures.push(format!("inferred {name}: want {want}\ngot {got}")); }
+        if got != *want {
+            failures.push(format!("inferred {name}: want {want}\ngot {got}"));
+        }
     }
     for (name, want) in oracle["queries"].as_object().unwrap() {
         let ty = &types[name.as_str()];
-        let got = json!([format!("{:?}", ty.is_callable()), format!("{:?}", ty.has_method("missing"))]);
-        if got != *want { failures.push(format!("queried {name}: want {want}\ngot {got}")); }
+        let got = json!([
+            format!("{:?}", ty.is_callable()),
+            format!("{:?}", ty.has_method("missing"))
+        ]);
+        if got != *want {
+            failures.push(format!("queried {name}: want {want}\ngot {got}"));
+        }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
@@ -613,7 +731,12 @@ fn compound_equality_keeps_order_for_reflection_not_invariant_generic_identity()
     let object = |name: &str| Type::Object(name.into(), vec![], false);
     for row in fixture("compound-equality.json").as_array().unwrap() {
         let make = |names: &Value| {
-            let members = names.as_array().unwrap().iter().map(|n| object(n.as_str().unwrap())).collect();
+            let members = names
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|n| object(n.as_str().unwrap()))
+                .collect();
             match row[0].as_str().unwrap() {
                 "union" => Type::Union(members),
                 "benevolent" => Type::Benevolent(members),
@@ -624,9 +747,31 @@ fn compound_equality_keeps_order_for_reflection_not_invariant_generic_identity()
         let (a, b) = (make(&row[1]), make(&row[2]));
         let generic = |key, value| Type::Object("ArrayIterator".into(), vec![key, value], false);
         assert_eq!(a == b, row[3].as_bool().unwrap(), "{row}");
-        assert_eq!(generic(object("Key"), a.clone()) == generic(object("Key"), b.clone()), row[4].as_bool().unwrap(), "{row}");
-        assert_eq!(generic(object("Key"), a.clone()) == generic(b, object("Key")), row[5].as_bool().unwrap(), "{row}");
-        let (Type::Union(members) | Type::Benevolent(members) | Type::Intersection(members)) = a else { unreachable!() };
-        assert_eq!(members.iter().map(Type::object_class_names).collect::<Vec<_>>(), row[1].as_array().unwrap().iter().map(|n| vec![n.as_str().unwrap().to_string()]).collect::<Vec<_>>());
+        assert_eq!(
+            generic(object("Key"), a.clone()) == generic(object("Key"), b.clone()),
+            row[4].as_bool().unwrap(),
+            "{row}"
+        );
+        assert_eq!(
+            generic(object("Key"), a.clone()) == generic(b, object("Key")),
+            row[5].as_bool().unwrap(),
+            "{row}"
+        );
+        let (Type::Union(members) | Type::Benevolent(members) | Type::Intersection(members)) = a
+        else {
+            unreachable!()
+        };
+        assert_eq!(
+            members
+                .iter()
+                .map(Type::object_class_names)
+                .collect::<Vec<_>>(),
+            row[1]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|n| vec![n.as_str().unwrap().to_string()])
+                .collect::<Vec<_>>()
+        );
     }
 }

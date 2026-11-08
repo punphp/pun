@@ -86,7 +86,9 @@ impl Child {
     /// `(string) $phpDocChildNode` of a reprinted child: only typed tags are ever changed or added (an untyped one is
     /// printed from its text).
     fn print(&self) -> String {
-        let (name, v) = self.typed().expect("a changed or added child is a typed tag");
+        let (name, v) = self
+            .typed()
+            .expect("a changed or added child is a typed tag");
         let value = match name {
             "@param" => format!(
                 "{} {}{}{} {}",
@@ -96,7 +98,11 @@ impl Child {
                 v.variable,
                 v.description
             ),
-            "@var" => format!("{} {}", v.ty, format!("{} {}", v.variable, v.description).trim()),
+            "@var" => format!(
+                "{} {}",
+                v.ty,
+                format!("{} {}", v.variable, v.description).trim()
+            ),
             _ => format!("{} {}", v.ty, v.description),
         };
         format!("{name} {}", value.trim()).trim().to_string()
@@ -256,7 +262,10 @@ impl PhpDocInfo {
             .map(|c| match (c.typed(), c.start_end) {
                 // an untyped child of a single-line doc the new tag made multi-line: its own text
                 (None, Some((start, end))) => {
-                    format!(" {}", self.text[self.tokens[start].1..self.tokens[end - 1].2].trim())
+                    format!(
+                        " {}",
+                        self.text[self.tokens[start].1..self.tokens[end - 1].2].trim()
+                    )
                 }
                 _ => format!(" {}", c.print()),
             })
@@ -272,7 +281,9 @@ impl PhpDocInfo {
             current: 0,
         };
         // hotfix of extra space with callable ()
-        CALLABLE.replace_all(&printer.print_doc(), "callable(").into_owned()
+        CALLABLE
+            .replace_all(&printer.print_doc(), "callable(")
+            .into_owned()
     }
 }
 
@@ -293,7 +304,11 @@ impl Printer<'_> {
             output.push_str(&self.print_child(child, key + 1, count));
         }
         output = self.print_end(output);
-        if !["//", "/**", "/*", "#"].iter().any(|s| output.starts_with(s)) && !output.is_empty() {
+        if !["//", "/**", "/*", "#"]
+            .iter()
+            .any(|s| output.starts_with(s))
+            && !output.is_empty()
+        {
             output.insert_str(0, "/**");
         }
         // (the doc's own `*/` is always printed)
@@ -313,7 +328,9 @@ impl Printer<'_> {
         // (`correctPreviouslyReprintedFirstNode()` never moves back: every child before set the position)
         let output = self.add_tokens_from_to(String::new(), self.current, end, count == key);
         self.current = end;
-        output.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B']).to_string()
+        output
+            .trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B'])
+            .to_string()
     }
 
     /// `printEnd()`.
@@ -326,7 +343,13 @@ impl Printer<'_> {
     }
 
     /// `addTokensFromTo()` (no child is removed, so nothing is jumped over).
-    fn add_tokens_from_to(&self, mut output: String, from: usize, to: usize, skip_empty_lines_above: bool) -> String {
+    fn add_tokens_from_to(
+        &self,
+        mut output: String,
+        from: usize,
+        to: usize,
+        skip_empty_lines_above: bool,
+    ) -> String {
         let tokens = &self.info.tokens;
         let text = |i: usize| tokens.get(i).map_or("", |t| &self.info.text[t.1..t.2]);
         let mut from = from;
@@ -365,7 +388,11 @@ pub(crate) fn lex(text: &str) -> Vec<(Kind, usize, usize)> {
         let start = i;
         let kind = match bytes[i] {
             b'\r' | b'\n' => {
-                i += if bytes[i] == b'\r' && bytes.get(i + 1) == Some(&b'\n') { 2 } else { 1 };
+                i += if bytes[i] == b'\r' && bytes.get(i + 1) == Some(&b'\n') {
+                    2
+                } else {
+                    1
+                };
                 while matches!(bytes.get(i), Some(b' ' | b'\t')) {
                     i += 1;
                 }
@@ -414,7 +441,8 @@ pub(crate) fn tag_name(word: &str) -> Option<&str> {
         while j < b.len() && name_char(b[j]) {
             j += 1;
         }
-        if b.get(j) == Some(&b':') && j > i + 1 && b.get(j + 1).is_some_and(u8::is_ascii_alphabetic) {
+        if b.get(j) == Some(&b':') && j > i + 1 && b.get(j + 1).is_some_and(u8::is_ascii_alphabetic)
+        {
             i = j + 1;
         }
         let mut j = i + 1;
@@ -425,8 +453,15 @@ pub(crate) fn tag_name(word: &str) -> Option<&str> {
     }
     // `@[a-z_\\][a-z0-9_\:\\]*[a-z_][a-z0-9_]*`
     if b.get(1).is_some_and(|c| *c == b'_' || *c == b'\\') {
-        let end = b.iter().skip(1).take_while(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b':' | b'\\')).count() + 1;
-        let tail = b[..end].iter().rposition(|c| c.is_ascii_alphabetic() || *c == b'_')?;
+        let end = b
+            .iter()
+            .skip(1)
+            .take_while(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b':' | b'\\'))
+            .count()
+            + 1;
+        let tail = b[..end]
+            .iter()
+            .rposition(|c| c.is_ascii_alphabetic() || *c == b'_')?;
         return (tail > 1).then(|| &word[..end]);
     }
     None
@@ -469,7 +504,9 @@ pub(crate) fn child_ranges(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(
 /// Where the child that starts at `start` ends (`parseText()`'s save points): at the line end after its last line
 /// that is not blank, the lines after it running up to the next line that starts with a tag.
 fn child_end(text: &str, tokens: &[(Kind, usize, usize)], start: usize) -> usize {
-    let is_tag = |i: usize| tokens[i].0 == Kind::Other && tag_name(&text[tokens[i].1..tokens[i].2]).is_some();
+    let is_tag = |i: usize| {
+        tokens[i].0 == Kind::Other && tag_name(&text[tokens[i].1..tokens[i].2]).is_some()
+    };
     let mut last = None;
     let mut p = start;
     loop {
@@ -520,8 +557,12 @@ fn child_node(text: &str, tokens: &[(Kind, usize, usize)], start: usize, end: us
 
 /// Whether `text` starts with the variable `$this` (`TOKEN_THIS_VARIABLE`).
 fn is_this_variable(text: &str) -> bool {
-    text.strip_prefix("$this")
-        .is_some_and(|after| !after.bytes().next().is_some_and(|c| c.is_ascii_alphanumeric() || c == b'_' || c >= 0x80))
+    text.strip_prefix("$this").is_some_and(|after| {
+        !after
+            .bytes()
+            .next()
+            .is_some_and(|c| c.is_ascii_alphanumeric() || c == b'_' || c >= 0x80)
+    })
 }
 
 /// A `@param`, `@var` or `@return` value, from `from` to `to` (bytes of the doc).
@@ -536,7 +577,11 @@ fn typed_value(
     let leading = value.len() - value.trim_start_matches([' ', '\t']).len();
     let rest = &value[leading..];
     // a typeless `@param $a`
-    if name == "@param" && ((rest.starts_with('$') && !is_this_variable(rest)) || rest.starts_with('&') || rest.starts_with("...")) {
+    if name == "@param"
+        && ((rest.starts_with('$') && !is_this_variable(rest))
+            || rest.starts_with('&')
+            || rest.starts_with("..."))
+    {
         return TagValue::Other;
     }
     let Ok((parsed, offset)) = phpdoc::parse_prefix(rest) else {
@@ -546,13 +591,21 @@ fn typed_value(
     let ty = TypeNode::from_parsed(&parsed).unwrap_or_else(|| TypeNode::Raw(type_text.to_string()));
     let mut at = leading + type_text.len();
     let preceded_by_ws = |at: usize| at > 0 && matches!(value.as_bytes()[at - 1], b' ' | b'\t');
-    let skip = |at: usize| at + value[at..].len() - value[at..].trim_start_matches([' ', '\t']).len();
+    let skip =
+        |at: usize| at + value[at..].len() - value[at..].trim_start_matches([' ', '\t']).len();
     let mut variable = String::new();
     let (mut is_reference, mut is_variadic) = (false, false);
     let variable_len = |s: &str| {
         let b = s.as_bytes();
-        (b.first() == Some(&b'$') && b.get(1).is_some_and(|c| c.is_ascii_alphabetic() || *c == b'_' || *c >= 0x80))
-            .then(|| 1 + b[1..].iter().take_while(|c| c.is_ascii_alphanumeric() || **c == b'_' || **c >= 0x80).count())
+        (b.first() == Some(&b'$')
+            && b.get(1)
+                .is_some_and(|c| c.is_ascii_alphabetic() || *c == b'_' || *c >= 0x80))
+        .then(|| {
+            1 + b[1..]
+                .iter()
+                .take_while(|c| c.is_ascii_alphanumeric() || **c == b'_' || **c >= 0x80)
+                .count()
+        })
     };
     let mut limit_start = name == "@return";
     match name {
@@ -567,7 +620,9 @@ fn typed_value(
                 at = skip(at + 3);
             }
             // `parseRequiredVariableName()`: a `TOKEN_VARIABLE`, which `$this` is not
-            let Some(len) = variable_len(&value[at..]).filter(|len| &value[at..at + len] != "$this") else {
+            let Some(len) =
+                variable_len(&value[at..]).filter(|len| &value[at..at + len] != "$this")
+            else {
                 return TagValue::Invalid;
             };
             variable = value[at..at + len].to_string();

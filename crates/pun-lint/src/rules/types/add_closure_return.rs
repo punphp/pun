@@ -80,7 +80,10 @@ pub(crate) fn closure_return<'ast, 'arena>(
     if returns.is_empty() {
         return;
     }
-    if returns.iter().all(|r| r.value.is_some_and(|v| is_new_parent_in_trait(v, ancestors))) {
+    if returns.iter().all(|r| {
+        r.value
+            .is_some_and(|v| is_new_parent_in_trait(v, ancestors))
+    }) {
         let at = match &closure.use_clause {
             Some(uses) => node_span(uses).end,
             None => node_span(&closure.parameter_list).end,
@@ -127,7 +130,11 @@ fn is_new_parent_in_trait(expr: &Expression<'_>, ancestors: &[Node<'_, '_>]) -> 
         && matches!(
             ancestors.iter().rev().find(|a| matches!(
                 a,
-                Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_)
+                Node::Class(_)
+                    | Node::AnonymousClass(_)
+                    | Node::Interface(_)
+                    | Node::Trait(_)
+                    | Node::Enum(_)
             )),
             Some(Node::Trait(_))
         )
@@ -171,7 +178,11 @@ impl Rule for AddArrowFunctionReturn {
             return;
         }
         if is_new_parent_in_trait(arrow.expression, ancestors) {
-            out.push(add_return_type(node_span(&arrow.r#fn), node_span(&arrow.parameter_list).end, "parent"));
+            out.push(add_return_type(
+                node_span(&arrow.r#fn),
+                node_span(&arrow.parameter_list).end,
+                "parent",
+            ));
             return;
         }
         let facts = facts(ctx);

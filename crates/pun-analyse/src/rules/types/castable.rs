@@ -5,7 +5,8 @@
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_phpstan::types::{
-    Accessory, Cast, Level, StrictMixed, Type, accepts, cast_is_error, intersect, is_super_type_of, union,
+    Accessory, Cast, Level, StrictMixed, Type, accepts, cast_is_error, intersect, is_super_type_of,
+    union,
 };
 
 pub(super) const IDENTIFIERS: &[&str] = &[
@@ -20,7 +21,9 @@ use super::super::params::{self, Acceptor};
 use super::super::{Checker, declared};
 
 /// The arguments as written: (name, value, unpacked).
-fn written<'a, 'arena>(call: &'a FunctionCall<'arena>) -> Vec<(Option<&'a [u8]>, &'a Expression<'arena>, bool)> {
+fn written<'a, 'arena>(
+    call: &'a FunctionCall<'arena>,
+) -> Vec<(Option<&'a [u8]>, &'a Expression<'arena>, bool)> {
     call.argument_list
         .arguments
         .iter()
@@ -39,7 +42,10 @@ fn normalized<'a, 'arena>(
     k: usize,
 ) -> Option<(&'a Expression<'arena>, bool, bool)> {
     let name = acceptor.names.get(k)?;
-    if let Some((_, v, _)) = args.iter().find(|(n, ..)| n.is_some_and(|n| n == name.as_bytes())) {
+    if let Some((_, v, _)) = args
+        .iter()
+        .find(|(n, ..)| n.is_some_and(|n| n == name.as_bytes()))
+    {
         return Some((v, true, false));
     }
     let positional: Vec<_> = args.iter().take_while(|(n, ..)| n.is_none()).collect();
@@ -56,7 +62,12 @@ fn parameter_name(acceptor: &Acceptor, idx: usize, named: bool) -> String {
 }
 
 /// ParameterCastableToStringCheck::checkParameter(): the array argument's type when a value of it fails `cast`.
-fn check_parameter(c: &Checker, value: &Expression, unpack: bool, cast: &dyn Fn(&Type) -> bool) -> Option<String> {
+fn check_parameter(
+    c: &Checker,
+    value: &Expression,
+    unpack: bool,
+    cast: &dyn Fn(&Type) -> bool,
+) -> Option<String> {
     if unpack {
         return None;
     }
@@ -78,7 +89,9 @@ fn function(c: &Checker, call: &FunctionCall) -> Option<(String, Acceptor)> {
         Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
         _ => None,
     };
-    let (name, variants) = std::iter::once(c.names.get(&id.span())).chain(fallback).find_map(|n| c.function(n))?;
+    let (name, variants) = std::iter::once(c.names.get(&id.span()))
+        .chain(fallback)
+        .find_map(|n| c.function(n))?;
     let counts = params::count(&call.argument_list);
     Some((name, params::select(c, variants, &counts)))
 }
@@ -116,8 +129,13 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             }
         }
         "implode" | "join" => {
-            let named = |n: &str| args.iter().any(|(a, _, unpack)| !unpack && a.is_some_and(|a| a == n.as_bytes()));
-            let normalized: Vec<_> = (0..2).map_while(|k| normalized(&args, &acceptor, k)).collect();
+            let named = |n: &str| {
+                args.iter()
+                    .any(|(a, _, unpack)| !unpack && a.is_some_and(|a| a == n.as_bytes()))
+            };
+            let normalized: Vec<_> = (0..2)
+                .map_while(|k| normalized(&args, &acceptor, k))
+                .collect();
             let idx = match normalized.len() {
                 1 => 0,
                 2 => 1,
@@ -132,7 +150,9 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
                 format!("#{} $array", idx + 1)
             };
             if let Some(given) = check_parameter(c, v, unpack, &to_string) {
-                errors.push(format!("Parameter {p} of function {name} expects array<string>, {given} given."));
+                errors.push(format!(
+                    "Parameter {p} of function {name} expects array<string>, {given} given."
+                ));
             }
         }
         "array_unique" | "sort" | "rsort" | "asort" | "arsort" => {
@@ -141,7 +161,10 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             };
             let flags = match normalized(&args, &acceptor, 1) {
                 Some((f, ..)) => c.phpstan_type(f),
-                None => acceptor.param_types.get(1).map(|_| Type::ConstInt(default_of(&name))),
+                None => acceptor
+                    .param_types
+                    .get(1)
+                    .map(|_| Type::ConstInt(default_of(&name))),
             };
             const SORT_REGULAR: i64 = 0;
             let Some(flags) = flags.filter(|f| *f != Type::ConstInt(SORT_REGULAR)) else {
@@ -149,7 +172,16 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             };
             let constants: Vec<i64> = match &flags {
                 Type::ConstInt(v) => vec![*v],
-                Type::Union(ts) => ts.iter().filter_map(|t| if let Type::ConstInt(v) = t { Some(*v) } else { None }).collect(),
+                Type::Union(ts) => ts
+                    .iter()
+                    .filter_map(|t| {
+                        if let Type::ConstInt(v) = t {
+                            Some(*v)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect(),
                 _ => Vec::new(),
             };
             let (mut string, mut float) = (constants.is_empty(), constants.is_empty());
@@ -165,9 +197,14 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
                 (true, false) => ("string", Box::new(to_string)),
                 (true, true) => (
                     "string and float",
-                    Box::new(move |t: &Type| cast_is_error(t, Cast::Float, sm) || cast_is_error(t, Cast::String, sm)),
+                    Box::new(move |t: &Type| {
+                        cast_is_error(t, Cast::Float, sm) || cast_is_error(t, Cast::String, sm)
+                    }),
                 ),
-                (false, true) => ("float", Box::new(move |t: &Type| cast_is_error(t, Cast::Float, sm))),
+                (false, true) => (
+                    "float",
+                    Box::new(move |t: &Type| cast_is_error(t, Cast::Float, sm)),
+                ),
                 (false, false) => return,
             };
             if let Some(given) = check_parameter(c, v, unpack, &*cast) {
@@ -178,12 +215,18 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             }
         }
         // ParameterCastableToNumberRule: only a call with exactly one argument
-        "array_sum" | "array_product" if c.toggled.on.contains(crate::rules::driver::Toggles::CASTABLE_TO_NUMBER) && args.len() == 1 => {
+        "array_sum" | "array_product"
+            if c.toggled
+                .on
+                .contains(crate::rules::driver::Toggles::CASTABLE_TO_NUMBER)
+                && args.len() == 1 =>
+        {
             let (n, v, unpack) = args[0];
             // PhpVersion::supportsObjectsInArraySumProduct(): before PHP 8.3 any possible object fails
             let objects = c.php_version >= 80300;
             let to_number = |t: &Type| {
-                (!objects && t.mixed_explicitness().is_none() && !t.is_object().no()) || cast_is_error(t, Cast::Number, sm)
+                (!objects && t.mixed_explicitness().is_none() && !t.is_object().no())
+                    || cast_is_error(t, Cast::Number, sm)
             };
             if let Some(given) = check_parameter(c, v, unpack, &to_number) {
                 let p = parameter_name(&acceptor, 0, n.is_some());
@@ -194,7 +237,9 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
         }
         "printf" | "sprintf" | "fprintf" => {
             if let Some(strict) = c.toggled.printf_types {
-                errors.extend(declared::with_classes(c, || printf_types(c, &args, &name, strict)));
+                errors.extend(declared::with_classes(c, || {
+                    printf_types(c, &args, &name, strict)
+                }));
             }
         }
         "random_int" => {
@@ -208,7 +253,9 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
             let Some((v, ..)) = normalized(&args, &acceptor, 0) else {
                 return;
             };
-            let count = (0..acceptor.names.len()).map_while(|k| normalized(&args, &acceptor, k)).count();
+            let count = (0..acceptor.names.len())
+                .map_while(|k| normalized(&args, &acceptor, k))
+                .count();
             let filter = name == "array_filter";
             if filter && count != 1 {
                 return;
@@ -230,10 +277,20 @@ fn array_function(c: &Checker, value: &Expression, filter: bool) -> Option<(&'st
     let t = c.phpstan_type(value)?;
     declared::with_classes(c, || {
         let described = t.describe(Level::Value);
-        let function = if filter { "array_filter" } else { "array_values" };
+        let function = if filter {
+            "array_filter"
+        } else {
+            "array_values"
+        };
         if t.is_iterable_at_least_once().no() {
-            let identifier = if filter { "arrayFilter.empty" } else { "arrayValues.empty" };
-            let message = format!("Parameter #1 $array ({described}) to function {function} is empty, call has no effect.");
+            let identifier = if filter {
+                "arrayFilter.empty"
+            } else {
+                "arrayValues.empty"
+            };
+            let message = format!(
+                "Parameter #1 $array ({described}) to function {function} is empty, call has no effect."
+            );
             return Some((identifier, message));
         }
         if !filter {
@@ -270,22 +327,36 @@ fn array_function(c: &Checker, value: &Expression, filter: bool) -> Option<(&'st
 
 /// PrintfParameterTypeRule: each value a placeholder of a single constant format consumes must suit the
 /// placeholder's specifier (`strict`: `checkStrictPrintfPlaceholderTypes`).
-fn printf_types(c: &Checker, args: &[(Option<&[u8]>, &Expression, bool)], name: &str, strict: bool) -> Vec<String> {
+fn printf_types(
+    c: &Checker,
+    args: &[(Option<&[u8]>, &Expression, bool)],
+    name: &str,
+    strict: bool,
+) -> Vec<String> {
     let position = usize::from(name == "fprintf");
     if args.iter().any(|(_, _, unpack)| *unpack) || args.len() < position + 1 {
         return Vec::new();
     }
-    let formats = c.phpstan_type(args[position].1).map(|t| t.constant_strings()).unwrap_or_default();
+    let formats = c
+        .phpstan_type(args[position].1)
+        .map(|t| t.constant_strings())
+        .unwrap_or_default();
     let [format] = formats.as_slice() else {
         return Vec::new();
     };
     // (an invalid format is PrintfParametersRule's error)
-    let Some(uses) = super::super::printf_helper::printf_uses(format, c.surely_at_least(80000)) else {
+    let Some(uses) = super::super::printf_helper::printf_uses(format, c.surely_at_least(80000))
+    else {
         return Vec::new();
     };
     // getPlaceholders(): argument index => (label, placeholder number, accepting type)
-    let starred: Vec<usize> = uses.iter().filter(|u| u.kind != "value").map(|u| u.number).collect();
-    let mut placeholders: std::collections::BTreeMap<usize, Vec<(String, usize, &str)>> = Default::default();
+    let starred: Vec<usize> = uses
+        .iter()
+        .filter(|u| u.kind != "value")
+        .map(|u| u.number)
+        .collect();
+    let mut placeholders: std::collections::BTreeMap<usize, Vec<(String, usize, &str)>> =
+        Default::default();
     for u in &uses {
         let mut label = format!("\"{}\"", String::from_utf8_lossy(&u.placeholder));
         let accepting = if u.kind != "value" {
@@ -302,23 +373,55 @@ fn printf_types(c: &Checker, args: &[(Option<&[u8]>, &Expression, bool)], name: 
                 _ => "mixed",
             }
         };
-        placeholders.entry(u.index).or_default().push((label, u.number, accepting));
+        placeholders
+            .entry(u.index)
+            .or_default()
+            .push((label, u.number, accepting));
     }
     let sm = StrictMixed::default();
     let string_and = |a: Accessory| intersect(vec![Type::String, Type::Accessory(a)]);
     // PrintfPlaceholder::doesArgumentTypeMatchPlaceholder()
     let matches = |accepting: &str, t: &Type| match accepting {
         "strict-int" => accepts(&Type::Int, t, true).yes(),
-        "int" if strict => {
-            accepts(&union(vec![Type::Int, string_and(Accessory::DecimalIntString { inverse: false })]), t, true).yes()
-        }
+        "int" if strict => accepts(
+            &union(vec![
+                Type::Int,
+                string_and(Accessory::DecimalIntString { inverse: false }),
+            ]),
+            t,
+            true,
+        )
+        .yes(),
         "int" => !cast_is_error(t, Cast::Integer, sm),
-        "float" if strict => accepts(&union(vec![Type::Float, string_and(Accessory::NumericString)]), t, true).yes(),
+        "float" if strict => accepts(
+            &union(vec![Type::Float, string_and(Accessory::NumericString)]),
+            t,
+            true,
+        )
+        .yes(),
         "float" => !cast_is_error(t, Cast::Float, sm),
-        _ => !strict || accepts(&union(vec![Type::StringAcceptingStringable, Type::Float, Type::Null]), t, true).yes(),
+        _ => {
+            !strict
+                || accepts(
+                    &union(vec![
+                        Type::StringAcceptingStringable,
+                        Type::Float,
+                        Type::Null,
+                    ]),
+                    t,
+                    true,
+                )
+                .yes()
+        }
     };
     // what CallToFunctionParametersRule already enforces
-    let allowed = union(vec![Type::StringAcceptingStringable, Type::Int, Type::Float, Type::Bool, Type::Null]);
+    let allowed = union(vec![
+        Type::StringAcceptingStringable,
+        Type::Int,
+        Type::Float,
+        Type::Bool,
+        Type::Null,
+    ]);
     let strict_types = super::returns::strict_types(c);
     let mut errors = Vec::new();
     for (i, (_, value, _)) in args.iter().enumerate().skip(position + 1) {
@@ -367,7 +470,8 @@ fn random_int(c: &Checker, min: &Expression, max: &Expression) -> Option<String>
     let yes = matches!((max_hi, min_lo), (Some(a), Some(b)) if a < b);
     let no = matches!((max_lo, min_hi), (Some(a), Some(b)) if a >= b);
     let report_maybes = c.level >= 7;
-    if !yes && !no && report_maybes && [min_lo, min_hi, max_lo, max_hi].iter().any(Option::is_none) {
+    if !yes && !no && report_maybes && [min_lo, min_hi, max_lo, max_hi].iter().any(Option::is_none)
+    {
         return None;
     }
     (yes || !no && report_maybes).then(|| {

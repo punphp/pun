@@ -5,7 +5,9 @@
 //! Mago resolves the mixin itself; these providers only replace the return types.
 
 use mago_analyzer::plugin::context::{InvocationInfo, ProviderContext};
-use mago_analyzer::plugin::provider::function::{CallbackInvocation, FunctionReturnTypeProvider, FunctionTarget};
+use mago_analyzer::plugin::provider::function::{
+    CallbackInvocation, FunctionReturnTypeProvider, FunctionTarget,
+};
 use mago_analyzer::plugin::provider::method::{MethodReturnTypeProvider, MethodTarget};
 use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::metadata::CodebaseMetadata;
@@ -13,11 +15,11 @@ use mago_codex::misc::GenericParent;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
+use mago_codex::ttype::comparator::{ComparisonResult, union_comparator};
 use mago_codex::ttype::expander::{StaticClassType, TypeExpansionOptions, expand_union};
 use mago_codex::ttype::get_specialized_template_type;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::inferred_type_replacer;
-use mago_codex::ttype::comparator::{ComparisonResult, union_comparator};
 use mago_codex::ttype::union::TUnion;
 
 const MODEL: &[u8] = b"Illuminate\\Database\\Eloquent\\Model";
@@ -28,7 +30,8 @@ const PROXY: &[u8] = b"Illuminate\\Support\\HigherOrderCollectionProxy";
 const RELATION: &[u8] = b"Illuminate\\Database\\Eloquent\\Relations\\Relation";
 const TAP_PROXY: &[u8] = b"Illuminate\\Support\\HigherOrderTapProxy";
 const SCOPE: &[u8] = b"Illuminate\\Database\\Eloquent\\Attributes\\Scope";
-const USE_ELOQUENT_BUILDER: &[u8] = b"Illuminate\\Database\\Eloquent\\Attributes\\UseEloquentBuilder";
+const USE_ELOQUENT_BUILDER: &[u8] =
+    b"Illuminate\\Database\\Eloquent\\Attributes\\UseEloquentBuilder";
 const SOFT_DELETES: &[u8] = b"Illuminate\\Database\\Eloquent\\SoftDeletes";
 
 /// `BuilderHelper::$passthru`: the query builder's results. Its constructor adds `getCountForPagination` from Laravel
@@ -80,21 +83,37 @@ impl FunctionReturnTypeProvider for Tap {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
-        let value = || invocation.get_argument(0, &[b"value"]).and_then(|a| context.get_expression_type(a));
+        let value = || {
+            invocation
+                .get_argument(0, &[b"value"])
+                .and_then(|a| context.get_expression_type(a))
+        };
         match invocation.argument_count() {
             1 => {
                 // a `$this` value is its static object
-                let value = TUnion::from_vec(value()?.types.iter().cloned().map(|t| match t {
-                    TAtomic::Object(TObject::Named(n)) if n.is_this => {
-                        TAtomic::Object(TObject::Named(TNamedObject { is_this: false, ..n }.with_is_static(true)))
-                    }
-                    t => t,
-                }).collect());
+                let value = TUnion::from_vec(
+                    value()?
+                        .types
+                        .iter()
+                        .cloned()
+                        .map(|t| match t {
+                            TAtomic::Object(TObject::Named(n)) if n.is_this => {
+                                TAtomic::Object(TObject::Named(
+                                    TNamedObject {
+                                        is_this: false,
+                                        ..n
+                                    }
+                                    .with_is_static(true),
+                                ))
+                            }
+                            t => t,
+                        })
+                        .collect(),
+                );
                 let proxy = context.codebase().get_class_like(TAP_PROXY)?.original_name;
-                Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-                    proxy,
-                    Some(vec![value]),
-                )))))
+                Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                    TNamedObject::new_with_type_parameters(proxy, Some(vec![value])),
+                ))))
             }
             2 => value().cloned(),
             _ => Some(mago_codex::ttype::get_never()),
@@ -130,7 +149,9 @@ impl MethodReturnTypeProvider for ModelForwards {
         if !codebase.is_instance_of(class, MODEL) || codebase.method_exists(class, method) {
             return Vec::new();
         }
-        let Some(model) = codebase.get_class_like(class) else { return Vec::new() };
+        let Some(model) = codebase.get_class_like(class) else {
+            return Vec::new();
+        };
         let builder = builder_of(codebase, &TNamedObject::new(model.original_name));
         let (Some(function), Some(templates)) = (
             codebase.get_declaring_method(builder.name.as_bytes(), method),
@@ -152,10 +173,14 @@ impl MethodReturnTypeProvider for ModelForwards {
         // RedirectResponseMethodsClassReflectionExtension and ViewWithMethodsClassReflectionExtension: a `with*`
         // method the class lacks returns the class
         if let Some(receiver) = with_method_class(codebase, class, method) {
-            return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(receiver)))));
+            return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                TNamedObject::new(receiver),
+            ))));
         }
         // (a query builder method its trait declares, `macro()`)
-        if class.eq_ignore_ascii_case(QUERY_BUILDER) || codebase.class_uses_trait(QUERY_BUILDER, class) {
+        if class.eq_ignore_ascii_case(QUERY_BUILDER)
+            || codebase.class_uses_trait(QUERY_BUILDER, class)
+        {
             let target = invocation.inner().target.get_method_context()?;
             let receiver = match &target.class_type {
                 StaticClassType::Object(TObject::Named(receiver))
@@ -168,7 +193,13 @@ impl MethodReturnTypeProvider for ModelForwards {
             };
             // a passed-through method's own return type, whose `$this` PHPStan binds to the Eloquent builder
             if is_passthru(method) {
-                return method_type(codebase, QUERY_BUILDER, receiver, method, Some((context, invocation)));
+                return method_type(
+                    codebase,
+                    QUERY_BUILDER,
+                    receiver,
+                    method,
+                    Some((context, invocation)),
+                );
             }
             return Some(builder_result(codebase, receiver));
         }
@@ -199,7 +230,14 @@ impl MethodReturnTypeProvider for ModelForwards {
             && !hidden_scope(context, class, method)
             && let Some(ty) = self
                 .new_query(context, class, method, invocation)
-                .or_else(|| own_collection(context, method, invocation, self.static_class(invocation, method).is_some()))
+                .or_else(|| {
+                    own_collection(
+                        context,
+                        method,
+                        invocation,
+                        self.static_class(invocation, method).is_some(),
+                    )
+                })
         {
             return Some(ty);
         }
@@ -237,10 +275,15 @@ impl ModelForwards {
         );
         let objects: Vec<TNamedObject> = match &target.class_type {
             StaticClassType::Object(TObject::Named(n)) => std::iter::once(n.clone())
-                .chain(n.intersection_types.iter().flat_map(|b| b.iter()).filter_map(|t| match t {
-                    TAtomic::Object(TObject::Named(i)) => Some(i.clone()),
-                    _ => None,
-                }))
+                .chain(
+                    n.intersection_types
+                        .iter()
+                        .flat_map(|b| b.iter())
+                        .filter_map(|t| match t {
+                            TAtomic::Object(TObject::Named(i)) => Some(i.clone()),
+                            _ => None,
+                        }),
+                )
                 .map(|mut n| {
                     n.intersection_types = None;
                     n
@@ -249,7 +292,11 @@ impl ModelForwards {
             StaticClassType::Exact(n) | StaticClassType::Name(n) => vec![TNamedObject::new(*n)],
             _ => return None,
         };
-        let models = || objects.iter().filter(|o| codebase.is_instance_of(o.name.as_bytes(), MODEL));
+        let models = || {
+            objects
+                .iter()
+                .filter(|o| codebase.is_instance_of(o.name.as_bytes(), MODEL))
+        };
         let static_class = self.static_class(invocation, method);
         if static_class.is_none() {
             if !new_query || !codebase.is_instance_of(class, MODEL) {
@@ -257,8 +304,13 @@ impl ModelForwards {
             }
             let types: Vec<TAtomic> = models()
                 .map(|m| {
-                    let name = codebase.get_class_like(m.name.as_bytes()).map_or(m.name, |k| k.original_name);
-                    TAtomic::Object(TObject::Named(builder_of(codebase, &TNamedObject::new(name))))
+                    let name = codebase
+                        .get_class_like(m.name.as_bytes())
+                        .map_or(m.name, |k| k.original_name);
+                    TAtomic::Object(TObject::Named(builder_of(
+                        codebase,
+                        &TNamedObject::new(name),
+                    )))
                 })
                 .collect();
             return (!types.is_empty()).then(|| TUnion::from_vec(types));
@@ -270,7 +322,11 @@ impl ModelForwards {
         {
             return None;
         }
-        let returned = &codebase.get_declaring_method(MODEL, method)?.return_type_metadata.as_ref()?.type_union;
+        let returned = &codebase
+            .get_declaring_method(MODEL, method)?
+            .return_type_metadata
+            .as_ref()?
+            .type_union;
         if !references(returned, BUILDER) {
             return None;
         }
@@ -279,9 +335,15 @@ impl ModelForwards {
         let is_static = static_class.is_some_and(|c| c.eq_ignore_ascii_case(b"static"));
         let types: Vec<TAtomic> = models()
             .map(|m| {
-                let name = codebase.get_class_like(m.name.as_bytes()).map_or(m.name, |k| k.original_name);
+                let name = codebase
+                    .get_class_like(m.name.as_bytes())
+                    .map_or(m.name, |k| k.original_name);
                 let model = if is_static {
-                    TNamedObject { is_this: false, ..m.clone() }.with_is_static(true)
+                    TNamedObject {
+                        is_this: false,
+                        ..m.clone()
+                    }
+                    .with_is_static(true)
                 } else {
                     TNamedObject::new(name)
                 };
@@ -293,26 +355,49 @@ impl ModelForwards {
 
     /// A static call's class expression (`static`, `self`, a name or an expression), found in the source before
     /// `::` and the method's name; `None` for an instance call.
-    fn static_class(&self, invocation: &InvocationInfo<'_, '_, '_>, method: &[u8]) -> Option<&[u8]> {
+    fn static_class(
+        &self,
+        invocation: &InvocationInfo<'_, '_, '_>,
+        method: &[u8],
+    ) -> Option<&[u8]> {
         use mago_span::HasSpan;
         let call = invocation.span();
         let arguments = invocation.inner().arguments_source.span();
-        let before = self.0.get(call.start.offset as usize..arguments.start.offset as usize)?.trim_ascii_end();
-        let at = before.len().checked_sub(method.len()).filter(|&at| before[at..].eq_ignore_ascii_case(method))?;
-        Some(before[..at].trim_ascii_end().strip_suffix(b"::")?.trim_ascii())
+        let before = self
+            .0
+            .get(call.start.offset as usize..arguments.start.offset as usize)?
+            .trim_ascii_end();
+        let at = before
+            .len()
+            .checked_sub(method.len())
+            .filter(|&at| before[at..].eq_ignore_ascii_case(method))?;
+        Some(
+            before[..at]
+                .trim_ascii_end()
+                .strip_suffix(b"::")?
+                .trim_ascii(),
+        )
     }
 }
 
 /// Whether the passthru list names the method (`BuilderHelper::$passthru`).
 fn is_passthru(method: &[u8]) -> bool {
-    PASSTHRU.contains(&String::from_utf8_lossy(method).to_ascii_lowercase().as_str())
+    PASSTHRU.contains(
+        &String::from_utf8_lossy(method)
+            .to_ascii_lowercase()
+            .as_str(),
+    )
 }
 
 /// Whether a type names the class (`getReferencedClasses()`), in its type arguments too.
 fn references(ty: &TUnion, class: &[u8]) -> bool {
     ty.types.iter().any(|t| match t {
         TAtomic::Object(TObject::Named(n)) => {
-            n.name.as_bytes().eq_ignore_ascii_case(class) || n.type_parameters.iter().flatten().any(|p| references(p, class))
+            n.name.as_bytes().eq_ignore_ascii_case(class)
+                || n.type_parameters
+                    .iter()
+                    .flatten()
+                    .any(|p| references(p, class))
         }
         _ => false,
     })
@@ -322,9 +407,16 @@ fn references(ty: &TUnion, class: &[u8]) -> bool {
 /// (ClassReflection::getMethod() asks the extensions when the scope cannot call the native method).
 fn hidden_scope(context: &ProviderContext<'_, '_, '_>, class: &[u8], method: &[u8]) -> bool {
     let codebase = context.codebase();
-    let Some(m) = codebase.get_declaring_method(class, method) else { return false };
-    let hidden = m.method_metadata.as_ref().is_some_and(|mm| !mm.visibility.is_public())
-        && m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(SCOPE));
+    let Some(m) = codebase.get_declaring_method(class, method) else {
+        return false;
+    };
+    let hidden = m
+        .method_metadata
+        .as_ref()
+        .is_some_and(|mm| !mm.visibility.is_public())
+        && m.attributes
+            .iter()
+            .any(|a| a.name.as_bytes().eq_ignore_ascii_case(SCOPE));
     hidden
         && !context
             .current_class_name()
@@ -336,16 +428,27 @@ fn hidden_scope(context: &ProviderContext<'_, '_, '_>, class: &[u8], method: &[u
 pub(crate) fn builder_name(codebase: &CodebaseMetadata, model: &[u8]) -> mago_word::Word {
     use mago_codex::ttype::atomic::scalar::TScalar;
     use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
-    let original = |name: mago_word::Word| codebase.get_class_like(name.as_bytes()).map_or(name, |k| k.original_name);
+    let original = |name: mago_word::Word| {
+        codebase
+            .get_class_like(name.as_bytes())
+            .map_or(name, |k| k.original_name)
+    };
     let builder = original(mago_word::word("Illuminate\\Database\\Eloquent\\Builder"));
     let Some(declaring) = codebase.get_declaring_method_class(model, b"newEloquentBuilder") else {
         return builder;
     };
     if declaring.as_bytes().eq_ignore_ascii_case(MODEL)
         && let Some(k) = codebase.get_class_like(model)
-        && let Some(attribute) = k.attributes.iter().find(|a| a.name.as_bytes().eq_ignore_ascii_case(USE_ELOQUENT_BUILDER))
+        && let Some(attribute) = k
+            .attributes
+            .iter()
+            .find(|a| a.name.as_bytes().eq_ignore_ascii_case(USE_ELOQUENT_BUILDER))
         && let Some(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value }))) =
-            attribute.arguments.first().and_then(|a| a.value_type.as_ref()).and_then(|t| t.types.first())
+            attribute
+                .arguments
+                .first()
+                .and_then(|a| a.value_type.as_ref())
+                .and_then(|t| t.types.first())
     {
         return original(*value);
     }
@@ -376,7 +479,10 @@ fn builder_of(codebase: &CodebaseMetadata, model: &TNamedObject) -> TNamedObject
 /// its class is generic.
 fn builder_result(codebase: &CodebaseMetadata, builder: &TNamedObject) -> TUnion {
     let mut builder = builder.clone();
-    if codebase.get_class_like(builder.name.as_bytes()).is_some_and(|k| k.template_types.is_empty()) {
+    if codebase
+        .get_class_like(builder.name.as_bytes())
+        .is_some_and(|k| k.template_types.is_empty())
+    {
         builder.type_parameters = None;
     }
     TUnion::from_atomic(plain(TAtomic::Object(TObject::Named(builder))))
@@ -388,7 +494,12 @@ fn object_classes(ty: &TUnion) -> Vec<mago_word::Word> {
     for t in ty.types.iter() {
         if let TAtomic::Object(TObject::Named(n)) = t {
             out.push(n.name);
-            out.extend(n.intersection_types.iter().flat_map(|b| b.iter()).flat_map(|i| object_classes(&TUnion::from_atomic(i.clone()))));
+            out.extend(
+                n.intersection_types
+                    .iter()
+                    .flat_map(|b| b.iter())
+                    .flat_map(|i| object_classes(&TUnion::from_atomic(i.clone()))),
+            );
         }
     }
     out
@@ -409,13 +520,21 @@ fn model_forward(
     if !codebase.method_exists(name.as_bytes(), method) {
         return builder_forward(context, &builder, method, invocation);
     }
-    let ty = method_type(codebase, name.as_bytes(), &builder, method, Some((context, invocation)))?;
+    let ty = method_type(
+        codebase,
+        name.as_bytes(),
+        &builder,
+        method,
+        Some((context, invocation)),
+    )?;
     // `TypeTraverser::map()`: each Eloquent builder is the model's builder
     let ty = TUnion::from_vec(
         ty.types
             .iter()
             .map(|t| match t {
-                TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(BUILDER) => {
+                TAtomic::Object(TObject::Named(n))
+                    if n.name.as_bytes().eq_ignore_ascii_case(BUILDER) =>
+                {
                     TAtomic::Object(TObject::Named(builder.clone()))
                 }
                 t => t.clone(),
@@ -438,15 +557,17 @@ fn builder_forward(
     let codebase = context.codebase();
     let k = codebase.get_class_like(builder.name.as_bytes())?;
     // the builder's own `TModel`, else its ancestors'
-    let model = [k.name, codebase.get_class_like(BUILDER)?.name].into_iter().find_map(|defining| {
-        get_specialized_template_type(
-            codebase,
-            mago_word::word("TModel"),
-            defining,
-            k,
-            builder.type_parameters.as_deref(),
-        )
-    })?;
+    let model = [k.name, codebase.get_class_like(BUILDER)?.name]
+        .into_iter()
+        .find_map(|defining| {
+            get_specialized_template_type(
+                codebase,
+                mago_word::word("TModel"),
+                defining,
+                k,
+                builder.type_parameters.as_deref(),
+            )
+        })?;
     let model = TUnion::from_vec(
         model
             .types
@@ -459,21 +580,35 @@ fn builder_forward(
     );
     let classes = object_classes(&model);
     let name = String::from_utf8_lossy(method).to_ascii_lowercase();
-    let found = classes.iter().any(|c| super::is_scope(codebase, c.as_bytes(), method))
+    let found = classes
+        .iter()
+        .any(|c| super::is_scope(codebase, c.as_bytes(), method))
         || codebase.method_exists(QUERY_BUILDER, method)
         || name.starts_with("where");
     if found {
         if is_passthru(method) && codebase.method_exists(QUERY_BUILDER, method) {
             let query = TNamedObject::new(codebase.get_class_like(QUERY_BUILDER)?.original_name);
-            return method_type(codebase, QUERY_BUILDER, &query, method, Some((context, invocation)));
+            return method_type(
+                codebase,
+                QUERY_BUILDER,
+                &query,
+                method,
+                Some((context, invocation)),
+            );
         }
         return Some(builder_result(codebase, builder));
     }
     let soft_deletes = classes.iter().any(|c| {
         codebase.get_class_like(c.as_bytes()).is_some_and(|m| {
-            std::iter::once(m.name).chain(m.all_parent_classes.iter().copied()).any(|p| {
-                codebase.get_class_like(p.as_bytes()).is_some_and(|p| p.used_traits.iter().any(|t| t.as_bytes().eq_ignore_ascii_case(SOFT_DELETES)))
-            })
+            std::iter::once(m.name)
+                .chain(m.all_parent_classes.iter().copied())
+                .any(|p| {
+                    codebase.get_class_like(p.as_bytes()).is_some_and(|p| {
+                        p.used_traits
+                            .iter()
+                            .any(|t| t.as_bytes().eq_ignore_ascii_case(SOFT_DELETES))
+                    })
+                })
         })
     });
     if !soft_deletes {
@@ -482,9 +617,11 @@ fn builder_forward(
     match name.as_str() {
         "restore" => Some(mago_codex::ttype::get_int()),
         "restoreorcreate" | "createorrestore" => Some(model),
-        "withtrashed" | "onlytrashed" | "withouttrashed" => Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
-            TNamedObject::new_with_type_parameters(k.original_name, Some(vec![model])),
-        )))),
+        "withtrashed" | "onlytrashed" | "withouttrashed" => {
+            Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                TNamedObject::new_with_type_parameters(k.original_name, Some(vec![model])),
+            ))))
+        }
         _ => None,
     }
 }
@@ -526,7 +663,9 @@ fn forward_builder_or_relation(
         _ => None,
     })
     .unwrap_or_else(|| TNamedObject::new(mago_word::word("Illuminate\\Database\\Eloquent\\Model")));
-    if !related.name.as_bytes().eq_ignore_ascii_case(MODEL) && !codebase.is_instance_of(related.name.as_bytes(), MODEL) {
+    if !related.name.as_bytes().eq_ignore_ascii_case(MODEL)
+        && !codebase.is_instance_of(related.name.as_bytes(), MODEL)
+    {
         return None;
     }
     let builder = builder_of(codebase, &related);
@@ -537,10 +676,27 @@ fn forward_builder_or_relation(
         let late = codebase
             .get_declaring_method(name.as_bytes(), method)
             .and_then(|f| f.return_type_metadata.as_ref())
-            .is_some_and(|r| r.type_union.types.iter().any(|t| t.is_conditional() || matches!(t, TAtomic::GenericParameter(_))));
-        (method_type(codebase, name.as_bytes(), &builder, method, Some((context, invocation)))?, late)
+            .is_some_and(|r| {
+                r.type_union
+                    .types
+                    .iter()
+                    .any(|t| t.is_conditional() || matches!(t, TAtomic::GenericParameter(_)))
+            });
+        (
+            method_type(
+                codebase,
+                name.as_bytes(),
+                &builder,
+                method,
+                Some((context, invocation)),
+            )?,
+            late,
+        )
     } else {
-        (builder_forward(context, &builder, method, invocation)?, false)
+        (
+            builder_forward(context, &builder, method, invocation)?,
+            false,
+        )
     };
     let is_builder = !late
         && !ty.types.is_empty()
@@ -549,7 +705,9 @@ fn forward_builder_or_relation(
                 if n.name.as_bytes().eq_ignore_ascii_case(BUILDER) || codebase.is_instance_of(n.name.as_bytes(), BUILDER))
         });
     if is_builder {
-        return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(receiver.clone()))));
+        return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
+            receiver.clone(),
+        ))));
     }
     // RelationCollectionExtension
     Some(crate::laravel::replace_collections(codebase, &ty))
@@ -599,8 +757,19 @@ fn own_collection(
             })
             .collect()
     };
-    let returned = || method_type(codebase, receiver_class, receiver, method, Some((context, invocation)));
-    let is = |parent: &[u8]| receiver_class.eq_ignore_ascii_case(parent) || codebase.is_instance_of(receiver_class, parent);
+    let returned = || {
+        method_type(
+            codebase,
+            receiver_class,
+            receiver,
+            method,
+            Some((context, invocation)),
+        )
+    };
+    let is = |parent: &[u8]| {
+        receiver_class.eq_ignore_ascii_case(parent)
+            || codebase.is_instance_of(receiver_class, parent)
+    };
     if is(BUILDER) && codebase.method_exists(BUILDER, method) {
         let models = models(template(BUILDER, "TModel"));
         let ty = returned()?;
@@ -610,14 +779,18 @@ fn own_collection(
         if name.starts_with("find") {
             return Some(crate::laravel::replace_collections(codebase, &ty));
         }
-        return Some(TUnion::from_atomic(crate::laravel::collection_class(codebase, models[0].as_bytes())));
+        return Some(TUnion::from_atomic(crate::laravel::collection_class(
+            codebase,
+            models[0].as_bytes(),
+        )));
     }
     if is(RELATION) {
         if models(template(RELATION, "TRelatedModel")).is_empty() {
             return None;
         }
         let ty = returned()?;
-        return crate::laravel::references_collection(&ty).then(|| crate::laravel::replace_collections(codebase, &ty));
+        return crate::laravel::references_collection(&ty)
+            .then(|| crate::laravel::replace_collections(codebase, &ty));
     }
     // ponytail: an instance call is not told from a static one (Mago keeps the invocation kind private)
     if is(MODEL)
@@ -633,7 +806,10 @@ fn own_collection(
         if ty.types.iter().any(|t| matches!(t, TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(BUILDER))) {
             return None;
         }
-        return Some(TUnion::from_atomic(crate::laravel::collection_class(codebase, receiver_class)));
+        return Some(TUnion::from_atomic(crate::laravel::collection_class(
+            codebase,
+            receiver_class,
+        )));
     }
     None
 }
@@ -671,7 +847,17 @@ fn higher_order_proxy(
     } else {
         return None;
     };
-    let returned = || forwarded.or_else(|| method_type(codebase, class, value_object, method, Some((context, invocation))));
+    let returned = || {
+        forwarded.or_else(|| {
+            method_type(
+                codebase,
+                class,
+                value_object,
+                method,
+                Some((context, invocation)),
+            )
+        })
+    };
     // ponytail: the ErrorType of `sum` and other methods is left to the declared return type
     crate::laravel::proxy_result(codebase, &name, value, returned, collection)
 }
@@ -692,11 +878,25 @@ fn facade_mixin(
     let k = codebase.get_class_like(class)?;
     for mixin in &k.mixins {
         for t in mixin.type_union.types.iter() {
-            let TAtomic::Object(TObject::Named(named)) = t else { continue };
+            let TAtomic::Object(TObject::Named(named)) = t else {
+                continue;
+            };
             let found = if codebase.method_exists(named.name.as_bytes(), method) {
-                method_type(codebase, named.name.as_bytes(), named, method, Some((context, invocation)))
+                method_type(
+                    codebase,
+                    named.name.as_bytes(),
+                    named,
+                    method,
+                    Some((context, invocation)),
+                )
             } else {
-                facade_mixin(context, named.name.as_bytes(), method, invocation, depth + 1)
+                facade_mixin(
+                    context,
+                    named.name.as_bytes(),
+                    method,
+                    invocation,
+                    depth + 1,
+                )
             };
             if found.is_some() {
                 return found;
@@ -717,11 +917,18 @@ pub(crate) fn facade_mixin_method<'a>(
     if depth == 0 && !c.codebase.is_instance_of(class.name.as_bytes(), FACADE) || depth > 3 {
         return None;
     }
-    class.mixins.iter().flat_map(|m| m.type_union.types.iter()).find_map(|t| {
-        let TAtomic::Object(TObject::Named(named)) = t else { return None };
-        let k = c.codebase.get_class_like(named.name.as_bytes())?;
-        super::super::members::method(c, k, method).or_else(|| facade_mixin_method(c, k, method, depth + 1))
-    })
+    class
+        .mixins
+        .iter()
+        .flat_map(|m| m.type_union.types.iter())
+        .find_map(|t| {
+            let TAtomic::Object(TObject::Named(named)) = t else {
+                return None;
+            };
+            let k = c.codebase.get_class_like(named.name.as_bytes())?;
+            super::super::members::method(c, k, method)
+                .or_else(|| facade_mixin_method(c, k, method, depth + 1))
+        })
 }
 
 /// A call's conditional return types (`($id is array ? collection-of<TModel> : TModel)`) resolved on the type of the
@@ -742,16 +949,19 @@ fn resolve_conditionals(
         };
         let argument = match conditional.subject.types.as_ref() {
             [TAtomic::Variable(name)] => {
-                let name = name.as_bytes().strip_prefix(b"$").unwrap_or(name.as_bytes());
+                let name = name
+                    .as_bytes()
+                    .strip_prefix(b"$")
+                    .unwrap_or(name.as_bytes());
                 function
                     .parameters
                     .iter()
                     .position(|p| p.get_name().0.as_bytes().strip_prefix(b"$") == Some(name))
-                    .and_then(|i| {
-                        match invocation.get_argument(i, &[name]) {
-                            Some(argument) => context.get_expression_type(argument).cloned(),
-                            None => function.parameters[i].get_default_type().map(|d| d.type_union.clone()),
-                        }
+                    .and_then(|i| match invocation.get_argument(i, &[name]) {
+                        Some(argument) => context.get_expression_type(argument).cloned(),
+                        None => function.parameters[i]
+                            .get_default_type()
+                            .map(|d| d.type_union.clone()),
                     })
             }
             _ => Some((*conditional.subject).clone()),
@@ -760,10 +970,16 @@ fn resolve_conditionals(
         expand_union(codebase, &mut target, options);
         let then = (*conditional.then).clone();
         let otherwise = (*conditional.otherwise).clone();
-        let (yes, no) = if conditional.negated { (otherwise, then) } else { (then, otherwise) };
+        let (yes, no) = if conditional.negated {
+            (otherwise, then)
+        } else {
+            (then, otherwise)
+        };
         let chosen = match argument {
             Some(subject) if !subject.is_never() => {
-                if !union_comparator::can_expression_types_be_identical(codebase, &subject, &target, false, false) {
+                if !union_comparator::can_expression_types_be_identical(
+                    codebase, &subject, &target, false, false,
+                ) {
                     vec![no]
                 } else if union_comparator::is_contained_by(
                     codebase,
@@ -782,7 +998,12 @@ fn resolve_conditionals(
             _ => vec![yes, no],
         };
         for branch in chosen {
-            types.extend(resolve_conditionals(codebase, &branch, function, (context, invocation), options).types.iter().cloned());
+            types.extend(
+                resolve_conditionals(codebase, &branch, function, (context, invocation), options)
+                    .types
+                    .iter()
+                    .cloned(),
+            );
         }
     }
     TUnion::from_vec(types)
@@ -822,7 +1043,12 @@ pub(super) fn method_type(
 }
 
 /// The templates of the class (or trait) declaring `class`'s `method`, as `object` specializes them.
-fn object_templates(codebase: &CodebaseMetadata, class: &[u8], object: &TNamedObject, method: &[u8]) -> Option<TemplateResult> {
+fn object_templates(
+    codebase: &CodebaseMetadata,
+    class: &[u8],
+    object: &TNamedObject,
+    method: &[u8],
+) -> Option<TemplateResult> {
     let declaring = codebase.get_declaring_method_class(class, method)?;
     let metadata = codebase.get_class_like(class)?;
     let mut templates = TemplateResult::default();
@@ -854,13 +1080,18 @@ fn callbacks<'ast, 'arena>(
     let mut out = Vec::new();
     for (i, parameter) in function.parameters.iter().enumerate() {
         let name = parameter.get_name().0;
-        let name = name.as_bytes().strip_prefix(b"$").unwrap_or(name.as_bytes());
-        let Some(callback @ (Expression::Closure(_) | Expression::ArrowFunction(_))) = invocation.get_argument(i, &[name])
+        let name = name
+            .as_bytes()
+            .strip_prefix(b"$")
+            .unwrap_or(name.as_bytes());
+        let Some(callback @ (Expression::Closure(_) | Expression::ArrowFunction(_))) =
+            invocation.get_argument(i, &[name])
         else {
             continue;
         };
-        let Some(TAtomic::Callable(TCallable::Signature(signature))) =
-            parameter.get_type_metadata().and_then(|t| t.type_union.types.iter().find(|t| t.is_callable()))
+        let Some(TAtomic::Callable(TCallable::Signature(signature))) = parameter
+            .get_type_metadata()
+            .and_then(|t| t.type_union.types.iter().find(|t| t.is_callable()))
         else {
             continue;
         };
@@ -868,11 +1099,17 @@ fn callbacks<'ast, 'arena>(
             .parameters
             .iter()
             .map(|p| {
-                let declared = p.get_type_signature().cloned().unwrap_or_else(mago_codex::ttype::get_mixed);
+                let declared = p
+                    .get_type_signature()
+                    .cloned()
+                    .unwrap_or_else(mago_codex::ttype::get_mixed);
                 inferred_type_replacer::replace(&declared, templates, codebase)
             })
             .collect();
-        out.push(CallbackInvocation { callback, arguments });
+        out.push(CallbackInvocation {
+            callback,
+            arguments,
+        });
     }
     out
 }
@@ -888,7 +1125,11 @@ fn infer_method_templates(
 ) {
     use mago_codex::ttype::atomic::callable::TCallable;
     let own = |t: &TAtomic| match t {
-        TAtomic::GenericParameter(g) if matches!(g.defining_entity, GenericParent::FunctionLike(_)) => Some(g.clone()),
+        TAtomic::GenericParameter(g)
+            if matches!(g.defining_entity, GenericParent::FunctionLike(_)) =>
+        {
+            Some(g.clone())
+        }
         _ => None,
     };
     let single = |t: &TUnion| match t.types.as_ref() {
@@ -896,9 +1137,14 @@ fn infer_method_templates(
         _ => None,
     };
     for (i, parameter) in function.parameters.iter().enumerate() {
-        let Some(declared) = parameter.get_type_metadata().map(|t| &t.type_union) else { continue };
+        let Some(declared) = parameter.get_type_metadata().map(|t| &t.type_union) else {
+            continue;
+        };
         let name = parameter.get_name().0;
-        let name = name.as_bytes().strip_prefix(b"$").unwrap_or(name.as_bytes());
+        let name = name
+            .as_bytes()
+            .strip_prefix(b"$")
+            .unwrap_or(name.as_bytes());
         // an omitted argument is its parameter's default value
         let argument = match invocation.get_argument(i, &[name]) {
             Some(a) => context.get_expression_type(a).cloned(),
@@ -912,19 +1158,28 @@ fn infer_method_templates(
                 continue;
             }
             if let Some(g) = own(atomic)
-                && declared.types.iter().all(|t| t.is_null() || own(t).is_some())
+                && declared
+                    .types
+                    .iter()
+                    .all(|t| t.is_null() || own(t).is_some())
             {
                 templates.add_lower_bound(g.parameter_name, g.defining_entity, argument.clone());
             }
-            let TAtomic::Callable(TCallable::Signature(signature)) = atomic else { continue };
-            let Some(g) = signature.return_type.as_deref().and_then(single) else { continue };
+            let TAtomic::Callable(TCallable::Signature(signature)) = atomic else {
+                continue;
+            };
+            let Some(g) = signature.return_type.as_deref().and_then(single) else {
+                continue;
+            };
             // an inline callback typed again against the parameter (callbacks())
             let priced = invocation.get_argument(i, &[name]).and_then(|callback| {
                 let arguments = callbacks(codebase, function, templates, invocation)
                     .into_iter()
                     .find(|c| std::ptr::eq(c.callback, callback))?
                     .arguments;
-                context.get_callback_return_type(callback, &arguments).cloned()
+                context
+                    .get_callback_return_type(callback, &arguments)
+                    .cloned()
             });
             if let Some(returned) = priced {
                 templates.add_lower_bound(g.parameter_name, g.defining_entity, returned);
@@ -934,9 +1189,12 @@ fn infer_method_templates(
                 .types
                 .iter()
                 .filter_map(|a| match a {
-                    TAtomic::Callable(TCallable::Signature(s)) => {
-                        Some(s.return_type.as_deref().cloned().unwrap_or_else(mago_codex::ttype::get_mixed))
-                    }
+                    TAtomic::Callable(TCallable::Signature(s)) => Some(
+                        s.return_type
+                            .as_deref()
+                            .cloned()
+                            .unwrap_or_else(mago_codex::ttype::get_mixed),
+                    ),
                     TAtomic::Callable(TCallable::Alias(id)) => codebase
                         .get_function_like(id)
                         .and_then(|f| f.return_type_metadata.as_ref())
@@ -986,24 +1244,49 @@ impl mago_analyzer::plugin::ExpressionHook for ScopeStaticCalls {
     ) -> mago_analyzer::plugin::HookResult<()> {
         use mago_span::HasSpan;
         use mago_syntax::cst::{Call, ClassLikeMemberSelector, Expression};
-        let Expression::Call(Call::StaticMethod(call)) = expr else { return Ok(()) };
-        let ClassLikeMemberSelector::Identifier(method) = &call.method else { return Ok(()) };
+        let Expression::Call(Call::StaticMethod(call)) = expr else {
+            return Ok(());
+        };
+        let ClassLikeMemberSelector::Identifier(method) = &call.method else {
+            return Ok(());
+        };
         let codebase = context.codebase();
-        let Expression::Identifier(id) = call.class else { return Ok(()) };
-        let Some(class) = self.0.get(&id.span().start.offset) else { return Ok(()) };
-        let Some(class) = codebase.get_class_like(class).map(|k| k.name) else { return Ok(()) };
-        let Some(m) = codebase.get_declaring_method(class.as_bytes(), method.value) else { return Ok(()) };
-        let scope = m.method_metadata.as_ref().is_some_and(|mm| !mm.visibility.is_public())
-            && m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(SCOPE));
-        let inside = context.current_class_name().is_some_and(|c| codebase.is_instance_of(c.as_bytes(), class.as_bytes()));
+        let Expression::Identifier(id) = call.class else {
+            return Ok(());
+        };
+        let Some(class) = self.0.get(&id.span().start.offset) else {
+            return Ok(());
+        };
+        let Some(class) = codebase.get_class_like(class).map(|k| k.name) else {
+            return Ok(());
+        };
+        let Some(m) = codebase.get_declaring_method(class.as_bytes(), method.value) else {
+            return Ok(());
+        };
+        let scope = m
+            .method_metadata
+            .as_ref()
+            .is_some_and(|mm| !mm.visibility.is_public())
+            && m.attributes
+                .iter()
+                .any(|a| a.name.as_bytes().eq_ignore_ascii_case(SCOPE));
+        let inside = context
+            .current_class_name()
+            .is_some_and(|c| codebase.is_instance_of(c.as_bytes(), class.as_bytes()));
         if !scope || inside || !codebase.is_instance_of(class.as_bytes(), MODEL) {
             return Ok(());
         }
-        let Some(model) = codebase.get_class_like(class.as_bytes()).map(|k| TNamedObject::new(k.original_name)) else {
+        let Some(model) = codebase
+            .get_class_like(class.as_bytes())
+            .map(|k| TNamedObject::new(k.original_name))
+        else {
             return Ok(());
         };
         let builder = builder_of(codebase, &model);
-        context.set_expression_type(expr, TUnion::from_atomic(TAtomic::Object(TObject::Named(builder))));
+        context.set_expression_type(
+            expr,
+            TUnion::from_atomic(TAtomic::Object(TObject::Named(builder))),
+        );
         Ok(())
     }
 }
@@ -1011,27 +1294,43 @@ impl mago_analyzer::plugin::ExpressionHook for ScopeStaticCalls {
 /// RedirectResponseMethodsClassReflectionExtension and ViewWithMethodsClassReflectionExtension: the class of a
 /// `with*` method of `Illuminate\Http\RedirectResponse`, `Illuminate\View\View` or `Illuminate\Contracts\View\View`
 /// that it does not declare.
-pub(crate) fn with_method_class(codebase: &CodebaseMetadata, class: &[u8], method: &[u8]) -> Option<mago_word::Word> {
-    const CLASSES: [&[u8]; 3] =
-        [b"Illuminate\\Http\\RedirectResponse", b"Illuminate\\View\\View", b"Illuminate\\Contracts\\View\\View"];
+pub(crate) fn with_method_class(
+    codebase: &CodebaseMetadata,
+    class: &[u8],
+    method: &[u8],
+) -> Option<mago_word::Word> {
+    const CLASSES: [&[u8]; 3] = [
+        b"Illuminate\\Http\\RedirectResponse",
+        b"Illuminate\\View\\View",
+        b"Illuminate\\Contracts\\View\\View",
+    ];
     if !method.starts_with(b"with") || codebase.method_exists(class, method) {
         return None;
     }
     let k = codebase.get_class_like(class)?;
-    CLASSES.iter().any(|c| k.original_name.as_bytes() == *c).then_some(k.original_name)
+    CLASSES
+        .iter()
+        .any(|c| k.original_name.as_bytes() == *c)
+        .then_some(k.original_name)
 }
 
 /// BuilderOfType::getResult() and RelationOfType::getResult() for Mago's expander (`builder-of<TModel[, TRelation]>`
 /// and `relation-of<TModel, TRelation>` once their arguments have no template left).
-pub(crate) fn late_builder(codebase: &CodebaseMetadata, name: &[u8], arguments: &[TUnion]) -> Option<TUnion> {
+pub(crate) fn late_builder(
+    codebase: &CodebaseMetadata,
+    name: &[u8],
+    arguments: &[TUnion],
+) -> Option<TUnion> {
     match (name, arguments) {
         (mago_codex::ttype::expander::BUILDER_OF, [model, relation @ ..]) => {
-            let (relation, unknown) = relation.first().map_or((None, false), |key| resolve_relations(codebase, model, key));
+            let (relation, unknown) = relation
+                .first()
+                .map_or((None, false), |key| resolve_relations(codebase, model, key));
             let related = match relation.as_ref().and_then(|r| related_model(codebase, r)) {
                 Some(related) => related,
-                None if unknown => TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(mago_word::word(
-                    "Illuminate\\Database\\Eloquent\\Model",
-                ))))),
+                None if unknown => TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                    TNamedObject::new(mago_word::word("Illuminate\\Database\\Eloquent\\Model")),
+                ))),
                 None => model.clone(),
             };
             let builders: Vec<TAtomic> = related
@@ -1040,12 +1339,16 @@ pub(crate) fn late_builder(codebase: &CodebaseMetadata, name: &[u8], arguments: 
                 .filter_map(|t| match t {
                     TAtomic::Object(TObject::Named(n)) if is_model(codebase, n.name.as_bytes()) => {
                         let builder = builder_name(codebase, n.name.as_bytes());
-                        let generic = codebase.get_class_like(builder.as_bytes()).is_some_and(|k| !k.template_types.is_empty());
+                        let generic = codebase
+                            .get_class_like(builder.as_bytes())
+                            .is_some_and(|k| !k.template_types.is_empty());
                         let model = TUnion::from_atomic(t.clone());
-                        Some(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-                            builder,
-                            generic.then(|| vec![model]),
-                        ))))
+                        Some(TAtomic::Object(TObject::Named(
+                            TNamedObject::new_with_type_parameters(
+                                builder,
+                                generic.then(|| vec![model]),
+                            ),
+                        )))
                     }
                     _ => None,
                 })
@@ -1053,15 +1356,20 @@ pub(crate) fn late_builder(codebase: &CodebaseMetadata, name: &[u8], arguments: 
             (!builders.is_empty()).then(|| TUnion::from_vec(builders))
         }
         (mago_codex::ttype::expander::RELATION_OF, [model, key]) => {
-            let relation = resolve_relations(codebase, model, key).0.unwrap_or_else(|| {
-                let mixed = mago_codex::ttype::get_mixed();
-                TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-                    mago_word::word("Illuminate\\Database\\Eloquent\\Relations\\Relation"),
-                    Some(vec![mixed.clone(), mixed.clone(), mixed]),
-                ))))
-            });
+            let relation = resolve_relations(codebase, model, key)
+                .0
+                .unwrap_or_else(|| {
+                    let mixed = mago_codex::ttype::get_mixed();
+                    TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                        TNamedObject::new_with_type_parameters(
+                            mago_word::word("Illuminate\\Database\\Eloquent\\Relations\\Relation"),
+                            Some(vec![mixed.clone(), mixed.clone(), mixed]),
+                        ),
+                    )))
+                });
             // eager loading creates the relation on a fresh model instance (`StaticType::getStaticObjectType()`)
-            let mut relation = TUnion::from_vec(relation.types.iter().cloned().map(plain).collect());
+            let mut relation =
+                TUnion::from_vec(relation.types.iter().cloned().map(plain).collect());
             relation.set_ignore_nullable_issues(true);
             relation.set_ignore_falsable_issues(true);
             Some(relation)
@@ -1097,7 +1405,11 @@ fn related_model(codebase: &CodebaseMetadata, relation: &TUnion) -> Option<TUnio
 
 /// RelationOfType::resolveRelations(): the union of each constant key's relation path, and whether a path failed
 /// on an unknown model.
-fn resolve_relations(codebase: &CodebaseMetadata, model: &TUnion, key: &TUnion) -> (Option<TUnion>, bool) {
+fn resolve_relations(
+    codebase: &CodebaseMetadata,
+    model: &TUnion,
+    key: &TUnion,
+) -> (Option<TUnion>, bool) {
     use mago_codex::ttype::atomic::scalar::TScalar;
     let keys: Option<Vec<&[u8]>> = key
         .types
@@ -1107,7 +1419,9 @@ fn resolve_relations(codebase: &CodebaseMetadata, model: &TUnion, key: &TUnion) 
             _ => None,
         })
         .collect();
-    let Some(keys) = keys.filter(|k| !k.is_empty()) else { return (None, false) };
+    let Some(keys) = keys.filter(|k| !k.is_empty()) else {
+        return (None, false);
+    };
     let mut results = Vec::new();
     let mut unknown = false;
     for path in keys {
@@ -1116,22 +1430,35 @@ fn resolve_relations(codebase: &CodebaseMetadata, model: &TUnion, key: &TUnion) 
         unknown |= failed;
         results.extend(relation.into_iter().flat_map(|r| r.types.into_owned()));
     }
-    ((!results.is_empty()).then(|| TUnion::from_vec(results)), unknown)
+    (
+        (!results.is_empty()).then(|| TUnion::from_vec(results)),
+        unknown,
+    )
 }
 
 /// RelationOfType::followRelationPath().
-fn follow_relation_path(codebase: &CodebaseMetadata, model: &TUnion, path: &[u8]) -> (Option<TUnion>, bool) {
+fn follow_relation_path(
+    codebase: &CodebaseMetadata,
+    model: &TUnion,
+    path: &[u8],
+) -> (Option<TUnion>, bool) {
     let mut related = model.clone();
     let mut relation = None;
     for name in path.split(|&b| b == b'.') {
         let mut relations = Vec::new();
         for t in related.types.iter() {
-            let TAtomic::Object(TObject::Named(n)) = t else { continue };
+            let TAtomic::Object(TObject::Named(n)) = t else {
+                continue;
+            };
             let class = n.name.as_bytes();
             if !codebase.method_exists(class, name) {
                 continue;
             }
-            let Some(returned) = method_type(codebase, class, &TNamedObject::new(n.name), name, None) else { continue };
+            let Some(returned) =
+                method_type(codebase, class, &TNamedObject::new(n.name), name, None)
+            else {
+                continue;
+            };
             let relations_only = !returned.types.is_empty()
                 && returned.types.iter().all(|r| {
                     matches!(r, TAtomic::Object(TObject::Named(o)) if o.name.as_bytes().eq_ignore_ascii_case(RELATION) || codebase.is_instance_of(o.name.as_bytes(), RELATION))
@@ -1144,7 +1471,9 @@ fn follow_relation_path(codebase: &CodebaseMetadata, model: &TUnion, path: &[u8]
             return (None, is_unknown_model(codebase, &related));
         }
         let union = TUnion::from_vec(relations);
-        let Some(next) = related_model(codebase, &union) else { return (Some(union), false) };
+        let Some(next) = related_model(codebase, &union) else {
+            return (Some(union), false);
+        };
         related = next;
         relation = Some(union);
     }

@@ -40,7 +40,8 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
         let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         if let Some(tag) = info.return_tag()
-            && let Type::Array(_, item) = DocTarget::doc_type(tag, ancestors, class_name(ancestors).as_deref())
+            && let Type::Array(_, item) =
+                DocTarget::doc_type(tag, ancestors, class_name(ancestors).as_deref())
             && !is_mixed(&item)
         {
             return;
@@ -70,15 +71,18 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
         }
         // `matchArrayObjectType()`: an `ArrayType`, which PHPStan gives a variable appended to in a loop (appended to
         // only outside loops it is a constant array, which Mago's list type does not tell)
-        let Some(Type::Array(_, item)) =
-            expr_type(ctx, &inner, returned).filter(|_| appended_in_loop(Node::Block(body), name, false))
+        let Some(Type::Array(_, item)) = expr_type(ctx, &inner, returned)
+            .filter(|_| appended_in_loop(Node::Block(body), name, false))
         else {
             return;
         };
         let Type::Object(class, args, _) = *item else {
             return;
         };
-        if decorate_return(&mut info, &Type::array(mixed(), Type::Object(class, args, false))) {
+        if decorate_return(
+            &mut info,
+            &Type::array(mixed(), Type::Object(class, args, false)),
+        ) {
             out.extend(doc_report(
                 f.name,
                 "Add the `@return` array type of the objects appended to the returned variable.",
@@ -101,7 +105,9 @@ fn is_exclusively_dim_assigned(
     let mut exclusive = true;
     visit(body, &mut |n| {
         match n {
-            Node::Assignment(a) if matches!(a.operator, mago_syntax::cst::AssignmentOperator::Assign(_)) => {
+            Node::Assignment(a)
+                if matches!(a.operator, mago_syntax::cst::AssignmentOperator::Assign(_)) =>
+            {
                 let dim = match a.lhs {
                     Expression::ArrayAccess(d) => Some((d.array, true)),
                     Expression::ArrayAppend(d) => Some((d.array, false)),
@@ -167,7 +173,10 @@ fn appended_in_loop(node: Node<'_, '_>, name: &str, in_loop: bool) -> bool {
 
 /// `NonExistingObjectType` is a class the reflection does not know.
 fn facts_has_class(ctx: &Context<'_>, class: &str) -> bool {
-    facts(ctx).codebase.get_class_like(class.as_bytes()).is_some()
+    facts(ctx)
+        .codebase
+        .get_class_like(class.as_bytes())
+        .is_some()
 }
 
 /// `traverseNodesWithCallable()` over a function's statements: `f` says whether to go into a node's children.

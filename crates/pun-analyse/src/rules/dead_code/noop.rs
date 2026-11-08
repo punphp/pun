@@ -185,7 +185,10 @@ pub(in super::super) enum Function<'a> {
     Builtin(&'static symbols::Function),
 }
 
-pub(in super::super) fn function_of<'a>(c: &Checker<'a, '_>, callee: &Expression) -> Option<Function<'a>> {
+pub(in super::super) fn function_of<'a>(
+    c: &Checker<'a, '_>,
+    callee: &Expression,
+) -> Option<Function<'a>> {
     let Expression::Identifier(id) = callee else {
         return None;
     };
@@ -360,15 +363,24 @@ impl Checker<'_, '_> {
                     },
                     Call::Method(m) => {
                         self.points(m.object, p);
-                        (self.method_call_pure(e, m.object, &m.method, &m.argument_list), &m.argument_list)
+                        (
+                            self.method_call_pure(e, m.object, &m.method, &m.argument_list),
+                            &m.argument_list,
+                        )
                     }
                     Call::NullSafeMethod(m) => {
                         self.points(m.object, p);
-                        (self.method_call_pure(e, m.object, &m.method, &m.argument_list), &m.argument_list)
+                        (
+                            self.method_call_pure(e, m.object, &m.method, &m.argument_list),
+                            &m.argument_list,
+                        )
                     }
                     Call::StaticMethod(m) => {
                         self.points(m.class, p);
-                        (self.method_call_pure(e, m.class, &m.method, &m.argument_list), &m.argument_list)
+                        (
+                            self.method_call_pure(e, m.class, &m.method, &m.argument_list),
+                            &m.argument_list,
+                        )
                     }
                 };
                 if !pure {
@@ -722,49 +734,90 @@ impl Checker<'_, '_> {
                 Some(vec![super::impure_points::function_key(&function.name())])
             }
             Expression::Call(Call::Method(m)) => self.method_keys(m.object, &m.method, true),
-            Expression::Call(Call::NullSafeMethod(m)) => self.method_keys(m.object, &m.method, true),
+            Expression::Call(Call::NullSafeMethod(m)) => {
+                self.method_keys(m.object, &m.method, true)
+            }
             Expression::Call(Call::StaticMethod(m))
-                if matches!(unparen(m.class), Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) =>
+                if matches!(
+                    unparen(m.class),
+                    Expression::Identifier(_)
+                        | Expression::Self_(_)
+                        | Expression::Static(_)
+                        | Expression::Parent(_)
+                ) =>
             {
                 self.method_keys(m.class, &m.method, false)
             }
-            Expression::Instantiation(Instantiation { class: Expression::Identifier(id), .. }) => {
+            Expression::Instantiation(Instantiation {
+                class: Expression::Identifier(id),
+                ..
+            }) => {
                 let k = self.class_like(&self.resolved(id)).found()?;
                 let m = members::method(self, k, b"__construct")?;
                 if let Method::User { f, .. } = &m {
                     user(f)?;
                 }
-                Some(vec![super::impure_points::method_key(&m.declaring_name(), "__construct")])
+                Some(vec![super::impure_points::method_key(
+                    &m.declaring_name(),
+                    "__construct",
+                )])
             }
             _ => None,
         }
     }
 
     /// A method call's key: an instance method must not be overridable.
-    fn method_keys(&self, on: &Expression, method: &ClassLikeMemberSelector, instance: bool) -> Option<Vec<String>> {
+    fn method_keys(
+        &self,
+        on: &Expression,
+        method: &ClassLikeMemberSelector,
+        instance: bool,
+    ) -> Option<Vec<String>> {
         if !instance {
             let m = self.method_target(on, method)?;
             if let Method::User { f, .. } = &m {
                 (!throws_explicitly(f)).then_some(())?;
             }
-            return Some(vec![super::impure_points::method_key(&m.declaring_name(), &m.name())]);
+            return Some(vec![super::impure_points::method_key(
+                &m.declaring_name(),
+                &m.name(),
+            )]);
         }
         let methods = self.fixed_methods(on, method)?;
-        methods.iter().all(|m| !matches!(m, Method::User { f, .. } if throws_explicitly(f))).then_some(())?;
-        Some(methods.iter().map(|m| super::impure_points::method_key(&m.declaring_name(), &m.name())).collect())
+        methods
+            .iter()
+            .all(|m| !matches!(m, Method::User { f, .. } if throws_explicitly(f)))
+            .then_some(())?;
+        Some(
+            methods
+                .iter()
+                .map(|m| super::impure_points::method_key(&m.declaring_name(), &m.name()))
+                .collect(),
+        )
     }
 
     /// The methods an instance call targets on each class of its receiver, when none can be overridden: private,
     /// final, of a final class, or on an object a `new` created.
-    fn fixed_methods(&self, on: &Expression, method: &ClassLikeMemberSelector) -> Option<Vec<Method<'_>>> {
-        let ClassLikeMemberSelector::Identifier(name) = method else { return None };
+    fn fixed_methods(
+        &self,
+        on: &Expression,
+        method: &ClassLikeMemberSelector,
+    ) -> Option<Vec<Method<'_>>> {
+        let ClassLikeMemberSelector::Identifier(name) = method else {
+            return None;
+        };
         let exact = self.conditions.exact.contains(&unparen(on).span());
         let classes = match unparen(on) {
-            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => vec![self.class_scope()?],
+            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                vec![self.class_scope()?]
+            }
             e => {
                 // in PHPStan's union order
                 let names = self.phpstan_type(e)?.remove_null().object_class_names();
-                names.iter().map(|n| self.codebase.get_class_like(n.as_bytes())).collect::<Option<Vec<_>>>()?
+                names
+                    .iter()
+                    .map(|n| self.codebase.get_class_like(n.as_bytes()))
+                    .collect::<Option<Vec<_>>>()?
             }
         };
         let mut methods = Vec::new();
@@ -820,7 +873,10 @@ impl Checker<'_, '_> {
             fn walk_function(&mut self, _: &'ast mago_syntax::cst::Function<'arena>, (): &mut ()) {}
             fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
         }
-        let mut body = Body { c: self, p: Points::default() };
+        let mut body = Body {
+            c: self,
+            p: Points::default(),
+        };
         for s in statements {
             body.walk_statement(s, &mut ());
         }
@@ -832,36 +888,85 @@ impl Checker<'_, '_> {
     pub(super) fn possibly_pure_call(&self, e: &Expression) -> Option<(&'static str, Vec<String>)> {
         let possibly = |m: &Method| matches!(m, Method::User { f, .. } if user_effects(self, f) == Effects::Maybe);
         match e {
-            Expression::Call(Call::Function(FunctionCall { function: callee, .. }))
-            | Expression::PartialApplication(PartialApplication::Function(FunctionPartialApplication { function: callee, .. })) => match function_of(self, callee)? {
-                Function::User(u) if user_effects(self, u) == Effects::Maybe => {
-                    Some(("function.resultUnused", vec![super::impure_points::function_key(&Function::User(u).name())]))
-                }
+            Expression::Call(Call::Function(FunctionCall {
+                function: callee, ..
+            }))
+            | Expression::PartialApplication(PartialApplication::Function(
+                FunctionPartialApplication {
+                    function: callee, ..
+                },
+            )) => match function_of(self, callee)? {
+                Function::User(u) if user_effects(self, u) == Effects::Maybe => Some((
+                    "function.resultUnused",
+                    vec![super::impure_points::function_key(
+                        &Function::User(u).name(),
+                    )],
+                )),
                 _ => None,
             },
             Expression::Call(Call::Method(m)) => self.possibly_pure_method(m.object, &m.method),
-            Expression::Call(Call::NullSafeMethod(m)) => self.possibly_pure_method(m.object, &m.method),
-            Expression::PartialApplication(PartialApplication::Method(m)) => self.possibly_pure_method(m.object, &m.method),
-            Expression::PartialApplication(PartialApplication::StaticMethod(StaticMethodPartialApplication { class, method, .. }))
+            Expression::Call(Call::NullSafeMethod(m)) => {
+                self.possibly_pure_method(m.object, &m.method)
+            }
+            Expression::PartialApplication(PartialApplication::Method(m)) => {
+                self.possibly_pure_method(m.object, &m.method)
+            }
+            Expression::PartialApplication(PartialApplication::StaticMethod(
+                StaticMethodPartialApplication { class, method, .. },
+            ))
             | Expression::Call(Call::StaticMethod(StaticMethodCall { class, method, .. }))
-                if matches!(unparen(class), Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) =>
+                if matches!(
+                    unparen(class),
+                    Expression::Identifier(_)
+                        | Expression::Self_(_)
+                        | Expression::Static(_)
+                        | Expression::Parent(_)
+                ) =>
             {
                 let target = self.method_target(class, method).filter(possibly)?;
-                Some(("staticMethod.resultUnused", vec![super::impure_points::method_key(&target.declaring_name(), &target.name())]))
+                Some((
+                    "staticMethod.resultUnused",
+                    vec![super::impure_points::method_key(
+                        &target.declaring_name(),
+                        &target.name(),
+                    )],
+                ))
             }
-            Expression::Instantiation(Instantiation { class: Expression::Identifier(id), .. }) => {
+            Expression::Instantiation(Instantiation {
+                class: Expression::Identifier(id),
+                ..
+            }) => {
                 let k = self.class_like(&self.resolved(id)).found()?;
                 let m = members::method(self, k, b"__construct").filter(|m| matches!(m, Method::User { f, .. } if user_effects(self, f) == Effects::Maybe))?;
-                Some(("new.resultUnused", vec![super::impure_points::method_key(&m.declaring_name(), "__construct")]))
+                Some((
+                    "new.resultUnused",
+                    vec![super::impure_points::method_key(
+                        &m.declaring_name(),
+                        "__construct",
+                    )],
+                ))
             }
             _ => None,
         }
     }
 
-    fn possibly_pure_method(&self, on: &Expression, method: &ClassLikeMemberSelector) -> Option<(&'static str, Vec<String>)> {
+    fn possibly_pure_method(
+        &self,
+        on: &Expression,
+        method: &ClassLikeMemberSelector,
+    ) -> Option<(&'static str, Vec<String>)> {
         let methods = self.fixed_methods(on, method)?;
-        methods.iter().all(|m| matches!(m, Method::User { f, .. } if user_effects(self, f) == Effects::Maybe)).then_some(())?;
-        Some(("method.resultUnused", methods.iter().map(|m| super::impure_points::method_key(&m.declaring_name(), &m.name())).collect()))
+        methods
+            .iter()
+            .all(|m| matches!(m, Method::User { f, .. } if user_effects(self, f) == Effects::Maybe))
+            .then_some(())?;
+        Some((
+            "method.resultUnused",
+            methods
+                .iter()
+                .map(|m| super::impure_points::method_key(&m.declaring_name(), &m.name()))
+                .collect(),
+        ))
     }
 }
 
@@ -1164,7 +1269,9 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
                 .join(", ")
         ),
         // (a `new` binds tighter than any operator)
-        Expression::Parenthesized(p) if matches!(p.expression, Expression::Instantiation(_)) => print(c, p.expression),
+        Expression::Parenthesized(p) if matches!(p.expression, Expression::Instantiation(_)) => {
+            print(c, p.expression)
+        }
         Expression::Parenthesized(p) => format!("({})", print(c, p.expression)),
         Expression::Instantiation(n) if matches!(n.class, Expression::Identifier(_)) => format!(
             "new {}({})",

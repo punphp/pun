@@ -340,17 +340,25 @@ fn scope_of(
     class: &ClassInfo<'_, '_>,
     path: &[Node<'_, '_>],
 ) -> (String, Option<String>) {
-    let inner = path.iter().enumerate().skip(1).rev().find_map(|(i, n)| match n {
-        Node::AnonymousClass(c) => Some(Ok(*c)),
-        Node::Class(c) => Some(Err((i, *c))),
-        _ => None,
-    });
+    let inner = path
+        .iter()
+        .enumerate()
+        .skip(1)
+        .rev()
+        .find_map(|(i, n)| match n {
+            Node::AnonymousClass(c) => Some(Ok(*c)),
+            Node::Class(c) => Some(Err((i, *c))),
+            _ => None,
+        });
     let inner = match inner {
         Some(Err((i, c))) => {
             let around = [ancestors, &path[..i]].concat();
             return (
                 qualified(&around, c.name.value),
-                c.extends.as_ref().and_then(|e| e.types.first()).map(|id| resolve_class_name(&around, id)),
+                c.extends
+                    .as_ref()
+                    .and_then(|e| e.types.first())
+                    .map(|id| resolve_class_name(&around, id)),
             );
         }
         Some(Ok(c)) => Some(c),

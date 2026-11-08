@@ -895,11 +895,17 @@ fn walk(node: &mut Node, parent_template: bool, f: &mut dyn FnMut(&mut String, b
             }
         }
         Node::Callable {
-            ident, templates, params, ret,
+            ident,
+            templates,
+            params,
+            ret,
         } => {
             f(ident, false);
             for t in templates.iter_mut() {
-                for node in [&mut t.bound, &mut t.lower, &mut t.default].into_iter().flatten() {
+                for node in [&mut t.bound, &mut t.lower, &mut t.default]
+                    .into_iter()
+                    .flatten()
+                {
                     walk(node, true, f);
                 }
             }

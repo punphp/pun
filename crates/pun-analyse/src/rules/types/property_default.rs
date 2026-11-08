@@ -32,15 +32,23 @@ pub(in super::super) fn property(c: &mut Checker, p: &Property) {
     if c.level < 3 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
     let display = c.display(context);
-    let kind = if p.modifiers().iter().any(|m| m.is_static()) { "Static property" } else { "Property" };
+    let kind = if p.modifiers().iter().any(|m| m.is_static()) {
+        "Static property"
+    } else {
+        "Property"
+    };
     for item in defaults(p) {
         // without a native type, `= null` is the implicit default
         if p.hint().is_none() && matches!(item.value, Expression::Literal(Literal::Null(_))) {
             continue;
         }
-        let Some(default) = c.phpstan_type(item.value) else { continue };
+        let Some(default) = c.phpstan_type(item.value) else {
+            continue;
+        };
         let name = &item.variable.name[1..];
         let levels = c.levels();
         let message = declared::with_classes(c, || {

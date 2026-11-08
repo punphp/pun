@@ -16,7 +16,13 @@ use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
     if let Expression::Identifier(id) = call.function {
         let first_level = c.is_top_level(call.span());
-        named_call(c, id, params::count(&call.argument_list), first_level, call.span());
+        named_call(
+            c,
+            id,
+            params::count(&call.argument_list),
+            first_level,
+            call.span(),
+        );
     }
 }
 
@@ -62,7 +68,10 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let written = c.written(id.span()).trim_start_matches('\\').to_ascii_lowercase();
+        let written = c
+            .written(id.span())
+            .trim_start_matches('\\')
+            .to_ascii_lowercase();
         let variants = super::selector::select_from_args(c, &written, &counts, variants);
         let all = variants.all.clone();
         let selected = params::select(c, variants, &counts);
@@ -141,7 +150,8 @@ pub(super) fn check_this_method<'arena>(
             return false;
         };
         key.strip_prefix("$this::").is_some_and(|method| {
-            c.has_method_guard(key) && members::method(c, class, method.as_bytes()).is_none()
+            c.has_method_guard(key)
+                && members::method(c, class, method.as_bytes()).is_none()
                 && members::annotation_method(c, class, method.as_bytes()).is_none()
         })
     });
@@ -155,7 +165,8 @@ pub(super) fn check_this_method<'arena>(
             Err(()) => return,
         }
     } else {
-        members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
+        members::method(c, class, name.value)
+            .or_else(|| members::annotation_method(c, class, name.value))
     };
     let Some(method) = method else {
         // reportMagicMethods is off at level 0: a native __call() answers every name. ponytail: with Larastan,
@@ -222,13 +233,27 @@ pub(super) fn method_name_case(
     static_call: bool,
 ) {
     let declared = method.name();
-    if c.on(crate::rules::Switches::CHECK_FUNCTION_NAME_CASE) && declared.as_bytes() != name.value
+    if c.on(crate::rules::Switches::CHECK_FUNCTION_NAME_CASE)
+        && declared.as_bytes() != name.value
         && (static_call || declared.as_bytes().eq_ignore_ascii_case(name.value))
     {
-        let kind = if static_call && method.is_static() { "static method" } else { "method" };
-        let identifier = if static_call { "staticMethod.nameCase" } else { "method.nameCase" };
+        let kind = if static_call && method.is_static() {
+            "static method"
+        } else {
+            "method"
+        };
+        let identifier = if static_call {
+            "staticMethod.nameCase"
+        } else {
+            "method.nameCase"
+        };
         let written = String::from_utf8_lossy(name.value);
-        c.report(name, identifier, format!("Call to {kind} {declaring}::{declared}() with incorrect case: {written}"), None);
+        c.report(
+            name,
+            identifier,
+            format!("Call to {kind} {declaring}::{declared}() with incorrect case: {written}"),
+            None,
+        );
     }
 }
 
@@ -263,26 +288,42 @@ fn arguments<'arena>(
 /// The declaring class's template names and their arguments on a call through the scope class (`$this->`, `self::`,
 /// `static::`, `parent::`): the scope's ClassReflection carries its own templates as TemplateTypeArgumentStrategy
 /// arguments (TemplateTypeHelper::toArgument()), resolved through the ancestors (`@extends C<int, T>`).
-fn scope_arguments(c: &Checker, method: &members::Method) -> Option<(String, Vec<String>, Vec<pun_phpstan::types::Type>)> {
+fn scope_arguments(
+    c: &Checker,
+    method: &members::Method,
+) -> Option<(String, Vec<String>, Vec<pun_phpstan::types::Type>)> {
     use pun_phpstan::types::{Template, Type};
     let (Some(scope), members::Method::User { declaring, .. }) = (c.class_scope(), method) else {
         return None;
     };
-    let names: Vec<String> = super::declared::class_templates(c, declaring).into_iter().map(|t| t.name).collect();
+    let names: Vec<String> = super::declared::class_templates(c, declaring)
+        .into_iter()
+        .map(|t| t.name)
+        .collect();
     if names.is_empty() {
         return None;
     }
     let own: Vec<Type> = super::declared::class_templates(c, scope)
         .into_iter()
-        .map(|t| Type::Template(Box::new(Template { argument: true, ..t })))
+        .map(|t| {
+            Type::Template(Box::new(Template {
+                argument: true,
+                ..t
+            }))
+        })
         .collect();
     let class = super::declared::original_name(declaring);
-    let args = if scope.name.as_bytes().eq_ignore_ascii_case(declaring.name.as_bytes()) {
+    let args = if scope
+        .name
+        .as_bytes()
+        .eq_ignore_ascii_case(declaring.name.as_bytes())
+    {
         own
     } else {
         let name = super::declared::original_name(scope);
         super::declared::with_classes(c, || {
-            pun_phpstan::symbols::lookup(&name).and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, &own))
+            pun_phpstan::symbols::lookup(&name)
+                .and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, &own))
         })?
     };
     Some((format!("class {class}"), names, args))
@@ -296,10 +337,14 @@ fn with_scope_arguments(c: &Checker, method: &members::Method, variants: &mut pa
     super::declared::with_classes(c, || {
         for v in &mut variants.all {
             for i in 0..v.names.len() {
-                let Some(declared) = super::types::declared_type(c, v, i) else { continue };
+                let Some(declared) = super::types::declared_type(c, v, i) else {
+                    continue;
+                };
                 // Template equality ignores the argument strategy, so look for the scope's templates instead
                 fn mentions(t: &pun_phpstan::types::Type, scope: &str) -> bool {
-                    let found = std::cell::Cell::new(matches!(t, pun_phpstan::types::Type::Template(tt) if tt.scope == scope));
+                    let found = std::cell::Cell::new(
+                        matches!(t, pun_phpstan::types::Type::Template(tt) if tt.scope == scope),
+                    );
                     t.traverse(&|i| {
                         found.set(found.get() || mentions(i, scope));
                         i.clone()
@@ -307,7 +352,9 @@ fn with_scope_arguments(c: &Checker, method: &members::Method, variants: &mut pa
                     found.get()
                 }
                 if mentions(&declared, &scope) {
-                    v.param_types[i] = params::ParamType::Typed(super::types::properties::with_args(&declared, &scope, &names, &args));
+                    v.param_types[i] = params::ParamType::Typed(
+                        super::types::properties::with_args(&declared, &scope, &names, &args),
+                    );
                 }
             }
         }
@@ -319,7 +366,9 @@ fn with_scope_arguments(c: &Checker, method: &members::Method, variants: &mut pa
 fn declaring_display(c: &Checker, method: &members::Method, through_scope: bool) -> String {
     if through_scope && let Some((_, _, args)) = scope_arguments(c, method) {
         let args: Vec<String> = super::declared::with_classes(c, || {
-            args.iter().map(|t| t.describe(pun_phpstan::types::Level::TypeOnly)).collect()
+            args.iter()
+                .map(|t| t.describe(pun_phpstan::types::Level::TypeOnly))
+                .collect()
         });
         return format!("{}<{}>", method.declaring_display(c), args.join(","));
     }
@@ -422,16 +471,26 @@ pub(super) fn check_static_method<'arena>(
     let display = c.display(class);
     // a macro is a static method unless its definition names an instance method (or a callable string)
     if let Some(found) = super::larastan::macro_method(c, class, name.value) {
-        let in_instance_method =
-            c.functions.last().is_some_and(|f| f.kind == super::FunctionScopeKind::Method { is_static: false });
+        let in_instance_method = c
+            .functions
+            .last()
+            .is_some_and(|f| f.kind == super::FunctionScopeKind::Method { is_static: false });
         let in_subclass = scope_class.is_some_and(|s| {
-            s.name.as_bytes().eq_ignore_ascii_case(class.name.as_bytes())
-                || c.codebase.is_instance_of(s.name.as_bytes(), class.name.as_bytes())
+            s.name
+                .as_bytes()
+                .eq_ignore_ascii_case(class.name.as_bytes())
+                || c.codebase
+                    .is_instance_of(s.name.as_bytes(), class.name.as_bytes())
         });
         if let Some((declaring, declared)) = found.instance
             && (!in_instance_method || !in_subclass)
         {
-            c.report(name, "method.staticCall", format!("Static call to instance method {declaring}::{declared}()."), None);
+            c.report(
+                name,
+                "method.staticCall",
+                format!("Static call to instance method {declaring}::{declared}()."),
+                None,
+            );
         }
         return;
     }
@@ -441,7 +500,8 @@ pub(super) fn check_static_method<'arena>(
             Err(()) => return,
         }
     } else {
-        members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
+        members::method(c, class, name.value)
+            .or_else(|| members::annotation_method(c, class, name.value))
     };
     let Some(method) = method else {
         // FacadesMethodsExtension leaves a facade's method to MixinMethodsClassReflectionExtension: the `@mixin`
@@ -462,7 +522,9 @@ pub(super) fn check_static_method<'arena>(
                     kind: params::CallKind::StaticMethod,
                     subject: &format!("Static method {subject}"),
                     scope: Some(call.span()),
-                    void_message: Some(format!("Result of static method {subject} (void) is used.")),
+                    void_message: Some(format!(
+                        "Result of static method {subject} (void) is used."
+                    )),
                 },
                 first_level,
             );
@@ -483,13 +545,23 @@ pub(super) fn check_static_method<'arena>(
             return;
         }
         // reportMagicMethods is off at level 0; ponytail: with Larastan a class with __callStatic stays unchecked
-        if !known && (c.level == 0 || call.is_some() && c.larastan.is_some())
+        if !known
+            && (c.level == 0 || call.is_some() && c.larastan.is_some())
             && members::method(c, class, b"__callStatic").is_some()
-            || call.is_some() && !matches!(c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value), Ok(None))
+            || call.is_some()
+                && !matches!(
+                    c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value),
+                    Ok(None)
+                )
         {
             return;
         }
-        class_names::check_at(c, pair.as_slice(), Some(&class_names::Location::StaticMethodCall(None)), true);
+        class_names::check_at(
+            c,
+            pair.as_slice(),
+            Some(&class_names::Location::StaticMethodCall(None)),
+            true,
+        );
         if known {
             return;
         }
@@ -503,13 +575,12 @@ pub(super) fn check_static_method<'arena>(
     };
     // ModelForwardsCallsExtension answers a model's non-public `#[Scope]` method the scope cannot call with a static
     // builder method. ponytail: its arguments (the scope's, the builder shifted off) are not checked
-    if c.larastan.is_some()
-        && super::larastan::is_hidden_scope(c, class, name.value, scope_class)
-    {
+    if c.larastan.is_some() && super::larastan::is_hidden_scope(c, class, name.value, scope_class) {
         return;
     }
     let errors_before = c.errors.len();
-    let location = class_names::Location::StaticMethodCall(Some(super::internal::method_member(c, &method)));
+    let location =
+        class_names::Location::StaticMethodCall(Some(super::internal::method_member(c, &method)));
     class_names::check_at(c, pair.as_slice(), Some(&location), true);
     let declaring = method.declaring_display(c);
     let declared = method.name();
@@ -579,8 +650,14 @@ pub(super) fn check_static_method<'arena>(
         }
         return;
     };
-    let through_scope = matches!(call.class, Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_));
-    let subject = format!("{}::{declared}()", declaring_display(c, &method, through_scope));
+    let through_scope = matches!(
+        call.class,
+        Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+    );
+    let subject = format!(
+        "{}::{declared}()",
+        declaring_display(c, &method, through_scope)
+    );
     let display_kind = if is_static { "Static method" } else { "Method" };
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
@@ -590,12 +667,17 @@ pub(super) fn check_static_method<'arena>(
     }
     // CalledOnTypeUnresolvedMethodPrototypeReflection: a call on a class name resolves the parameters' `static` and
     // `$this` to that class
-    if matches!(call.class, Expression::Identifier(_)) && matches!(method, members::Method::User { .. }) {
-        let receiver = pun_phpstan::types::Type::Object(super::declared::original_name(class), vec![], false);
+    if matches!(call.class, Expression::Identifier(_))
+        && matches!(method, members::Method::User { .. })
+    {
+        let receiver =
+            pun_phpstan::types::Type::Object(super::declared::original_name(class), vec![], false);
         super::declared::with_classes(c, || {
             for v in &mut variants.all {
                 for i in 0..v.names.len() {
-                    let Some(declared) = super::types::declared_type(c, v, i) else { continue };
+                    let Some(declared) = super::types::declared_type(c, v, i) else {
+                        continue;
+                    };
                     let called = super::method_reflection::called_on(&declared, &receiver);
                     if called != declared {
                         v.param_types[i] = params::ParamType::Typed(called);
@@ -606,10 +688,13 @@ pub(super) fn check_static_method<'arena>(
     }
     // ClosureBindArgVisitor: `Closure::bind($var, ...)`
     if let Expression::Identifier(id) = call.class
-        && c.written(id.span()).trim_start_matches('\\').eq_ignore_ascii_case("closure")
+        && c.written(id.span())
+            .trim_start_matches('\\')
+            .eq_ignore_ascii_case("closure")
         && name.value.eq_ignore_ascii_case(b"bind")
         && call.argument_list.arguments.len() > 1
-        && let Some(Expression::Variable(Variable::Direct(v))) = call.argument_list.arguments.first().map(|a| a.value())
+        && let Some(Expression::Variable(Variable::Direct(v))) =
+            call.argument_list.arguments.first().map(|a| a.value())
     {
         let var = String::from_utf8_lossy(&v.name[1..]);
         variants = super::selector::closure_bind(c, &var, call.span().start.offset, 1, variants);

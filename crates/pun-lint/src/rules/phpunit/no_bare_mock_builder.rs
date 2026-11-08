@@ -64,12 +64,7 @@ impl Rule for NoBareMockBuilder {
         let from = builder.args.left_parenthesis.end.offset as usize;
         let text = format!(
             "$this->createMock({})",
-            maybe_multiline(
-                ctx,
-                from,
-                &args,
-                line_indent(ctx.source, call.span.start)
-            )
+            maybe_multiline(ctx, from, &args, line_indent(ctx.source, call.span.start))
         );
         out.push(Report::fixed(
             call.span,

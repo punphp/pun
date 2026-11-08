@@ -28,7 +28,9 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
         return;
     };
     let scope = declared::function_scope(c, f, &entry.doc);
-    let errors = declared::with_classes(c, || check(c, &entry.phpdoc, &scope, &declared::function(c, f), None));
+    let errors = declared::with_classes(c, || {
+        check(c, &entry.phpdoc, &scope, &declared::function(c, f), None)
+    });
     report(c, f.span(), errors);
 }
 
@@ -36,21 +38,44 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
-    let Some(declaring) = missing_types::declaring(c, m.span()) else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
+    let Some(declaring) = missing_types::declaring(c, m.span()) else {
+        return;
+    };
     let this = (!m.modifiers.contains_static())
         .then(|| Type::Object(declared::original_name(context), vec![], false));
-    let own = c.doc_before(c.file.id, m.span().start.offset).map(|(_, entry)| entry).filter(|entry| !asserts(&entry.phpdoc).is_empty());
+    let own = c
+        .doc_before(c.file.id, m.span().start.offset)
+        .map(|(_, entry)| entry)
+        .filter(|entry| !asserts(&entry.phpdoc).is_empty());
     let errors = declared::with_classes(c, || {
         let sig = declared::method(c, m, declaring, context);
         match own {
-            Some(entry) => check(c, &entry.phpdoc, &declared::method_scope(c, m, &entry.doc, declaring, context), &sig, this),
+            Some(entry) => check(
+                c,
+                &entry.phpdoc,
+                &declared::method_scope(c, m, &entry.doc, declaring, context),
+                &sig,
+                this,
+            ),
             // the inherited (implicit) asserts: only their parameter is checked
             None => sig
                 .asserts
                 .iter()
-                .filter(|name| !sig.params.iter().any(|p| p.0 == **name) && !(this.is_some() && *name == "this"))
-                .map(|name| ("parameter.notFound", format!("Assert references unknown parameter ${name}."), None, None))
+                .filter(|name| {
+                    !sig.params.iter().any(|p| p.0 == **name)
+                        && !(this.is_some() && *name == "this")
+                })
+                .map(|name| {
+                    (
+                        "parameter.notFound",
+                        format!("Assert references unknown parameter ${name}."),
+                        None,
+                        None,
+                    )
+                })
                 .collect(),
         }
     });
@@ -72,11 +97,20 @@ fn report(c: &mut Checker, at: Span, errors: Errors) {
 }
 
 /// An assert tag: its tag name, type, parameter, `->member` (a method with `()`) and negation.
-type Assert = (&'static str, phpdoc::Node, String, Option<(String, bool)>, bool);
+type Assert = (
+    &'static str,
+    phpdoc::Node,
+    String,
+    Option<(String, bool)>,
+    bool,
+);
 
 /// The parameters (without `$`) the asserts of a PHPDoc's `tags` name.
 pub(super) fn parameters(tags: &[phpdoc::Tag]) -> Vec<String> {
-    asserts(tags).into_iter().map(|a| a.2[1..].to_string()).collect()
+    asserts(tags)
+        .into_iter()
+        .map(|a| a.2[1..].to_string())
+        .collect()
 }
 
 /// `resolveAssertTags()`: the first of the `@phpstan-`, `@psalm-` and `@phan-` prefixes with any assert.
@@ -100,7 +134,13 @@ fn asserts(tags: &[phpdoc::Tag]) -> Vec<Assert> {
                         member,
                         negated,
                         ..
-                    } => Some((name, ty.clone(), parameter.clone(), member.clone(), *negated)),
+                    } => Some((
+                        name,
+                        ty.clone(),
+                        parameter.clone(),
+                        member.clone(),
+                        *negated,
+                    )),
                     _ => None,
                 })
                 .collect();
@@ -129,27 +169,54 @@ fn member_type(c: &Checker, on: &Type, member: &(String, bool)) -> Type {
             let ty = if *method {
                 c.codebase
                     .get_method(class.as_bytes(), name.as_bytes())
-                    .map(|m| m.return_type_metadata.as_ref().map(|t| c.to_phpstan(&t.type_union)))
+                    .map(|m| {
+                        m.return_type_metadata
+                            .as_ref()
+                            .map(|t| c.to_phpstan(&t.type_union))
+                    })
             } else {
                 c.codebase
                     .get_property(class.as_bytes(), format!("${name}").as_bytes())
-                    .map(|p| p.type_metadata.as_ref().map(|t| c.to_phpstan(&t.type_union)))
+                    .map(|p| {
+                        p.type_metadata
+                            .as_ref()
+                            .map(|t| c.to_phpstan(&t.type_union))
+                    })
             };
             ty.map(|t| t.unwrap_or(Type::Mixed { explicit: false }))
         })
         .collect();
-    if found.is_empty() { Type::Error } else { pun_phpstan::types::union(found) }
+    if found.is_empty() {
+        Type::Error
+    } else {
+        pun_phpstan::types::union(found)
+    }
 }
 
 /// AssertRuleHelper::check(); the class names to check for their case come last, as `(.., Some(class))`.
-fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::Signature, this: Option<Type>) -> Errors {
+fn check(
+    c: &Checker,
+    tags: &[phpdoc::Tag],
+    scope: &NameScope,
+    sig: &declared::Signature,
+    this: Option<Type>,
+) -> Errors {
     let mut errors: Errors = Vec::new();
-    let mut by_name: Vec<(String, Type)> = sig.params.iter().map(|p| (p.0.clone(), p.1.clone())).collect();
+    let mut by_name: Vec<(String, Type)> = sig
+        .params
+        .iter()
+        .map(|p| (p.0.clone(), p.1.clone()))
+        .collect();
     by_name.extend(this.map(|t| ("this".to_string(), t)));
     for (tag, ty, parameter, member, negated) in asserts(tags) {
         let name = &parameter[1..];
         let Some((_, param_type)) = by_name.iter().find(|(n, _)| n == name) else {
-            errors.push(("parameter.notFound", format!("Assert references unknown parameter ${name}."), None, None));
+            errors.push((
+                "parameter.notFound",
+                format!("Assert references unknown parameter ${name}."),
+                None,
+                None,
+            ));
             continue;
         };
         let (expr_type, expr) = match &member {
@@ -160,7 +227,12 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
             ),
         };
         if expr_type == Type::Error {
-            errors.push(("assert.unknownExpr", format!("Assert references unknown {expr}."), None, None));
+            errors.push((
+                "assert.unknownExpr",
+                format!("Assert references unknown {expr}."),
+                None,
+                None,
+            ));
             continue;
         }
         let asserted = resolve_in(&ty, scope);
@@ -180,7 +252,10 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
         let is = is_super_type_of(&asserted, &expr_type);
         if !is.maybe() {
             let negation = if negated { "negated " } else { "" };
-            let (described, given) = (asserted.describe(Level::Precise), expr_type.describe(Level::Precise));
+            let (described, given) = (
+                asserted.describe(Level::Precise),
+                expr_type.describe(Level::Precise),
+            );
             if if negated { is.yes() } else { is.no() } {
                 errors.push((
                     "assert.impossibleType",
@@ -219,7 +294,12 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
         let messages = generics::GenericMessages::at(&s);
         let mut found = generics::Found::default();
         generics::generic_object_check(&asserted, &messages, &mut found);
-        errors.extend(found.errors.into_iter().map(|(id, m, tip)| (id, m, tip.map(String::from), None)));
+        errors.extend(
+            found
+                .errors
+                .into_iter()
+                .map(|(id, m, tip)| (id, m, tip.map(String::from), None)),
+        );
         errors.extend(names);
         if c.level < 6 {
             continue;
@@ -232,7 +312,10 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
                 None,
             ));
         }
-        for (inner, list) in missing_types::generics_without_args(&asserted, c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES)) {
+        for (inner, list) in missing_types::generics_without_args(
+            &asserted,
+            c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES),
+        ) {
             errors.push((
                 "missingType.generics",
                 format!("PHPDoc tag {tag} for {expr} contains generic {inner} but does not specify its types: {list}"),
@@ -240,7 +323,10 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
                 None,
             ));
         }
-        for callable in missing_types::callables_without_signature(&asserted, c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE)) {
+        for callable in missing_types::callables_without_signature(
+            &asserted,
+            c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE),
+        ) {
             errors.push((
                 "missingType.callable",
                 format!("PHPDoc tag {tag} for {expr} has no signature specified for {callable}."),

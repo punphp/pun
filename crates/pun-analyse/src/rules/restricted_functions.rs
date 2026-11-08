@@ -44,12 +44,19 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl 
     let at = at.span();
     let resolved = function_checks::function_name(c.names, c.codebase, id);
     // a built-in's deprecation is PHPStan's (its signature map), not the stub's PHPDoc
-    let user = c.codebase.get_function(resolved.as_bytes()).filter(|f| f.flags.is_user_defined());
+    let user = c
+        .codebase
+        .get_function(resolved.as_bytes())
+        .filter(|f| f.flags.is_user_defined());
     let (name, internal, deprecation) = match user {
         Some(function) => (
             String::from_utf8_lossy(function.original_name.as_bytes()).into_owned(),
             function.flags.is_internal(),
-            if c.on(crate::rules::Switches::DEPRECATIONS) { c.function_deprecation(function) } else { None },
+            if c.on(crate::rules::Switches::DEPRECATIONS) {
+                c.function_deprecation(function)
+            } else {
+                None
+            },
         ),
         None => match c.builtins.functions.get(&resolved) {
             Some(f) => (f.name.clone(), false, f.deprecated.then_some(None)),
@@ -62,7 +69,9 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl 
     {
         let message = match internal::root_namespace(&name) {
             Some(root) => {
-                format!("Call to internal function {name}() from outside its root namespace {root}.")
+                format!(
+                    "Call to internal function {name}() from outside its root namespace {root}."
+                )
             }
             None => format!("Call to internal function {name}()."),
         };

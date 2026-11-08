@@ -443,7 +443,11 @@ impl<'ast, 'arena, 'c> Walker<'ast, 'arena, State<'ast, 'arena, 'c>> for Walk<'_
     }
 
     /// No `array` keyword.
-    fn walk_legacy_array(&self, array: &'ast LegacyArray<'arena>, state: &mut State<'ast, 'arena, 'c>) {
+    fn walk_legacy_array(
+        &self,
+        array: &'ast LegacyArray<'arena>,
+        state: &mut State<'ast, 'arena, 'c>,
+    ) {
         self.walk_in_legacy_array(array, state);
         for element in &array.elements {
             self.walk_array_element(element, state);

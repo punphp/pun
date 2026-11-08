@@ -29,8 +29,14 @@ pub(super) fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
             .and_then(|p| c.codebase.get_class_like(p.as_bytes())),
         // RuleLevelHelper::findTypeToCheck() with checkThisOnly (levels 0 and 1), else the expression's type
         // ponytail: the first class of a union only
-        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" && c.level < 2 && c.this_defined() => scope,
-        _ if c.level >= 2 => super::internal::object_classes(c, a.class).into_iter().next(),
+        Expression::Variable(Variable::Direct(v))
+            if v.name == b"$this" && c.level < 2 && c.this_defined() =>
+        {
+            scope
+        }
+        _ if c.level >= 2 => super::internal::object_classes(c, a.class)
+            .into_iter()
+            .next(),
         _ => None,
     };
     let Some(k) = referenced else {
@@ -39,10 +45,15 @@ pub(super) fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
     // `hasConstant()`: a constant (declared by the class-like holding it) or an enum case
     let found = match k.constants.get(&mago_word::word(name.value)) {
         Some(constant) => Some((declaring(c, k, constant), constant.flags.is_internal())),
-        None => k.enum_cases.get(&mago_word::word(name.value)).map(|case| (k, case.flags.is_internal())),
+        None => k
+            .enum_cases
+            .get(&mago_word::word(name.value))
+            .map(|case| (k, case.flags.is_internal())),
     };
     let deprecation = match found {
-        Some((owner, _)) if c.on(crate::rules::Switches::DEPRECATIONS) => c.constant_deprecation(owner, name.value),
+        Some((owner, _)) if c.on(crate::rules::Switches::DEPRECATIONS) => {
+            c.constant_deprecation(owner, name.value)
+        }
         _ => None,
     };
     if let Expression::Identifier(id) = a.class {
@@ -50,9 +61,13 @@ pub(super) fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
         let member = found.map(|(owner, internal)| Member {
             name: String::from_utf8_lossy(name.value).into_owned(),
             internal: internal || owner.flags.is_internal(),
-            deprecated: deprecation.is_some() || (c.on(crate::rules::Switches::DEPRECATIONS) && c.class_deprecation(owner).is_some()),
+            deprecated: deprecation.is_some()
+                || (c.on(crate::rules::Switches::DEPRECATIONS)
+                    && c.class_deprecation(owner).is_some()),
         });
-        for (message, identifier) in class_names::restricted(c, k, &Location::ClassConstantAccess(member)) {
+        for (message, identifier) in
+            class_names::restricted(c, k, &Location::ClassConstantAccess(member))
+        {
             c.report(id, &identifier, message, None);
         }
     }
@@ -84,7 +99,9 @@ fn restricted(
     owner: &ClassLikeMetadata,
     name: &[u8],
 ) -> Option<(String, String)> {
-    if !c.on(crate::rules::Switches::INTERNAL_TAG) || (!constant_internal && !owner.flags.is_internal()) {
+    if !c.on(crate::rules::Switches::INTERNAL_TAG)
+        || (!constant_internal && !owner.flags.is_internal())
+    {
         return None;
     }
     let owner_name = String::from_utf8_lossy(owner.original_name.as_bytes()).into_owned();
@@ -95,10 +112,18 @@ fn restricted(
     let name = String::from_utf8_lossy(name);
     let kind = super::deprecations::type_description(owner);
     let description = kind.to_ascii_lowercase();
-    let outside = root_namespace(&owner_name).map_or_else(String::new, |ns| format!(" from outside its root namespace {ns}"));
+    let outside = root_namespace(&owner_name).map_or_else(String::new, |ns| {
+        format!(" from outside its root namespace {ns}")
+    });
     Some(if constant_internal {
-        (format!("Access to internal constant {display}::{name}{outside}."), "classConstant.internal".to_string())
+        (
+            format!("Access to internal constant {display}::{name}{outside}."),
+            "classConstant.internal".to_string(),
+        )
     } else {
-        (format!("Access to constant {name} of internal {description} {display}{outside}."), format!("classConstant.internal{kind}"))
+        (
+            format!("Access to constant {name} of internal {description} {display}{outside}."),
+            format!("classConstant.internal{kind}"),
+        )
     })
 }

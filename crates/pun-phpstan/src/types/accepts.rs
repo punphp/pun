@@ -2,7 +2,10 @@
 //! property assignments). It differs from `isSuperTypeOf()` where PHP coerces: `float` accepts `int`, a non-strict
 //! `string` accepts a `Stringable` object, an implicit `mixed` is accepted by anything.
 
-use super::{Accessory, NeverKind, Tri, Type, canonical_class, has_method, is_super_type_of, signature_super, static_of, symbols};
+use super::{
+    Accessory, NeverKind, Tri, Type, canonical_class, has_method, is_super_type_of,
+    signature_super, static_of, symbols,
+};
 
 /// How `mixed` is accepted: RuleLevelHelper's `StrictMixedType` (levels 9 and 10) is accepted by `mixed` alone.
 #[derive(Clone, Copy, Default, Debug)]
@@ -23,19 +26,32 @@ impl StrictMixed {
         {
             return self.transform_generic_object_arguments(class, args, *exact, t);
         }
-        self.transform_mixed(t).unwrap_or_else(|| t.traverse(&|t| self.transform(t)))
+        self.transform_mixed(t)
+            .unwrap_or_else(|| t.traverse(&|t| self.transform(t)))
     }
 
     /// `transformMixedType()`: the checked copy of a mixed this level maps, else `None`.
     fn transform_mixed(self, t: &Type) -> Option<Type> {
         t.mixed_explicitness()
-            .is_some_and(|explicit| if explicit { self.explicit } else { self.implicit })
+            .is_some_and(|explicit| {
+                if explicit {
+                    self.explicit
+                } else {
+                    self.implicit
+                }
+            })
             .then(|| t.to_strict_mixed())
     }
 
     /// `transformGenericObjectTypeArguments()` (PHPStan 2.3.2): an invariant argument of an invariant template is
     /// compared with equals(), so only a top-level mixed in it is mapped, not one nested deeper.
-    fn transform_generic_object_arguments(self, class: &str, args: &[Type], exact: bool, t: &Type) -> Type {
+    fn transform_generic_object_arguments(
+        self,
+        class: &str,
+        args: &[Type],
+        exact: bool,
+        t: &Type,
+    ) -> Type {
         let Some(reflection) = symbols::lookup(class) else {
             return t.traverse(&|t| self.transform(t));
         };
@@ -44,8 +60,16 @@ impl StrictMixed {
             .enumerate()
             .map(|(i, argument)| {
                 let invariant = !matches!(argument, Type::Projection(..))
-                    && reflection.templates.get(i).is_some_and(|template| template.variance == "invariant");
-                if invariant { self.transform_mixed(argument).unwrap_or_else(|| argument.clone()) } else { self.transform(argument) }
+                    && reflection
+                        .templates
+                        .get(i)
+                        .is_some_and(|template| template.variance == "invariant");
+                if invariant {
+                    self.transform_mixed(argument)
+                        .unwrap_or_else(|| argument.clone())
+                } else {
+                    self.transform(argument)
+                }
             })
             .collect();
         Type::Object(class.to_string(), args, exact)
@@ -62,34 +86,93 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     if sm.explicit || sm.implicit {
         return accepts_with(a, &sm.transform(b), strict, StrictMixed::default());
     }
-    if let T::Reasoned(t, _) = b { return accepts_with(a, t, strict, sm); }
-    if let T::SubtractedObject { object, .. } = b { return accepts_with(a, object, strict, sm); }
-    if let T::LateArrayShape(s) = b { return accepts_with(a, &s.resolve(), strict, sm); }
+    if let T::Reasoned(t, _) = b {
+        return accepts_with(a, t, strict, sm);
+    }
+    if let T::SubtractedObject { object, .. } = b {
+        return accepts_with(a, object, strict, sm);
+    }
+    if let T::LateArrayShape(s) = b {
+        return accepts_with(a, &s.resolve(), strict, sm);
+    }
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     // a CompoundType `$b` answers through its `isAcceptedBy()`, a StrictMixedType too
     let compound = b.is_compound();
     let by = || accepted_by(a, b, strict, sm);
     // `$type instanceof StringType` (and IntegerType for an int)
-    let string = matches!(b, T::String | T::ConstString(_) | T::ClassString(_) | T::StringAcceptingStringable | T::StringNotAcceptingStringable);
+    let string = matches!(
+        b,
+        T::String
+            | T::ConstString(_)
+            | T::ClassString(_)
+            | T::StringAcceptingStringable
+            | T::StringNotAcceptingStringable
+    );
     let integer = matches!(b, T::Int | T::ConstInt(_) | T::IntRange(..));
     // `$this->isXxx()->yes()` first, then the compound, then the answer itself (the accessory types)
-    let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
+    let accessory = |r: Tri| {
+        if r.yes() {
+            Tri::Yes
+        } else if compound {
+            by()
+        } else {
+            r
+        }
+    };
     match a {
         T::Reasoned(t, _) => rec(t, b),
-        T::SubtractedObject { object, .. } => if compound { by() } else { rec(object, b) },
+        T::SubtractedObject { object, .. } => {
+            if compound {
+                by()
+            } else {
+                rec(object, b)
+            }
+        }
         T::LateArrayShape(s) => rec(&s.resolve(), b),
         // MixedType (ErrorType extends it) accepts anything
-        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
+        T::Mixed { .. }
+        | T::StrictMixed
+        | T::SubtractedMixed { .. }
+        | T::Error
+        | T::Wildcard
+        | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
         T::Never(_) => Tri::Yes,
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
         T::Intersection(types) => types.iter().map(|t| rec(t, b)).fold(Tri::Yes, Tri::and),
         T::Conditional(c) => rec(&c.resolve(), b),
         // TemplateTypeParameterStrategy; TemplateTypeArgumentStrategy adds a maybe
-        T::Template(t) => if compound { by() } else if t.argument { rec(&t.bound, b).and(Tri::Maybe) } else { rec(&t.bound, b) },
-        _ if compound && !matches!(a, T::Float | T::ConstFloat(_) | T::ConstInt(_) | T::ConstBool(_) | T::ConstString(_)
-            | T::Int | T::IntRange(..) | T::Bool | T::Null | T::Resource | T::String | T::StringAcceptingStringable
-            | T::StringNotAcceptingStringable | T::Iterable(..) | T::Accessory(_) | T::Callable(_) | T::ConstArray(_) | T::EnumCase(..)) =>
+        T::Template(t) => {
+            if compound {
+                by()
+            } else if t.argument {
+                rec(&t.bound, b).and(Tri::Maybe)
+            } else {
+                rec(&t.bound, b)
+            }
+        }
+        _ if compound
+            && !matches!(
+                a,
+                T::Float
+                    | T::ConstFloat(_)
+                    | T::ConstInt(_)
+                    | T::ConstBool(_)
+                    | T::ConstString(_)
+                    | T::Int
+                    | T::IntRange(..)
+                    | T::Bool
+                    | T::Null
+                    | T::Resource
+                    | T::String
+                    | T::StringAcceptingStringable
+                    | T::StringNotAcceptingStringable
+                    | T::Iterable(..)
+                    | T::Accessory(_)
+                    | T::Callable(_)
+                    | T::ConstArray(_)
+                    | T::EnumCase(..)
+            ) =>
         {
             by()
         }
@@ -134,21 +217,46 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
                 string_accepts(a, b, strict)
             }
         }
-        T::Int => if integer { Tri::Yes } else if compound { by() } else { Tri::No },
-        T::IntRange(..) => if integer { is_super_type_of(a, b) } else if compound { by() } else { Tri::No },
+        T::Int => {
+            if integer {
+                Tri::Yes
+            } else if compound {
+                by()
+            } else {
+                Tri::No
+            }
+        }
+        T::IntRange(..) => {
+            if integer {
+                is_super_type_of(a, b)
+            } else if compound {
+                by()
+            } else {
+                Tri::No
+            }
+        }
         T::Bool | T::Null | T::Resource => {
             let same = match a {
                 T::Bool => matches!(b, T::Bool | T::ConstBool(_)),
                 _ => std::mem::discriminant(a) == std::mem::discriminant(b),
             };
-            if same { Tri::Yes } else if compound { by() } else { Tri::No }
+            if same {
+                Tri::Yes
+            } else if compound {
+                by()
+            } else {
+                Tri::No
+            }
         }
         T::Void => b.is_void().or(b.is_null()),
         T::ClassString(None) => b.is_class_string(),
         T::ClassString(Some(object)) => match b {
             T::ConstString(name) => {
                 if b.is_class_string().yes() {
-                    rec(object, &T::Object(String::from_utf8_lossy(name).into_owned(), vec![], false))
+                    rec(
+                        object,
+                        &T::Object(String::from_utf8_lossy(name).into_owned(), vec![], false),
+                    )
                 } else {
                     Tri::No
                 }
@@ -175,7 +283,9 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             _ => b.is_array(),
         },
         // checkOurKeys() of a general array; ponytail: a constant array or an unsealed shape is isSuperTypeOf() here
-        T::ConstArray(c) if c.unsealed.is_none() && !matches!(b, T::ConstArray(_)) => our_keys(c, b, strict, sm),
+        T::ConstArray(c) if c.unsealed.is_none() && !matches!(b, T::ConstArray(_)) => {
+            our_keys(c, b, strict, sm)
+        }
         T::Iterable(key, item) => {
             if b.is_constant_array().yes() && b.is_iterable_at_least_once().no() {
                 return Tri::Yes;
@@ -200,7 +310,8 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         }
         T::Object(class, args, exact) => super::object_super(class, args, b, false, *exact),
         T::ObjectWithoutClass => Tri::from(
-            matches!(b, T::ObjectWithoutClass | T::ObjectShape(_)) || !b.object_class_names().is_empty(),
+            matches!(b, T::ObjectWithoutClass | T::ObjectShape(_))
+                || !b.object_class_names().is_empty(),
         ),
         T::ObjectShape(props) => object_shape(a, props, b, strict),
         T::Closure(ours) => match b {
@@ -214,7 +325,9 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
             let callable = b.is_callable();
             match sig {
-                Some(ours) if !callable.no() => callable.and(signature_super(ours, b, Some(strict))),
+                Some(ours) if !callable.no() => {
+                    callable.and(signature_super(ours, b, Some(strict)))
+                }
                 _ => callable,
             }
         }
@@ -252,9 +365,19 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
         }
         T::Accessory(Accessory::List) => accessory(b.is_list()),
-        T::Accessory(Accessory::NonEmptyArray) => accessory(b.is_array().and(b.is_iterable_at_least_once())),
-        T::Accessory(Accessory::HasMethod(_)) => if compound { by() } else { Tri::No },
-        T::Accessory(Accessory::ModelProperty(t)) => super::larastan::model_property_accepts(t, b, strict, by),
+        T::Accessory(Accessory::NonEmptyArray) => {
+            accessory(b.is_array().and(b.is_iterable_at_least_once()))
+        }
+        T::Accessory(Accessory::HasMethod(_)) => {
+            if compound {
+                by()
+            } else {
+                Tri::No
+            }
+        }
+        T::Accessory(Accessory::ModelProperty(t)) => {
+            super::larastan::model_property_accepts(t, b, strict, by)
+        }
         T::Accessory(Accessory::ViewString) => super::larastan::view_string_accepts(b, by),
         // GenericObjectType, EnumCaseObjectType, a ConstantArrayType (ponytail: its key-by-key checkOurKeys() and
         // unsealed shapes are isSuperTypeOf() here)
@@ -308,7 +431,10 @@ fn subclass(class: &str, that: &str, exact: bool) -> Tri {
         return Tri::Yes;
     }
     match (symbols::lookup(class), symbols::lookup(that)) {
-        (Some(this), Some(other)) => Tri::from(this.name == other.name || (!exact && !this.is_final && other.ancestors.contains(&this.name))),
+        (Some(this), Some(other)) => Tri::from(
+            this.name == other.name
+                || (!exact && !this.is_final && other.ancestors.contains(&this.name)),
+        ),
         _ => Tri::No,
     }
 }
@@ -326,8 +452,14 @@ fn object_shape(a: &Type, props: &[(String, Type, bool)], b: &Type, strict: bool
     }
     // SimpleXMLElementClassPropertyReflectionExtension: every property, `__benevolent<static|null>`
     if class.name == "SimpleXMLElement" || class.ancestors.iter().any(|c| c == "SimpleXMLElement") {
-        let property = Type::Benevolent(vec![Type::Object(class.name.clone(), vec![], false), Type::Null]);
-        return props.iter().map(|(_, ty, _)| accepts(ty, &property, strict)).fold(Tri::Yes, Tri::and);
+        let property = Type::Benevolent(vec![
+            Type::Object(class.name.clone(), vec![], false),
+            Type::Null,
+        ]);
+        return props
+            .iter()
+            .map(|(_, ty, _)| accepts(ty, &property, strict))
+            .fold(Tri::Yes, Tri::and);
     }
     props
         .iter()
@@ -344,14 +476,26 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
         // IterableType::toArrayOrTraversable()
         let alt = T::Union(vec![
             T::Array(k.clone(), v.clone()),
-            T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false),
+            T::Object(
+                "Traversable".into(),
+                vec![(**k).clone(), (**v).clone()],
+                false,
+            ),
         ]);
         return rec(a, &alt);
     }
     // EQUAL_UNION_CLASSES
-    for (base, classes) in [("DateTimeInterface", ["DateTimeImmutable", "DateTime"]), ("Throwable", ["Error", "Exception"])] {
+    for (base, classes) in [
+        ("DateTimeInterface", ["DateTimeImmutable", "DateTime"]),
+        ("Throwable", ["Error", "Exception"]),
+    ] {
         if matches!(b, T::Object(n, args, _) if args.is_empty() && n == base) {
-            let all = T::Union(classes.iter().map(|c| T::Object((*c).into(), vec![], false)).collect());
+            let all = T::Union(
+                classes
+                    .iter()
+                    .map(|c| T::Object((*c).into(), vec![], false))
+                    .collect(),
+            );
             if rec(a, &all).yes() {
                 return Tri::Yes;
             }
@@ -376,8 +520,13 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     match b {
-        T::StrictMixed => Tri::from(matches!(a, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)
-            || matches!(a, T::Template(t) if matches!(t.bound, T::StrictMixed))).or(Tri::Maybe),
+        T::StrictMixed => Tri::from(
+            matches!(
+                a,
+                T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error
+            ) || matches!(a, T::Template(t) if matches!(t.bound, T::StrictMixed)),
+        )
+        .or(Tri::Maybe),
         T::Union(types) => Tri::extreme_identity(types.iter().map(|t| rec(a, t))),
         T::Benevolent(types) => types.iter().map(|t| rec(a, t)).fold(Tri::No, Tri::or),
         T::Mixed { .. } | T::Error => Tri::Yes,
@@ -390,7 +539,11 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
                     return Tri::No;
                 }
                 // a template member's eager yes is not trusted over the holistic maybe
-                if super_type.maybe() && types.iter().any(|t| matches!(t, T::Template(_)) && rec(a, t).yes()) {
+                if super_type.maybe()
+                    && types
+                        .iter()
+                        .any(|t| matches!(t, T::Template(_)) && rec(a, t).yes())
+                {
                     return Tri::Maybe;
                 }
             }
@@ -399,14 +552,21 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         // IntegerRangeType::isSubTypeOf(): an integer, a union (a template of a union too) or an intersection asks
         // itself, anything else no
         T::IntRange(..) => match a {
-            T::Template(at) if matches!(at.bound, T::Union(_) | T::Benevolent(_)) => is_super_type_of(&at.bound, b),
-            T::Int | T::ConstInt(_) | T::IntRange(..) | T::Union(_) | T::Benevolent(_) | T::Intersection(_) => {
-                is_super_type_of(a, b)
+            T::Template(at) if matches!(at.bound, T::Union(_) | T::Benevolent(_)) => {
+                is_super_type_of(&at.bound, b)
             }
+            T::Int
+            | T::ConstInt(_)
+            | T::IntRange(..)
+            | T::Union(_)
+            | T::Benevolent(_)
+            | T::Intersection(_) => is_super_type_of(a, b),
             _ => Tri::No,
         },
         // TemplateMixedType::isAcceptedBy(), as MixedType's
-        T::Template(t) if matches!(t.bound, T::Mixed { .. }) => Tri::from(!is_super_type_of(b, a).no()),
+        T::Template(t) if matches!(t.bound, T::Mixed { .. }) => {
+            Tri::from(!is_super_type_of(b, a).no())
+        }
         // TemplateStrictMixedType::isAcceptedBy() uses the template's subtype relation, not the bound's accepts().
         T::Template(t) if matches!(t.bound, T::StrictMixed) => is_super_type_of(a, b),
         // TemplateTypeTrait::isAcceptedBy(): a union or intersection reaches here only with a bound of its kind (their
@@ -414,14 +574,22 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Template(t) => match a {
             T::Template(at) => {
                 let r = rec(&at.bound, &t.bound);
-                if at.name == t.name && at.scope == t.scope { r } else { r.and(Tri::Maybe) }
+                if at.name == t.name && at.scope == t.scope {
+                    r
+                } else {
+                    r.and(Tri::Maybe)
+                }
             }
             _ => rec(a, &t.bound),
         },
         // LateResolvableTypeTrait
         T::Conditional(c) => {
             let resolved = c.resolve();
-            if resolved.is_compound() { accepted_by(a, &resolved, strict, sm) } else { rec(a, &resolved) }
+            if resolved.is_compound() {
+                accepted_by(a, &resolved, strict, sm)
+            } else {
+                rec(a, &resolved)
+            }
         }
         // MixedType's is above; NeverType, IntegerRangeType, CallableType, IterableType and the accessories answer
         // `isSubTypeOf()`

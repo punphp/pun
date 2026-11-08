@@ -823,7 +823,8 @@ fn prepared_assignment_positions_and_cached_property_receivers_keep_their_own_an
 #[test]
 fn prepared_property_array_receivers_and_rhs_calls_are_evaluated_once() {
     const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/prepared-effects.php");
-    const ORACLE: &str = include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
     check_nullsafe_scopes(CODE, ORACLE);
     let source = std::str::from_utf8(CODE).unwrap();
     let start = source.rfind("preparedEffectBox()").unwrap() as u32;
@@ -844,7 +845,10 @@ fn prepared_property_array_receivers_and_rhs_calls_are_evaluated_once() {
         // The declared call result stays lazy after the property writer consumes it.
         assert!(!result.is_eager());
         assert!(!result.has_value_override());
-        assert_eq!(describe(result.get_raw_type(), &codebase), "PreparedEffectBox");
+        assert_eq!(
+            describe(result.get_raw_type(), &codebase),
+            "PreparedEffectBox"
+        );
         assert_eq!(describe(result.get_type(), &codebase), "PreparedEffectBox");
         assert!(result.get_native_type().is_none());
         assert!(result.get_raw_native_type().is_none());
@@ -866,7 +870,11 @@ fn prepared_targets_do_not_add_public_diagnostics() {
             .into_iter()
             .map(|error| {
                 serde_json::json!([
-                    error.line, error.identifier, error.message, error.tip, error.can_be_ignored,
+                    error.line,
+                    error.identifier,
+                    error.message,
+                    error.tip,
+                    error.can_be_ignored,
                 ])
             })
             .collect();
@@ -910,7 +918,8 @@ fn failed_target_operands_abort_before_rhs_effects() {
         ("$$class::$field", "$$class", 1, 6),
         ("${preparedFailure()}", "${preparedFailure()}", 2, 17),
     ] {
-        let code = format!("<?php function exercise($object): void {{ {target} = preparedLater(); }}");
+        let code =
+            format!("<?php function exercise($object): void {{ {target} = preparedLater(); }}");
         for native in [false, true] {
             let arena = LocalArena::new();
             let file = File::ephemeral(
@@ -929,16 +938,24 @@ fn failed_target_operands_abort_before_rhs_effects() {
             };
             let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
             let mut references = SymbolReferences::new();
-            populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+            populate_codebase(
+                &mut codebase,
+                &mut references,
+                Default::default(),
+                Default::default(),
+            );
             let events = Events::default();
             let mut registry = providers(&events);
             registry.register_expression_hook(FailOperand(failed));
             let mut result = AnalysisResult::new(references);
-            assert!(matches!(
-                Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
-                    .analyze_with_artifacts(program, &mut result),
-                Err(AnalysisError::Plugin(PluginError::Internal { reason })) if reason == "target operand failed"
-            ), "{target}");
+            assert!(
+                matches!(
+                    Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+                        .analyze_with_artifacts(program, &mut result),
+                    Err(AnalysisError::Plugin(PluginError::Internal { reason })) if reason == "target operand failed"
+                ),
+                "{target}"
+            );
             let events = events.0.lock().unwrap();
             assert_eq!(
                 events.get(&("expression-before", start, start + len)),
@@ -968,17 +985,20 @@ fn untyped_prepared_operands_remain_absent_without_a_second_visit() {
             expression: &Expression<'_>,
             _: &mut HookContext<'_, '_>,
         ) -> HookResult<ExpressionHookResult> {
-            Ok(if matches!(expression, Expression::Call(Call::Function(call))
+            Ok(
+                if matches!(expression, Expression::Call(Call::Function(call))
                 if matches!(call.function, Expression::Identifier(name) if name.value() == b"preparedEffectBox"))
-            {
-                ExpressionHookResult::Skip
-            } else {
-                ExpressionHookResult::Continue
-            })
+                {
+                    ExpressionHookResult::Skip
+                } else {
+                    ExpressionHookResult::Continue
+                },
+            )
         }
     }
     const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/prepared-effects.php");
-    const ORACLE: &str = include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
     let source = std::str::from_utf8(CODE).unwrap();
     let root_start = source.find("preparedEffectBox()->").unwrap() as u32;
     let root_end = root_start + "preparedEffectBox()".len() as u32;
@@ -999,7 +1019,11 @@ fn untyped_prepared_operands_remain_absent_without_a_second_visit() {
                 },
             );
             assert_eq!(
-                events.0.lock().unwrap().get(&("expression-before", root_start, root_end)),
+                events
+                    .0
+                    .lock()
+                    .unwrap()
+                    .get(&("expression-before", root_start, root_end)),
                 Some(&1)
             );
             let root = Span::new(file.id, Position::new(root_start), Position::new(root_end));
@@ -1018,7 +1042,11 @@ fn untyped_prepared_operands_remain_absent_without_a_second_visit() {
                     }
                 }
             }
-            runs.push((events.0.lock().unwrap().clone(), artifacts.expression_types, result.issues));
+            runs.push((
+                events.0.lock().unwrap().clone(),
+                artifacts.expression_types,
+                result.issues,
+            ));
         }
         assert_eq!(runs[0], runs[1]);
     }

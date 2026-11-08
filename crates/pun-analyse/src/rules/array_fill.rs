@@ -19,7 +19,11 @@ use pun_phpstan::types::Tri;
 
 const MAX_SIZE_USE_CONSTANT_ARRAY: i64 = 100;
 
-static META: ProviderMeta = ProviderMeta::new("pun-array-fill", "pun", "PHPStan's array_fill() return type");
+static META: ProviderMeta = ProviderMeta::new(
+    "pun-array-fill",
+    "pun",
+    "PHPStan's array_fill() return type",
+);
 
 pub(super) struct ArrayFill;
 
@@ -41,10 +45,9 @@ impl FunctionReturnTypeProvider for ArrayFill {
     ) -> Option<TUnion> {
         // the extension declines, and PHPStan's signature map returns `array` where Mago's prelude infers a list
         if invocation.argument_count() < 3 {
-            return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
-                Arc::new(get_arraykey()),
-                Arc::new(get_mixed()),
-            )))));
+            return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
+                TKeyedArray::new_with_parameters(Arc::new(get_arraykey()), Arc::new(get_mixed())),
+            ))));
         }
         let start = context.get_expression_type(invocation.get_argument(0, &[b"start_index"])?)?;
         let count = context.get_expression_type(invocation.get_argument(1, &[b"count"])?)?;
@@ -59,8 +62,10 @@ fn return_type(start: &TUnion, count: &TUnion, value: &TUnion) -> TUnion {
     if valid == Tri::No {
         return get_never();
     }
-    if let (Some(start), Some(n)) = (start.get_single_literal_int_value(), count.get_single_literal_int_value())
-        && n <= MAX_SIZE_USE_CONSTANT_ARRAY
+    if let (Some(start), Some(n)) = (
+        start.get_single_literal_int_value(),
+        count.get_single_literal_int_value(),
+    ) && n <= MAX_SIZE_USE_CONSTANT_ARRAY
     {
         let mut items = KnownItems::default();
         let mut next = start;
@@ -87,9 +92,15 @@ fn return_type(start: &TUnion, count: &TUnion, value: &TUnion) -> TUnion {
     }
     let non_empty = count.types.iter().all(|t| int_from(t, 1) == Tri::Yes);
     let array = if start.get_single_literal_int_value() == Some(0) {
-        TArray::List(TList { non_empty, ..TList::new(Arc::new(value.clone())) })
+        TArray::List(TList {
+            non_empty,
+            ..TList::new(Arc::new(value.clone()))
+        })
     } else {
-        TArray::Keyed(TKeyedArray { non_empty, ..TKeyedArray::new_with_parameters(Arc::new(get_int()), Arc::new(value.clone())) })
+        TArray::Keyed(TKeyedArray {
+            non_empty,
+            ..TKeyedArray::new_with_parameters(Arc::new(get_int()), Arc::new(value.clone()))
+        })
     };
     TUnion::from_atomic(TAtomic::Array(array))
 }
@@ -112,7 +123,9 @@ fn int_from(t: &TAtomic, min: i64) -> Tri {
             }
         }
         // an integer template is only maybe within a range, whatever its bound (TemplateIntegerType)
-        TAtomic::GenericParameter(_) | TAtomic::Mixed(_) | TAtomic::Scalar(TScalar::Generic | TScalar::ArrayKey | TScalar::Numeric) => Tri::Maybe,
+        TAtomic::GenericParameter(_)
+        | TAtomic::Mixed(_)
+        | TAtomic::Scalar(TScalar::Generic | TScalar::ArrayKey | TScalar::Numeric) => Tri::Maybe,
         _ => Tri::No,
     }
 }

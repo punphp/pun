@@ -36,7 +36,11 @@ pub(super) fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantia
         expr => {
             // php-parser drops the parentheses of `new ($expr)`
             let expr = super::types::flow::unparen(expr);
-            if c.toggled.on.contains(crate::rules::driver::Toggles::NEW_ON_NON_OBJECT) && non_object(c, new, expr) {
+            if c.toggled
+                .on
+                .contains(crate::rules::driver::Toggles::NEW_ON_NON_OBJECT)
+                && non_object(c, new, expr)
+            {
                 return;
             }
             for (name, is_name) in class_names(c, expr) {
@@ -143,7 +147,11 @@ fn class_string_object(c: &Checker, ty: &Type) -> Option<Type> {
                 .unwrap_or(Type::ObjectWithoutClass),
         ),
         Type::ConstString(n) if class_like(c, &String::from_utf8_lossy(n)).found().is_some() => {
-            Some(Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false))
+            Some(Type::Object(
+                String::from_utf8_lossy(n).into_owned(),
+                vec![],
+                false,
+            ))
         }
         // TemplateTypeFactory has no TemplateGenericClassStringType: a direct class-string bound falls back
         // to TemplateMixedType. Its union/intersection and ordinary string template subclasses retain bounds.

@@ -27,8 +27,23 @@ use crate::{Context, Report, Rule};
 
 /// php-parser's `ClassMethod::$magicNames`.
 const MAGIC_METHODS: [&str; 17] = [
-    "__construct", "__destruct", "__call", "__callstatic", "__get", "__set", "__isset", "__unset", "__sleep",
-    "__wakeup", "__tostring", "__set_state", "__clone", "__invoke", "__debuginfo", "__serialize", "__unserialize",
+    "__construct",
+    "__destruct",
+    "__call",
+    "__callstatic",
+    "__get",
+    "__set",
+    "__isset",
+    "__unset",
+    "__sleep",
+    "__wakeup",
+    "__tostring",
+    "__set_state",
+    "__clone",
+    "__invoke",
+    "__debuginfo",
+    "__serialize",
+    "__unserialize",
 ];
 
 #[derive(Default)]
@@ -94,7 +109,8 @@ impl Rule for AddParamTypeMethodCall {
             if !only_own || (!private && !protected) {
                 continue;
             }
-            let Some(types) = call_types(&facts, &scoped, &name, &methods, method.name.value) else {
+            let Some(types) = call_types(&facts, &scoped, &name, &methods, method.name.value)
+            else {
                 continue;
             };
             if is_vendor_locked(&facts, &name, method, private) {
@@ -108,7 +124,8 @@ impl Rule for AddParamTypeMethodCall {
                 if param.ellipsis.is_some() || param.hint.is_some() {
                     continue;
                 }
-                let Some(declaration) = param_declaration_unsorted(&types, &facts.codebase, ctx.php_version)
+                let Some(declaration) =
+                    param_declaration_unsorted(&types, &facts.codebase, ctx.php_version)
                 else {
                     continue;
                 };
@@ -142,11 +159,17 @@ fn is_vendor_locked(facts: &Facts, class: &str, method: &Method<'_>, private: bo
     if private {
         return false;
     }
-    facts.codebase.get_class_like(class.as_bytes()).is_some_and(|c| {
-        c.all_parent_interfaces
-            .iter()
-            .any(|i| facts.codebase.get_method(i.as_bytes(), method.name.value).is_some())
-    })
+    facts
+        .codebase
+        .get_class_like(class.as_bytes())
+        .is_some_and(|c| {
+            c.all_parent_interfaces.iter().any(|i| {
+                facts
+                    .codebase
+                    .get_method(i.as_bytes(), method.name.value)
+                    .is_some()
+            })
+        })
 }
 
 /// `LocalMethodCallFinder::match` and `CallTypesResolver::resolveStrictTypesFromCalls`: for each argument position of
@@ -268,7 +291,9 @@ fn static_class(scoped: &[Node<'_, '_>], class: &Expression<'_>) -> Option<Strin
     match unparenthesize(class) {
         // the rule visits classes only, so `scoped[at]` is the class
         Expression::Self_(_) | Expression::Static(_) => {
-            let Node::Class(c) = scoped[at] else { return None };
+            let Node::Class(c) = scoped[at] else {
+                return None;
+            };
             Some(qualified(&scoped[..at], c.name.value))
         }
         Expression::Identifier(id) => Some(resolve_class_name(&scoped[..at], id)),
@@ -279,7 +304,9 @@ fn static_class(scoped: &[Node<'_, '_>], class: &Expression<'_>) -> Option<Strin
 /// `ClassMethodParamTypeCompleter::isAcceptedByDefault`: the new type accepts the parameter's default value.
 fn accepts(facts: &Facts, types: &[TAtomic], default: &Expression<'_>) -> bool {
     // a default without a type (an unknown constant) is `mixed` to `mapPhpParserNodePHPStanType`, which `accepts()`
-    let Some(default) = type_of(facts, default) else { return true };
+    let Some(default) = type_of(facts, default) else {
+        return true;
+    };
     default.types.iter().all(|d| {
         types.iter().any(|t| match (t, d) {
             (TAtomic::Null, TAtomic::Null) => true,
@@ -314,7 +341,9 @@ fn literal_key(index: &Expression<'_>) -> Option<ArrayKey> {
                 _ => ArrayKey::from(v),
             })
         }
-        Expression::Literal(Literal::Integer(i)) => Some(ArrayKey::Integer(i64::try_from(i.value?).ok()?)),
+        Expression::Literal(Literal::Integer(i)) => {
+            Some(ArrayKey::Integer(i64::try_from(i.value?).ok()?))
+        }
         _ => None,
     }
 }
@@ -325,18 +354,22 @@ fn is_optional_offset(facts: &Facts, expr: &Expression<'_>) -> bool {
     let Expression::ArrayAccess(access) = unparenthesize(expr) else {
         return false;
     };
-    let Some(key) = literal_key(access.index) else { return false };
+    let Some(key) = literal_key(access.index) else {
+        return false;
+    };
     let nullable = facts
         .native_type(node_span(unparenthesize(expr)))
         .is_some_and(|t| t.types.iter().any(|a| matches!(a, TAtomic::Null)));
-    let has_key = facts.native_type(node_span(unparenthesize(access.array))).is_some_and(|array| {
-        array.types.iter().all(|a| match a {
-            TAtomic::Array(TArray::Keyed(k)) => k
-                .known_items
-                .as_ref()
-                .is_some_and(|items| items.get(&key).is_some_and(|(optional, _)| !*optional)),
-            _ => false,
-        })
-    });
+    let has_key = facts
+        .native_type(node_span(unparenthesize(access.array)))
+        .is_some_and(|array| {
+            array.types.iter().all(|a| match a {
+                TAtomic::Array(TArray::Keyed(k)) => k
+                    .known_items
+                    .as_ref()
+                    .is_some_and(|items| items.get(&key).is_some_and(|(optional, _)| !*optional)),
+                _ => false,
+            })
+        });
     nullable && !has_key
 }

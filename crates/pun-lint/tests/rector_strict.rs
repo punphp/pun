@@ -27,4 +27,3 @@ fn safe_declare_strict_types() {
         80400,
     );
 }
-

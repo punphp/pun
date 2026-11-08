@@ -22,7 +22,11 @@ pub(super) const IDENTIFIERS: &[&str] = &["return.unusedType", "property.unusedT
 /// `isConstantScalarValue()->yes()`.
 fn constant_scalar(t: &Type) -> bool {
     match t {
-        Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::Null => true,
+        Type::ConstInt(_)
+        | Type::ConstFloat(_)
+        | Type::ConstString(_)
+        | Type::ConstBool(_)
+        | Type::Null => true,
         Type::Union(ts) => ts.iter().all(constant_scalar),
         _ => false,
     }
@@ -38,12 +42,18 @@ fn resolved(t: &Type) -> Type {
 
 /// The members of a declared union `narrowType()` drops, as `createErrors()` describes them.
 fn unused(declared: &Type, actual: &Type) -> Vec<String> {
-    let Type::Union(members) = declared else { return Vec::new() };
+    let Type::Union(members) = declared else {
+        return Vec::new();
+    };
     if constant_scalar(declared) && constant_scalar(actual) {
         return Vec::new();
     }
     // (`checkFunctionReturnType()` narrows with `$checkDescendantClass` false)
-    let used = members.iter().filter(|m| !is_super_type_of(m, actual).no()).cloned().collect();
+    let used = members
+        .iter()
+        .filter(|m| !is_super_type_of(m, actual).no())
+        .cloned()
+        .collect();
     let narrowed = union(used);
     members
         .iter()
@@ -53,7 +63,15 @@ fn unused(declared: &Type, actual: &Type) -> Vec<String> {
 }
 
 /// `checkFunctionReturnType()` of a body (`native` is whether it has a native return type).
-fn body(c: &mut Checker, b: &Block, parent: Span, native: bool, ret: &Type, of: &str, descendant: bool) {
+fn body(
+    c: &mut Checker,
+    b: &Block,
+    parent: Span,
+    native: bool,
+    ret: &Type,
+    of: &str,
+    descendant: bool,
+) {
     let r = returns(b);
     if r.generator || r.returns.is_empty() {
         return;
@@ -68,8 +86,14 @@ fn body(c: &mut Checker, b: &Block, parent: Span, native: bool, ret: &Type, of: 
             }
         }
     }
-    let results = super::flow::Results { types: &c.types, call_terminations: Some(&c.call_terminations), contents: &c.file.contents, codebase: Some(c.codebase) };
-    let (flow, ends) = results.execution_ends(&list(b.statements.as_slice()), parent, Some(b.right_brace));
+    let results = super::flow::Results {
+        types: &c.types,
+        call_terminations: Some(&c.call_terminations),
+        contents: &c.file.contents,
+        codebase: Some(c.codebase),
+    };
+    let (flow, ends) =
+        results.execution_ends(&list(b.statements.as_slice()), parent, Some(b.right_brace));
     if !flow.always {
         types.push(Type::Void);
     }
@@ -78,7 +102,9 @@ fn body(c: &mut Checker, b: &Block, parent: Span, native: bool, ret: &Type, of: 
     }
     let actual = union(types);
     if let [only] = r.returns.as_slice()
-        && only.value.is_some_and(|v| matches!(v, Expression::Literal(Literal::True(_) | Literal::False(_))))
+        && only
+            .value
+            .is_some_and(|v| matches!(v, Expression::Literal(Literal::True(_) | Literal::False(_))))
         && ret.is_boolean().yes()
     {
         return;
@@ -102,8 +128,18 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     }
     let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
-    let ret = declared::with_classes(c, || late(c, &resolved(&declared::function(c, f).ret), None, !native));
-    body(c, &f.body, f.span(), native, &ret, &format!("Function {name}()"), false);
+    let ret = declared::with_classes(c, || {
+        late(c, &resolved(&declared::function(c, f).ret), None, !native)
+    });
+    body(
+        c,
+        &f.body,
+        f.span(),
+        native,
+        &ret,
+        &format!("Function {name}()"),
+        false,
+    );
 }
 
 pub(in super::super) fn method(c: &mut Checker, m: &Method) {
@@ -113,9 +149,14 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     let MethodBody::Concrete(b) = &m.body else {
         return;
     };
-    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else { return };
+    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else {
+        return;
+    };
     let private = m.modifiers.contains_private();
-    let anonymous = context.original_name.as_bytes().starts_with(b"{anonymous-class:");
+    let anonymous = context
+        .original_name
+        .as_bytes()
+        .starts_with(b"{anonymous-class:");
     let finals = context.flags.is_final()
         || anonymous
         || m.modifiers.contains_final()
@@ -130,7 +171,12 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
         .is_none_or(|o| o.is_empty());
     let native = m.return_type_hint.is_some();
     let ret = declared::with_classes(c, || {
-        late(c, &resolved(&declared::method(c, m, declaring, context).ret), Some(context), !native)
+        late(
+            c,
+            &resolved(&declared::method(c, m, declaring, context).ret),
+            Some(context),
+            !native,
+        )
     });
     let of = format!("Method {}::{name}()", c.display(context));
     body(c, b, m.span(), native, &ret, &of, !first && !private);
@@ -157,11 +203,15 @@ fn anonymous(c: &mut Checker, at: Span, actual: &Type, ret: &Type) {
 
 fn native(c: &Checker, hint: &FunctionLikeReturnTypeHint) -> Type {
     let class = c.class_scope();
-    declared::with_classes(c, || late(c, &declared::native(c, &hint.hint, class), class, false))
+    declared::with_classes(c, || {
+        late(c, &declared::native(c, &hint.hint, class), class, false)
+    })
 }
 
 pub(in super::super) fn closure(c: &mut Checker, f: &Closure) {
-    let (true, Some(hint)) = (c.level >= 4, &f.return_type_hint) else { return };
+    let (true, Some(hint)) = (c.level >= 4, &f.return_type_hint) else {
+        return;
+    };
     let r = returns(&f.body);
     if r.generator {
         return;
@@ -179,11 +229,15 @@ pub(in super::super) fn closure(c: &mut Checker, f: &Closure) {
 }
 
 pub(in super::super) fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
-    let (true, Some(hint)) = (c.level >= 4, &f.return_type_hint) else { return };
+    let (true, Some(hint)) = (c.level >= 4, &f.return_type_hint) else {
+        return;
+    };
     if matches!(unparen(f.expression), Expression::Yield(_)) {
         return;
     }
-    let Some(actual) = c.phpstan_type(f.expression) else { return };
+    let Some(actual) = c.phpstan_type(f.expression) else {
+        return;
+    };
     let ret = native(c, hint);
     anonymous(c, f.span(), &actual, &ret);
 }
@@ -249,7 +303,11 @@ fn without_null(t: &Type) -> Type {
 /// their default and the values its members assign them.
 // ponytail: the assignments in the traits the class uses are not read, nor are those of a list element, `++`/`--`, a
 // foreach target or a by-reference argument, whose properties are skipped
-pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, members: &[ClassLikeMember]) {
+pub(in super::super) fn properties(
+    c: &mut Checker,
+    k: &ClassLikeMetadata,
+    members: &[ClassLikeMember],
+) {
     if c.level < 4 || c.in_trait().is_some() {
         return;
     }
@@ -268,14 +326,21 @@ pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, membe
             rhs => rhs,
         };
         for found in super::properties::written(c, a.lhs) {
-            let Some((declaring, name, direct, offset)) = found else { return };
+            let Some((declaring, name, direct, offset)) = found else {
+                return;
+            };
             if !own(declaring) {
                 continue;
             }
             let t = match (&a.operator, direct) {
                 _ if offset => Written::Offset,
-                (AssignmentOperator::Assign(_), true) => c.phpstan_type(rhs).map_or(Written::Unknown, Written::Value),
-                (_, true) => c.types.get(&a.span()).map_or(Written::Unknown, |t| Written::Value(c.to_phpstan(t))),
+                (AssignmentOperator::Assign(_), true) => {
+                    c.phpstan_type(rhs).map_or(Written::Unknown, Written::Value)
+                }
+                (_, true) => c
+                    .types
+                    .get(&a.span())
+                    .map_or(Written::Unknown, |t| Written::Value(c.to_phpstan(t))),
                 (_, false) => Written::Unknown,
             };
             write(name, t);
@@ -284,16 +349,28 @@ pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, membe
     for call in &w.calls {
         let (refs, args) = match *call {
             Callee::Function(f) => (by_ref_arguments(c, f), &f.argument_list),
-            Callee::Method(m) => (by_ref_call_arguments(c, Callee::Method(m), &m.argument_list), &m.argument_list),
-            Callee::StaticMethod(m) => {
-                (by_ref_call_arguments(c, Callee::StaticMethod(m), &m.argument_list), &m.argument_list)
-            }
+            Callee::Method(m) => (
+                by_ref_call_arguments(c, Callee::Method(m), &m.argument_list),
+                &m.argument_list,
+            ),
+            Callee::StaticMethod(m) => (
+                by_ref_call_arguments(c, Callee::StaticMethod(m), &m.argument_list),
+                &m.argument_list,
+            ),
             Callee::New(n) => {
-                let Some(args) = &n.argument_list else { continue };
+                let Some(args) = &n.argument_list else {
+                    continue;
+                };
                 (by_ref_call_arguments(c, Callee::New(n), args), args)
             }
         };
-        w.others.extend(args.arguments.iter().zip(refs).filter(|(_, r)| *r).map(|(a, _)| a.value()));
+        w.others.extend(
+            args.arguments
+                .iter()
+                .zip(refs)
+                .filter(|(_, r)| *r)
+                .map(|(a, _)| a.value()),
+        );
     }
     for e in &w.others {
         for (declaring, name, ..) in super::properties::written(c, e).into_iter().flatten() {
@@ -304,7 +381,9 @@ pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, membe
     }
     let display = c.display(k);
     for m in members {
-        let ClassLikeMember::Property(p) = m else { continue };
+        let ClassLikeMember::Property(p) = m else {
+            continue;
+        };
         if !p.modifiers().contains_private() {
             continue;
         }
@@ -319,14 +398,25 @@ pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, membe
             let mut types = Vec::new();
             let mut known = true;
             let ret = declared::with_classes(c, || {
-                late(c, &resolved(&declared::property(c, p.hint(), p.span(), name, k)), Some(k), true)
+                late(
+                    c,
+                    &resolved(&declared::property(c, p.hint(), p.span(), name, k)),
+                    Some(k),
+                    true,
+                )
             });
             for (_, t) in assigned.iter().filter(|(n, _)| *n == text) {
                 match t {
                     Written::Value(t) => types.push(t.clone()),
                     // ponytail: an offset write gives an array property its array type (`setOffsetValueType()` of
                     // the type before), other properties are skipped
-                    Written::Offset if is_super_type_of(&Type::array(mixed(), mixed()), &without_null(&ret)).yes() => {
+                    Written::Offset
+                        if is_super_type_of(
+                            &Type::array(mixed(), mixed()),
+                            &without_null(&ret),
+                        )
+                        .yes() =>
+                    {
                         types.push(Type::array(mixed(), mixed()));
                     }
                     _ => known = false,
@@ -342,8 +432,13 @@ pub(in super::super) fn properties(c: &mut Checker, k: &ClassLikeMetadata, membe
                 continue;
             }
             let actual = union(types);
-            let described = declared::with_classes(c, || ret.describe(recommended_level(&ret, None)));
-            let kind = if static_ { "Static property" } else { "Property" };
+            let described =
+                declared::with_classes(c, || ret.describe(recommended_level(&ret, None)));
+            let kind = if static_ {
+                "Static property"
+            } else {
+                "Property"
+            };
             for t in declared::with_classes(c, || unused(&ret, &actual)) {
                 c.report(
                     p.span(),

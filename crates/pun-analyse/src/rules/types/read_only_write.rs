@@ -53,23 +53,36 @@ fn property(c: &mut Checker, p: &PropertyAccess) {
         return;
     };
     let property = [b"$", name.value].concat();
-    let (declaring, writable) = if let Some((declaring, _, meta)) = c.declared_property(class, &property)
-        && !(meta.read_visibility == mago_codex::visibility::Visibility::Private && declaring.name != class.name)
+    let (declaring, writable) = if let Some((declaring, _, meta)) =
+        c.declared_property(class, &property)
+        && !(meta.read_visibility == mago_codex::visibility::Visibility::Private
+            && declaring.name != class.name)
     {
         let virtual_ = c.property_virtual(declaring, meta, &property);
         let hooks = c.property_hooks(declaring, hook_names(meta), &property);
-        (c.display(declaring), meta.flags.is_static() || !virtual_ || hooks.1)
+        (
+            c.display(declaring),
+            meta.flags.is_static() || !virtual_ || hooks.1,
+        )
     } else if c.allows_dynamic_properties(class)
         && let Some(declaring) = class.magic_property_ids.get(&word(&property))
-        && let Some(tag) = c.codebase.get_magic_property(declaring.as_bytes(), &property)
+        && let Some(tag) = c
+            .codebase
+            .get_magic_property(declaring.as_bytes(), &property)
     {
-        let declaring = c.codebase.get_class_like(declaring.as_bytes()).map_or_else(String::new, |d| c.display(d));
+        let declaring = c
+            .codebase
+            .get_class_like(declaring.as_bytes())
+            .map_or_else(String::new, |d| c.display(d));
         (declaring, !tag.flags.is_readonly())
     } else {
         return;
     };
     if !writable {
-        let message = format!("Property {declaring}::${} is not writable.", String::from_utf8_lossy(name.value));
+        let message = format!(
+            "Property {declaring}::${} is not writable.",
+            String::from_utf8_lossy(name.value)
+        );
         c.report(name, "assign.propertyReadOnly", message, None);
     }
 }

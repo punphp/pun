@@ -137,14 +137,21 @@ fn from_parsed(
         },
         // `CallableTypeNode` with its templates (`TemplateTagValueNode`: `T of Bound super Lower = Default`)
         Node::Callable {
-            ident, templates, params, ret,
+            ident,
+            templates,
+            params,
+            ret,
         } => TypeNode::Callable {
             ident: ident.clone(),
             templates: templates
                 .iter()
                 .map(|t| {
                     let mut printed = t.name.clone();
-                    for (word, node) in [(" of ", &t.bound), (" super ", &t.lower), (" = ", &t.default)] {
+                    for (word, node) in [
+                        (" of ", &t.bound),
+                        (" super ", &t.lower),
+                        (" = ", &t.default),
+                    ] {
                         if let Some(node) = node {
                             printed.push_str(word);
                             printed.push_str(&from_parsed(node, false, all)?.to_string());
@@ -294,7 +301,12 @@ impl fmt::Display for TypeNode {
                 write!(f, "{kind}{{{}}}", printed.join(", "))
             }
             TypeNode::Nullable(inner) => write!(f, "?{inner}"),
-            TypeNode::Callable { ident, templates, params, ret } => {
+            TypeNode::Callable {
+                ident,
+                templates,
+                params,
+                ret,
+            } => {
                 // phpdoc-parser 2.4's `Printer::printType()` (Rector 2.8.4 prints with it): `ident(params): ret`, the
                 // return type in parentheses when it is a union, an intersection or a callable
                 let wrap = matches!(
@@ -307,7 +319,11 @@ impl fmt::Display for TypeNode {
                 }
                 let params = format!("({})", params.join(", "));
                 let ret = format!(": {ret}");
-                let templates = if templates.is_empty() { String::new() } else { format!("<{}>", templates.join(", ")) };
+                let templates = if templates.is_empty() {
+                    String::new()
+                } else {
+                    format!("<{}>", templates.join(", "))
+                };
                 write!(f, "{ident}{templates}{params}{ret}")
             }
         }
@@ -360,7 +376,9 @@ fn print_array(inner: &TypeNode, generic_parent: bool) -> String {
 /// parentheses.
 fn array_of(t: &TypeNode) -> String {
     match t {
-        TypeNode::Intersection(_) | TypeNode::Callable { .. } | TypeNode::Nullable(_) => format!("({t})[]"),
+        TypeNode::Intersection(_) | TypeNode::Callable { .. } | TypeNode::Nullable(_) => {
+            format!("({t})[]")
+        }
         _ => format!("{t}[]"),
     }
 }

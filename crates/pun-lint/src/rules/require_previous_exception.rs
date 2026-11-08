@@ -197,7 +197,11 @@ fn refactor(
         // Rector sets `args[$position]`, which php-parser prints after the last argument; Rector 2.8.4 reprints and
         // runs the rule again until nothing changes, so a positional exception goes in until it reaches its position
         // (`new \ErrorException('m', 1)` gets `$e` four times).
-        let count = if named { 1 } else { (position + 1).saturating_sub(args.len()).max(1) };
+        let count = if named {
+            1
+        } else {
+            (position + 1).saturating_sub(args.len()).max(1)
+        };
         for _ in 0..count {
             args.push(new_arg(named.then(|| "previous".to_string()), var.clone()));
         }

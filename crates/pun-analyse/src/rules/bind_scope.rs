@@ -75,8 +75,13 @@ impl<'arena> Checker<'_, 'arena> {
                 .bound_class_of(receiver, false)
                 .and_then(|n| self.class_like(&n).found())
                 .or_else(|| {
-                    let names = self.phpstan_type(original_receiver)?.remove_null().object_class_names();
-                    let [name] = names.as_slice() else { return None };
+                    let names = self
+                        .phpstan_type(original_receiver)?
+                        .remove_null()
+                        .object_class_names();
+                    let [name] = names.as_slice() else {
+                        return None;
+                    };
                     self.class_like(name).found()
                 }),
         };
@@ -84,8 +89,16 @@ impl<'arena> Checker<'_, 'arena> {
         let class = class.and_then(|class| match members::method(self, class, name.value) {
             Some(method) => Some((class, method)),
             None => {
-                let display = self.reflected_method(&Type::Object(self.display(class), vec![], false), name.value).ok()??.display;
-                let mixin = self.class_like(display.split('<').next().unwrap_or(&display)).found()?;
+                let display = self
+                    .reflected_method(
+                        &Type::Object(self.display(class), vec![], false),
+                        name.value,
+                    )
+                    .ok()??
+                    .display;
+                let mixin = self
+                    .class_like(display.split('<').next().unwrap_or(&display))
+                    .found()?;
                 Some((mixin, members::method(self, mixin, name.value)?))
             }
         });
@@ -192,9 +205,11 @@ impl<'arena> Checker<'_, 'arena> {
         self.bound_class_of(new_this, false).or_else(|| {
             // enterClosureCall() scopes the closure to `$thisType->getObjectClassNames()`
             match self.type_of(new_this)?.types.as_ref() {
-                [mago_codex::ttype::atomic::TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(named))] => {
-                    Some(String::from_utf8_lossy(named.name.as_bytes()).into_owned())
-                }
+                [
+                    mago_codex::ttype::atomic::TAtomic::Object(
+                        mago_codex::ttype::atomic::object::TObject::Named(named),
+                    ),
+                ] => Some(String::from_utf8_lossy(named.name.as_bytes()).into_owned()),
                 _ => None,
             }
         })

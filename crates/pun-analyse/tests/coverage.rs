@@ -29,7 +29,12 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("types-level4", "checks.php", 203, "void.pure"),
     // ConstantResolver::resolveConstantType() types a fetch of a `dynamicConstantNames` constant with its configured
     // type (`int` here); Pun types the fetch with the defined value 42, which `positive-int` accepts
-    ("dynamic-constant-values", "value-assigned-to-global-constant.php", 5, "constant.value"),
+    (
+        "dynamic-constant-values",
+        "value-assigned-to-global-constant.php",
+        5,
+        "constant.value",
+    ),
     // Calling a `callable(A|B, int): B` parameter infers its own A and B again from the arguments, so the result is A
     // where PHPStan keeps the function's B: the return reads `TReduceInitial`, not `TReduceInitial|TReduceReturnType`
     ("max", "template-self-reference.php", 32, "return.type"),
@@ -44,8 +49,18 @@ const EXTRA: &[(&str, &str, i64, &str)] = &[
     // PHPStan makes a holder an ErrorType after an invalid offset write (`$a[1] = 2`, `$closed['x'] = 1`, `$i['k'] = 1`);
     // Mago keeps its type, so NonexistentOffsetInArrayDimFetchRule still checks the later `.=` offsets
     ("types", "offsets.php", 122, "offsetAccess.notFound"),
-    ("types", "offsets.php", 124, "offsetAccess.nonOffsetAccessible"),
-    ("types", "offsets.php", 125, "offsetAccess.nonOffsetAccessible"),
+    (
+        "types",
+        "offsets.php",
+        124,
+        "offsetAccess.nonOffsetAccessible",
+    ),
+    (
+        "types",
+        "offsets.php",
+        125,
+        "offsetAccess.nonOffsetAccessible",
+    ),
     // The GAPS entry's message with `TReduceInitial` alone
     ("max", "template-self-reference.php", 32, "return.type"),
     // PHPStan 2.3.5 reports an unmatched entry in its config file. These two match PHPStan's errors that Pun does not
@@ -74,11 +89,16 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
     got.sort();
     // An entry in a config file belongs to that config's run only
     let ours = |file: &str| !file.ends_with(".neon") || file == format!("{neon}.neon");
-    for (case, file, line, id) in EXTRA.iter().filter(|(case, file, ..)| dir.ends_with(case) && ours(file)) {
+    for (case, file, line, id) in EXTRA
+        .iter()
+        .filter(|(case, file, ..)| dir.ends_with(case) && ours(file))
+    {
         let at = got
             .iter()
             .position(|k| k.0 == *file && k.1 == *line && k.2 == *id)
-            .ok_or_else(|| format!("EXTRA lists {case} {file}:{line} {id}, which Pun no longer reports"))?;
+            .ok_or_else(|| {
+                format!("EXTRA lists {case} {file}:{line} {id}, which Pun no longer reports")
+            })?;
         got.remove(at);
     }
     let expected: Value =

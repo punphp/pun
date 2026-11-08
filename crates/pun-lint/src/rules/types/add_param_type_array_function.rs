@@ -12,7 +12,8 @@ use pun_problem::Safety;
 use super::add_param_type_array_any_all::closure_params;
 use super::facts::facts;
 use super::param::{
-    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type, param_declaration_unsorted,
+    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed,
+    item_declaration, item_type, param_declaration_unsorted,
 };
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
@@ -53,7 +54,9 @@ impl Rule for AddParamTypeArrayFunction {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         if call.argument_list.arguments.len() != 2 {
             return;
         }
@@ -79,20 +82,34 @@ impl Rule for AddParamTypeArrayFunction {
             return;
         };
         let facts = facts(ctx);
-        let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else { return };
-        let Some(item) = item_type(&shape) else { return };
+        let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else {
+            return;
+        };
+        let Some(item) = item_type(&shape) else {
+            return;
+        };
         if is_mixed(&item) {
             return;
         }
         let declaration = match shape {
             // `ConstantArrayType::getItemType()`, PHPStan's union of the values
             ArrayShape::Constant(values) => {
-                let Some(types) = constant_values(&facts, ancestors, value(array), &values) else { return };
-                param_declaration_unsorted(&constant_values_union(&types), &facts.codebase, ctx.php_version)
+                let Some(types) = constant_values(&facts, ancestors, value(array), &values) else {
+                    return;
+                };
+                param_declaration_unsorted(
+                    &constant_values_union(&types),
+                    &facts.codebase,
+                    ctx.php_version,
+                )
             }
-            ArrayShape::General(_) => item_declaration(&facts, ancestors, value(array), &item, ctx.php_version),
+            ArrayShape::General(_) => {
+                item_declaration(&facts, ancestors, value(array), &item, ctx.php_version)
+            }
         };
-        let Some(declaration) = declaration else { return };
+        let Some(declaration) = declaration else {
+            return;
+        };
         out.push(Report::fixed(
             node_span(call),
             "Add the array's item type to the callback's parameter.",

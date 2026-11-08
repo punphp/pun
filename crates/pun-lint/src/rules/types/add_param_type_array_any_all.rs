@@ -13,8 +13,8 @@ use pun_problem::Safety;
 
 use super::facts::facts;
 use super::param::{
-    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type,
-    param_declaration_unsorted,
+    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed,
+    item_declaration, item_type, param_declaration_unsorted,
 };
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
@@ -49,7 +49,14 @@ impl Rule for AddParamTypeArrayAnyAll {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        visit(node, ancestors, ctx, out, &["array_any", "array_all"], false);
+        visit(
+            node,
+            ancestors,
+            ctx,
+            out,
+            &["array_any", "array_all"],
+            false,
+        );
     }
 }
 
@@ -93,7 +100,9 @@ fn visit(
     names: &[&str],
     narrow: bool,
 ) {
-    let Node::FunctionCall(call) = node else { return };
+    let Node::FunctionCall(call) = node else {
+        return;
+    };
     if !names.iter().any(|n| named(call, n)) {
         return;
     }
@@ -115,7 +124,9 @@ fn visit(
         _ => return,
     };
     let facts = facts(ctx);
-    let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else { return };
+    let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else {
+        return;
+    };
     let Some(item) = item_type(&shape) else {
         return;
     };
@@ -125,10 +136,18 @@ fn visit(
     let declaration = match shape {
         // `ConstantArrayType::getItemType()`, PHPStan's union of the values in the order their keys were set
         ArrayShape::Constant(values) => {
-            let Some(types) = constant_values(&facts, ancestors, value(array), &values) else { return };
-            param_declaration_unsorted(&constant_values_union(&types), &facts.codebase, ctx.php_version)
+            let Some(types) = constant_values(&facts, ancestors, value(array), &values) else {
+                return;
+            };
+            param_declaration_unsorted(
+                &constant_values_union(&types),
+                &facts.codebase,
+                ctx.php_version,
+            )
         }
-        ArrayShape::General(_) => item_declaration(&facts, ancestors, value(array), &item, ctx.php_version),
+        ArrayShape::General(_) => {
+            item_declaration(&facts, ancestors, value(array), &item, ctx.php_version)
+        }
     };
     let Some(declaration) = declaration else {
         return;
@@ -146,7 +165,9 @@ fn visit(
 }
 
 /// The parameters of a closure or an arrow function.
-pub(crate) fn closure_params<'a>(expr: &'a Expression<'a>) -> Option<&'a FunctionLikeParameterList<'a>> {
+pub(crate) fn closure_params<'a>(
+    expr: &'a Expression<'a>,
+) -> Option<&'a FunctionLikeParameterList<'a>> {
     match unparenthesize(expr) {
         Expression::Closure(c) => Some(&c.parameter_list),
         Expression::ArrowFunction(a) => Some(&a.parameter_list),

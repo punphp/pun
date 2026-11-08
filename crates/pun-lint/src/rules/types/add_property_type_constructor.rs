@@ -24,9 +24,9 @@ use super::facts::{Facts, facts};
 use super::property_type::{
     Assigned, ClassView, Prop, TYPED_PROPERTIES, Ty, VarTag, are_equal, assigned_native_ty,
     assigned_type, conflicts_with_default, declared_ty, default_span, default_ty, doc_text,
-    doc_type, hint_ty, is_doctrine_collection, is_legal, is_null_literal, is_var_tag_useless,
-    is_safe_protected_property, mixed_passed_or_union, parent_allows, property_declaration, union,
-    variable_span,
+    doc_type, hint_ty, is_doctrine_collection, is_legal, is_null_literal,
+    is_safe_protected_property, is_var_tag_useless, mixed_passed_or_union, parent_allows,
+    property_declaration, union, variable_span,
 };
 use crate::rules::no_redundant_property_default::is_property_assigned;
 use crate::syntax::{node_span, unparenthesize};

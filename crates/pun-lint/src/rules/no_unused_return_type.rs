@@ -567,9 +567,9 @@ fn phpdoc_node(t: &RType) -> TypeNode {
             // name it holds
             let keys: Vec<Type> = (types.iter())
                 .map(|t| match t {
-                    RType::Object(Object::Shortened { short: name, .. } | Object::Aliased { alias: name, .. }) => {
-                        Type::Object(name.clone(), Vec::new(), false)
-                    }
+                    RType::Object(
+                        Object::Shortened { short: name, .. } | Object::Aliased { alias: name, .. },
+                    ) => Type::Object(name.clone(), Vec::new(), false),
                     other => other.to_sub(),
                 })
                 .collect();
@@ -581,7 +581,11 @@ fn phpdoc_node(t: &RType) -> TypeNode {
                     sorted.push(phpdoc_node(&types[i]));
                 }
             }
-            sorted.extend((0..keys.len()).filter(|&i| !used[i]).map(|i| phpdoc_node(&types[i])));
+            sorted.extend(
+                (0..keys.len())
+                    .filter(|&i| !used[i])
+                    .map(|i| phpdoc_node(&types[i])),
+            );
             TypeNode::Union {
                 types: sorted,
                 wrapped: false,

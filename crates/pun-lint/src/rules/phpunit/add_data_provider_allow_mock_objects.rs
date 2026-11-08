@@ -14,9 +14,9 @@ use super::add_allow_mock_objects_attribute::{ATTRIBUTES, add_attribute, should_
 use super::annotations::named_tags;
 use super::no_bare_mock_assign::scoped;
 use super::{AnyCall, class_body, is_public};
+use crate::rules::laravel::is_a;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_batch5::has_attribute;
-use crate::rules::laravel::is_a;
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -115,11 +115,13 @@ fn is_stub_only(ctx: &Context<'_>, expr: &Expression<'_>) -> bool {
             && t.types.iter().all(|atomic| match atomic {
                 TAtomic::Object(TObject::Named(named)) => {
                     is_a(ctx, &named.name.to_string(), &[class])
-                        || (named.intersection_types.iter().flat_map(|ts| ts.iter())).any(|part| match part {
-                            TAtomic::Object(TObject::Named(p)) => {
-                                is_a(ctx, &p.name.to_string(), &[class])
+                        || (named.intersection_types.iter().flat_map(|ts| ts.iter())).any(|part| {
+                            match part {
+                                TAtomic::Object(TObject::Named(p)) => {
+                                    is_a(ctx, &p.name.to_string(), &[class])
+                                }
+                                _ => false,
                             }
-                            _ => false,
                         })
                 }
                 _ => false,

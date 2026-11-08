@@ -135,7 +135,11 @@ fn run_error(message: String, hint: Option<String>) -> anyhow::Error {
 /// The project pun-analyse works on: the analysed files, Composer's autoloaded files for symbols (minus the
 /// excludes), the target PHP version, and `[analyse]` as PHPStan's parameters (the level, `stubFiles`,
 /// `ignoreErrors`, Larastan, rule options). Only the enabled rules' identifiers are reported.
-fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> Result<pun_analyse::Project> {
+fn project(
+    cfg: &Config,
+    analysed: Vec<PathBuf>,
+    analysed_paths: &[PathBuf],
+) -> Result<pun_analyse::Project> {
     use pun_phpstan::ignore::IgnoredErrors;
     use pun_phpstan::{Array, Key, Value};
     let mut params = cfg.analyse.parameters(&cfg.root);
@@ -157,7 +161,10 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> 
     // InceptionResult::isOnlyFiles() over the analysed paths: the parameters carry no `paths`
     project.only_files = analysed_paths.iter().all(|p| p.is_file());
     // FuzzyRelativePathHelper (anonymous class names) over the analysed paths
-    let analysed_paths: Vec<String> = analysed_paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
+    let analysed_paths: Vec<String> = analysed_paths
+        .iter()
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect();
     project.relative_path = pun_analyse::RelativePath::of(&analysed_paths);
     let ignores = (params.get_str("ignoreErrors").and_then(Value::as_array)).cloned();
     let ignores = ignores.unwrap_or_default();
@@ -165,7 +172,11 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> 
     let pun_toml = cfg.pun_toml();
     let mut ignore_errors = IgnoredErrors::new(&ignores, true).with_rules(rule_of_identifier);
     if let Some(file) = pun_toml {
-        ignore_errors = ignore_errors.with_config_entries(&file.to_string_lossy(), &ignores, &cfg.root.to_string_lossy());
+        ignore_errors = ignore_errors.with_config_entries(
+            &file.to_string_lossy(),
+            &ignores,
+            &cfg.root.to_string_lossy(),
+        );
     }
     project.ignore_errors = ignore_errors;
     let on: std::collections::HashSet<String> =

@@ -183,7 +183,11 @@ fn expression_guards(name: &str, levels: &[u8]) {
     let mut differences = Vec::new();
     for &level in levels {
         let config = resolve(&Options {
-            config: Some(root.join(format!("{name}.neon")).to_string_lossy().into_owned()),
+            config: Some(
+                root.join(format!("{name}.neon"))
+                    .to_string_lossy()
+                    .into_owned(),
+            ),
             level: Some(level.to_string()),
             ..Options::for_project(&root.to_string_lossy())
         })
@@ -195,8 +199,14 @@ fn expression_guards(name: &str, levels: &[u8]) {
         let relevant = |e: &Key| e.2.starts_with("classConstant.") || e.2 == "class.notFound";
         let mut project = Project::from_config(&root, &config.parameters);
         project.level = level;
-        let got: Vec<_> = keys(run(&project).unwrap(), &root).into_iter().filter(relevant).collect();
-        let want: Vec<_> = expected(&want["errors"]).into_iter().filter(relevant).collect();
+        let got: Vec<_> = keys(run(&project).unwrap(), &root)
+            .into_iter()
+            .filter(relevant)
+            .collect();
+        let want: Vec<_> = expected(&want["errors"])
+            .into_iter()
+            .filter(relevant)
+            .collect();
         if got != want {
             let mut missing = want;
             let mut extra = Vec::new();
@@ -207,7 +217,9 @@ fn expression_guards(name: &str, levels: &[u8]) {
                     extra.push(error);
                 }
             }
-            differences.push(format!("{name}, level {level}: extra {extra:#?}, missing {missing:#?}"));
+            differences.push(format!(
+                "{name}, level {level}: extra {extra:#?}, missing {missing:#?}"
+            ));
         }
     }
     assert!(differences.is_empty(), "{}", differences.join("\n"));

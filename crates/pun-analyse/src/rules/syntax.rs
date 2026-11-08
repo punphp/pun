@@ -259,12 +259,7 @@ fn names_of(
 }
 
 /// findErrorsInUses().
-fn uses(
-    c: &mut Checker,
-    prefix: &str,
-    items: &[&UseItem],
-    scope: &mut Vec<String>,
-) {
+fn uses(c: &mut Checker, prefix: &str, items: &[&UseItem], scope: &mut Vec<String>) {
     for item in items {
         // php-parser drops a use name's leading `\`
         let name = c.written(item.name.span());

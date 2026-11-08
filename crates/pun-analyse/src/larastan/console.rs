@@ -100,7 +100,11 @@ impl InputArgument {
             (Some(m), Value::Null) if m & Self::IS_ARRAY != 0 => Value::Array(Vec::new()),
             (_, d) => d,
         };
-        InputArgument { name, mode, default }
+        InputArgument {
+            name,
+            mode,
+            default,
+        }
     }
 }
 
@@ -124,17 +128,30 @@ impl InputOption {
     fn new(name: String, mode: Option<Option<u32>>, default: Value) -> InputOption {
         let mode = mode.map_or(Some(Self::VALUE_NONE), |m| {
             m.map(|m| {
-                if m & (Self::VALUE_REQUIRED | Self::VALUE_OPTIONAL) != 0 { m } else { m | Self::VALUE_NONE }
+                if m & (Self::VALUE_REQUIRED | Self::VALUE_OPTIONAL) != 0 {
+                    m
+                } else {
+                    m | Self::VALUE_NONE
+                }
             })
         });
         let default = match mode {
-            Some(m) if m & Self::VALUE_IS_ARRAY != 0 && default == Value::Null => Value::Array(Vec::new()),
-            Some(m) if m & (Self::VALUE_REQUIRED | Self::VALUE_OPTIONAL | Self::VALUE_NEGATABLE) == 0 => {
+            Some(m) if m & Self::VALUE_IS_ARRAY != 0 && default == Value::Null => {
+                Value::Array(Vec::new())
+            }
+            Some(m)
+                if m & (Self::VALUE_REQUIRED | Self::VALUE_OPTIONAL | Self::VALUE_NEGATABLE)
+                    == 0 =>
+            {
                 Value::Bool(false)
             }
             _ => default,
         };
-        InputOption { name, mode, default }
+        InputOption {
+            name,
+            mode,
+            default,
+        }
     }
 }
 
@@ -163,7 +180,13 @@ impl Definition {
     }
 
     /// `InputDefinition::addOption()`: the name without `--`, and each shortcut (InputOption's constructor).
-    fn add_option(&mut self, name: &str, shortcut: Option<&str>, mode: Option<Option<u32>>, default: Value) -> Option<()> {
+    fn add_option(
+        &mut self,
+        name: &str,
+        shortcut: Option<&str>,
+        mode: Option<Option<u32>>,
+        default: Value,
+    ) -> Option<()> {
         let name = name.strip_prefix("--").unwrap_or(name);
         if name.is_empty() {
             return None;
@@ -193,7 +216,11 @@ impl Definition {
     /// Symfony's `Application::getDefaultInputDefinition()` and Laravel's `--env`.
     fn application() -> Definition {
         let mut d = Definition::default();
-        d.add_argument(InputArgument::new("command".into(), Some(Some(InputArgument::REQUIRED)), Value::Null));
+        d.add_argument(InputArgument::new(
+            "command".into(),
+            Some(Some(InputArgument::REQUIRED)),
+            Value::Null,
+        ));
         for (name, shortcut, mode) in [
             ("help", Some("h"), InputOption::VALUE_NONE),
             ("silent", None, InputOption::VALUE_NONE),
@@ -212,7 +239,10 @@ impl Definition {
     /// `mergeApplicationDefinition()`: the application's arguments first, then its options after the command's.
     fn merge(&self) -> Definition {
         let application = Definition::application();
-        let mut merged = Definition { arguments: application.arguments, ..Definition::default() };
+        let mut merged = Definition {
+            arguments: application.arguments,
+            ..Definition::default()
+        };
         for a in &self.arguments {
             merged.add_argument(a.clone());
         }
@@ -319,7 +349,12 @@ fn command(
     configure(codebase, files, k, &mut definition)?;
     if codebase.class_implements(class, ISOLATABLE) {
         // `new InputOption('isolated', null, InputOption::VALUE_OPTIONAL, ..., false)`
-        definition.add_option("isolated", None, Some(Some(InputOption::VALUE_OPTIONAL)), Value::Bool(false));
+        definition.add_option(
+            "isolated",
+            None,
+            Some(Some(InputOption::VALUE_OPTIONAL)),
+            Value::Bool(false),
+        );
     }
     // Application::resolve(): a command with #[AsCommand] is lazy, under the attribute's names
     let names = match attribute(b"symfony\\component\\console\\attribute\\ascommand") {
@@ -393,7 +428,11 @@ fn strings(t: &TUnion) -> Option<Vec<String>> {
 }
 
 /// A signature's name, arguments, and options with their shortcuts, modes and defaults.
-type Signature = (String, Vec<InputArgument>, Vec<(String, Option<String>, u32, Value)>);
+type Signature = (
+    String,
+    Vec<InputArgument>,
+    Vec<(String, Option<String>, u32, Value)>,
+);
 
 /// Laravel's `Parser::parse()`: the name, the arguments and the options. `None` when the signature has no name
 /// (Laravel throws).
@@ -445,14 +484,23 @@ fn split_list(s: &str) -> Value {
         start = m.end();
     }
     values.push(text(&bytes[start..]));
-    Value::Array(values.into_iter().enumerate().map(|(i, v)| (Key::Int(i as i64), Value::String(v))).collect())
+    Value::Array(
+        values
+            .into_iter()
+            .enumerate()
+            .map(|(i, v)| (Key::Int(i as i64), Value::String(v)))
+            .collect(),
+    )
 }
 
 /// A default `(.+)=*(.+)` (an array, split at commas) or `(.+)=(.+)`, with the name before it.
 fn with_default(token: &str) -> Option<(String, Value, bool)> {
     let captures = |cell: &'static OnceLock<pcre2::bytes::Regex>, pattern: &str| {
         let re = cell.get_or_init(|| preg_compile(pattern).expect("a valid pattern"));
-        re.captures(token.as_bytes()).ok().flatten().map(|c| (text(&c[1]), text(&c[2])))
+        re.captures(token.as_bytes())
+            .ok()
+            .flatten()
+            .map(|c| (text(&c[1]), text(&c[2])))
     };
     if let Some((name, default)) = captures(&ARRAY_DEFAULT, r"/(.+)\=\*(.+)/") {
         return Some((name, split_list(&default), true));
@@ -464,9 +512,17 @@ fn with_default(token: &str) -> Option<(String, Value, bool)> {
 fn parse_argument(token: &str) -> InputArgument {
     let token = extract_description(token);
     let (name, mode, default) = if token.ends_with("?*") {
-        (trim(&token, "?*").to_string(), InputArgument::IS_ARRAY, Value::Null)
+        (
+            trim(&token, "?*").to_string(),
+            InputArgument::IS_ARRAY,
+            Value::Null,
+        )
     } else if token.ends_with('*') {
-        (trim(&token, "*").to_string(), InputArgument::IS_ARRAY | InputArgument::REQUIRED, Value::Null)
+        (
+            trim(&token, "*").to_string(),
+            InputArgument::IS_ARRAY | InputArgument::REQUIRED,
+            Value::Null,
+        )
     } else if token.ends_with('?') {
         (trim(&token, "?").to_string(), 2, Value::Null)
     } else {
@@ -491,7 +547,11 @@ fn parse_option(token: &str) -> (String, Option<String>, u32, Value) {
     let (name, mode, default) = if token.ends_with('=') {
         (trim(&token, "=").to_string(), optional, Value::Null)
     } else if token.ends_with("=*") {
-        (trim(&token, "=*").to_string(), optional | InputOption::VALUE_IS_ARRAY, Value::Null)
+        (
+            trim(&token, "=*").to_string(),
+            optional | InputOption::VALUE_IS_ARRAY,
+            Value::Null,
+        )
     } else {
         match with_default(&token) {
             Some((name, default, true)) => (name, optional | InputOption::VALUE_IS_ARRAY, default),
@@ -632,7 +692,9 @@ fn call_parameters<'a, 'arena>(list: &'a ArgumentList<'arena>) -> Option<Paramet
     list.arguments
         .iter()
         .map(|a| match a {
-            mago_syntax::cst::Argument::Positional(p) if p.ellipsis.is_none() => Some((None, p.value)),
+            mago_syntax::cst::Argument::Positional(p) if p.ellipsis.is_none() => {
+                Some((None, p.value))
+            }
             mago_syntax::cst::Argument::Named(n) => Some((Some(n.name.value), n.value)),
             _ => None,
         })
@@ -678,7 +740,8 @@ fn add(
     };
     let name = string(parameter(0, b"name")?)?;
     let mode = |position: usize| parameter(position, b"mode").map(|e| mode(names, e));
-    let default = |position: usize| parameter(position, b"default").map_or(Value::Null, |e| value(e));
+    let default =
+        |position: usize| parameter(position, b"default").map_or(Value::Null, |e| value(e));
     if !option {
         definition.add_argument(InputArgument::new(name, mode(1), default(3)));
         return Some(());
@@ -726,7 +789,10 @@ fn mode(names: &ResolvedNames, e: &Expression) -> Option<u32> {
             } else {
                 return None;
             };
-            constants.iter().find(|(n, _)| *n == constant.value).map(|(_, v)| *v)
+            constants
+                .iter()
+                .find(|(n, _)| *n == constant.value)
+                .map(|(_, v)| *v)
         }
         _ => None,
     }
@@ -738,9 +804,14 @@ fn value(e: &Expression) -> Value {
         Expression::Literal(Literal::Null(_)) => Value::Null,
         Expression::Literal(Literal::True(_)) => Value::Bool(true),
         Expression::Literal(Literal::False(_)) => Value::Bool(false),
-        Expression::Literal(Literal::Integer(i)) => i.value.and_then(|v| i64::try_from(v).ok()).map_or(Value::Unknown, Value::Int),
+        Expression::Literal(Literal::Integer(i)) => i
+            .value
+            .and_then(|v| i64::try_from(v).ok())
+            .map_or(Value::Unknown, Value::Int),
         Expression::Literal(Literal::Float(f)) => Value::Float(f.value.into_inner()),
-        Expression::Literal(Literal::String(s)) => s.value.map_or(Value::Unknown, |v| Value::String(text(v))),
+        Expression::Literal(Literal::String(s)) => {
+            s.value.map_or(Value::Unknown, |v| Value::String(text(v)))
+        }
         Expression::Array(a) => array_value(&a.elements),
         Expression::LegacyArray(a) => array_value(&a.elements),
         _ => Value::Unknown,

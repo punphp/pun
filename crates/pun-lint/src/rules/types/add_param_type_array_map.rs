@@ -13,11 +13,11 @@ use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
+use super::class_scope;
 use super::facts::facts;
 use super::param::{
     ArrayShape, add_hint, array_shape_of, doc_order, is_mixed, own_static, param_declaration_in,
 };
-use super::class_scope;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -41,7 +41,9 @@ impl Rule for AddParamTypeArrayMap {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         if !named(call, "array_map") {
             return;
         }
@@ -62,7 +64,8 @@ impl Rule for AddParamTypeArrayMap {
             let Some(param) = params.get(position) else {
                 continue;
             };
-            let Some(ArrayShape::General(Some(item))) = array_shape_of(&facts, ancestors, value(arg))
+            let Some(ArrayShape::General(Some(item))) =
+                array_shape_of(&facts, ancestors, value(arg))
             else {
                 continue;
             };
@@ -70,8 +73,15 @@ impl Rule for AddParamTypeArrayMap {
                 continue;
             }
             let class = class_scope(ancestors).and_then(|scope| scope.name);
-            let item = TUnion::from_vec(item.types.iter().map(|t| own_static(t, class.as_deref())).collect());
-            if let Some(declaration) = param_declaration_in(&item, &facts.codebase, ctx.php_version, &order) {
+            let item = TUnion::from_vec(
+                item.types
+                    .iter()
+                    .map(|t| own_static(t, class.as_deref()))
+                    .collect(),
+            );
+            if let Some(declaration) =
+                param_declaration_in(&item, &facts.codebase, ctx.php_version, &order)
+            {
                 edits.push(add_hint(param, &declaration));
             }
         }

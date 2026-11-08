@@ -109,7 +109,9 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
                 .flat_map(|(key, value)| key.iter().copied().chain(std::iter::once(*value)))
                 .collect(),
             Some(Origin::Offset(array, key)) => vec![*array, *key],
-            Some(Origin::Unset(array, keys)) => std::iter::once(*array).chain(keys.iter().copied()).collect(),
+            Some(Origin::Unset(array, keys)) => std::iter::once(*array)
+                .chain(keys.iter().copied())
+                .collect(),
             Some(Origin::Call(call) | Origin::Callback(call, ..)) => call
                 .args
                 .iter()
@@ -162,11 +164,23 @@ impl Sources<'_, '_> {
 
     fn explicit_mixed_parameter(&self, origin: &Origin) -> bool {
         match origin {
-            Origin::Parameter(function, index) => self.codebase.function_likes.get(function)
+            Origin::Parameter(function, index) => self
+                .codebase
+                .function_likes
+                .get(function)
                 .map(|f| &f.parameters[*index])
-                .is_some_and(|p| p.type_declaration_metadata.as_ref().is_none_or(|t| t.type_union.is_mixed())
-                    && p.type_metadata.as_ref().is_some_and(|t| t.type_union.is_mixed())),
-            Origin::Copy(span) => self.found.get(span).is_some_and(|o| self.explicit_mixed_parameter(o)),
+                .is_some_and(|p| {
+                    p.type_declaration_metadata
+                        .as_ref()
+                        .is_none_or(|t| t.type_union.is_mixed())
+                        && p.type_metadata
+                            .as_ref()
+                            .is_some_and(|t| t.type_union.is_mixed())
+                }),
+            Origin::Copy(span) => self
+                .found
+                .get(span)
+                .is_some_and(|o| self.explicit_mixed_parameter(o)),
             _ => false,
         }
     }
@@ -318,7 +332,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         let has_else = match &i.body {
             IfBody::Statement(b) => {
                 branches.push((None, vec![b.statement]));
-                branches.extend(b.else_if_clauses.iter().map(|e| (Some(e.condition), vec![e.statement])));
+                branches.extend(
+                    b.else_if_clauses
+                        .iter()
+                        .map(|e| (Some(e.condition), vec![e.statement])),
+                );
                 if let Some(e) = &b.else_clause {
                     branches.push((None, vec![e.statement]));
                 }
@@ -326,7 +344,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             }
             IfBody::ColonDelimited(b) => {
                 branches.push((None, b.statements.iter().collect()));
-                branches.extend(b.else_if_clauses.iter().map(|e| (Some(e.condition), e.statements.iter().collect())));
+                branches.extend(
+                    b.else_if_clauses
+                        .iter()
+                        .map(|e| (Some(e.condition), e.statements.iter().collect())),
+                );
                 if let Some(e) = &b.else_clause {
                     branches.push((None, e.statements.iter().collect()));
                 }
@@ -369,8 +391,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         self.walk_expression(b.lhs, ctx);
         let skipped = self.locals.clone();
         self.walk_expression(b.rhs, ctx);
-        if matches!(b.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_) | BinaryOperator::Or(_) | BinaryOperator::LowOr(_))
-            || b.operator.is_null_coalesce()
+        if matches!(
+            b.operator,
+            BinaryOperator::And(_)
+                | BinaryOperator::LowAnd(_)
+                | BinaryOperator::Or(_)
+                | BinaryOperator::LowOr(_)
+        ) || b.operator.is_null_coalesce()
         {
             self.merge(vec![self.locals.clone(), skipped]);
         }
@@ -419,16 +446,20 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         };
         if let Some(elements) = elements
             && elements.len() <= 256
-            && let Some(items) = elements.iter().map(|element| match element {
-                ArrayElement::KeyValue(kv) => Some((Some(kv.key.span()), kv.value.span())),
-                ArrayElement::Value(value) => Some((None, value.value.span())),
-                _ => None,
-            }).collect::<Option<Vec<_>>>()
+            && let Some(items) = elements
+                .iter()
+                .map(|element| match element {
+                    ArrayElement::KeyValue(kv) => Some((Some(kv.key.span()), kv.value.span())),
+                    ArrayElement::Value(value) => Some((None, value.value.span())),
+                    _ => None,
+                })
+                .collect::<Option<Vec<_>>>()
         {
             self.found.insert(e.span(), Origin::Array(items));
         }
         if let Expression::ArrayAccess(a) = e {
-            self.found.insert(e.span(), Origin::Offset(a.array.span(), a.index.span()));
+            self.found
+                .insert(e.span(), Origin::Offset(a.array.span(), a.index.span()));
         }
         // Keep the operation's source edge, not a cached inferred value. Parent offsets written back
         // by nested unsets retain existing slots or append new ones in this operation's real order.
@@ -444,7 +475,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
                 Expression::Variable(Variable::Direct(v)) if !keys.is_empty() => {
                     keys.reverse();
                     if self.locals.contains_key(v.name) {
-                        self.locals.insert(v.name.to_vec(), Origin::Unset(root.span(), keys));
+                        self.locals
+                            .insert(v.name.to_vec(), Origin::Unset(root.span(), keys));
                     }
                 }
                 Expression::Variable(Variable::Direct(v)) => {

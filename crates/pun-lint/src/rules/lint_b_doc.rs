@@ -171,11 +171,13 @@ impl<'s> Doc<'s> {
                 while let Some(at) = rest.find('\n') {
                     out.push_str(&rest[..at]);
                     rest = &rest[at + 1..];
-                    out.push_str(if matches!(rest.as_bytes().first(), None | Some(b'\r' | b'\n')) {
-                        "\n *"
-                    } else {
-                        "\n * "
-                    });
+                    out.push_str(
+                        if matches!(rest.as_bytes().first(), None | Some(b'\r' | b'\n')) {
+                            "\n *"
+                        } else {
+                            "\n * "
+                        },
+                    );
                 }
                 out.push_str(rest);
                 out
@@ -189,7 +191,12 @@ impl<'s> Doc<'s> {
             return format!("/**\n *{}\n */", parts.join("\n *"));
         }
         // `removeTrailingEmptyLines()`: removing the last tag keeps the empty lines above it, so they go too.
-        if appended.is_empty() && self.children.last().is_some_and(|_| !empty(self.children.len() - 1)) {
+        if appended.is_empty()
+            && self
+                .children
+                .last()
+                .is_some_and(|_| !empty(self.children.len() - 1))
+        {
             while kept.last().is_some_and(|&i| empty(i)) {
                 kept.pop();
             }
@@ -209,9 +216,19 @@ impl<'s> Doc<'s> {
             Add(&'a str),
         }
         let mut diff: Vec<Elem<'_>> = (0..self.children.len())
-            .map(|i| if kept.contains(&i) { Elem::Keep(i) } else { Elem::Remove(i) })
+            .map(|i| {
+                if kept.contains(&i) {
+                    Elem::Keep(i)
+                } else {
+                    Elem::Remove(i)
+                }
+            })
             .collect();
-        let trailing = diff.iter().rev().take_while(|e| matches!(e, Elem::Remove(_))).count();
+        let trailing = diff
+            .iter()
+            .rev()
+            .take_while(|e| matches!(e, Elem::Remove(_)))
+            .count();
         if trailing > 0 && trailing == appended.len() {
             let first = diff.len() - trailing;
             for (n, tag) in appended.iter().enumerate() {
@@ -346,7 +363,10 @@ fn children(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(usize, usize)> 
         let t = tokens[i];
         t.0 == Kind::Other && {
             let word = &text.as_bytes()[t.1..t.2];
-            word[0] == b'@' && word.get(1).is_some_and(|b| b.is_ascii_alphabetic() || *b == b'\\')
+            word[0] == b'@'
+                && word
+                    .get(1)
+                    .is_some_and(|b| b.is_ascii_alphabetic() || *b == b'\\')
         }
     };
     let ends = |i: usize| matches!(tokens[i].0, Kind::Close | Kind::End);

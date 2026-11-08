@@ -17,7 +17,11 @@ pub(super) fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     let class = c.display(k);
     let mut errors: Vec<(&str, String)> = Vec::new();
     // getInterfaces()
-    for i in k.all_parent_interfaces.iter().filter_map(|i| c.codebase.get_class_like(i.as_bytes())) {
+    for i in k
+        .all_parent_interfaces
+        .iter()
+        .filter_map(|i| c.codebase.get_class_like(i.as_bytes()))
+    {
         for t in tags(c, i, "require-extends") {
             if object_class_names(&t).iter().any(|n| !is(k, n)) {
                 let message = format!(
@@ -46,7 +50,10 @@ pub(super) fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
         for ty in tags(c, t, "require-implements") {
             // `instanceof ObjectType`, generic or not
             if let Type::Object(name, _, _) = &ty
-                && !k.all_parent_interfaces.iter().any(|i| i.as_bytes().eq_ignore_ascii_case(name.as_bytes()))
+                && !k
+                    .all_parent_interfaces
+                    .iter()
+                    .any(|i| i.as_bytes().eq_ignore_ascii_case(name.as_bytes()))
             {
                 let message = format!(
                     "Trait {} requires using class to implement {}, but {class} does not.",
@@ -96,8 +103,12 @@ fn object_class_names(t: &Type) -> Vec<String> {
 fn is(k: &ClassLikeMetadata, name: &str) -> bool {
     let name = name.as_bytes();
     k.name.as_bytes().eq_ignore_ascii_case(name)
-        || k.all_parent_classes.iter().any(|p| p.as_bytes().eq_ignore_ascii_case(name))
-        || k.all_parent_interfaces.iter().any(|p| p.as_bytes().eq_ignore_ascii_case(name))
+        || k.all_parent_classes
+            .iter()
+            .any(|p| p.as_bytes().eq_ignore_ascii_case(name))
+        || k.all_parent_interfaces
+            .iter()
+            .any(|p| p.as_bytes().eq_ignore_ascii_case(name))
 }
 
 /// `getTraits(true)`: the traits of the class, of its traits and of its parents, each once.

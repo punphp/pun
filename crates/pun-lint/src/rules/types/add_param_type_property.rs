@@ -11,15 +11,15 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    AssignmentOperator, BinaryOperator, ClassLikeMemberSelector, Expression, IfBody, Literal, MethodBody, Modifier,
-    Node, NodeKind, UnaryPrefixOperator, Variable,
+    AssignmentOperator, BinaryOperator, ClassLikeMemberSelector, Expression, IfBody, Literal,
+    MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
 };
 use pun_problem::{Safety, Span};
 
+use super::class_scope;
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
 use super::param::{add_hint, is_mixed, param_declaration};
-use super::class_scope;
 use crate::rules::class_method::qualified;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -53,9 +53,13 @@ impl Rule for AddParamTypeProperty {
         out: &mut Vec<Report>,
     ) {
         let Node::Method(method) = node else { return };
-        let MethodBody::Concrete(body) = &method.body else { return };
+        let MethodBody::Concrete(body) = &method.body else {
+            return;
+        };
         let facts = facts(ctx);
-        let Some(class) = own_class(&facts, ancestors) else { return };
+        let Some(class) = own_class(&facts, ancestors) else {
+            return;
+        };
         let mut edits = Vec::new();
         for param in &method.parameter_list.parameters {
             if param.hint.is_some() || param.ellipsis.is_some() {
@@ -64,7 +68,8 @@ impl Rule for AddParamTypeProperty {
             if !is_legal(Node::Block(body), param.variable.name) {
                 continue;
             }
-            let Some(types) = property_types(&facts, &class, Node::Block(body), param.variable.name)
+            let Some(types) =
+                property_types(&facts, &class, Node::Block(body), param.variable.name)
             else {
                 continue;
             };
@@ -75,8 +80,9 @@ impl Rule for AddParamTypeProperty {
                 .modifiers
                 .iter()
                 .any(|m| matches!(m, Modifier::Private(_)))
-                && class_scope(ancestors)
-                    .is_some_and(|scope| has_parent_class_method(&facts, &scope, method.name.value));
+                && class_scope(ancestors).is_some_and(|scope| {
+                    has_parent_class_method(&facts, &scope, method.name.value)
+                });
             if overrides {
                 return;
             }
@@ -122,13 +128,20 @@ enum PropertyType {
 
 /// The native types of the properties `$name` is assigned to in `body`, outside nested classes and functions
 /// (closures are looked into); `None` when it is assigned to none.
-fn property_types(facts: &Facts, class: &str, body: Node<'_, '_>, name: &[u8]) -> Option<Vec<PropertyType>> {
+fn property_types(
+    facts: &Facts,
+    class: &str,
+    body: Node<'_, '_>,
+    name: &[u8],
+) -> Option<Vec<PropertyType>> {
     // the statements `if (! $this->property)` runs, by property
     let mut falsy: Vec<(Vec<u8>, Span)> = Vec::new();
     let mut null: Vec<(Vec<u8>, Span)> = Vec::new();
     walk(body, &mut |node| {
         let Node::If(i) = node else { return };
-        let IfBody::Statement(s) = &i.body else { return };
+        let IfBody::Statement(s) = &i.body else {
+            return;
+        };
         match unparenthesize(i.condition) {
             Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::Not(_)) => {
                 if let Some(property) = local_property(u.operand) {
@@ -137,9 +150,8 @@ fn property_types(facts: &Facts, class: &str, body: Node<'_, '_>, name: &[u8]) -
             }
             Expression::Binary(b) if matches!(b.operator, BinaryOperator::Identical(_)) => {
                 let checked = match (unparenthesize(b.lhs), unparenthesize(b.rhs)) {
-                    (other, Expression::Literal(Literal::Null(_))) | (Expression::Literal(Literal::Null(_)), other) => {
-                        local_property(other)
-                    }
+                    (other, Expression::Literal(Literal::Null(_)))
+                    | (Expression::Literal(Literal::Null(_)), other) => local_property(other),
                     _ => None,
                 };
                 if let Some(property) = checked {
@@ -169,10 +181,16 @@ fn property_types(facts: &Facts, class: &str, body: Node<'_, '_>, name: &[u8]) -
         let at = node_span(assign);
         types.push(match declared {
             Some(t) => PropertyType::Native(Some(t.type_union.clone())),
-            None if falsy.iter().any(|(p, s)| *p == property && s.start <= at.start && at.end <= s.end) => {
+            None if falsy
+                .iter()
+                .any(|(p, s)| *p == property && s.start <= at.start && at.end <= s.end) =>
+            {
                 PropertyType::Falsy
             }
-            None if null.iter().any(|(p, s)| *p == property && s.start <= at.start && at.end <= s.end) => {
+            None if null
+                .iter()
+                .any(|(p, s)| *p == property && s.start <= at.start && at.end <= s.end) =>
+            {
                 PropertyType::Null
             }
             None => PropertyType::Native(None),
@@ -184,9 +202,7 @@ fn property_types(facts: &Facts, class: &str, body: Node<'_, '_>, name: &[u8]) -
 /// The property name (`$name`, as the codebase keys it) of `$this->name`, `self::$name` or `static::$name`.
 fn local_property(expr: &Expression<'_>) -> Option<Vec<u8>> {
     match unparenthesize(expr) {
-        Expression::Access(mago_syntax::cst::Access::Property(fetch))
-            if matches!(unparenthesize(fetch.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this") =>
-        {
+        Expression::Access(mago_syntax::cst::Access::Property(fetch)) if matches!(unparenthesize(fetch.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this") => {
             match &fetch.property {
                 ClassLikeMemberSelector::Identifier(id) => Some([b"$", id.value].concat()),
                 _ => None,
@@ -208,7 +224,8 @@ fn local_property(expr: &Expression<'_>) -> Option<Vec<u8>> {
 /// declared so (Rector writes no type for a `mixed` property, checked with Rector 2.8.4).
 fn declaration(facts: &Facts, types: &[PropertyType], php_version: u32) -> Option<String> {
     if types.iter().all(|t| matches!(t, PropertyType::Falsy)) {
-        return (php_version >= UNION_TYPES).then(|| "array|bool|int|float|string|null".to_string());
+        return (php_version >= UNION_TYPES)
+            .then(|| "array|bool|int|float|string|null".to_string());
     }
     let mut atomics: Vec<TAtomic> = Vec::new();
     for t in types {
@@ -218,7 +235,9 @@ fn declaration(facts: &Facts, types: &[PropertyType], php_version: u32) -> Optio
             }
             continue;
         }
-        let PropertyType::Native(Some(t)) = t else { return None };
+        let PropertyType::Native(Some(t)) = t else {
+            return None;
+        };
         for a in t.types.iter() {
             if !atomics.contains(a) {
                 atomics.push(a.clone());

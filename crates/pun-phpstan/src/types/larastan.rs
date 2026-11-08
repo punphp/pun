@@ -23,7 +23,10 @@ thread_local! {
 }
 
 /// Runs `f` with `answer` answering the string types' questions on this thread.
-pub fn with_larastan_strings<R>(answer: &dyn Fn(StringQuery<'_>) -> Tri, f: impl FnOnce() -> R) -> R {
+pub fn with_larastan_strings<R>(
+    answer: &dyn Fn(StringQuery<'_>) -> Tri,
+    f: impl FnOnce() -> R,
+) -> R {
     struct Restore(Option<*const Answer>);
     impl Drop for Restore {
         fn drop(&mut self) {
@@ -78,7 +81,12 @@ fn single_constant(t: &Type) -> Option<String> {
 
 /// `GenericModelPropertyType::accepts()`, before the compound given type answers itself (Pun's `model property
 /// of` is an intersection, which PHPStan's own class is not).
-pub(super) fn model_property_accepts(t: &Type, b: &Type, strict: bool, compound: impl FnOnce() -> Tri) -> Tri {
+pub(super) fn model_property_accepts(
+    t: &Type,
+    b: &Type,
+    strict: bool,
+    compound: impl FnOnce() -> Tri,
+) -> Tri {
     if let Some(given) = model_property(b) {
         return accepts_with(t, given, strict, StrictMixed::default());
     }
@@ -99,7 +107,11 @@ pub(super) fn model_property_accepts(t: &Type, b: &Type, strict: bool, compound:
         return ask(StringQuery::Property(t, given));
     }
     // an arbitrary string cannot be checked
-    if b.is_string().yes() { Tri::Yes } else { Tri::No }
+    if b.is_string().yes() {
+        Tri::Yes
+    } else {
+        Tri::No
+    }
 }
 
 /// `GenericModelPropertyType::isSuperTypeOf()`

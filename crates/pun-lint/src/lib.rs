@@ -10,9 +10,9 @@
 
 use std::borrow::Cow;
 use std::cell::OnceCell;
-use std::rc::Rc;
 use std::fmt;
 use std::path::{Path, PathBuf};
+use std::rc::Rc;
 
 use mago_allocator::LocalArena;
 use mago_database::file::{File, FileId, FileType};
@@ -52,7 +52,8 @@ impl<'a> Context<'a> {
 
     /// Every token of the file, read from its start (inline HTML first, as PHP does).
     pub(crate) fn tokens(&self) -> &[rules::php_parser::Token] {
-        self.tokens.get_or_init(|| rules::php_parser::lex(self.source))
+        self.tokens
+            .get_or_init(|| rules::php_parser::lex(self.source))
     }
 }
 

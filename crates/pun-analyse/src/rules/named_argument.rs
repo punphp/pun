@@ -70,7 +70,8 @@ fn method_doc(
             && let Some((_, parent, _)) = declared::doc_at(c, f.span)
         {
             return Some(
-                own.unwrap_or(true) && !super::declarations::has_tag(&parent.names, &["@no-named-arguments"]),
+                own.unwrap_or(true)
+                    && !super::declarations::has_tag(&parent.names, &["@no-named-arguments"]),
             );
         }
     }
@@ -136,7 +137,9 @@ fn unpacked_names(ty: &Type, first: bool) -> Option<Vec<Option<String>>> {
         .filter_map(|i| {
             let key = &arrays[0].keys[i];
             let name = match key {
-                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(String::from_utf8_lossy(s).into_owned()),
+                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => {
+                    Some(String::from_utf8_lossy(s).into_owned())
+                }
                 _ => None,
             };
             if name.is_none() && arrays.last().unwrap().optional.contains(&i) {
@@ -163,13 +166,19 @@ struct Requests(Vec<CallScopeRequest>);
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
     fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         let (object, selector, args) = match expression {
-            Expression::Call(Call::Method(call)) => (call.object, &call.method, &call.argument_list),
-            Expression::Call(Call::NullSafeMethod(call)) => (call.object, &call.method, &call.argument_list),
+            Expression::Call(Call::Method(call)) => {
+                (call.object, &call.method, &call.argument_list)
+            }
+            Expression::Call(Call::NullSafeMethod(call)) => {
+                (call.object, &call.method, &call.argument_list)
+            }
             _ => return,
         };
         if matches!(selector, ClassLikeMemberSelector::Identifier(_))
-            && !args.arguments.iter().any(|arg| matches!(arg, Argument::Named(_))
-            || matches!(arg, Argument::Positional(arg) if arg.ellipsis.is_some()))
+            && !args.arguments.iter().any(|arg| {
+                matches!(arg, Argument::Named(_))
+                    || matches!(arg, Argument::Positional(arg) if arg.ellipsis.is_some())
+            })
         {
             return;
         }
@@ -177,9 +186,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
         expressions.walk_expression(object, &mut ());
         expressions.walk_class_like_member_selector(selector, &mut ());
         expressions.walk_argument_list(args, &mut ());
-        expressions.0.sort_unstable_by_key(|span| (span.start.offset, span.end.offset));
+        expressions
+            .0
+            .sort_unstable_by_key(|span| (span.start.offset, span.end.offset));
         expressions.0.dedup();
-        self.0.push(CallScopeRequest { call: expression.span(), expressions: expressions.0 });
+        self.0.push(CallScopeRequest {
+            call: expression.span(),
+            expressions: expressions.0,
+        });
     }
 }
 
@@ -202,7 +216,10 @@ pub(super) fn call(
     nullsafe: bool,
 ) {
     // FunctionCallParametersCheck returns before emitting only when both independent argument checks are off.
-    if (!c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) && !c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE)) || !c.checks_expression(object) {
+    if (!c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES)
+        && !c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE))
+        || !c.checks_expression(object)
+    {
         return;
     }
     let counts = params::count(args);
@@ -210,11 +227,18 @@ pub(super) fn call(
     let mut records = Vec::new();
     for scope in c.named_call_scopes.get(&span).into_iter().flatten() {
         // Missing observations are not mixed: later names cannot bind against an unknown unpack width.
-        if counts.args.iter().any(|arg| arg.unpack.is_some() && !scope.types.contains_key(&arg.value)) {
+        if counts
+            .args
+            .iter()
+            .any(|arg| arg.unpack.is_some() && !scope.types.contains_key(&arg.value))
+        {
             continue;
         }
         let name = scope.name;
-        let short_circuit = scope.types.get(&object.span()).is_some_and(|t| t.has_nullsafe_null());
+        let short_circuit = scope
+            .types
+            .get(&object.span())
+            .is_some_and(|t| t.has_nullsafe_null());
         // Both null removal and RuleLevelHelper recombine alternatives using declared generic variance.
         let ty = declared::with_classes(c, || {
             let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
@@ -225,7 +249,9 @@ pub(super) fn call(
                     t
                 }
             });
-            c.find_type_to_check_of(ty, &|t| matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_))))
+            c.find_type_to_check_of(ty, &|t| {
+                matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_)))
+            })
         });
         let Some(m) = ty
             .as_ref()
@@ -265,20 +291,18 @@ pub(super) fn call(
                     continue;
                 };
                 position += 1;
-                let parameter = acceptor
-                    .names
-                    .iter()
-                    .position(|p| *p == name)
-                    .or_else(|| {
-                        (!m.builtin() && acceptor.variadics.iter().last() == Some(true))
-                            .then(|| acceptor.names.len() - 1)
-                    });
+                let parameter = acceptor.names.iter().position(|p| *p == name).or_else(|| {
+                    (!m.builtin() && acceptor.variadics.iter().last() == Some(true))
+                        .then(|| acceptor.names.len() - 1)
+                });
                 if let Some(parameter) = parameter {
                     records.push((
                         arg.span,
                         format!(
                             "{ENTRY}call\u{1f}{}\u{1f}{}\u{1f}{}",
-                            m.declaring.declaring_name(), m.name, acceptor.names[parameter]
+                            m.declaring.declaring_name(),
+                            m.name,
+                            acceptor.names[parameter]
                         ),
                     ));
                 }

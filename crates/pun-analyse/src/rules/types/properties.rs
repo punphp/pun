@@ -7,12 +7,17 @@ use std::collections::HashSet;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
-use mago_codex::ttype::atomic::{TAtomic, array::{TArray, key::ArrayKey}};
+use mago_codex::ttype::atomic::{
+    TAtomic,
+    array::{TArray, key::ArrayKey},
+};
 use mago_codex::visibility::Visibility;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::{Word, word};
-use pun_phpstan::types::{NeverKind, Type, ancestor_args, decide_type, is_super_type_of, mixed, recommended_level};
+use pun_phpstan::types::{
+    NeverKind, Type, ancestor_args, decide_type, is_super_type_of, mixed, recommended_level,
+};
 
 use super::super::declarations::immutable_tags;
 use super::super::overriding_property::{declaration_readonly, hook_names};
@@ -46,7 +51,9 @@ struct Fetch<'e, 'arena> {
 fn fetch<'e, 'arena>(e: &'e Expression<'arena>) -> Option<Fetch<'e, 'arena>> {
     match unparen(e) {
         Expression::Access(Access::Property(p)) => {
-            let ClassLikeMemberSelector::Identifier(id) = &p.property else { return None };
+            let ClassLikeMemberSelector::Identifier(id) = &p.property else {
+                return None;
+            };
             Some(Fetch {
                 holder: Some(p.object),
                 class: None,
@@ -57,15 +64,28 @@ fn fetch<'e, 'arena>(e: &'e Expression<'arena>) -> Option<Fetch<'e, 'arena>> {
             })
         }
         Expression::Access(Access::StaticProperty(p)) => {
-            let Variable::Direct(v) = &p.property else { return None };
-            Some(Fetch { holder: None, class: Some(p.class), name: v.name.to_vec(), at: v.span(), instance: false, span: p.span() })
+            let Variable::Direct(v) = &p.property else {
+                return None;
+            };
+            Some(Fetch {
+                holder: None,
+                class: Some(p.class),
+                name: v.name.to_vec(),
+                at: v.span(),
+                instance: false,
+                span: p.span(),
+            })
         }
         _ => None,
     }
 }
 
 /// The property fetches a write target writes (offsets of one too, `true`), as PropertyAssignNodes.
-fn targets<'e, 'arena>(e: &'e Expression<'arena>, offset: bool, out: &mut Vec<(Fetch<'e, 'arena>, bool)>) {
+fn targets<'e, 'arena>(
+    e: &'e Expression<'arena>,
+    offset: bool,
+    out: &mut Vec<(Fetch<'e, 'arena>, bool)>,
+) {
     let e = unparen(e);
     if let Some(f) = fetch(e) {
         out.push((f, offset));
@@ -109,7 +129,11 @@ pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
         }
         _ => {}
     }
-    spans.extend(out.iter().filter_map(|(f, _)| f.holder.or(f.class)).map(|h| h.span()));
+    spans.extend(
+        out.iter()
+            .filter_map(|(f, _)| f.holder.or(f.class))
+            .map(|h| h.span()),
+    );
 }
 
 /// A FoundPropertyReflection.
@@ -153,12 +177,20 @@ fn holder_type(c: &Checker, f: &Fetch) -> Option<Type> {
     let scope = c.class_scope();
     let name = |k: &ClassLikeMetadata| c.reflected_name(k.name.as_bytes());
     match unparen(class) {
-        Expression::Identifier(id) => Some(Type::Object(c.reflected_name(c.resolved(id).as_bytes()), vec![], false)),
+        Expression::Identifier(id) => Some(Type::Object(
+            c.reflected_name(c.resolved(id).as_bytes()),
+            vec![],
+            false,
+        )),
         Expression::Self_(_) => scope.map(|k| Type::Object(name(k), vec![], false)),
         Expression::Static(_) => scope.map(|k| Type::Static(name(k), vec![])),
         Expression::Parent(_) => {
             let parent = scope?.direct_parent_class.as_ref()?;
-            Some(Type::Object(c.reflected_name(parent.as_bytes()), vec![], false))
+            Some(Type::Object(
+                c.reflected_name(parent.as_bytes()),
+                vec![],
+                false,
+            ))
         }
         e => c.phpstan_type(e),
     }
@@ -173,9 +205,12 @@ fn says_readonly(c: &Checker, at: Option<Span>) -> bool {
 /// A class template `T` of `scope` as the holder's argument.
 pub(in super::super) fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) -> Type {
     match t {
-        Type::Template(tpl) if tpl.scope == scope => {
-            names.iter().position(|n| *n == tpl.name).and_then(|i| args.get(i)).cloned().unwrap_or_else(|| t.clone())
-        }
+        Type::Template(tpl) if tpl.scope == scope => names
+            .iter()
+            .position(|n| *n == tpl.name)
+            .and_then(|i| args.get(i))
+            .cloned()
+            .unwrap_or_else(|| t.clone()),
         _ => t.traverse(&|i| with_args(i, scope, names, args)),
     }
 }
@@ -195,62 +230,122 @@ enum UnsetReflection<'a> {
 pub(in super::super) fn native_unset_property<'a>(
     c: &Checker<'a, '_>,
     e: &Expression,
-) -> Option<(&'a ClassLikeMetadata, &'a PropertyMetadata, bool, bool, bool)> {
+) -> Option<(
+    &'a ClassLikeMetadata,
+    &'a PropertyMetadata,
+    bool,
+    bool,
+    bool,
+)> {
     let f = fetch(e)?;
-    let UnsetReflection::Native(p) = unset_reflection(c, &f, &holder_type(c, &f)?, false, &mut HashSet::new())? else { return None };
-    Some((p.declaring, p.meta, p.native_readonly, p.phpdoc_readonly, p.private))
+    let UnsetReflection::Native(p) =
+        unset_reflection(c, &f, &holder_type(c, &f)?, false, &mut HashSet::new())?
+    else {
+        return None;
+    };
+    Some((
+        p.declaring,
+        p.meta,
+        p.native_readonly,
+        p.phpdoc_readonly,
+        p.private,
+    ))
 }
 
 /// Instance-property existence and selection before native unwrapping. `NonNative` is a successful, terminal
 /// reflection: it also contributes to an intersection even if another route names the same native declaration.
 fn unset_reflection<'a>(
-    c: &Checker<'a, '_>, f: &Fetch, holder: &Type, out_of_class: bool, active: &mut HashSet<Word>,
+    c: &Checker<'a, '_>,
+    f: &Fetch,
+    holder: &Type,
+    out_of_class: bool,
+    active: &mut HashSet<Word>,
 ) -> Option<UnsetReflection<'a>> {
     let holder = holder.resolve_to_bounds();
     match &holder {
         Type::Union(types) | Type::Benevolent(types) => {
-            return types.iter().all(|t| unset_reflection(c, f, t, out_of_class, active).is_some()).then_some(UnsetReflection::NonNative);
+            return types
+                .iter()
+                .all(|t| unset_reflection(c, f, t, out_of_class, active).is_some())
+                .then_some(UnsetReflection::NonNative);
         }
         Type::Intersection(types) => {
-            let mut properties = types.iter().filter_map(|t| unset_reflection(c, f, t, out_of_class, active));
+            let mut properties = types
+                .iter()
+                .filter_map(|t| unset_reflection(c, f, t, out_of_class, active));
             let first = properties.next()?;
-            return Some(if properties.next().is_some() { UnsetReflection::NonNative } else { first });
+            return Some(if properties.next().is_some() {
+                UnsetReflection::NonNative
+            } else {
+                first
+            });
         }
         _ => {}
     }
     let names = holder.object_class_names();
-    let [name] = names.as_slice() else { return None };
+    let [name] = names.as_slice() else {
+        return None;
+    };
     let class = c.codebase.get_class_like(name.as_bytes()).or_else(|| {
         // Conversion uses an anonymous class's display name, codex its storage key.
-        c.codebase.class_likes.values().find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == *name).map(Box::as_ref)
+        c.codebase
+            .class_likes
+            .values()
+            .find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == *name)
+            .map(Box::as_ref)
     })?;
-    if !active.insert(class.name) { return None }
+    if !active.insert(class.name) {
+        return None;
+    }
     let property = if has_instance_property(c, class, &f.name) {
-        Some(match find_on(c, f, Type::Object(class.name.to_string(), vec![], false), true, out_of_class) {
-            Some(p) => UnsetReflection::Native(p),
-            None => UnsetReflection::NonNative,
-        })
+        Some(
+            match find_on(
+                c,
+                f,
+                Type::Object(class.name.to_string(), vec![], false),
+                true,
+                out_of_class,
+            ) {
+                Some(p) => UnsetReflection::Native(p),
+                None => UnsetReflection::NonNative,
+            },
+        )
     } else {
-        super::super::require_tags::property_requirements(c, class).iter()
+        super::super::require_tags::property_requirements(c, class)
+            .iter()
             .find_map(|required| unset_reflection(c, f, required, true, active))
     };
     active.remove(&class.name);
     property
 }
 
-fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, out_of_class: bool) -> Option<Prop<'a>> {
+fn find_on<'a>(
+    c: &Checker<'a, '_>,
+    f: &Fetch,
+    holder: Type,
+    native_only: bool,
+    out_of_class: bool,
+) -> Option<Prop<'a>> {
     let names = holder.object_class_names();
-    let classes: Vec<&'a ClassLikeMetadata> =
-        names.iter().map(|n| c.codebase.get_class_like(n.as_bytes())).collect::<Option<_>>()?;
+    let classes: Vec<&'a ClassLikeMetadata> = names
+        .iter()
+        .map(|n| c.codebase.get_class_like(n.as_bytes()))
+        .collect::<Option<_>>()?;
     let has = |k: &ClassLikeMetadata| {
-        if f.instance { has_instance_property(c, k, &f.name) } else { has_static_property(c, k, &f.name) }
+        if f.instance {
+            has_instance_property(c, k, &f.name)
+        } else {
+            has_static_property(c, k, &f.name)
+        }
     };
     // ponytail: a union of classes reads the first one's property (UnionTypePropertyReflection merges them)
     let class = *classes.first().filter(|_| classes.iter().all(|k| has(k)))?;
     let name = String::from_utf8_lossy(&f.name[1..]).into_owned();
     let magic_property = || {
         let declaring = class.magic_property_ids.get(&word(&f.name))?;
-        let meta = c.codebase.get_magic_property(declaring.as_bytes(), &f.name)?;
+        let meta = c
+            .codebase
+            .get_magic_property(declaring.as_bytes(), &f.name)?;
         Some((c.codebase.get_class_like(declaring.as_bytes())?, meta, true))
     };
     // the native property an `@property` replaces
@@ -262,7 +357,11 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
                 if f.instance
                     && declaring.kind != mago_codex::symbol::SymbolKind::Enum
                     && (c.allows_dynamic_properties(class)
-                        || if out_of_class { meta.read_visibility == Visibility::Public } else { can_access(c, declaring, meta.read_visibility) })
+                        || if out_of_class {
+                            meta.read_visibility == Visibility::Public
+                        } else {
+                            can_access(c, declaring, meta.read_visibility)
+                        })
                     && (meta.read_visibility == Visibility::Public
                         || out_of_class
                         || c.class_scope().is_none_or(|k| k.name != declaring.name))
@@ -289,18 +388,26 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     // Mago's appearing id still names the trait. PHP reflects its property on the class that directly imports it
     // (possibly through another trait), not on a later inheriting class.
     let importer = (declaring.kind == mago_codex::symbol::SymbolKind::Trait).then(|| {
-        std::iter::successors(Some(class), |k| k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes())))
-            .take(super::super::overriding::ANCESTRY)
-            .find(|k| k.direct_trait_names().any(|t| t == declaring.name))
+        std::iter::successors(Some(class), |k| {
+            k.direct_parent_class
+                .and_then(|p| c.codebase.get_class_like(p.as_bytes()))
+        })
+        .take(super::super::overriding::ANCESTRY)
+        .find(|k| k.direct_trait_names().any(|t| t == declaring.name))
     });
     let declaring = match importer {
         Some(importer) if native_only => importer?,
         _ => declaring,
     };
     let ty = if magic {
-        let readable = meta.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union));
+        let readable = meta
+            .type_metadata
+            .as_ref()
+            .map_or_else(mixed, |t| c.to_phpstan(&t.type_union));
         match shadowed {
-            Some((declaring, native)) => overlay_write_type(c, f, declaring, native, meta, readable),
+            Some((declaring, native)) => {
+                overlay_write_type(c, f, declaring, native, meta, readable)
+            }
             None => readable,
         }
     } else {
@@ -311,7 +418,12 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     // active template map for native and annotation properties alike, not just annotation overlays.
     let receiver_args = match &holder {
         Type::Object(_, args, _) | Type::Static(_, args) => Some(args.clone()),
-        Type::This(_) => Some(declared::class_templates(c, class).into_iter().map(|t| Type::Template(Box::new(t))).collect()),
+        Type::This(_) => Some(
+            declared::class_templates(c, class)
+                .into_iter()
+                .map(|t| Type::Template(Box::new(t)))
+                .collect(),
+        ),
         _ => None,
     };
     let ty = if let Some(args) = receiver_args {
@@ -320,15 +432,28 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
             args
         } else {
             pun_phpstan::symbols::lookup(&c.reflected_name(class.name.as_bytes()))
-                .and_then(|k| ancestor_args(&k, &scope, &args)).unwrap_or_default()
+                .and_then(|k| ancestor_args(&k, &scope, &args))
+                .unwrap_or_default()
         };
         let templates = declared::class_templates(c, declaring);
-        let args: Vec<_> = templates.iter().enumerate().map(|(i, t)| {
-            args.get(i).cloned().unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
-        }).collect();
+        let args: Vec<_> = templates
+            .iter()
+            .enumerate()
+            .map(|(i, t)| {
+                args.get(i)
+                    .cloned()
+                    .unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
+            })
+            .collect();
         if !args.is_empty() {
             // ClassReflection::getDisplayName() uses type-only arguments and no separator spaces.
-            display = format!("{display}<{}>", args.iter().map(|t| t.describe(pun_phpstan::types::Level::TypeOnly)).collect::<Vec<_>>().join(","));
+            display = format!(
+                "{display}<{}>",
+                args.iter()
+                    .map(|t| t.describe(pun_phpstan::types::Level::TypeOnly))
+                    .collect::<Vec<_>>()
+                    .join(",")
+            );
         }
         let names = templates.iter().map(|t| t.name.clone()).collect::<Vec<_>>();
         with_args(&ty, &format!("class {scope}"), &names, &args)
@@ -343,23 +468,32 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
         // AnnotationsPropertiesClassReflectionExtension promotes a read-only tag only for a non-private,
         // non-static writable native property. The resulting PhpPropertyReflection still needs a set hook
         // when virtual, even if the annotation itself is writable.
-        (!meta.flags.is_readonly() || shadowed.is_some_and(|(d, p)| {
-            p.read_visibility != Visibility::Private && !p.flags.is_static() && native_writable(c, d, p, &f.name)
-        })) && shadowed.is_none_or(|(d, p)| native_writable(c, d, p, &f.name))
+        (!meta.flags.is_readonly()
+            || shadowed.is_some_and(|(d, p)| {
+                p.read_visibility != Visibility::Private
+                    && !p.flags.is_static()
+                    && native_writable(c, d, p, &f.name)
+            }))
+            && shadowed.is_none_or(|(d, p)| native_writable(c, d, p, &f.name))
     } else {
         native_writable(c, declaring, meta, &f.name)
     };
     let readonly = meta.flags.is_readonly() && !magic && !enum_;
-    let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, Some(declaring.span)));
+    let native_readonly =
+        readonly && (says_readonly(c, meta.name_span) || says_readonly(c, Some(declaring.span)));
     // `ClassReflection::isImmutable()` (up the parents) or the property's own readonly tag
-    let doc = |span: Option<Span>| span.and_then(|s| declared::doc_at(c, s)).map_or(&[][..], |(_, entry, _)| &entry.tags);
+    let doc = |span: Option<Span>| {
+        span.and_then(|s| declared::doc_at(c, s))
+            .map_or(&[][..], |(_, entry, _)| &entry.tags)
+    };
     let tagged = |span, names: &[&str]| doc(span).iter().any(|(t, _)| names.contains(&t.as_str()));
     let immutable = std::iter::once(&declaring.name)
         .chain(&declaring.all_parent_classes)
         .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
         .any(|k| immutable_tags(&c.class_tags(k)));
     let span = declared::property_span(c, meta);
-    let phpdoc_readonly = !magic && !enum_ && !native_readonly && (immutable || tagged(span, &READONLY));
+    let phpdoc_readonly =
+        !magic && !enum_ && !native_readonly && (immutable || tagged(span, &READONLY));
     Some(Prop {
         declaring,
         meta,
@@ -373,21 +507,43 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     })
 }
 
-fn native_writable(c: &Checker, declaring: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
-    p.flags.is_static() || !c.property_virtual(declaring, p, name) || c.property_hooks(declaring, hook_names(p), name).1
+fn native_writable(
+    c: &Checker,
+    declaring: &ClassLikeMetadata,
+    p: &PropertyMetadata,
+    name: &[u8],
+) -> bool {
+    p.flags.is_static()
+        || !c.property_virtual(declaring, p, name)
+        || c.property_hooks(declaring, hook_names(p), name).1
 }
 
 /// PhpClassReflectionExtension's overlay and PhpPropertyReflection::getWritableType(): an absent writable
 /// PHPDoc type (`@property-read`) falls back to the readable PHPDoc, not to the original native/`@var` type.
 fn overlay_write_type(
-    c: &Checker, f: &Fetch, declaring: &ClassLikeMetadata, native: &PropertyMetadata,
-    annotation: &PropertyMetadata, readable: Type,
+    c: &Checker,
+    f: &Fetch,
+    declaring: &ClassLikeMetadata,
+    native: &PropertyMetadata,
+    annotation: &PropertyMetadata,
+    readable: Type,
 ) -> Type {
-    let writable = annotation.write_type_metadata.as_ref().map(|t| c.to_phpstan(&t.type_union))
+    let writable = annotation
+        .write_type_metadata
+        .as_ref()
+        .map(|t| c.to_phpstan(&t.type_union))
         .or_else(|| annotation.flags.is_writeonly().then(|| readable.clone()));
-    let readable = if annotation.flags.is_writeonly() { Type::Never(NeverKind::Implicit) } else { readable };
-    let native_type = native.type_declaration_metadata.as_ref()
-        .map_or_else(mixed, |t| declared::from_tunion(c, &t.type_union, declaring));
+    let readable = if annotation.flags.is_writeonly() {
+        Type::Never(NeverKind::Implicit)
+    } else {
+        readable
+    };
+    let native_type = native
+        .type_declaration_metadata
+        .as_ref()
+        .map_or_else(mixed, |t| {
+            declared::from_tunion(c, &t.type_union, declaring)
+        });
     let native_type = if is_super_type_of(&native_type, &readable).yes()
         || !can_access(c, declaring, native.read_visibility)
     {
@@ -402,18 +558,34 @@ fn overlay_write_type(
     // A native set hook's parameter takes precedence over the annotation, including inherited hooks.
     let mut property = Some((declaring, native));
     for _ in 0..super::super::overriding::ANCESTRY {
-        let Some((declaring, p)) = property else { break };
-        if let Some(parameter) = p.hooks.get(&word(b"set")).and_then(|h| h.parameter.as_ref()) {
+        let Some((declaring, p)) = property else {
+            break;
+        };
+        if let Some(parameter) = p
+            .hooks
+            .get(&word(b"set"))
+            .and_then(|h| h.parameter.as_ref())
+        {
             // Mago copies the property's effective PHPDoc type into an implicit parameter's native slot.
-            let native = parameter.type_declaration_metadata.as_ref().filter(|t| !t.from_docblock)
+            let native = parameter
+                .type_declaration_metadata
+                .as_ref()
+                .filter(|t| !t.from_docblock)
                 .or(p.type_declaration_metadata.as_ref());
-            let native = native
-                .map_or_else(mixed, |t| declared::from_tunion(c, &t.type_union, declaring));
-            let phpdoc = parameter.type_metadata.as_ref().filter(|t| t.from_docblock)
-                .or(p.type_metadata.as_ref().filter(|t| t.from_docblock)).map(|t| c.to_phpstan(&t.type_union));
+            let native = native.map_or_else(mixed, |t| {
+                declared::from_tunion(c, &t.type_union, declaring)
+            });
+            let phpdoc = parameter
+                .type_metadata
+                .as_ref()
+                .filter(|t| t.from_docblock)
+                .or(p.type_metadata.as_ref().filter(|t| t.from_docblock))
+                .map(|t| c.to_phpstan(&t.type_union));
             return decide_type(native, phpdoc);
         }
-        property = declaring.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()))
+        property = declaring
+            .direct_parent_class
+            .and_then(|n| c.codebase.get_class_like(n.as_bytes()))
             .and_then(|parent| c.declared_property(parent, &f.name).map(|(d, _, p)| (d, p)));
     }
     match writable {
@@ -424,8 +596,9 @@ fn overlay_write_type(
 
 /// A write of `$this->p` in one of `p`'s own hooks (`getHookedPropertyName()`).
 fn in_own_hook(f: &Fetch, p: &PropertyMetadata) -> bool {
-    let this =
-        f.holder.is_some_and(|h| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this"));
+    let this = f.holder.is_some_and(
+        |h| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this"),
+    );
     this && p.span.is_some_and(|s| s.has_offset(f.at.start.offset))
 }
 
@@ -440,17 +613,23 @@ fn distance(c: &Checker, class: &ClassLikeMetadata, of: &Word) -> usize {
             return at + usize::from(k.name != *of);
         }
         at += 1 + k.used_traits.len();
-        current = k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+        current = k
+            .direct_parent_class
+            .and_then(|p| c.codebase.get_class_like(p.as_bytes()));
     }
 }
 
 /// `$scope->canReadProperty()` or `canWriteProperty()` for a member of `declaring` with visibility `v`.
 fn can_access(c: &Checker, declaring: &ClassLikeMetadata, v: Visibility) -> bool {
-    let inside = |k: &ClassLikeMetadata| k.name == declaring.name || k.all_parent_classes.contains(&declaring.name);
+    let inside = |k: &ClassLikeMetadata| {
+        k.name == declaring.name || k.all_parent_classes.contains(&declaring.name)
+    };
     match (v, c.class_scope()) {
         (Visibility::Public, _) => true,
         (_, None) => false,
-        (Visibility::Protected, Some(k)) => inside(k) || declaring.all_parent_classes.contains(&k.name),
+        (Visibility::Protected, Some(k)) => {
+            inside(k) || declaring.all_parent_classes.contains(&k.name)
+        }
         (Visibility::Private, Some(k)) => k.name == declaring.name,
     }
 }
@@ -468,13 +647,26 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
     if p.phpdoc_readonly && in_own_hook(f, p.meta) {
         return;
     }
-    let (kind, id) = if p.native_readonly { ("Readonly", "readOnly") } else { ("@readonly", "readOnlyByPhpDoc") };
+    let (kind, id) = if p.native_readonly {
+        ("Readonly", "readOnly")
+    } else {
+        ("@readonly", "readOnlyByPhpDoc")
+    };
     let what = format!("{kind} property {}::${}", c.display(p.declaring), p.name);
     let report = |c: &mut Checker, suffix: &str, message: &str| {
-        c.report(f.at, &format!("property.{id}{suffix}"), format!("{what} {message}"), None);
+        c.report(
+            f.at,
+            &format!("property.{id}{suffix}"),
+            format!("{what} {message}"),
+            None,
+        );
     };
     let Some(scope) = c.class_scope() else {
-        return report(c, "AssignOutOfClass", "is assigned outside of its declaring class.");
+        return report(
+            c,
+            "AssignOutOfClass",
+            "is assigned outside of its declaring class.",
+        );
     };
     if scope.name != p.declaring.name {
         // supportsAsymmetricVisibility(): a subclass may write a readonly property that is not private(set)
@@ -483,13 +675,24 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
             && p.meta.write_visibility != Visibility::Private
             && scope.all_parent_classes.contains(&p.declaring.name);
         if !subclass {
-            return report(c, "AssignOutOfClass", "is assigned outside of its declaring class.");
+            return report(
+                c,
+                "AssignOutOfClass",
+                "is assigned outside of its declaring class.",
+            );
         }
     }
-    let method = c.functions.last().map(|m| m.name.to_ascii_lowercase()).unwrap_or_default();
+    let method = c
+        .functions
+        .last()
+        .map(|m| m.name.to_ascii_lowercase())
+        .unwrap_or_default();
     let clone = p.native_readonly && c.php_version >= 80300 && method == "__clone";
     if method == "__construct" || method == "__unserialize" || clone {
-        let on_this = f.holder.and_then(|h| c.phpstan_type(h)).is_some_and(|t| find_this(&t));
+        let on_this = f
+            .holder
+            .and_then(|h| c.phpstan_type(h))
+            .is_some_and(|t| find_this(&t));
         if !on_this {
             report(c, "AssignNotOnThis", "is not assigned on $this.");
         }
@@ -500,8 +703,17 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
     let allowed = p.phpdoc_readonly && p.private_mutation;
     // isArrayAccessOffsetWrite()
     let array_access = Type::Object("ArrayAccess".into(), vec![], false);
-    if !allowed && !(offset && p.writable.as_ref().is_some_and(|t| is_super_type_of(&array_access, t).yes())) {
-        report(c, "AssignNotInConstructor", "is assigned outside of the constructor.");
+    if !allowed
+        && !(offset
+            && p.writable
+                .as_ref()
+                .is_some_and(|t| is_super_type_of(&array_access, t).yes()))
+    {
+        report(
+            c,
+            "AssignNotInConstructor",
+            "is assigned outside of the constructor.",
+        );
     }
 }
 
@@ -509,11 +721,15 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
 fn not_writable(c: &mut Checker, f: &Fetch, p: &Prop) {
     let this = |h: &Expression| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
     let enum_ = p.declaring.kind == mago_codex::symbol::SymbolKind::Enum;
-    let Some(holder) = f.holder.filter(|h| enum_ || !this(h)) else { return };
+    let Some(holder) = f.holder.filter(|h| enum_ || !this(h)) else {
+        return;
+    };
     if p.writable.is_some() || !can_write(c, p) {
         return;
     }
-    let Some(on) = c.phpstan_type(holder) else { return };
+    let Some(on) = c.phpstan_type(holder) else {
+        return;
+    };
     let declaring = Type::Object(c.reflected_name(p.declaring.name.as_bytes()), vec![], false);
     let class = declared::with_classes(c, || {
         if is_super_type_of(&declaring, &on).yes() {
@@ -522,7 +738,12 @@ fn not_writable(c: &mut Checker, f: &Fetch, p: &Prop) {
             on.describe(pun_phpstan::types::Level::TypeOnly)
         }
     });
-    c.report(f.at, "assign.propertyReadOnly", format!("Property {class}::${} is not writable.", p.name), None);
+    c.report(
+        f.at,
+        "assign.propertyReadOnly",
+        format!("Property {class}::${} is not writable.", p.name),
+        None,
+    );
 }
 
 /// `TypeUtils::findThisType()`.
@@ -533,10 +754,16 @@ fn find_this(t: &Type) -> bool {
 
 /// TypesAssignedToPropertiesRule for a direct write of `value`.
 fn assigned(c: &mut Checker, f: &Fetch, p: &Prop, value: Option<Type>, at: Span) {
-    let (Some(ty), Some(value)) = (&p.writable, value) else { return };
+    let (Some(ty), Some(value)) = (&p.writable, value) else {
+        return;
+    };
     let strict = super::returns::strict_types(c);
     let levels = c.levels();
-    let kind = if f.instance { "Property" } else { "Static property" };
+    let kind = if f.instance {
+        "Property"
+    } else {
+        "Static property"
+    };
     let message = declared::with_classes(c, || {
         if levels.accepts(ty, &value, strict) {
             return None;
@@ -574,7 +801,9 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
     // ponytail: the values a list destructuring gives its properties are not checked
     let direct = fetch(a.lhs).is_some();
     for (f, offset) in &writes {
-        let Some(p) = declared::with_classes(c, || find(c, f)) else { continue };
+        let Some(p) = declared::with_classes(c, || find(c, f)) else {
+            continue;
+        };
         not_writable(c, f, &p);
         if c.level < 3 {
             continue;
@@ -591,11 +820,26 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
             assigned(c, f, &p, offset_write(c, f), f.span);
         }
     }
-    let Some(f) = by_ref.and_then(fetch).filter(|f| f.instance && c.level >= 3) else { return };
-    let Some(p) = declared::with_classes(c, || find(c, &f)) else { return };
+    let Some(f) = by_ref
+        .and_then(fetch)
+        .filter(|f| f.instance && c.level >= 3)
+    else {
+        return;
+    };
+    let Some(p) = declared::with_classes(c, || find(c, &f)) else {
+        return;
+    };
     if (p.native_readonly || p.phpdoc_readonly) && can_write(c, &p) {
-        let (kind, id) = if p.native_readonly { ("Readonly", "readOnly") } else { ("@readonly", "readOnlyByPhpDoc") };
-        let message = format!("{kind} property {}::${} is assigned by reference.", c.display(p.declaring), p.name);
+        let (kind, id) = if p.native_readonly {
+            ("Readonly", "readOnly")
+        } else {
+            ("@readonly", "readOnlyByPhpDoc")
+        };
+        let message = format!(
+            "{kind} property {}::${} is assigned by reference.",
+            c.display(p.declaring),
+            p.name
+        );
         c.report(a, &format!("property.{id}AssignByRef"), message, None);
     }
 }
@@ -610,7 +854,12 @@ fn offset_write(c: &Checker, f: &Fetch) -> Option<Type> {
 }
 
 /// `++`/`--` writes a virtual prefix expression's value, not a postfix expression's old value.
-pub(in super::super) fn increment(c: &mut Checker, operand: &Expression, operator: Span, expression: Span) {
+pub(in super::super) fn increment(
+    c: &mut Checker,
+    operand: &Expression,
+    operator: Span,
+    expression: Span,
+) {
     writes(c, operand, false, Some((operator, expression)));
 }
 
@@ -621,7 +870,12 @@ pub(in super::super) fn unset(c: &mut Checker, u: &Unset) {
     }
 }
 
-fn writes(c: &mut Checker, e: &Expression, offsets_only: bool, virtual_write: Option<(Span, Span)>) {
+fn writes(
+    c: &mut Checker,
+    e: &Expression,
+    offsets_only: bool,
+    virtual_write: Option<(Span, Span)>,
+) {
     if c.level < 2 {
         return;
     }
@@ -632,28 +886,42 @@ fn writes(c: &mut Checker, e: &Expression, offsets_only: bool, virtual_write: Op
         && let Some(name) = super::dynamic_names::static_property(&p.property)
         && let Some(ty) = c.phpstan_type_at(name)
     {
-        writes.extend(ty.constant_strings().into_iter().map(|name| (Fetch {
-            holder: None,
-            class: Some(p.class),
-            name: [b"$", name.as_slice()].concat(),
-            at: p.property.span(),
-            instance: false,
-            span: p.span(),
-        }, false)));
+        writes.extend(ty.constant_strings().into_iter().map(|name| {
+            (
+                Fetch {
+                    holder: None,
+                    class: Some(p.class),
+                    name: [b"$", name.as_slice()].concat(),
+                    at: p.property.span(),
+                    instance: false,
+                    span: p.span(),
+                },
+                false,
+            )
+        }));
     }
     for (f, offset) in writes.iter().filter(|(_, offset)| *offset || !offsets_only) {
-        let Some(p) = declared::with_classes(c, || find(c, f)) else { continue };
+        let Some(p) = declared::with_classes(c, || find(c, f)) else {
+            continue;
+        };
         not_writable(c, f, &p);
         if c.level >= 3 {
             read_only(c, f, &p, *offset);
             if !offset && let Some((operator, at)) = virtual_write {
-                let value = c.types.get(&operator).and_then(|t| {
-                    if let [TAtomic::Array(TArray::Keyed(named))] = t.types.as_ref() {
-                        named.get_known_items()?.get(&ArrayKey::String(word(&f.name))).map(|(_, ty)| ty)
-                    } else {
-                        Some(t)
-                    }
-                }).map(|t| c.to_phpstan(t));
+                let value = c
+                    .types
+                    .get(&operator)
+                    .and_then(|t| {
+                        if let [TAtomic::Array(TArray::Keyed(named))] = t.types.as_ref() {
+                            named
+                                .get_known_items()?
+                                .get(&ArrayKey::String(word(&f.name)))
+                                .map(|(_, ty)| ty)
+                        } else {
+                            Some(t)
+                        }
+                    })
+                    .map(|t| c.to_phpstan(t));
                 assigned(c, f, &p, value, at);
             } else if *offset && offsets_only {
                 // UnsetHandler's PropertyAssignNode: the property's value without the offset
@@ -673,8 +941,14 @@ pub(super) fn written<'a>(
     let mut out = Vec::new();
     targets(target, false, &mut out);
     let direct = fetch(target).is_some();
-    let dynamic = matches!(unparen(target), Expression::Access(Access::Property(_) | Access::StaticProperty(_))) && !direct;
-    let found = out.iter().map(|(f, offset)| declared::with_classes(c, || find(c, f)).map(|p| (p.declaring, p.name, direct && !offset, *offset)));
+    let dynamic = matches!(
+        unparen(target),
+        Expression::Access(Access::Property(_) | Access::StaticProperty(_))
+    ) && !direct;
+    let found = out.iter().map(|(f, offset)| {
+        declared::with_classes(c, || find(c, f))
+            .map(|p| (p.declaring, p.name, direct && !offset, *offset))
+    });
     // a dynamic name finds no property
     found.chain(dynamic.then_some(None)).collect()
 }

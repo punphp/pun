@@ -121,10 +121,7 @@ pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
         if let Some(ty) = c.phpstan_type(arg.value()) {
             let (identifier, ty) = declared::with_classes(c, || match dump {
                 Dump::Type => ("phpstan.dumpType", ty.describe(Level::Precise)),
-                Dump::PhpDoc => (
-                    "phpstan.dumpPhpDocType",
-                    to_phpdoc_fully_qualified(&ty),
-                ),
+                Dump::PhpDoc => ("phpstan.dumpPhpDocType", to_phpdoc_fully_qualified(&ty)),
             });
             let message = if args.len() > 1 {
                 format!("Dumped type #{}: {ty}", i + 1)
@@ -142,7 +139,11 @@ fn file_assert<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>,
     let (expected, value) = (args[0].value(), args[1].value());
     let literal = |c: &Checker<'_, 'arena>, native: bool| {
         let ty = if native {
-            c.phpstan_type_from_in(expected, c.native_types.get(&expected.span())?, &c.native_types)
+            c.phpstan_type_from_in(
+                expected,
+                c.native_types.get(&expected.span())?,
+                &c.native_types,
+            )
         } else {
             c.phpstan_type(expected)?
         };
@@ -153,36 +154,65 @@ fn file_assert<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>,
     };
     let found = match assert {
         Assert::Type | Assert::SuperType => {
-            let Some(expected) = literal(c, false) else { return };
-            let Ok(expected) = expected else {
-                let what = if matches!(assert, Assert::Type) { "type" } else { "super type" };
-                return unknown(c, call, format!("Expected {what} must be a literal string."));
+            let Some(expected) = literal(c, false) else {
+                return;
             };
-            let Some(actual) = c.phpstan_type(value) else { return };
+            let Ok(expected) = expected else {
+                let what = if matches!(assert, Assert::Type) {
+                    "type"
+                } else {
+                    "super type"
+                };
+                return unknown(
+                    c,
+                    call,
+                    format!("Expected {what} must be a literal string."),
+                );
+            };
+            let Some(actual) = c.phpstan_type(value) else {
+                return;
+            };
             declared::with_classes(c, || {
                 let described = actual.describe(Level::Precise);
                 if matches!(assert, Assert::Type) {
                     (expected != described).then(|| {
-                        ("phpstan.type", format!("Expected type {expected}, actual: {described}"))
+                        (
+                            "phpstan.type",
+                            format!("Expected type {expected}, actual: {described}"),
+                        )
                     })
                 } else {
                     let resolved = pun_phpstan::resolve::resolve_str(&expected, None);
                     (!is_super_type_of(&resolved, &actual).yes()).then(|| {
-                        ("phpstan.superType", format!("Expected subtype of {expected}, actual: {described}"))
+                        (
+                            "phpstan.superType",
+                            format!("Expected subtype of {expected}, actual: {described}"),
+                        )
                     })
                 }
             })
         }
         Assert::NativeType => {
-            let Some(expected) = literal(c, true) else { return };
-            let Ok(expected) = expected else {
-                return unknown(c, call, "Expected native type must be a literal string.".into());
+            let Some(expected) = literal(c, true) else {
+                return;
             };
-            let Some(actual) = c.native_types.get(&value.span()) else { return };
+            let Ok(expected) = expected else {
+                return unknown(
+                    c,
+                    call,
+                    "Expected native type must be a literal string.".into(),
+                );
+            };
+            let Some(actual) = c.native_types.get(&value.span()) else {
+                return;
+            };
             let actual = c.phpstan_type_from_in(value, actual, &c.native_types);
             let described = declared::with_classes(c, || actual.describe(Level::Precise));
             (expected != described).then(|| {
-                ("phpstan.nativeType", format!("Expected native type {expected}, actual: {described}"))
+                (
+                    "phpstan.nativeType",
+                    format!("Expected native type {expected}, actual: {described}"),
+                )
             })
         }
         Assert::VariableCertainty => match variable_certainty(c, call, expected, value) {
@@ -235,11 +265,15 @@ fn variable_certainty<'arena>(
             (scope.get(&name), format!("variable ${name}"))
         }
         Expression::ArrayAccess(a) => {
-            let (Some(array), Some(offset)) = (c.phpstan_type(a.array), c.phpstan_type(a.index)) else {
+            let (Some(array), Some(offset)) = (c.phpstan_type(a.array), c.phpstan_type(a.index))
+            else {
                 return Ok(None);
             };
             declared::with_classes(c, || {
-                (unset::has_offset(c, &array, &offset), format!("offset {}", offset.describe(Level::Precise)))
+                (
+                    unset::has_offset(c, &array, &offset),
+                    format!("offset {}", offset.describe(Level::Precise)),
+                )
             })
         }
         _ => return Err("Invalid assertVariableCertainty call."),
@@ -252,7 +286,11 @@ fn variable_certainty<'arena>(
     Ok((expected != actual).then(|| {
         (
             "phpstan.variable",
-            format!("Expected {description} certainty {}, actual: {}", describe(expected), describe(actual)),
+            format!(
+                "Expected {description} certainty {}, actual: {}",
+                describe(expected),
+                describe(actual)
+            ),
         )
     }))
 }

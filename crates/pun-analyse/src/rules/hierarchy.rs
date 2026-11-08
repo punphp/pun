@@ -23,12 +23,17 @@ pub(super) fn implements_serializable(k: &ClassLikeMetadata) -> bool {
 
 impl<'a> Checker<'a, '_> {
     /// The PHPDoc right before a class-like's declaration (`getResolvedPhpDoc()` of its own comment).
-    pub(super) fn class_doc(&self, k: &ClassLikeMetadata) -> Option<(&'a [u8], std::borrow::Cow<'a, super::facts::DocEntry>)> {
+    pub(super) fn class_doc(
+        &self,
+        k: &ClassLikeMetadata,
+    ) -> Option<(&'a [u8], std::borrow::Cow<'a, super::facts::DocEntry>)> {
         self.php_doc(k.span.file_id, k.span.start.offset)
     }
 
     pub(super) fn class_tags(&self, k: &ClassLikeMetadata) -> Vec<String> {
-        self.class_doc(k).map(|(_, entry)| entry.names.clone()).unwrap_or_default()
+        self.class_doc(k)
+            .map(|(_, entry)| entry.names.clone())
+            .unwrap_or_default()
     }
 
     /// `isFinalByKeyword()` of a declared class: Mago's FINAL flag also holds an `@final` tag (even one between the
@@ -170,7 +175,12 @@ pub(super) fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena
         .class_scope()
         .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
         .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
-    class_names::check_at(c, &pairs, Some(&class_names::Location::TraitUse { class }), true);
+    class_names::check_at(
+        c,
+        &pairs,
+        Some(&class_names::Location::TraitUse { class }),
+        true,
+    );
     // (an interface is never a trait's context)
     if kind == SymbolKind::Interface {
         let display = display.expect("a named interface");
@@ -580,7 +590,11 @@ fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpst
         t => vec![t],
     };
     if k.kind == SymbolKind::Class && !k.flags.is_abstract() {
-        types.push(Type::Object(super::declared::original_name(k), Vec::new(), false));
+        types.push(Type::Object(
+            super::declared::original_name(k),
+            Vec::new(),
+            false,
+        ));
     }
     Some(types)
 }

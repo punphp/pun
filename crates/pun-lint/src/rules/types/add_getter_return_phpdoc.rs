@@ -41,7 +41,11 @@ impl Rule for AddGetterReturnPhpdoc {
         let class = class_name(&scope);
         let mut changes = Vec::new();
         for m in methods(members) {
-            if !m.return_type_hint.as_ref().is_some_and(|r| is_array_hint(&r.hint)) {
+            if !m
+                .return_type_hint
+                .as_ref()
+                .is_some_and(|r| is_array_hint(&r.hint))
+            {
                 continue;
             }
             let target = DocTarget::of(ctx, node_span(m).start);
@@ -71,7 +75,10 @@ impl Rule for AddGetterReturnPhpdoc {
                 continue;
             };
             // is type useful?
-            if !matches!(var.parsed, Some(DocNode::Generic { .. } | DocNode::Array(_))) {
+            if !matches!(
+                var.parsed,
+                Some(DocNode::Generic { .. } | DocNode::Array(_))
+            ) {
                 continue;
             }
             let t = DocTarget::doc_type(var, &scope, class.as_deref());

@@ -14,7 +14,11 @@ use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{combine_union_types, get_string};
 
-static META: ProviderMeta = ProviderMeta::new("pun-date-format", "pun", "PHPStan's date format return types");
+static META: ProviderMeta = ProviderMeta::new(
+    "pun-date-format",
+    "pun",
+    "PHPStan's date format return types",
+);
 
 pub(super) struct DateFormat;
 
@@ -56,8 +60,14 @@ impl MethodReturnTypeProvider for DateFormat {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         // the class the method is called on (Mago names the declaring one, which can be a trait)
-        let class = invocation.inner().target.get_method_context().map_or(class, |t| t.class_like_metadata.name.as_bytes());
-        if !class.eq_ignore_ascii_case(b"DateTimeInterface") && !context.is_instance_of(class, b"DateTimeInterface") {
+        let class = invocation
+            .inner()
+            .target
+            .get_method_context()
+            .map_or(class, |t| t.class_like_metadata.name.as_bytes());
+        if !class.eq_ignore_ascii_case(b"DateTimeInterface")
+            && !context.is_instance_of(class, b"DateTimeInterface")
+        {
             return None;
         }
         if invocation.argument_count() == 0 {
@@ -94,9 +104,16 @@ fn non_empty_string() -> TUnion {
 
 /// DateFunctionReturnTypeHelper::getTypeFromFormatType() with `$useMicrosec` (both extensions pass `true`).
 fn type_from_format_type(codebase: &CodebaseMetadata, format: &TUnion) -> TUnion {
-    let union = |a: &TUnion, b: &TUnion| combine_union_types(a, b, codebase, CombinerOptions::default());
-    let types: Vec<TUnion> = constant_strings(format).into_iter().map(from_format).collect();
-    let non_empty_format = format.types.iter().all(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.is_non_empty()));
+    let union =
+        |a: &TUnion, b: &TUnion| combine_union_types(a, b, codebase, CombinerOptions::default());
+    let types: Vec<TUnion> = constant_strings(format)
+        .into_iter()
+        .map(from_format)
+        .collect();
+    let non_empty_format = format
+        .types
+        .iter()
+        .all(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.is_non_empty()));
     match types.split_first() {
         None if non_empty_format => non_empty_string(),
         None => get_string(),
@@ -110,8 +127,14 @@ fn from_format(format: &[u8]) -> TUnion {
         TUnion::from_vec(
             (min..=max)
                 .map(|i| {
-                    let s = if pad { format!("{i:02}") } else { i.to_string() };
-                    TAtomic::Scalar(TScalar::String(TString::known_literal(mago_word::word(s.as_bytes()))))
+                    let s = if pad {
+                        format!("{i:02}")
+                    } else {
+                        i.to_string()
+                    };
+                    TAtomic::Scalar(TScalar::String(TString::known_literal(mago_word::word(
+                        s.as_bytes(),
+                    ))))
                 })
                 .collect(),
         )
@@ -128,18 +151,50 @@ fn from_format(format: &[u8]) -> TUnion {
         b"G" => return range(0, 23, false),
         b"h" => return range(1, 12, true),
         b"H" => return range(0, 23, true),
-        b"u" | b"v" => return string(TString::general_with_props(true, true, true, false, TStringCasing::Unspecified)),
+        b"u" | b"v" => {
+            return string(TString::general_with_props(
+                true,
+                true,
+                true,
+                false,
+                TStringCasing::Unspecified,
+            ));
+        }
         // values which do not depend on the locale (PHPStan 2.3.3)
         b"a" => return strings(&["am", "pm"]),
         b"A" => return strings(&["AM", "PM"]),
         b"S" => return strings(&["st", "nd", "rd", "th"]),
         b"D" => return strings(&["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]),
-        b"l" => return strings(&["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
-        b"M" => return strings(&["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]),
+        b"l" => {
+            return strings(&[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ]);
+        }
+        b"M" => {
+            return strings(&[
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            ]);
+        }
         b"F" => {
             return strings(&[
-                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
-                "November", "December",
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
             ]);
         }
         _ => {}
@@ -159,7 +214,11 @@ fn strings(values: &[&str]) -> TUnion {
     TUnion::from_vec(
         values
             .iter()
-            .map(|v| TAtomic::Scalar(TScalar::String(TString::known_literal(mago_word::word(v.as_bytes())))))
+            .map(|v| {
+                TAtomic::Scalar(TScalar::String(TString::known_literal(mago_word::word(
+                    v.as_bytes(),
+                ))))
+            })
             .collect(),
     )
 }

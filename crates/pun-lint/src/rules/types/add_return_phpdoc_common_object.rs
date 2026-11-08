@@ -10,7 +10,9 @@ use super::class_scope;
 use super::docblock::{FunctionLike, doc_report, referenced_classes};
 use super::facts::{Facts, facts};
 use super::silent_void::Place;
-use crate::rules::phpdoc_writer::type_mapper::{const_array_key_type, is_useful_array_tag, uniquate_types};
+use crate::rules::phpdoc_writer::type_mapper::{
+    const_array_key_type, is_useful_array_tag, uniquate_types,
+};
 use crate::rules::phpdoc_writer::{decorate_return, expr_type};
 use crate::{Context, Report, Rule};
 
@@ -86,7 +88,10 @@ impl Rule for AddReturnPhpdocCommonObject {
         let Some(shared) = shared else {
             return;
         };
-        let t = Type::array(resolve_key_type(&returned), Type::Object(shared, vec![], false));
+        let t = Type::array(
+            resolve_key_type(&returned),
+            Type::Object(shared, vec![], false),
+        );
         if decorate_return(&mut info, &t) {
             out.extend(doc_report(
                 f.name,
@@ -111,7 +116,10 @@ fn is_object(t: &Type) -> bool {
 /// `array_intersect(...$parentClassesAndInterfaces)[0]`: the first parent class (or, without one, the first
 /// interface) of the first class, when every class has it too.
 fn first_shared_parent(facts: &Facts, classes: &[String]) -> Option<String> {
-    let lists: Vec<Vec<String>> = classes.iter().map(|c| parents_and_interfaces(facts, c)).collect();
+    let lists: Vec<Vec<String>> = classes
+        .iter()
+        .map(|c| parents_and_interfaces(facts, c))
+        .collect();
     let first = lists.first()?.first()?;
     lists[1..]
         .iter()
@@ -131,7 +139,11 @@ fn parents_and_interfaces(facts: &Facts, class: &str) -> Vec<String> {
         current = parent_class;
     }
     let mut interfaces: Vec<String> = Vec::new();
-    for i in own.iter().flat_map(|own| own.direct_parent_interfaces.iter().chain(own.all_parent_interfaces.iter())) {
+    for i in own.iter().flat_map(|own| {
+        own.direct_parent_interfaces
+            .iter()
+            .chain(own.all_parent_interfaces.iter())
+    }) {
         let name = codebase
             .get_class_like(i.as_bytes())
             .map_or(i.to_string(), |c| c.original_name.to_string());
@@ -150,7 +162,16 @@ fn resolve_key_type(a: &ConstArray) -> Type {
         return mixed();
     };
     // (a constant array's keys are integers and strings)
-    let types: Vec<Type> = keys.iter().map(|key| if key.is_string().yes() { Type::String } else { Type::Int }).collect();
+    let types: Vec<Type> = keys
+        .iter()
+        .map(|key| {
+            if key.is_string().yes() {
+                Type::String
+            } else {
+                Type::Int
+            }
+        })
+        .collect();
     let mut unique = uniquate_types(&types);
     if unique.len() == 1 {
         return unique.remove(0);

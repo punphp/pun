@@ -17,9 +17,9 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{is_name, member_name};
 use super::object_type::{is_hint_type, is_object_type};
 use super::print::kept_arguments;
+use super::{is_name, member_name};
 use crate::rules::rector_code_quality::named;
 use crate::rules::types::facts::facts;
 use crate::rules::types::{class_scope, namespace_of};

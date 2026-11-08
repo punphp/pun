@@ -10,11 +10,11 @@ use mago_codex::visibility::Visibility;
 use mago_span::{Position, Span};
 use pun_phpstan::types::{Level, Type, is_super_type_of};
 
+use super::Checker;
 use super::declarations::has_tag;
 use super::declared;
 use super::overriding::{ANCESTRY, Class};
 use super::properties::{PropertyNode, is_virtual};
-use super::Checker;
 
 /// The prototype as PhpPropertyReflection gives it.
 struct Prototype {
@@ -42,16 +42,32 @@ fn accessible(is_static: bool, is_virtual: bool, hook: bool) -> bool {
 
 /// A property's own native modifier, or a class's readonly modifier (not PHPDoc, comments or attributes).
 pub(super) fn declaration_readonly(c: &Checker, at: Span) -> bool {
-    c.file_facts(at.file_id).is_some_and(|facts| facts.declarations.readonly.contains(&at.start.offset))
+    c.file_facts(at.file_id)
+        .is_some_and(|facts| facts.declarations.readonly.contains(&at.start.offset))
 }
 
 /// Nominal interface parents in declaration order (codex's populated interface sets are unordered).
-pub(super) fn declaration_interfaces<'a>(c: &Checker<'a, '_>, k: &ClassLikeMetadata) -> Vec<&'a ClassLikeMetadata> {
-    let Some(facts) = c.file_facts(k.span.file_id) else { return Vec::new() };
-    let parents = facts.declarations.parents.get(&k.span.start.offset).filter(|(interface, _)| *interface);
-    parents.into_iter().flat_map(|(_, names)| names).filter_map(|name| {
-        c.codebase.get_class_like(name).filter(|i| i.kind == SymbolKind::Interface)
-    }).collect()
+pub(super) fn declaration_interfaces<'a>(
+    c: &Checker<'a, '_>,
+    k: &ClassLikeMetadata,
+) -> Vec<&'a ClassLikeMetadata> {
+    let Some(facts) = c.file_facts(k.span.file_id) else {
+        return Vec::new();
+    };
+    let parents = facts
+        .declarations
+        .parents
+        .get(&k.span.start.offset)
+        .filter(|(interface, _)| *interface);
+    parents
+        .into_iter()
+        .flat_map(|(_, names)| names)
+        .filter_map(|name| {
+            c.codebase
+                .get_class_like(name)
+                .filter(|i| i.kind == SymbolKind::Interface)
+        })
+        .collect()
 }
 
 impl<'a> Checker<'a, '_> {
@@ -61,8 +77,15 @@ impl<'a> Checker<'a, '_> {
         if let Some(span) = p.span {
             return Some((span, name));
         }
-        let start = *self.file_facts(name.file_id)?.declarations.starts.get(&name.start.offset)?;
-        Some((Span::new(name.file_id, Position::new(start), name.end), name))
+        let start = *self
+            .file_facts(name.file_id)?
+            .declarations
+            .starts
+            .get(&name.start.offset)?;
+        Some((
+            Span::new(name.file_id, Position::new(start), name.end),
+            name,
+        ))
     }
 
     /// The declared property `name` (with its `$`) of user class `class` (its own, a trait's or an ancestor's): the
@@ -71,8 +94,14 @@ impl<'a> Checker<'a, '_> {
         &self,
         class: &'a ClassLikeMetadata,
         name: &[u8],
-    ) -> Option<(&'a ClassLikeMetadata, &'a ClassLikeMetadata, &'a PropertyMetadata)> {
-        let origin = self.codebase.get_declaring_property_class(class.name.as_bytes(), name)?;
+    ) -> Option<(
+        &'a ClassLikeMetadata,
+        &'a ClassLikeMetadata,
+        &'a PropertyMetadata,
+    )> {
+        let origin = self
+            .codebase
+            .get_declaring_property_class(class.name.as_bytes(), name)?;
         let origin = self.codebase.get_class_like(origin.as_bytes())?;
         let property = origin.properties.get(&mago_word::word(name))?;
         let declaring = if origin.kind == SymbolKind::Trait {
@@ -85,11 +114,22 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// BetterReflection's `getHooks()` of the property `name` declared in `class`: its own, else its parent class's.
-    pub(super) fn property_hooks(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8]) -> (bool, bool) {
+    pub(super) fn property_hooks(
+        &self,
+        class: &ClassLikeMetadata,
+        own: (bool, bool),
+        name: &[u8],
+    ) -> (bool, bool) {
         self.property_hooks_at(class, own, name, 0)
     }
 
-    fn property_hooks_at(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8], depth: usize) -> (bool, bool) {
+    fn property_hooks_at(
+        &self,
+        class: &ClassLikeMetadata,
+        own: (bool, bool),
+        name: &[u8],
+        depth: usize,
+    ) -> (bool, bool) {
         if (own.0 && own.1) || depth > ANCESTRY {
             return own;
         }
@@ -108,22 +148,40 @@ impl<'a> Checker<'a, '_> {
 
     /// The native property `name` (with its `$`) of `class` as PhpClassReflectionExtension finds it (a parent's
     /// private one excluded): the class declaring it and `isReadable()`.
-    pub(super) fn native_readable(&self, class: &'a ClassLikeMetadata, name: &[u8]) -> Option<(String, bool)> {
+    pub(super) fn native_readable(
+        &self,
+        class: &'a ClassLikeMetadata,
+        name: &[u8],
+    ) -> Option<(String, bool)> {
         let (declaring, _, p) = self.declared_property(class, name)?;
         if p.read_visibility == Visibility::Private && declaring.name != class.name {
             return None;
         }
         let virtual_ = self.property_virtual(declaring, p, name);
         let hooks = self.property_hooks(declaring, hook_names(p), name);
-        Some((self.display(declaring), accessible(p.flags.is_static(), virtual_, hooks.0)))
+        Some((
+            self.display(declaring),
+            accessible(p.flags.is_static(), virtual_, hooks.0),
+        ))
     }
 
     /// BetterReflection's `isVirtual()`: virtual hooks, and a virtual parent property if there is one.
-    pub(super) fn property_virtual(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
+    pub(super) fn property_virtual(
+        &self,
+        class: &ClassLikeMetadata,
+        p: &PropertyMetadata,
+        name: &[u8],
+    ) -> bool {
         self.property_virtual_at(class, p, name, 0)
     }
 
-    fn property_virtual_at(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8], depth: usize) -> bool {
+    fn property_virtual_at(
+        &self,
+        class: &ClassLikeMetadata,
+        p: &PropertyMetadata,
+        name: &[u8],
+        depth: usize,
+    ) -> bool {
         p.flags.is_virtual_property()
             && (depth > ANCESTRY
                 || class
@@ -134,7 +192,12 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// `getNativeProperty($name)` of `class` as class `k` reaches it.
-    fn native_property(&self, class: Class<'a>, name: &str, k: &ClassLikeMetadata) -> Option<Prototype> {
+    fn native_property(
+        &self,
+        class: Class<'a>,
+        name: &str,
+        k: &ClassLikeMetadata,
+    ) -> Option<Prototype> {
         match class {
             Class::Builtin(mut b) => loop {
                 if let Some(p) = b.properties.get(name) {
@@ -155,7 +218,10 @@ impl<'a> Checker<'a, '_> {
                     });
                 }
                 // a built-in class's parent is built in
-                b = self.natives.classes.get(&b.parent.as_deref()?.to_ascii_lowercase())?;
+                b = self
+                    .natives
+                    .classes
+                    .get(&b.parent.as_deref()?.to_ascii_lowercase())?;
             },
             Class::User(u) => {
                 let dollar = format!("${name}");
@@ -170,8 +236,8 @@ impl<'a> Checker<'a, '_> {
                     .name_span
                     .and_then(|at| self.has_modifier(declaring.span, at, b"readonly"))
                     .unwrap_or(false);
-                let private_set =
-                    p.write_visibility == Visibility::Private && p.read_visibility != Visibility::Private;
+                let private_set = p.write_visibility == Visibility::Private
+                    && p.read_visibility != Visibility::Private;
                 let final_by_keyword = modifier(b"final") || private_set;
                 let doc_final = declaration
                     .and_then(|(span, _)| declared::doc_at(self, span))
@@ -180,7 +246,11 @@ impl<'a> Checker<'a, '_> {
                 let is_virtual = self.property_virtual(declaring, p, dollar.as_bytes());
                 let hooks = self.property_hooks(declaring, hook_names(p), dollar.as_bytes());
                 let native = p.type_declaration_metadata.as_ref().map(|t| {
-                    self.localize(&declared::from_tunion(self, &t.type_union, origin), origin, declaring)
+                    self.localize(
+                        &declared::from_tunion(self, &t.type_union, origin),
+                        origin,
+                        declaring,
+                    )
                 });
                 Some(Prototype {
                     class: self.ancestor_display(k, &self.display(declaring)),
@@ -224,7 +294,9 @@ pub(super) fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
 /// OverridingPropertyRule on a ClassPropertyNode, `is_readonly` being its `isReadOnly()`.
 pub(super) fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
     // a trait's property is walked only in a using class's context, where the scope is that class
-    let k = c.class_scope().expect("a property is walked inside its class");
+    let k = c
+        .class_scope()
+        .expect("a property is walked inside its class");
     let errors = declared::with_classes(c, || errors(c, node, is_readonly, k));
     for (identifier, message, ignorable) in errors {
         let count = c.errors.len();
@@ -257,7 +329,9 @@ fn errors<'a>(
         if override_attribute {
             return vec![(
                 "property.override",
-                format!("Property {class}::${name} has #[\\Override] attribute but does not override any property."),
+                format!(
+                    "Property {class}::${name} has #[\\Override] attribute but does not override any property."
+                ),
                 false,
             )];
         }
@@ -271,13 +345,17 @@ fn errors<'a>(
         if !is_static {
             error(
                 "property.nonStatic",
-                format!("Non-static property {class}::${name} overrides static property {proto}::${name}."),
+                format!(
+                    "Non-static property {class}::${name} overrides static property {proto}::${name}."
+                ),
             );
         }
     } else if is_static {
         error(
             "property.static",
-            format!("Static property {class}::${name} overrides non-static property {proto}::${name}."),
+            format!(
+                "Static property {class}::${name} overrides non-static property {proto}::${name}."
+            ),
         );
     }
     let hooks_supported = c.php_version >= 80400;
@@ -285,13 +363,17 @@ fn errors<'a>(
         if !is_readonly {
             error(
                 "property.readWrite",
-                format!("Readwrite property {class}::${name} overrides readonly property {proto}::${name}."),
+                format!(
+                    "Readwrite property {class}::${name} overrides readonly property {proto}::${name}."
+                ),
             );
         }
     } else if is_readonly && (!hooks_supported || prototype.writable) {
         error(
             "property.readOnly",
-            format!("Readonly property {class}::${name} overrides readwrite property {proto}::${name}."),
+            format!(
+                "Readonly property {class}::${name} overrides readwrite property {proto}::${name}."
+            ),
         );
     }
     if hooks_supported {
@@ -318,7 +400,10 @@ fn errors<'a>(
             );
         }
         if node.has(|m| m.is_abstract()) && !prototype.is_abstract {
-            for (hook, own, theirs) in [("get", hooks.0, prototype.hooks.0), ("set", hooks.1, prototype.hooks.1)] {
+            for (hook, own, theirs) in [
+                ("get", hooks.0, prototype.hooks.0),
+                ("set", hooks.1, prototype.hooks.1),
+            ] {
                 if own && theirs {
                     error(
                         "property.abstractOverridingNonAbstractHook",
@@ -332,7 +417,11 @@ fn errors<'a>(
     }
     if prototype.is_public {
         if !node.is_public() {
-            let visibility = if node.has(|m| m.is_private()) { "Private" } else { "Protected" };
+            let visibility = if node.has(|m| m.is_private()) {
+                "Private"
+            } else {
+                "Protected"
+            };
             error(
                 "property.visibility",
                 format!(

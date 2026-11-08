@@ -12,7 +12,13 @@ pub(super) const IDENTIFIERS: &[&str] = &["parameter.defaultValue"];
 
 /// The default values, whose types the rule reads.
 pub(super) fn typed(params: &FunctionLikeParameterList, spans: &mut Vec<mago_span::Span>) {
-    spans.extend(params.parameters.iter().filter_map(|p| p.default_value.as_ref()).map(|d| d.value.span()));
+    spans.extend(
+        params
+            .parameters
+            .iter()
+            .filter_map(|p| p.default_value.as_ref())
+            .map(|d| d.value.span()),
+    );
 }
 
 fn check(c: &mut Checker, params: &FunctionLikeParameterList, types: &[Type], of: &str) {
@@ -48,8 +54,13 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
         return;
     }
     let name = c.resolved_span(f.name.span());
-    let types: Vec<Type> =
-        declared::with_classes(c, || declared::function(c, f).params.into_iter().map(|p| p.1).collect());
+    let types: Vec<Type> = declared::with_classes(c, || {
+        declared::function(c, f)
+            .params
+            .into_iter()
+            .map(|p| p.1)
+            .collect()
+    });
     check(c, &f.parameter_list, &types, &format!("function {name}()"));
 }
 
@@ -57,11 +68,19 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
-    let Some(declaring) = super::super::missing_types::declaring(c, m.span()) else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
+    let Some(declaring) = super::super::missing_types::declaring(c, m.span()) else {
+        return;
+    };
     let name = super::missing_return::method_name(c, m);
     let types: Vec<Type> = declared::with_classes(c, || {
-        declared::method(c, m, declaring, context).params.into_iter().map(|p| p.1).collect()
+        declared::method(c, m, declaring, context)
+            .params
+            .into_iter()
+            .map(|p| p.1)
+            .collect()
     });
     let of = format!("method {}::{name}()", c.display(context));
     check(c, &m.parameter_list, &types, &of);
@@ -81,7 +100,11 @@ pub(in super::super) fn anonymous(c: &mut Checker, params: &FunctionLikeParamete
             .map(|p| {
                 p.hint.as_ref().map_or_else(pun_phpstan::types::mixed, |h| {
                     let t = declared::native(c, h, class);
-                    if declared::default_is_null(p) { t.add_null() } else { t }
+                    if declared::default_is_null(p) {
+                        t.add_null()
+                    } else {
+                        t
+                    }
                 })
             })
             .collect()

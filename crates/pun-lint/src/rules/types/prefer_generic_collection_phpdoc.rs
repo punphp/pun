@@ -64,7 +64,11 @@ fn match_generic_collection(types: &[TypeNode]) -> Option<TypeNode> {
                 item = Some((**inner).clone());
             }
             TypeNode::Identifier(name) => {
-                let short = name.trim_start_matches('\\').rsplit('\\').next().unwrap_or(name);
+                let short = name
+                    .trim_start_matches('\\')
+                    .rsplit('\\')
+                    .next()
+                    .unwrap_or(name);
                 if matches!(short, "Collection" | "ArrayCollection") {
                     collection = Some(name.clone());
                 }

@@ -37,7 +37,10 @@ pub(super) fn collection<'a, 'arena>(
 }
 
 pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
-    let Some(larastan) = c.larastan.filter(|l| l.switches.contains(crate::LarastanSwitches::CHECK_CONFIG_TYPES)) else {
+    let Some(larastan) = c.larastan.filter(|l| {
+        l.switches
+            .contains(crate::LarastanSwitches::CHECK_CONFIG_TYPES)
+    }) else {
         return;
     };
     let Some(args @ [first, ..]) = collection(c.names, call) else {
@@ -108,8 +111,11 @@ pub(super) fn typed(
         .unwrap_or_default()
 }
 
-static META: ProviderMeta =
-    ProviderMeta::new("pun-larastan-config", "pun-larastan-config", "Larastan's config extensions");
+static META: ProviderMeta = ProviderMeta::new(
+    "pun-larastan-config",
+    "pun-larastan-config",
+    "Larastan's config extensions",
+);
 
 /// ConfigFunctionDynamicFunctionReturnTypeExtension (`config()`), ConfigRepositoryDynamicMethodReturnTypeExtension
 /// (`get()` and `collection()` of `Illuminate\Config\Repository`) and
@@ -137,13 +143,17 @@ impl Types {
             .get_expression_type(argument(0)?)?
             .types
             .iter()
-            .map(|a| a.get_literal_string_value().map(|v| String::from_utf8_lossy(v).into_owned()))
+            .map(|a| {
+                a.get_literal_string_value()
+                    .map(|v| String::from_utf8_lossy(v).into_owned())
+            })
             .collect::<Option<Vec<_>>>()
             .unwrap_or_default();
         let mut types = self.0.value_types(&keys).unwrap_or(Some(Vec::new()))?;
         if invocation.argument_count() > 1 {
             let default = context.get_expression_type(argument(1)?)?;
-            let default = helpers::generalize(codebase, &helpers::call_callables(codebase, default));
+            let default =
+                helpers::generalize(codebase, &helpers::call_callables(codebase, default));
             match types.first_mut() {
                 Some(t) => *t = default,
                 None => types.push(default),
@@ -153,7 +163,11 @@ impl Types {
     }
 
     /// `get()`: the union, `None` without types.
-    fn get(&self, context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+    fn get(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
         let types = self.return_types(context, invocation)?;
         (!types.is_empty()).then(|| helpers::union(context.codebase(), types))
     }
@@ -175,7 +189,12 @@ impl Types {
                 TAtomic::Array(TArray::List(list)) if list.element_type.is_never() => {
                     let known = list.known_elements.as_deref()?;
                     Some((
-                        TUnion::from_vec(known.keys().map(|i| TAtomic::Scalar(TScalar::literal_int(*i as i64))).collect()),
+                        TUnion::from_vec(
+                            known
+                                .keys()
+                                .map(|i| TAtomic::Scalar(TScalar::literal_int(*i as i64)))
+                                .collect(),
+                        ),
                         helpers::union(codebase, known.values().map(|(_, t)| t.clone())),
                     ))
                 }
@@ -189,7 +208,10 @@ impl Types {
                 Some(extensions::generic(
                     codebase,
                     "Illuminate\\Support\\Collection",
-                    vec![helpers::union(codebase, keys), helpers::union(codebase, values)],
+                    vec![
+                        helpers::union(codebase, keys),
+                        helpers::union(codebase, values),
+                    ],
                 ))
             }
             _ => Some(get_error()),
@@ -216,7 +238,10 @@ impl FunctionReturnTypeProvider for Types {
 
 impl MethodReturnTypeProvider for Types {
     fn targets() -> &'static [MethodTarget] {
-        static TARGETS: [MethodTarget; 2] = [MethodTarget::any_class(b"get"), MethodTarget::any_class(b"collection")];
+        static TARGETS: [MethodTarget; 2] = [
+            MethodTarget::any_class(b"get"),
+            MethodTarget::any_class(b"collection"),
+        ];
         &TARGETS
     }
 
@@ -228,8 +253,14 @@ impl MethodReturnTypeProvider for Types {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         let codebase = context.codebase();
-        let receiver = invocation.inner().target.get_method_context().map_or(class, |t| t.class_like_metadata.name.as_bytes());
-        let is = |parent: &[u8]| receiver.eq_ignore_ascii_case(parent) || codebase.is_instance_of(receiver, parent);
+        let receiver = invocation
+            .inner()
+            .target
+            .get_method_context()
+            .map_or(class, |t| t.class_like_metadata.name.as_bytes());
+        let is = |parent: &[u8]| {
+            receiver.eq_ignore_ascii_case(parent) || codebase.is_instance_of(receiver, parent)
+        };
         if invocation.has_no_arguments() {
             return None;
         }

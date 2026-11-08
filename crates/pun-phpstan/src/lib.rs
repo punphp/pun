@@ -3,9 +3,9 @@
 //! symbols and PHPStan's type strings.
 
 pub mod comments;
-pub mod fixers;
 pub mod config;
 pub mod di;
+pub mod fixers;
 pub mod ignore;
 pub mod neon;
 pub mod php;

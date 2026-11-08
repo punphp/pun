@@ -60,7 +60,10 @@ impl Rule for NoUselessPhpdocType {
             return;
         }
         // keep static/$this, they denote the runtime subclass the native type cannot express
-        if members.iter().any(|m| matches!(m, DocNode::This) || matches!(m, DocNode::Ident(n) if n == "static")) {
+        if members
+            .iter()
+            .any(|m| matches!(m, DocNode::This) || matches!(m, DocNode::Ident(n) if n == "static"))
+        {
             return;
         }
         let facts = facts(ctx);

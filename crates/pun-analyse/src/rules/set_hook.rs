@@ -16,11 +16,17 @@ pub(super) fn hooks<'arena>(
     hint: Option<&Hint<'arena>>,
     list: &PropertyHookList<'arena>,
 ) {
-    let k = c.class_scope().expect("a property is walked inside its class-like");
+    let k = c
+        .class_scope()
+        .expect("a property is walked inside its class-like");
     let class = c.display(k);
     let property = String::from_utf8_lossy(&name[1..]).into_owned();
     for hook in list.hooks.iter().filter(|h| h.name.value == b"set") {
-        let Some(parameter) = hook.parameter_list.as_ref().and_then(|l| l.parameters.first()) else {
+        let Some(parameter) = hook
+            .parameter_list
+            .as_ref()
+            .and_then(|l| l.parameters.first())
+        else {
             continue;
         };
         if let Some(message) = native_error(c, k, &class, &property, hint, parameter) {
@@ -86,12 +92,18 @@ pub(super) fn missing_types<'arena>(
     let property = String::from_utf8_lossy(&name[1..]).into_owned();
     let class = c.display(k);
     for hook in list.hooks.iter().filter(|h| h.name.value == b"set") {
-        let parameter = hook.parameter_list.as_ref().and_then(|l| l.parameters.first());
+        let parameter = hook
+            .parameter_list
+            .as_ref()
+            .and_then(|l| l.parameters.first());
         if parameter.is_some_and(|p| native_error(c, k, &class, &property, hint, p).is_some()) {
             continue;
         }
         let (param, native_hint) = match parameter {
-            Some(p) => (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.hint.as_ref()),
+            Some(p) => (
+                String::from_utf8_lossy(&p.variable.name[1..]).into_owned(),
+                p.hint.as_ref(),
+            ),
             None => ("value".to_string(), hint),
         };
         let found = declared::with_classes(c, || {
@@ -101,12 +113,15 @@ pub(super) fn missing_types<'arena>(
                 return Vec::new();
             }
             // the hook's own `@param`, else the property's `@var`
-            let own = c.doc_before(c.file.id, hook.span().start.offset).and_then(|(_, entry)| {
-                let scope = declared::scope_at(c, hook.span(), Some(k));
-                entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
-            });
+            let own = c
+                .doc_before(c.file.id, hook.span().start.offset)
+                .and_then(|(_, entry)| {
+                    let scope = declared::scope_at(c, hook.span(), Some(k));
+                    entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
+                });
             let phpdoc = own.or_else(|| {
-                Some(declared::property(c, None, decl, &name[1..], k)).filter(|t| !t.is_implicit_mixed())
+                Some(declared::property(c, None, decl, &name[1..], k))
+                    .filter(|t| !t.is_implicit_mixed())
             });
             let ty = decide_type(native, phpdoc);
             let subject = format!("Set hook for property {display}::${property}");

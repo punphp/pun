@@ -162,7 +162,12 @@ fn native_reflection_survives_annotations_aliases_and_declaration_boundaries() {
 
 #[test]
 fn native_reflection_keeps_annotation_write_contracts() {
-    oracle_at_level("native-reflection-writes.php", "native-reflection-writes.json", 80400, 3);
+    oracle_at_level(
+        "native-reflection-writes.php",
+        "native-reflection-writes.json",
+        80400,
+        3,
+    );
 }
 
 #[test]
@@ -177,32 +182,67 @@ fn native_writable_overlays_keep_hook_parameters_and_writability() {
 
 #[test]
 fn native_writable_overlays_resolve_inherited_and_generic_types() {
-    oracle_at_level("writable-inheritance.php", "writable-inheritance.json", 80400, 3);
-    oracle_at_level("writable-generic-scope.php", "writable-generic-scope.json", 80400, 3);
+    oracle_at_level(
+        "writable-inheritance.php",
+        "writable-inheritance.json",
+        80400,
+        3,
+    );
+    oracle_at_level(
+        "writable-generic-scope.php",
+        "writable-generic-scope.json",
+        80400,
+        3,
+    );
 }
 
 // These CLI captures were independently checked against PHPStan's public Analyser. Keep trait-context file
 // suffixes as well as every diagnostic; a trait checked in an invalid consumer must not borrow required members.
 fn required_native_oracle(name: &str, scanned: &[&str]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/unset");
-    let expected: Value = serde_json::from_slice(&std::fs::read(root.join(format!("required-{name}.json"))).unwrap()).unwrap();
-    let mut want: Vec<_> = expected["files"].as_object().unwrap().iter().flat_map(|(file, result)| {
-        result["messages"].as_array().unwrap().iter().map(move |e| (
-            file.split_once(".php").unwrap().1.to_string(),
-            e["line"].as_i64().unwrap(),
-            e["identifier"].as_str().unwrap().to_string(),
-            e["message"].as_str().unwrap().to_string(),
-            e["tip"].as_str().map(str::to_string),
-            e["ignorable"].as_bool().unwrap(),
-        ))
-    }).collect();
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join(format!("required-{name}.json"))).unwrap())
+            .unwrap();
+    let mut want: Vec<_> = expected["files"]
+        .as_object()
+        .unwrap()
+        .iter()
+        .flat_map(|(file, result)| {
+            result["messages"].as_array().unwrap().iter().map(move |e| {
+                (
+                    file.split_once(".php").unwrap().1.to_string(),
+                    e["line"].as_i64().unwrap(),
+                    e["identifier"].as_str().unwrap().to_string(),
+                    e["message"].as_str().unwrap().to_string(),
+                    e["tip"].as_str().map(str::to_string),
+                    e["ignorable"].as_bool().unwrap(),
+                )
+            })
+        })
+        .collect();
     let file = root.join(format!("required-{name}.php"));
-    let mut project = Project::new(vec![file.clone()], scanned.iter().map(|name| root.join(name)).collect());
+    let mut project = Project::new(
+        vec![file.clone()],
+        scanned.iter().map(|name| root.join(name)).collect(),
+    );
     project.php_version = 80400;
-    let mut got: Vec<_> = run(&project).unwrap().into_iter().map(|e| (
-        e.file.strip_prefix(file.to_str().unwrap()).unwrap().to_string(),
-        e.line, e.identifier, e.message, e.tip, e.can_be_ignored,
-    )).collect();
+    let mut got: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|e| {
+            (
+                e.file
+                    .strip_prefix(file.to_str().unwrap())
+                    .unwrap()
+                    .to_string(),
+                e.line,
+                e.identifier,
+                e.message,
+                e.tip,
+                e.can_be_ignored,
+            )
+        })
+        .collect();
     want.sort();
     got.sort();
     assert_eq!(got, want, "required-{name}");

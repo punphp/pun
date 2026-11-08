@@ -41,7 +41,10 @@ impl Rule for AddVarPhpdocFromDefault {
         for property in properties(members) {
             // only a private property is safe: a child class can assign a protected or public one a wider type (and
             // a private one overrides no parent's, so `hasUsefulParentPropertyVarTag()` never stops it)
-            if !property.hint.is_some_and(is_array_hint) || !property.is_private || property.names.len() > 1 {
+            if !property.hint.is_some_and(is_array_hint)
+                || !property.is_private
+                || property.names.len() > 1
+            {
                 continue;
             }
             // an array default, of a type Pun maps

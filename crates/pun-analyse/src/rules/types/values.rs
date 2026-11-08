@@ -29,10 +29,16 @@ pub(super) fn typed(e: &Expression, level: u8, spans: &mut Vec<Span>) {
         Expression::Clone(c) => spans.push(c.object.span()),
         Expression::ArrayAccess(a) => spans.extend([a.array.span(), a.index.span()]),
         Expression::ArrayAppend(a) => spans.push(a.array.span()),
-        Expression::Assignment(a) if matches!(super::flow::unparen(a.lhs), Expression::Array(_) | Expression::List(_)) => {
+        Expression::Assignment(a)
+            if matches!(
+                super::flow::unparen(a.lhs),
+                Expression::Array(_) | Expression::List(_)
+            ) =>
+        {
             spans.push(a.rhs.span());
         }
-        Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. }) => {
+        Expression::Array(Array { elements, .. })
+        | Expression::LegacyArray(LegacyArray { elements, .. }) => {
             spans.extend(elements.iter().filter_map(|e| match e {
                 ArrayElement::Variadic(v) => Some(v.value.span()),
                 _ => None,
@@ -44,14 +50,30 @@ pub(super) fn typed(e: &Expression, level: u8, spans: &mut Vec<Span>) {
 
 /// `findTypeToCheck()` of `e` and whether the type found is `ok` (`None`: nothing to report), reporting the unknown
 /// classes it names with `unknown` (`%s` the class) when there is one.
-fn invalid(c: &mut Checker, e: &Expression, ok: &dyn Fn(&Type) -> bool, unknown: Option<&str>) -> Option<String> {
+fn invalid(
+    c: &mut Checker,
+    e: &Expression,
+    ok: &dyn Fn(&Type) -> bool,
+    unknown: Option<&str>,
+) -> Option<String> {
     let (found, names) = declared::with_classes(c, || {
         let found = c.find_type_to_check(e, &ok);
-        let described = found.ty.filter(|t| !ok(t)).map(|t| t.describe(Level::TypeOnly));
+        let described = found
+            .ty
+            .filter(|t| !ok(t))
+            .map(|t| t.describe(Level::TypeOnly));
         (described, found.unknown)
     });
-    for (pattern, name) in unknown.iter().flat_map(|p| names.iter().map(move |n| (p, n))) {
-        c.report(e, "class.notFound", pattern.replace("%s", name), Some(super::super::DISCOVERING_SYMBOLS_TIP));
+    for (pattern, name) in unknown
+        .iter()
+        .flat_map(|p| names.iter().map(move |n| (p, n)))
+    {
+        c.report(
+            e,
+            "class.notFound",
+            pattern.replace("%s", name),
+            Some(super::super::DISCOVERING_SYMBOLS_TIP),
+        );
     }
     found
 }
@@ -64,8 +86,18 @@ pub(in super::super) fn throw(c: &mut Checker, t: &Throw) {
     if c.level < 3 {
         return;
     }
-    if let Some(described) = invalid(c, t.exception, &throwable, Some("Throwing object of an unknown class %s.")) {
-        c.report(t, "throw.notThrowable", format!("Invalid type {described} to throw."), None);
+    if let Some(described) = invalid(
+        c,
+        t.exception,
+        &throwable,
+        Some("Throwing object of an unknown class %s."),
+    ) {
+        c.report(
+            t,
+            "throw.notThrowable",
+            format!("Invalid type {described} to throw."),
+            None,
+        );
     }
 }
 
@@ -73,7 +105,14 @@ pub(in super::super) fn clone(c: &mut Checker, k: &Clone) {
     if c.level < 3 {
         return;
     }
-    let Some(described) = invalid(c, k.object, &|t| t.is_cloneable().yes(), Some("Cloning object of an unknown class %s.")) else { return };
+    let Some(described) = invalid(
+        c,
+        k.object,
+        &|t| t.is_cloneable().yes(),
+        Some("Cloning object of an unknown class %s."),
+    ) else {
+        return;
+    };
     // php-parser drops the parentheses of `clone ($a)`
     let message = match super::flow::unparen(k.object) {
         Expression::Variable(Variable::Direct(v)) => format!(
@@ -89,17 +128,30 @@ pub(in super::super) fn foreach(c: &mut Checker, f: &Foreach) {
     if c.level < 3 {
         return;
     }
-    if let Some(described) = invalid(c, f.expression, &|t| t.is_iterable().yes(), Some("Iterating over an object of an unknown class %s.")) {
-        let message =
-            format!("Argument of an invalid type {described} supplied for foreach, only iterables are supported.");
+    if let Some(described) = invalid(
+        c,
+        f.expression,
+        &|t| t.is_iterable().yes(),
+        Some("Iterating over an object of an unknown class %s."),
+    ) {
+        let message = format!(
+            "Argument of an invalid type {described} supplied for foreach, only iterables are supported."
+        );
         c.report(f.expression, "foreach.nonIterable", message, None);
     }
     if c.level < 4 {
         return;
     }
-    let Some(t) = c.phpstan_type(f.expression) else { return };
+    let Some(t) = c.phpstan_type(f.expression) else {
+        return;
+    };
     if !t.is_iterable().no() && t.is_iterable_at_least_once().no() {
-        c.report(f, "foreach.emptyArray", "Empty array passed to foreach.".into(), None);
+        c.report(
+            f,
+            "foreach.emptyArray",
+            "Empty array passed to foreach.".into(),
+            None,
+        );
     }
 }
 
@@ -108,7 +160,9 @@ pub(in super::super) fn array(c: &mut Checker, elements: &[ArrayElement]) {
         return;
     }
     for e in elements {
-        let ArrayElement::Variadic(v) = e else { continue };
+        let ArrayElement::Variadic(v) = e else {
+            continue;
+        };
         if let Some(described) = invalid(c, v.value, &|t| t.is_iterable().yes(), None) {
             let message = format!("Only iterables can be unpacked, {described} given.");
             c.report(v, "arrayUnpacking.nonIterable", message, None);
@@ -117,10 +171,17 @@ pub(in super::super) fn array(c: &mut Checker, elements: &[ArrayElement]) {
             continue;
         }
         // ArrayUnpackingRule: before PHP 8.1, only int keys
-        let Some(t) = c.phpstan_type(v.value) else { continue };
+        let Some(t) = c.phpstan_type(v.value) else {
+            continue;
+        };
         let levels = c.levels();
         let message = declared::with_classes(c, || {
-            let key = c.find_in(levels, t.iterable_key_type(), &|k| k.is_string().no(), Some(&mut Vec::new()))?;
+            let key = c.find_in(
+                levels,
+                t.iterable_key_type(),
+                &|k| k.is_string().no(),
+                Some(&mut Vec::new()),
+            )?;
             let string = key.is_string();
             (!string.no()).then(|| {
                 format!(
@@ -160,7 +221,9 @@ pub(in super::super) fn array_access(c: &mut Checker, a: &ArrayAccess) {
         if is_array.no() || (is_array.maybe() && !report_maybes) {
             return None;
         }
-        let key = c.find_type_to_check(a.index, &|t| is_super_type_of(&allowed, t).yes()).ty?;
+        let key = c
+            .find_type_to_check(a.index, &|t| is_super_type_of(&allowed, t).yes())
+            .ty?;
         let fits = is_super_type_of(&allowed, &key);
         if fits.yes() || (fits.maybe() && !report_maybes) {
             return None;
@@ -168,7 +231,11 @@ pub(in super::super) fn array_access(c: &mut Checker, a: &ArrayAccess) {
         let certain = is_array.yes() && fits.no();
         Some(format!(
             "{} array key type {}.",
-            if certain { "Invalid" } else { "Possibly invalid" },
+            if certain {
+                "Invalid"
+            } else {
+                "Possibly invalid"
+            },
             key.describe(Level::TypeOnly)
         ))
     });

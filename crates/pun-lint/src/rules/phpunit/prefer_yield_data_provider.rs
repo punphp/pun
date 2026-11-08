@@ -823,7 +823,10 @@ impl Reader<'_, '_, '_> {
                         keyword(&lower, Member::Alone)
                     }
                     "list" | "non-empty-list" => keyword(&lower, Member::Array),
-                    "array" => Some(style_array(None, Printed::new("mixed".into(), Member::Solo, Shape::Other))),
+                    "array" => Some(style_array(
+                        None,
+                        Printed::new("mixed".into(), Member::Solo, Shape::Other),
+                    )),
                     "non-empty-array" => keyword(&lower, Member::Array),
                     "self" => {
                         if self.class.is_anonymous {
@@ -976,7 +979,8 @@ fn style_array(key: Option<&str>, value: Printed) -> Printed {
     if !items_only {
         return Printed::new(generic, Member::Array, Shape::Generic).sorted("array");
     }
-    let of = |item: &Printed| Printed::new(format!("{}[]", item.text), Member::Array, Shape::ArrayOf);
+    let of =
+        |item: &Printed| Printed::new(format!("{}[]", item.text), Member::Array, Shape::ArrayOf);
     match &value.shape {
         Shape::Union(members) => {
             Printed::union(members.iter().map(of).collect(), Member::Array).sorted("array")
@@ -1065,7 +1069,11 @@ impl Printed {
     }
 
     fn union(members: Vec<Printed>, member: Member) -> Self {
-        let text = members.iter().map(|m| m.text.as_str()).collect::<Vec<_>>().join("|");
+        let text = members
+            .iter()
+            .map(|m| m.text.as_str())
+            .collect::<Vec<_>>()
+            .join("|");
         Printed {
             sort: text.clone(),
             text,

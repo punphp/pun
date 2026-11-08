@@ -33,7 +33,8 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
         };
         // a by-ref param type is invariant in PHPStan; narrowing it below array breaks callers passing a plain array,
         // which are invisible for a non-private method
-        if !matches!(node, Node::Method(m) if m.modifiers.iter().any(|m| matches!(m, mago_syntax::cst::Modifier::Private(_)))) {
+        if !matches!(node, Node::Method(m) if m.modifiers.iter().any(|m| matches!(m, mago_syntax::cst::Modifier::Private(_))))
+        {
             return;
         }
         let target = f.target(ctx);
@@ -65,7 +66,12 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
             };
             // (a type Pun does not map, such as a closure's, adds nothing)
             if let Some(t) = expr_type(ctx, &scope, expr)
-                && decorate_param(&mut info, &Type::array(mixed(), t), &name, param.ellipsis.is_some())
+                && decorate_param(
+                    &mut info,
+                    &Type::array(mixed(), t),
+                    &name,
+                    param.ellipsis.is_some(),
+                )
             {
                 changed = true;
             }

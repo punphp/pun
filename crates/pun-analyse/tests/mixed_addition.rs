@@ -288,7 +288,10 @@ fn frontend_addition_preserves_complete_phpstan_diagnostics_including_level_ten(
 #[test]
 fn mixed_subtraction_and_multiplication_are_benevolent_numbers() {
     // PHPStan 2.3.1 dumps `(float|int)` for `mixed - mixed` and `mixed * mixed` (resolveCommonMath()).
-    let mut number = TUnion::from_vec(vec![get_int().types[0].clone(), get_float().types[0].clone()]);
+    let mut number = TUnion::from_vec(vec![
+        get_int().types[0].clone(),
+        get_float().types[0].clone(),
+    ]);
     number.set_ignore_nullable_issues(true);
     number.set_ignore_falsable_issues(true);
     for operator in ["-", "*"] {

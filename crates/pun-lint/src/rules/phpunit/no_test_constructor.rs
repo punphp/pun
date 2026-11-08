@@ -255,7 +255,12 @@ fn renamed_to_set_up(
 /// The edit for adding the statements of `kept` to the end of `set_up`'s body, as php-parser inserts them: on lines
 /// of their own after the last statement, or, in an empty body (`block`), with the method printed anew; `None` with
 /// nothing to add.
-fn appended(ctx: &crate::Context<'_>, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_>) -> Option<Edit> {
+fn appended(
+    ctx: &crate::Context<'_>,
+    set_up: &Method<'_>,
+    block: &Block<'_>,
+    kept: &List<'_>,
+) -> Option<Edit> {
     let source = ctx.source;
     if kept.is_empty() {
         return None;

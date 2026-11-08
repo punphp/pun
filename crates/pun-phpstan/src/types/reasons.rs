@@ -24,11 +24,19 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
                 let level = recommended_level(a, Some(b));
                 let list = b.is_list();
                 if a.is_list().yes() && !list.yes() {
-                    reasons.push(format!("{} {} a list.", b.describe(level), if list.no() { "is not" } else { "might not be" }));
+                    reasons.push(format!(
+                        "{} {} a list.",
+                        b.describe(level),
+                        if list.no() { "is not" } else { "might not be" }
+                    ));
                 }
                 let non_empty = b.is_iterable_at_least_once();
                 if a.is_iterable_at_least_once().yes() && !non_empty.yes() {
-                    reasons.push(format!("{} {} empty.", b.describe(level), if non_empty.no() { "is" } else { "might be" }));
+                    reasons.push(format!(
+                        "{} {} empty.",
+                        b.describe(level),
+                        if non_empty.no() { "is" } else { "might be" }
+                    ));
                 }
             }
             reasons
@@ -48,20 +56,46 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
         }
         T::Callable(_) if matches!(b, T::Callable(_)) || !compound => match a {
             T::Callable(Some(ours)) if !b.is_callable().no() && !matches!(b, T::Callable(None)) => {
-                merged(callable_signatures(b).iter().map(|theirs| signature(ours, theirs, strict)))
+                merged(
+                    callable_signatures(b)
+                        .iter()
+                        .map(|theirs| signature(ours, theirs, strict)),
+                )
             }
             _ => vec![],
         },
-        T::ConstArray(c) if c.unsealed.is_none() && (!compound || matches!(b, T::Intersection(_))) => our_keys(c, b, strict),
-        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
+        T::ConstArray(c)
+            if c.unsealed.is_none() && (!compound || matches!(b, T::Intersection(_))) =>
+        {
+            our_keys(c, b, strict)
+        }
+        T::Mixed { .. }
+        | T::StrictMixed
+        | T::SubtractedMixed { .. }
+        | T::Error
+        | T::Wildcard
+        | T::OffsetAccess(..)
+        | T::Never(_)
+        | T::ObjectShape(_) => vec![],
         _ if compound => accepted_by(a, b, strict, sm),
         T::Array(key, item) => match b {
-            T::ConstArray(c) => merged(c.keys.iter().zip(&c.values).flat_map(|(k, v)| [rec(key, k), rec(item, v)])),
+            T::ConstArray(c) => merged(
+                c.keys
+                    .iter()
+                    .zip(&c.values)
+                    .flat_map(|(k, v)| [rec(key, k), rec(item, v)]),
+            ),
             T::Array(k, v) => merged([rec(item, v), rec(key, k)]),
             _ => vec![],
         },
-        T::Iterable(key, item) if b.is_iterable().yes() && !(b.is_constant_array().yes() && b.is_iterable_at_least_once().no()) => {
-            merged([rec(item, &b.iterable_value_type()), rec(key, &b.iterable_key_type())])
+        T::Iterable(key, item)
+            if b.is_iterable().yes()
+                && !(b.is_constant_array().yes() && b.is_iterable_at_least_once().no()) =>
+        {
+            merged([
+                rec(item, &b.iterable_value_type()),
+                rec(key, &b.iterable_key_type()),
+            ])
         }
         T::Closure(ours) => match b {
             T::Closure(theirs) => signature(ours, theirs, strict),
@@ -87,18 +121,43 @@ fn merged(all: impl IntoIterator<Item = Vec<String>>) -> Vec<String> {
 fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> Vec<String> {
     use Type as T;
     if let T::Iterable(k, v) = b {
-        let alt = T::Union(vec![T::Array(k.clone(), v.clone()), T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false)]);
+        let alt = T::Union(vec![
+            T::Array(k.clone(), v.clone()),
+            T::Object(
+                "Traversable".into(),
+                vec![(**k).clone(), (**v).clone()],
+                false,
+            ),
+        ]);
         return accepts_reasons(a, &alt, strict, sm);
     }
-    let inner: Vec<Vec<String>> = sort_types(types).iter().map(|t| accepts_reasons(t, b, strict, sm)).collect();
+    let inner: Vec<Vec<String>> = sort_types(types)
+        .iter()
+        .map(|t| accepts_reasons(t, b, strict, sm))
+        .collect();
     let decorate = |i: usize, r: &String| format!("Type #{} from the union: {r}", i + 1);
-    let mut reasons = merged(inner.iter().enumerate().map(|(i, rs)| rs.iter().map(|r| decorate(i, r)).collect()));
-    if types.iter().map(|t| accepts_with(t, b, strict, sm)).fold(Tri::No, Tri::or).yes() {
+    let mut reasons = merged(
+        inner
+            .iter()
+            .enumerate()
+            .map(|(i, rs)| rs.iter().map(|r| decorate(i, r)).collect()),
+    );
+    if types
+        .iter()
+        .map(|t| accepts_with(t, b, strict, sm))
+        .fold(Tri::No, Tri::or)
+        .yes()
+    {
         return reasons;
     }
-    let common: Vec<&String> = inner[0].iter().filter(|r| inner[1..].iter().all(|o| o.contains(r))).collect();
+    let common: Vec<&String> = inner[0]
+        .iter()
+        .filter(|r| inner[1..].iter().all(|o| o.contains(r)))
+        .collect();
     if !common.is_empty() {
-        reasons = (0..inner.len()).flat_map(|i| common.iter().map(move |r| decorate(i, r))).collect();
+        reasons = (0..inner.len())
+            .flat_map(|i| common.iter().map(move |r| decorate(i, r)))
+            .collect();
     }
     if b.is_compound() && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
         return accepted_by(a, b, strict, sm);
@@ -115,12 +174,16 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
     // (a StrictMixedType answers `mixed`, which gives no reasons)
     let rec = |t: &Type| accepts_reasons(a, t, strict, sm);
     match b {
-        T::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, a).yes() => vec![format!(
-            "Type {} has already been eliminated from mixed.", excluded.describe(Level::Precise)
-        )],
+        T::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, a).yes() => {
+            vec![format!(
+                "Type {} has already been eliminated from mixed.",
+                excluded.describe(Level::Precise)
+            )]
+        }
         T::Union(types) | T::Benevolent(types) => merged(types.iter().map(rec)),
         // AcceptsResult::lazyMaxMin(): the first member accepted answers
-        T::Intersection(types) => match types.iter().find(|t| accepts_with(a, t, strict, sm).yes()) {
+        T::Intersection(types) => match types.iter().find(|t| accepts_with(a, t, strict, sm).yes())
+        {
             Some(t) => rec(t),
             None => merged(types.iter().map(rec)),
         },
@@ -144,8 +207,11 @@ fn signature(ours: &Signature, theirs: &Signature, strict: bool) -> Vec<String> 
     }
     let mut reasons = Vec::new();
     for (i, theirs) in params.iter().enumerate() {
-        let described =
-            if theirs.name.is_empty() { format!("#{}", i + 1) } else { format!("#{} ${}", i + 1, theirs.name) };
+        let described = if theirs.name.is_empty() {
+            format!("#{}", i + 1)
+        } else {
+            format!("#{} ${}", i + 1, theirs.name)
+        };
         let Some(our) = ours.params.get(i) else {
             if !theirs.optional {
                 reasons.push(format!(
@@ -159,7 +225,12 @@ fn signature(ours: &Signature, theirs: &Signature, strict: bool) -> Vec<String> 
                 "Parameter {described} of passed callable is required but the parameter of accepting callable is optional. It might be called without it."
             ));
         }
-        reasons.extend(accepts_reasons(&theirs.ty, &our.ty, strict, StrictMixed::default()));
+        reasons.extend(accepts_reasons(
+            &theirs.ty,
+            &our.ty,
+            strict,
+            StrictMixed::default(),
+        ));
         if accepts_with(&theirs.ty, &our.ty, strict, StrictMixed::default()).maybe() {
             let level = recommended_level(&theirs.ty, Some(&our.ty));
             reasons.push(format!(
@@ -169,7 +240,12 @@ fn signature(ours: &Signature, theirs: &Signature, strict: bool) -> Vec<String> 
             ));
         }
     }
-    reasons.extend(accepts_reasons(&ours.ret, &theirs.ret, true, StrictMixed::default()));
+    reasons.extend(accepts_reasons(
+        &ours.ret,
+        &theirs.ret,
+        true,
+        StrictMixed::default(),
+    ));
     merged([reasons])
 }
 
@@ -186,31 +262,56 @@ fn our_keys(c: &ConstArray, b: &Type, strict: bool) -> Vec<String> {
         let optional = c.optional.contains(&i);
         let (has, other) = match constant {
             Some(b) => match b.keys.iter().position(|o| o == k) {
-                Some(j) => (if b.optional.contains(&j) { Tri::Maybe } else { Tri::Yes }, b.values[j].clone()),
+                Some(j) => (
+                    if b.optional.contains(&j) {
+                        Tri::Maybe
+                    } else {
+                        Tri::Yes
+                    },
+                    b.values[j].clone(),
+                ),
                 None => (Tri::No, Type::Never(NeverKind::Implicit)),
             },
-            None if is_super_type_of(&b.iterable_key_type(), k).no() || b.is_array().no() => (Tri::No, Type::Error),
+            None if is_super_type_of(&b.iterable_key_type(), k).no() || b.is_array().no() => {
+                (Tri::No, Type::Error)
+            }
             None => (Tri::Maybe, b.iterable_value_type()),
         };
-        let offset = |no: bool| format!("Array {} have offset {}.", if no { "does not" } else { "might not" }, k.describe(Level::Value));
+        let offset = |no: bool| {
+            format!(
+                "Array {} have offset {}.",
+                if no { "does not" } else { "might not" },
+                k.describe(Level::Value)
+            )
+        };
         if has.no() {
             if optional {
                 continue;
             }
-            return if constant.is_some() { vec![offset(true)] } else { vec![] };
+            return if constant.is_some() {
+                vec![offset(true)]
+            } else {
+                vec![]
+            };
         }
         if has.maybe() && !optional && constant.is_some() {
             reasons.push(offset(false));
         }
         let level = recommended_level(v, Some(&other));
-        let (key, ours, theirs) = (k.describe(Level::Precise), v.describe(level), other.describe(level));
+        let (key, ours, theirs) = (
+            k.describe(Level::Precise),
+            v.describe(level),
+            other.describe(level),
+        );
         let mut value: Vec<String> = accepts_reasons(v, &other, strict, StrictMixed::default())
             .into_iter()
             .map(|r| format!("Offset {key} ({ours}) does not accept type {theirs}: {r}"))
             .collect();
         let accepted = accepts_with(v, &other, strict, StrictMixed::default());
         if !accepted.yes() && value.is_empty() && constant.is_some() {
-            value.push(format!("Offset {key} ({ours}) does not accept type {theirs}."));
+            value.push(format!(
+                "Offset {key} ({ours}) does not accept type {theirs}."
+            ));
         }
         if accepted.no() {
             return value;
@@ -238,7 +339,9 @@ pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
         if t.variance != "invariant" || matches!(ours, Type::Projection(..)) {
             continue;
         }
-        if !valid_variance(ours, theirs, t.variance, false).yes() && is_super_type_of(ours, theirs).yes() {
+        if !valid_variance(ours, theirs, t.variance, false).yes()
+            && is_super_type_of(ours, theirs).yes()
+        {
             reasons.push(format!(
                 "Template type {} on class {} is not covariant. Learn more: <fg=cyan>https://phpstan.org/blog/whats-up-with-template-covariant</>",
                 t.name, c.name

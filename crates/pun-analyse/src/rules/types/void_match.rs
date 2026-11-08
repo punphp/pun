@@ -19,6 +19,11 @@ pub(in super::super) fn void_match(c: &mut Checker, m: &Match) {
         return;
     }
     if c.keep_void_type_at(m.span()).is_some_and(TUnion::is_void) {
-        c.report(m, "match.void", "Result of match expression (void) is used.".to_string(), None);
+        c.report(
+            m,
+            "match.void",
+            "Result of match expression (void) is used.".to_string(),
+            None,
+        );
     }
 }

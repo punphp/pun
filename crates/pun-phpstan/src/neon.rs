@@ -623,7 +623,12 @@ pub fn ignore_errors_items(input: &[u8]) -> Option<Vec<(Value, usize)>> {
     let Node::Array(items) = find(parameters.value, "ignoreErrors")?.value else {
         return None;
     };
-    Some(items.into_iter().map(|i| (to_value(i.value), lines[i.start])).collect())
+    Some(
+        items
+            .into_iter()
+            .map(|i| (to_value(i.value), lines[i.start]))
+            .collect(),
+    )
 }
 
 /// `Neon::decode()` on bytes: nette/neon's lexer (`/u`) rejects invalid UTF-8 up front.

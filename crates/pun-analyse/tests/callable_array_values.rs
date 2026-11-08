@@ -14,10 +14,14 @@ fn check_native_array_map(case: &str) {
     use std::borrow::Cow;
 
     use mago_allocator::LocalArena;
-    use mago_analyzer::{Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings};
+    use mago_analyzer::{
+        Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings,
+    };
     use mago_codex::ttype::atomic::array::TArray;
     use mago_codex::ttype::union::TUnion;
-    use mago_codex::{populator::populate_codebase, reference::SymbolReferences, scanner::scan_program};
+    use mago_codex::{
+        populator::populate_codebase, reference::SymbolReferences, scanner::scan_program,
+    };
     use mago_database::file::File;
     use mago_names::resolver::NameResolver;
     use mago_php_version::PHPVersion;
@@ -52,7 +56,8 @@ fn check_native_array_map(case: &str) {
                     (
                         values,
                         items.len(),
-                        (!list.element_type.is_never()).then(|| format!("...<{}>", describe(&list.element_type))),
+                        (!list.element_type.is_never())
+                            .then(|| format!("...<{}>", describe(&list.element_type))),
                     )
                 }
                 TArray::Keyed(keyed) => {
@@ -114,7 +119,10 @@ fn check_native_array_map(case: &str) {
     let oracle: serde_json::Value =
         serde_json::from_slice(&std::fs::read(root.join(format!("{case}.json"))).unwrap()).unwrap();
     let arena = LocalArena::new();
-    let file = File::ephemeral(Cow::Owned(case.as_bytes().to_vec()), Cow::Owned(source.as_bytes().to_vec()));
+    let file = File::ephemeral(
+        Cow::Owned(case.as_bytes().to_vec()),
+        Cow::Owned(source.as_bytes().to_vec()),
+    );
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
@@ -135,11 +143,23 @@ fn check_native_array_map(case: &str) {
         PHPVersion::PHP85,
     ));
     let mut references = SymbolReferences::new();
-    populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
     let registry = PluginRegistry::with_library_providers();
-    let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, Settings::default())
-        .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
-        .unwrap();
+    let artifacts = Analyzer::new(
+        &arena,
+        &file,
+        &names,
+        &codebase,
+        &registry,
+        Settings::default(),
+    )
+    .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
+    .unwrap();
     let mut dumps = Dumps::default();
     dumps.walk_program(program, &mut ());
     let actual: Vec<_> = dumps
@@ -179,9 +199,13 @@ fn library_array_projections_produce_ordinary_values() {
     use std::borrow::Cow;
 
     use mago_allocator::LocalArena;
-    use mago_analyzer::{Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings};
+    use mago_analyzer::{
+        Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings,
+    };
     use mago_codex::ttype::get_array_parameters;
-    use mago_codex::{populator::populate_codebase, reference::SymbolReferences, scanner::scan_program};
+    use mago_codex::{
+        populator::populate_codebase, reference::SymbolReferences, scanner::scan_program,
+    };
     use mago_database::file::File;
     use mago_names::resolver::NameResolver;
     use mago_php_version::PHPVersion;
@@ -258,11 +282,23 @@ function probe(array $numbers, array $open, int $index, callable $callback, mixe
         .unwrap()
         .flags |= mago_codex::metadata::flags::MetadataFlags::BUILTIN;
     let mut references = SymbolReferences::new();
-    populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
     let registry = PluginRegistry::with_library_providers();
-    let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, Settings::default())
-        .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
-        .unwrap();
+    let artifacts = Analyzer::new(
+        &arena,
+        &file,
+        &names,
+        &codebase,
+        &registry,
+        Settings::default(),
+    )
+    .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
+    .unwrap();
     // PHPStan retains `array` for missing operands. With a null callback its
     // extension returns the second operand unchanged, even when it is not an array.
     for call in [r"\array_map()", r"\array_map(null)"] {
@@ -271,11 +307,20 @@ function probe(array $numbers, array $open, int $index, callable $callback, mixe
     }
     let call = r"\array_map(null, 1)";
     let start = source.find(call).unwrap() as u32;
-    assert_eq!(artifacts.expression_types[&(start, start + call.len() as u32)].get_single_literal_int_value(), Some(1));
+    assert_eq!(
+        artifacts.expression_types[&(start, start + call.len() as u32)]
+            .get_single_literal_int_value(),
+        Some(1)
+    );
     let call = r"\array_pad($numbers, 3, 4)";
     let start = source.find(call).unwrap() as u32;
-    let array = artifacts.expression_types[&(start, start + call.len() as u32)].get_single_array().unwrap();
-    assert!(array.callable().is_none(), "{call} must create an ordinary array");
+    let array = artifacts.expression_types[&(start, start + call.len() as u32)]
+        .get_single_array()
+        .unwrap();
+    assert!(
+        array.callable().is_none(),
+        "{call} must create an ordinary array"
+    );
     assert_eq!(array.get_minimum_size(), 3, "{call}");
     assert!(get_array_parameters(array, &codebase).1.is_int(), "{call}");
     let zipped_call = r"\array_map(null, $numbers, $numbers)";
@@ -292,7 +337,11 @@ function probe(array $numbers, array $open, int $index, callable $callback, mixe
             .get_single_literal_int_value(),
         Some(2)
     );
-    for call in [r"\array_is_list(['key' => 1])", r"\array_is_list($open)", r"\array_is_list($callback)"] {
+    for call in [
+        r"\array_is_list(['key' => 1])",
+        r"\array_is_list($open)",
+        r"\array_is_list($callback)",
+    ] {
         let start = source.find(call).unwrap() as u32;
         assert_eq!(
             artifacts.expression_types[&(start, start + call.len() as u32)].as_ref(),
@@ -318,14 +367,20 @@ function probe(array $numbers, array $open, int $index, callable $callback, mixe
             };
             assert!(array.callable().is_none(), "{variable}");
             assert_eq!(array.get_minimum_size(), minimum, "{variable}");
-            assert!(get_array_parameters(array, &codebase).1.is_int(), "{variable}");
+            assert!(
+                get_array_parameters(array, &codebase).1.is_int(),
+                "{variable}"
+            );
         }
     }
     let expression = "$mixed['value'];";
     let start = source.find(expression).unwrap() as u32;
     assert!(artifacts.expression_types[&(start, start + expression.len() as u32 - 1)].is_int());
     let start = source.find("$mixed;").unwrap() as u32;
-    for atomic in artifacts.expression_types[&(start, start + 6)].types.as_ref() {
+    for atomic in artifacts.expression_types[&(start, start + 6)]
+        .types
+        .as_ref()
+    {
         if let mago_codex::ttype::atomic::TAtomic::Array(array) = atomic {
             assert!(array.callable().is_none());
         }

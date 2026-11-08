@@ -391,7 +391,12 @@ fn class_constant(facts: &Facts, class: &str, name: &[u8]) -> Option<Key> {
         );
     for owner in owners {
         if let Some(constant) = facts.codebase.get_class_constant(&owner, name) {
-            return match constant.inferred_type.as_ref().filter(|t| t.is_single())?.get_single() {
+            return match constant
+                .inferred_type
+                .as_ref()
+                .filter(|t| t.is_single())?
+                .get_single()
+            {
                 TAtomic::Scalar(TScalar::Integer(i)) => Some(Key::Int(i.get_literal_value()?)),
                 TAtomic::Scalar(s @ TScalar::String(_)) => Some(string_key(
                     std::str::from_utf8(s.get_known_literal_string_value()?).ok()?,

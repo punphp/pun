@@ -1,0 +1,4 @@
+# `cargo fmt --all` formats every workspace crate; third_party/ is excluded from the workspace and keeps Mago's style.
+# The edition is set here too so a bare `rustfmt` on one file matches `cargo fmt`.
+edition = "2024"
+style_edition = "2024"

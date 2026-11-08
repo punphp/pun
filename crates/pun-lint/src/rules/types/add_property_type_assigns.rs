@@ -149,7 +149,11 @@ impl Rule for AddPropertyTypeAssigns {
 
 /// `isDoctrineMappedProperty` (`AttrinationFinder::hasByMany`): a Doctrine mapping attribute, or a doc annotation
 /// naming one.
-fn is_doctrine_mapped(ctx: &crate::Context<'_>, prop: &PlainProperty<'_>, path: &[Node<'_, '_>]) -> bool {
+fn is_doctrine_mapped(
+    ctx: &crate::Context<'_>,
+    prop: &PlainProperty<'_>,
+    path: &[Node<'_, '_>],
+) -> bool {
     if DOCTRINE_MAPPING
         .iter()
         .any(|c| has_attribute(path, &prop.attribute_lists, c))

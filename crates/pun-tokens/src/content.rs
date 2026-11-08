@@ -50,7 +50,6 @@ impl Borrow<[u8]> for Content {
     }
 }
 
-
 impl fmt::Debug for Content {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         <[u8] as fmt::Debug>::fmt(self, f)

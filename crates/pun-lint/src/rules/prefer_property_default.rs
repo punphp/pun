@@ -248,7 +248,11 @@ fn is_parent_construct_call(expr: &Expression<'_>) -> bool {
 
 /// `isPropertyDefinedInParentClass`: a parent class of the class (`scope` ends with it) has the property, its own or
 /// inherited. A class or parent the codebase does not know may have it ("unknown parent, keep it safe").
-fn is_property_defined_in_parent_class(ctx: &Context<'_>, scope: &[Node<'_, '_>], name: &[u8]) -> bool {
+fn is_property_defined_in_parent_class(
+    ctx: &Context<'_>,
+    scope: &[Node<'_, '_>],
+    name: &[u8],
+) -> bool {
     let facts = super::types::facts::facts(ctx);
     let codebase = &facts.codebase;
     let Some(class) = super::types::class_scope(scope)
@@ -258,8 +262,12 @@ fn is_property_defined_in_parent_class(ctx: &Context<'_>, scope: &[Node<'_, '_>]
         return true;
     };
     let property = [b"$".as_slice(), name].concat();
-    class.direct_parent_class.iter().chain(class.all_parent_classes.iter()).any(|parent| {
-        codebase.get_class_like(parent.as_bytes()).is_none()
-            || codebase.property_exists(parent.as_bytes(), &property)
-    })
+    class
+        .direct_parent_class
+        .iter()
+        .chain(class.all_parent_classes.iter())
+        .any(|parent| {
+            codebase.get_class_like(parent.as_bytes()).is_none()
+                || codebase.property_exists(parent.as_bytes(), &property)
+        })
 }

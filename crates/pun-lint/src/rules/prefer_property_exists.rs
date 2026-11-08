@@ -149,7 +149,9 @@ fn check(
     let metadata = facts.codebase.get_class_like(class.as_bytes())?;
     // XML elements resolve properties from the XML document itself
     if class.eq_ignore_ascii_case("SimpleXMLElement")
-        || facts.codebase.is_instance_of(class.as_bytes(), b"SimpleXMLElement")
+        || facts
+            .codebase
+            .is_instance_of(class.as_bytes(), b"SimpleXMLElement")
     {
         return None;
     }

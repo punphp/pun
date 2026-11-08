@@ -355,7 +355,8 @@ fn parameter_edit(
 /// before PHP 8.2), `None` where Pun does not know Rector's.
 fn declaration(facts: &Facts, types: Vec<&TAtomic>, php_version: u32) -> Option<Option<String>> {
     // `NullType::toNativePhpTypeNode()`: a standalone `null` parameter from PHP 8.2.
-    if !types.is_empty() && types.iter().all(|a| matches!(a, TAtomic::Null)) && php_version >= 80200 {
+    if !types.is_empty() && types.iter().all(|a| matches!(a, TAtomic::Null)) && php_version >= 80200
+    {
         return Some(Some("null".to_string()));
     }
     if types

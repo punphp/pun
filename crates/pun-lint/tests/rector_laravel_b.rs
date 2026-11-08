@@ -385,7 +385,12 @@ fn add_generic_return_type_to_relations() {
     run_dirs(
         vec![Box::new(AddRelationGenerics)],
         "AddGenericReturnTypeToRelationsRector",
-        &["Fixture/NewGenerics", "Oracle/NewGenerics", "Oracle/Laravel12", "Pun/Laravel12"],
+        &[
+            "Fixture/NewGenerics",
+            "Oracle/NewGenerics",
+            "Oracle/Laravel12",
+            "Pun/Laravel12",
+        ],
         80400,
         &[stubs.as_path()],
     );

@@ -171,7 +171,8 @@ fn unsupported_native_receivers_members_and_reference_writes_stay_unavailable() 
         "$alias = 1",
         "$callable",
     ] {
-        let source = format!("<?php
+        let source = format!(
+            "<?php
 class Constructor {{ public function __construct() {{}} }}
 /** @template T */ class Generic {{}}
 class Simple {{}}
@@ -197,17 +198,31 @@ class NativeBoundary {{
         $this->unavailable; // after
     }}
 }}
-");
+"
+        );
         let (enabled, issues) = analyze(source.as_bytes(), true);
         let (disabled, off_issues) = analyze(source.as_bytes(), false);
         assert_eq!(issues, off_issues, "{expression}");
-        assert_eq!(enabled.expression_types, disabled.expression_types, "{expression}");
+        assert_eq!(
+            enabled.expression_types, disabled.expression_types,
+            "{expression}"
+        );
         let before = expression_span(&source, "$this->prop; // before");
-        let before = Span::new(before.file_id, before.start, Position::new(before.start.offset + 11));
-        assert_eq!(identity(enabled.get_native_expression_type(&before).unwrap()), Value::Bool(false));
+        let before = Span::new(
+            before.file_id,
+            before.start,
+            Position::new(before.start.offset + 11),
+        );
+        assert_eq!(
+            identity(enabled.get_native_expression_type(&before).unwrap()),
+            Value::Bool(false)
+        );
         for unavailable in [expression, "$this->unavailable"] {
             let span = expression_span(&source, unavailable);
-            assert!(enabled.get_native_expression_type(&span).is_none(), "{expression}: {unavailable}");
+            assert!(
+                enabled.get_native_expression_type(&span).is_none(),
+                "{expression}: {unavailable}"
+            );
         }
     }
 }
@@ -221,14 +236,16 @@ fn closure_creation_keeps_only_supported_outer_native_continuations() {
         ("unknown();", "&", true),
         ("$copy = 1;", "&", true),
     ] {
-        let source = format!("<?php class CaptureBoundary {{
+        let source = format!(
+            "<?php class CaptureBoundary {{
     public mixed $prop;
     public function example(): void {{
         $copy = $this->prop;
         $callable = function () use ({reference}$copy) {{ {body} }};
         $this->prop;
     }}
-}}");
+}}"
+        );
         let (enabled, issues) = analyze(source.as_bytes(), true);
         let (disabled, off_issues) = analyze(source.as_bytes(), false);
         assert_eq!(issues, off_issues);

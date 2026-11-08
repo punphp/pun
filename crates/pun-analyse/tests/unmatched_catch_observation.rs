@@ -223,16 +223,25 @@ fn catch_observations_match_pinned_rector_without_changing_live_flow_or_native_a
             // PHPStan 2.3.3+ (the ordinary run) also walks a catch no throw point reaches, whose boundaries, returns
             // and yields Rector's pinned PHPStan 2.2.7 never sees: the observed flow is the ordinary one without them.
             let mut flow = flow.clone();
-            let position = flow.iter().position(|(offset, ..)| *offset == nested).unwrap();
-            assert_eq!(flow.remove(position), (nested, Vec::new(), Vec::new(), Vec::new()));
+            let position = flow
+                .iter()
+                .position(|(offset, ..)| *offset == nested)
+                .unwrap();
+            assert_eq!(
+                flow.remove(position),
+                (nested, Vec::new(), Vec::new(), Vec::new())
+            );
             assert_eq!(flow[position].0, outer);
             let mut rest = off_flow.iter();
             for (offset, returns, yields, sent) in &flow {
-                let (_, r, y, s) = rest
-                    .find(|(o, ..)| o == offset)
-                    .unwrap_or_else(|| panic!("observed boundary {offset} is not an ordinary one, in order"));
+                let (_, r, y, s) = rest.find(|(o, ..)| o == offset).unwrap_or_else(|| {
+                    panic!("observed boundary {offset} is not an ordinary one, in order")
+                });
                 for (observed, ordinary) in [(returns, r), (yields, y), (sent, s)] {
-                    assert!(observed.iter().all(|t| ordinary.contains(t)), "{offset}: {observed:?} not in {ordinary:?}");
+                    assert!(
+                        observed.iter().all(|t| ordinary.contains(t)),
+                        "{offset}: {observed:?} not in {ordinary:?}"
+                    );
                 }
             }
             assert_eq!(

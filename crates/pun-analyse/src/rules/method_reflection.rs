@@ -40,21 +40,26 @@ impl<'a> Method<'a> {
         let mut variants = declaring.variants();
         let scope = format!("class {}", declaring.declaring_name());
         // `static` in a PHPDoc type resolves against the class reflection (a nested one too)
-        let variant_types = declared::with_classes(c, || variants
-            .all
-            .iter_mut()
-            .map(|v| {
-                let types: Vec<_> = (0..v.names.len())
-                    .map(|i| {
-                        let ty = super::types::declared_type(c, v, i)
-                            .unwrap_or_else(pun_phpstan::types::mixed);
-                        called_on(&super::types::with_args(&ty, &scope, &names, &args), receiver)
-                    })
-                    .collect();
-                v.types = types.iter().map(|t| t.describe(Level::TypeOnly)).collect();
-                types
-            })
-            .collect());
+        let variant_types = declared::with_classes(c, || {
+            variants
+                .all
+                .iter_mut()
+                .map(|v| {
+                    let types: Vec<_> = (0..v.names.len())
+                        .map(|i| {
+                            let ty = super::types::declared_type(c, v, i)
+                                .unwrap_or_else(pun_phpstan::types::mixed);
+                            called_on(
+                                &super::types::with_args(&ty, &scope, &names, &args),
+                                receiver,
+                            )
+                        })
+                        .collect();
+                    v.types = types.iter().map(|t| t.describe(Level::TypeOnly)).collect();
+                    types
+                })
+                .collect()
+        });
         Self {
             display,
             name: declaring.name(),
@@ -183,7 +188,9 @@ impl<'a> Method<'a> {
 /// `$this` types to that object; called on `static`/`$this` they stay late.
 pub(super) fn called_on(t: &Type, receiver: &Type) -> Type {
     match t {
-        Type::Static(..) | Type::This(_) if matches!(receiver, Type::Object(..)) => receiver.clone(),
+        Type::Static(..) | Type::This(_) if matches!(receiver, Type::Object(..)) => {
+            receiver.clone()
+        }
         _ => t.traverse(&|i| called_on(i, receiver)),
     }
 }

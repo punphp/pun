@@ -63,14 +63,20 @@ const SEALED: [&str; 2] = ["@psalm-inheritors", "@phpstan-sealed"];
 /// RequireExtendsPropertiesClassReflectionExtension: own tags, then nominal parent interfaces in source order.
 /// Keep whole Types: a successful annotation/union/intersection reflection must stop lookup too.
 pub(super) fn property_requirements(c: &Checker, k: &ClassLikeMetadata) -> Vec<Type> {
-    if k.kind != SymbolKind::Interface { return Vec::new() }
+    if k.kind != SymbolKind::Interface {
+        return Vec::new();
+    }
     let mut pending = vec![k];
     let mut seen = HashSet::new();
     let mut types = Vec::new();
     while let Some(interface) = pending.pop() {
         if seen.insert(interface.name) {
             types.extend(tag_types(c, interface, EXTENDS));
-            pending.extend(super::overriding_property::declaration_interfaces(c, interface).into_iter().rev());
+            pending.extend(
+                super::overriding_property::declaration_interfaces(c, interface)
+                    .into_iter()
+                    .rev(),
+            );
         }
     }
     types
@@ -140,7 +146,11 @@ pub(super) fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
                 unknown(c, at, "@phpstan-sealed", &class);
                 continue;
             }
-            class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
+            class_names::check(
+                c,
+                &[Pair::node(class, at)],
+                c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY),
+            );
         }
     }
 }
@@ -185,7 +195,11 @@ pub(super) fn trait_(c: &mut Checker, at: Span, name: &str) {
                 continue;
             };
             if reflection.is_interface() {
-                class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
+                class_names::check(
+                    c,
+                    &[Pair::node(class, at)],
+                    c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY),
+                );
             } else {
                 c.report(
                     at,
@@ -263,7 +277,11 @@ fn extends_check(c: &mut Checker, at: Span, tags: &[Type]) {
                     None,
                 );
             } else {
-                class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
+                class_names::check(
+                    c,
+                    &[Pair::node(class, at)],
+                    c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY),
+                );
             }
         }
     }

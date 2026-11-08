@@ -94,7 +94,14 @@ fn to_argument(t: &Type) -> Type {
 }
 
 /// `FunctionReturnTypeCheck::checkReturnType()` for one return of a function-like described by `of`.
-fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: &str, generator: bool) {
+fn check(
+    c: &mut Checker,
+    ret: &Type,
+    value: Option<&Expression>,
+    at: Span,
+    of: &str,
+    generator: bool,
+) {
     if matches!(ret, Type::Never(NeverKind::Explicit)) {
         let message = format!("{of} should never return but return statement found.");
         c.report(at, "return.never", message, None);
@@ -141,7 +148,11 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
         (!levels.accepts(&ret, &value_type, strict)).then(|| {
             (
                 "return.type",
-                format!("{of} should return {} but returns {}.", ret.describe(level), value_type.describe(level)),
+                format!(
+                    "{of} should return {} but returns {}.",
+                    ret.describe(level),
+                    value_type.describe(level)
+                ),
             )
         })
     });
@@ -173,7 +184,14 @@ fn body(c: &mut Checker, b: &Block, ret: &Type, of: &str) {
         }
     }
     for ret_stmt in &r.returns {
-        check(c, ret, ret_stmt.value, ret_stmt.span(), of, contains_yield.0);
+        check(
+            c,
+            ret,
+            ret_stmt.value,
+            ret_stmt.span(),
+            of,
+            contains_yield.0,
+        );
     }
     let strict = strict_types(c);
     super::yields::check(c, &r.yields, &r.statements, ret, strict);
@@ -186,7 +204,12 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
     let ret = declared::with_classes(c, || {
-        late(c, &super::super::larastan::resolving_unresolvable(|| declared::function(c, f).ret), None, !native)
+        late(
+            c,
+            &super::super::larastan::resolving_unresolvable(|| declared::function(c, f).ret),
+            None,
+            !native,
+        )
     });
     body(c, &f.body, &ret, &format!("Function {name}()"));
 }
@@ -198,10 +221,14 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     let MethodBody::Concrete(b) = &m.body else {
         return;
     };
-    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else { return };
+    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else {
+        return;
+    };
     let native = m.return_type_hint.is_some();
     let ret = declared::with_classes(c, || {
-        let declared = super::super::larastan::resolving_unresolvable(|| declared::method(c, m, declaring, context).ret);
+        let declared = super::super::larastan::resolving_unresolvable(|| {
+            declared::method(c, m, declaring, context).ret
+        });
         late(c, &declared, Some(context), !native)
     });
     let of = format!("Method {}::{}()", c.display(context), method_name(c, m));
@@ -218,7 +245,9 @@ pub(in super::super) fn closure(c: &mut Checker, f: &Closure) {
         return;
     };
     let class = c.class_scope();
-    let ret = declared::with_classes(c, || late(c, &declared::native(c, &hint.hint, class), class, false));
+    let ret = declared::with_classes(c, || {
+        late(c, &declared::native(c, &hint.hint, class), class, false)
+    });
     body(c, &f.body, &ret, "Anonymous function");
 }
 
@@ -230,25 +259,42 @@ pub(in super::super) fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
         return;
     };
     let class = c.class_scope();
-    let ret = declared::with_classes(c, || late(c, &declared::native(c, &hint.hint, class), class, false));
+    let ret = declared::with_classes(c, || {
+        late(c, &declared::native(c, &hint.hint, class), class, false)
+    });
     if matches!(ret, Type::Never(NeverKind::Explicit))
         && c.type_of(f.expression).is_some_and(|t| t.is_never())
     {
         return;
     }
     let generator = matches!(&ret, Type::Object(n, _, _) if n.eq_ignore_ascii_case("Generator"));
-    check(c, &ret, Some(f.expression), f.expression.span(), "Anonymous function", generator);
+    check(
+        c,
+        &ret,
+        Some(f.expression),
+        f.expression.span(),
+        "Anonymous function",
+        generator,
+    );
     let strict = strict_types(c);
     super::yields::check(c, &arrow_yields(f.expression), &[], &ret, strict);
 }
 
 /// The hooks of property `name` (with its `$`): a `get` hook returns the property's type (an `=> expr` body is its
 /// return), a `set` hook returns void.
-pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], hint: Option<&Hint>, at: Span, list: &PropertyHookList) {
+pub(in super::super) fn hooks(
+    c: &mut Checker,
+    name: &[u8],
+    hint: Option<&Hint>,
+    at: Span,
+    list: &PropertyHookList,
+) {
     if c.level < 3 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
     let display = c.display(context);
     let property = String::from_utf8_lossy(name).into_owned();
     for h in &list.hooks {
@@ -258,12 +304,20 @@ pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], hint: Option<&Hint>,
         let get = h.name.value.eq_ignore_ascii_case(b"get");
         let ret = if get {
             declared::with_classes(c, || {
-                late(c, &declared::property(c, hint, at, &name[1..], context), Some(context), hint.is_none())
+                late(
+                    c,
+                    &declared::property(c, hint, at, &name[1..], context),
+                    Some(context),
+                    hint.is_none(),
+                )
             })
         } else {
             Type::Void
         };
-        let of = format!("{} hook for property {display}::{property}", if get { "Get" } else { "Set" });
+        let of = format!(
+            "{} hook for property {display}::{property}",
+            if get { "Get" } else { "Set" }
+        );
         match body {
             PropertyHookConcreteBody::Block(b) => self::body(c, b, &ret, &of),
             PropertyHookConcreteBody::Expression(e) if get => {

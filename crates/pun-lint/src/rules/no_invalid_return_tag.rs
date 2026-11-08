@@ -109,16 +109,29 @@ fn contains_name(node: &DocNode, names: &[String]) -> bool {
     let any = |nodes: &[DocNode]| nodes.iter().any(|n| contains_name(n, names));
     match node {
         DocNode::Ident(name) => names.contains(name),
-        DocNode::Nullable(inner) | DocNode::Array(inner) | DocNode::Projection(_, inner) => contains_name(inner, names),
+        DocNode::Nullable(inner) | DocNode::Array(inner) | DocNode::Projection(_, inner) => {
+            contains_name(inner, names)
+        }
         DocNode::Union(nodes) | DocNode::Inter(nodes) => any(nodes),
         DocNode::Generic { args, .. } => any(args),
         DocNode::OffsetAccess(a, b) => contains_name(a, names) || contains_name(b, names),
-        DocNode::Conditional { subject, target, then, otherwise, .. } => {
-            [subject, target, then, otherwise].iter().any(|n| contains_name(n, names))
-        }
-        DocNode::ConditionalForParameter { target, then, otherwise, .. } => {
-            [target, then, otherwise].iter().any(|n| contains_name(n, names))
-        }
+        DocNode::Conditional {
+            subject,
+            target,
+            then,
+            otherwise,
+            ..
+        } => [subject, target, then, otherwise]
+            .iter()
+            .any(|n| contains_name(n, names)),
+        DocNode::ConditionalForParameter {
+            target,
+            then,
+            otherwise,
+            ..
+        } => [target, then, otherwise]
+            .iter()
+            .any(|n| contains_name(n, names)),
         _ => false,
     }
 }

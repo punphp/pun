@@ -581,7 +581,11 @@ impl<'a> Scope<'_, '_, 'a> {
         else {
             return false;
         };
-        let ctx = Context::new(&source, std::path::Path::new(path.as_ref()), self.ctx.php_version);
+        let ctx = Context::new(
+            &source,
+            std::path::Path::new(path.as_ref()),
+            self.ctx.php_version,
+        );
         let body_facts = facts::facts(&ctx);
         let arena = mago_allocator::LocalArena::new();
         let file = mago_database::file::File::new(

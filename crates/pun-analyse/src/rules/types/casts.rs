@@ -31,7 +31,9 @@ pub(super) fn part<'s, 'arena>(p: &'s StringPart<'arena>) -> Option<&'s Expressi
 fn invalid(c: &Checker, e: &Expression, cast: Cast) -> Option<Type> {
     let sm = StrictMixed::default();
     declared::with_classes(c, || {
-        let found = c.find_type_to_check(e, &|t| !cast_is_error(t, cast, sm)).ty?;
+        let found = c
+            .find_type_to_check(e, &|t| !cast_is_error(t, cast, sm))
+            .ty?;
         cast_is_error(&found, cast, sm).then_some(found)
     })
 }
@@ -61,7 +63,10 @@ pub(in super::super) fn print(c: &mut Checker, p: &PrintConstruct) {
         return;
     }
     if let Some(t) = invalid(c, p.value, Cast::String) {
-        let message = format!("Parameter {} of print cannot be converted to string.", value(c, &t));
+        let message = format!(
+            "Parameter {} of print cannot be converted to string.",
+            value(c, &t)
+        );
         c.report(p.value, "print.nonString", message, None);
     }
 }
@@ -86,12 +91,18 @@ pub(in super::super) fn interpolated(c: &mut Checker, parts: &[StringPart]) {
 /// The conversion a cast or unary operator makes, with its name in messages.
 pub(super) fn operation(op: &UnaryPrefixOperator) -> Option<(Cast, &'static str)> {
     Some(match op {
-        UnaryPrefixOperator::IntCast(..) | UnaryPrefixOperator::IntegerCast(..) => (Cast::Integer, "int"),
-        UnaryPrefixOperator::BoolCast(..) | UnaryPrefixOperator::BooleanCast(..) => (Cast::Boolean, "bool"),
+        UnaryPrefixOperator::IntCast(..) | UnaryPrefixOperator::IntegerCast(..) => {
+            (Cast::Integer, "int")
+        }
+        UnaryPrefixOperator::BoolCast(..) | UnaryPrefixOperator::BooleanCast(..) => {
+            (Cast::Boolean, "bool")
+        }
         UnaryPrefixOperator::DoubleCast(..)
         | UnaryPrefixOperator::RealCast(..)
         | UnaryPrefixOperator::FloatCast(..) => (Cast::Float, "double"),
-        UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..) => (Cast::String, "string"),
+        UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..) => {
+            (Cast::String, "string")
+        }
         UnaryPrefixOperator::Plus(_) => (Cast::Number, "+"),
         UnaryPrefixOperator::Negation(_) => (Cast::Number, "-"),
         UnaryPrefixOperator::BitwiseNot(_) => (Cast::BitwiseNot, "~"),
@@ -109,11 +120,15 @@ pub(in super::super) fn unary(c: &mut Checker, u: &UnaryPrefix) {
     let unary = matches!(cast, Cast::Number | Cast::BitwiseNot);
     let sm = StrictMixed::default();
     let error = declared::with_classes(c, || {
-        let Some(t) = c.find_type_to_check(u.operand, &|t| !cast_is_error(t, cast, sm)).ty else {
+        let Some(t) = c
+            .find_type_to_check(u.operand, &|t| !cast_is_error(t, cast, sm))
+            .ty
+        else {
             return false;
         };
         // BcMathNumber/GmpUnaryOperatorTypeSpecifyingExtension
-        let extension = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![], false), &t).yes();
+        let extension =
+            |class: &str| is_super_type_of(&Type::Object(class.into(), vec![], false), &t).yes();
         if unary && (extension("GMP") || (cast == Cast::Number && extension("BcMath\\Number"))) {
             return false;
         }

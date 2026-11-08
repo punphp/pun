@@ -131,7 +131,11 @@ impl Rule for RequireConsistentReturn {
 
 /// `transformDocUnionVoidToUnionNull`: the edit of the `@return` type, `Some(None)` when it stays, `None` when Pun
 /// cannot print it as Rector does.
-fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<Option<Edit>> {
+fn doc_edit(
+    ctx: &crate::Context<'_>,
+    node: Node<'_, '_>,
+    ancestors: &[Node<'_, '_>],
+) -> Option<Option<Edit>> {
     let source = ctx.source;
     let Some(doc) = Doc::of(ctx, ancestors, node_span(&node).start) else {
         return Some(None);
@@ -257,7 +261,9 @@ fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, 
             "true" | "false" => 1,
             _ => 0,
         };
-        let name = if is_class_name(p) && !matches!(p.as_str(), "int" | "float" | "string" | "bool" | "array") {
+        let name = if is_class_name(p)
+            && !matches!(p.as_str(), "int" | "float" | "string" | "bool" | "array")
+        {
             resolve_written(ancestors, p).0
         } else {
             p.clone()

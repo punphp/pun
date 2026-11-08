@@ -41,7 +41,9 @@ impl Rule for AddParamTypeArrowDimFetch {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         let args: Vec<&Argument<'_>> = call.argument_list.arguments.iter().collect();
         if args.len() != 2 {
             return;
@@ -64,8 +66,11 @@ impl Rule for AddParamTypeArrowDimFetch {
         let mut look = |n: Node<'_, '_>| {
             match n {
                 Node::FunctionCall(f) if named(f, "is_array") => {
-                    if let Some(Expression::Variable(Variable::Direct(v))) =
-                        f.argument_list.arguments.first().map(|a| unparenthesize(value(a)))
+                    if let Some(Expression::Variable(Variable::Direct(v))) = f
+                        .argument_list
+                        .arguments
+                        .first()
+                        .map(|a| unparenthesize(value(a)))
                     {
                         skipped.push(v.name.to_vec());
                     }

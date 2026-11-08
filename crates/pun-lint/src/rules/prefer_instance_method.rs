@@ -260,7 +260,12 @@ fn is_never_called(class: Node<'_, '_>, name: &[u8]) -> bool {
 
 /// `new MethodCall(new Variable('this'), $classMethodName, $node->args)`, printed in place of the call at `span`
 /// whose arguments start at `from` and are at `items`.
-fn this_call(ctx: &crate::Context<'_>, span: Span, (from, items): (usize, Vec<Span>), name: &[u8]) -> Edit {
+fn this_call(
+    ctx: &crate::Context<'_>,
+    span: Span,
+    (from, items): (usize, Vec<Span>),
+    name: &[u8],
+) -> Edit {
     let source = ctx.source;
     let indent = line_indent(source, span.start);
     let args = maybe_multiline(ctx, from, &items, indent);

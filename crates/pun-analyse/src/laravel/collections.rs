@@ -2,16 +2,16 @@
 //! ModelRelationsExtension's relation properties, whose collections it replaces.
 
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::misc::GenericParent;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::expander::{StaticClassType, TypeExpansionOptions, expand_union};
-use mago_codex::misc::GenericParent;
-use mago_codex::ttype::{TType, TypeRef};
 use mago_codex::ttype::template::{TemplateResult, inferred_type_replacer};
 use mago_codex::ttype::union::TUnion;
+use mago_codex::ttype::{TType, TypeRef};
 use mago_codex::ttype::{get_int, get_specialized_template_type};
 use mago_word::{Word, word};
 
@@ -20,16 +20,27 @@ const RELATION: &[u8] = b"Illuminate\\Database\\Eloquent\\Relations\\Relation";
 const COLLECTED_BY: &[u8] = b"Illuminate\\Database\\Eloquent\\Attributes\\CollectedBy";
 
 fn named(class: Word, parameters: Option<Vec<TUnion>>) -> TAtomic {
-    TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(class, parameters)))
+    TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+        class, parameters,
+    )))
 }
 
 /// `determineCollectionClassName()`: the class `#[CollectedBy]` names, else the one `newCollection()` returns.
 fn collection_class_name(codebase: &CodebaseMetadata, model: &[u8]) -> Word {
     let fallback = || word(ELOQUENT_COLLECTION);
-    let Some(k) = codebase.get_class_like(model) else { return fallback() };
-    if let Some(attribute) = k.attributes.iter().find(|a| a.name.as_bytes().eq_ignore_ascii_case(COLLECTED_BY))
+    let Some(k) = codebase.get_class_like(model) else {
+        return fallback();
+    };
+    if let Some(attribute) = k
+        .attributes
+        .iter()
+        .find(|a| a.name.as_bytes().eq_ignore_ascii_case(COLLECTED_BY))
         && let Some(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value }))) =
-            attribute.arguments.first().and_then(|a| a.value_type.as_ref()).and_then(|t| t.types.first())
+            attribute
+                .arguments
+                .first()
+                .and_then(|a| a.value_type.as_ref())
+                .and_then(|t| t.types.first())
     {
         return *value;
     }
@@ -52,8 +63,12 @@ pub(crate) fn collection_class(codebase: &CodebaseMetadata, model: &[u8]) -> TAt
 /// `determineCollectionClass()` with a key type.
 fn keyed_collection_class(codebase: &CodebaseMetadata, model: &[u8], key: TUnion) -> TAtomic {
     let class = collection_class_name(codebase, model);
-    let Some(k) = codebase.get_class_like(class.as_bytes()) else { return named(class, None) };
-    let model = codebase.get_class_like(model).map_or_else(|| word(model), |m| m.original_name);
+    let Some(k) = codebase.get_class_like(class.as_bytes()) else {
+        return named(class, None);
+    };
+    let model = codebase
+        .get_class_like(model)
+        .map_or_else(|| word(model), |m| m.original_name);
     let value = TUnion::from_atomic(named(model, None));
     let parameters = match k.template_types.len() {
         2 => Some(vec![key, value]),
@@ -65,18 +80,34 @@ fn keyed_collection_class(codebase: &CodebaseMetadata, model: &[u8], key: TUnion
 
 /// CollectionOfType::getResult() for Mago's expander (`collection-of<TModel>` without a template): each object
 /// class's own collection; `None` when no part is a model (CollectionOfTypeNodeResolverExtension declines it).
-pub(crate) fn collection_of(codebase: &CodebaseMetadata, model: &TUnion, key: Option<&TUnion>) -> Option<TUnion> {
+pub(crate) fn collection_of(
+    codebase: &CodebaseMetadata,
+    model: &TUnion,
+    key: Option<&TUnion>,
+) -> Option<TUnion> {
     const MODEL: &[u8] = b"Illuminate\\Database\\Eloquent\\Model";
     let classes = object_class_names(model);
-    let models = classes.iter().any(|c| c.as_bytes().eq_ignore_ascii_case(MODEL) || codebase.is_instance_of(c.as_bytes(), MODEL));
+    let models = classes.iter().any(|c| {
+        c.as_bytes().eq_ignore_ascii_case(MODEL) || codebase.is_instance_of(c.as_bytes(), MODEL)
+    });
     // without a key, `new BenevolentUnionType([new IntegerType(), new StringType()])`
     let key = key.cloned().unwrap_or_else(|| {
-        let mut key = TUnion::from_vec(vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::string())]);
+        let mut key = TUnion::from_vec(vec![
+            TAtomic::Scalar(TScalar::int()),
+            TAtomic::Scalar(TScalar::string()),
+        ]);
         key.set_ignore_nullable_issues(true);
         key.set_ignore_falsable_issues(true);
         key
     });
-    models.then(|| TUnion::from_vec(classes.iter().map(|c| keyed_collection_class(codebase, c.as_bytes(), key.clone())).collect()))
+    models.then(|| {
+        TUnion::from_vec(
+            classes
+                .iter()
+                .map(|c| keyed_collection_class(codebase, c.as_bytes(), key.clone()))
+                .collect(),
+        )
+    })
 }
 
 /// `getObjectClassNames()` of a type whose parts are objects.
@@ -93,7 +124,9 @@ fn object_class_names(ty: &TUnion) -> Vec<Word> {
 /// `getTemplateType(Collection::class, 'TModel')->getObjectClassNames()` of an Eloquent collection type.
 fn collection_models(codebase: &CodebaseMetadata, n: &TNamedObject) -> Option<Vec<Word>> {
     let class = n.name.as_bytes();
-    if !class.eq_ignore_ascii_case(ELOQUENT_COLLECTION) && !codebase.is_instance_of(class, ELOQUENT_COLLECTION) {
+    if !class.eq_ignore_ascii_case(ELOQUENT_COLLECTION)
+        && !codebase.is_instance_of(class, ELOQUENT_COLLECTION)
+    {
         return None;
     }
     let k = codebase.get_class_like(class)?;
@@ -112,7 +145,10 @@ pub(crate) fn references_collection(ty: &TUnion) -> bool {
     ty.types.iter().any(|t| match t {
         TAtomic::Object(TObject::Named(n)) => {
             n.name.as_bytes().eq_ignore_ascii_case(ELOQUENT_COLLECTION)
-                || n.type_parameters.iter().flatten().any(references_collection)
+                || n.type_parameters
+                    .iter()
+                    .flatten()
+                    .any(references_collection)
         }
         _ => false,
     })
@@ -131,7 +167,11 @@ pub(crate) fn replace_collections(codebase: &CodebaseMetadata, ty: &TUnion) -> T
         };
         match collection_models(codebase, n) {
             Some(models) if !models.is_empty() => {
-                types.extend(models.iter().map(|m| collection_class(codebase, m.as_bytes())));
+                types.extend(
+                    models
+                        .iter()
+                        .map(|m| collection_class(codebase, m.as_bytes())),
+                );
             }
             Some(_) => types.push(t.clone()),
             None => {
@@ -157,7 +197,11 @@ pub(crate) fn is_relation(codebase: &CodebaseMetadata, ty: &TUnion) -> bool {
 }
 
 /// ModelRelationsExtension::getProperty(): a relation method's `TResult`, its collections the related models' own.
-pub(crate) fn relation_property(codebase: &CodebaseMetadata, object: &TNamedObject, property: &str) -> Option<TUnion> {
+pub(crate) fn relation_property(
+    codebase: &CodebaseMetadata,
+    object: &TNamedObject,
+    property: &str,
+) -> Option<TUnion> {
     let class = object.name.as_bytes();
     let method = codebase.get_declaring_method(class, property.as_bytes())?;
     let declared = &method.return_type_metadata.as_ref()?.type_union;
@@ -179,8 +223,13 @@ pub(crate) fn relation_property(codebase: &CodebaseMetadata, object: &TNamedObje
             continue;
         };
         let k = codebase.get_class_like(n.name.as_bytes())?;
-        let mut result =
-            get_specialized_template_type(codebase, word("TResult"), relation, k, n.type_parameters.as_deref())?;
+        let mut result = get_specialized_template_type(
+            codebase,
+            word("TResult"),
+            relation,
+            k,
+            n.type_parameters.as_deref(),
+        )?;
         // `getTemplateType()` through every ancestor: an intermediate class's templates (BelongsToMany's, under
         // MorphToMany) are the relation's own once more
         for _ in 0..4 {
@@ -189,7 +238,9 @@ pub(crate) fn relation_property(codebase: &CodebaseMetadata, object: &TNamedObje
                 .into_iter()
                 .filter_map(|node| match node {
                     TypeRef::Atomic(TAtomic::GenericParameter(p)) => match p.defining_entity {
-                        GenericParent::ClassLike(class) if class != k.name && class != relation => Some((p.parameter_name, class)),
+                        GenericParent::ClassLike(class) if class != k.name && class != relation => {
+                            Some((p.parameter_name, class))
+                        }
                         _ => None,
                     },
                     _ => None,
@@ -200,7 +251,13 @@ pub(crate) fn relation_property(codebase: &CodebaseMetadata, object: &TNamedObje
             }
             let mut templates = TemplateResult::default();
             for (name, class) in pending {
-                if let Some(t) = get_specialized_template_type(codebase, name, class, k, n.type_parameters.as_deref()) {
+                if let Some(t) = get_specialized_template_type(
+                    codebase,
+                    name,
+                    class,
+                    k,
+                    n.type_parameters.as_deref(),
+                ) {
                     templates.add_lower_bound(name, GenericParent::ClassLike(class), t);
                 }
             }
@@ -244,16 +301,32 @@ pub(crate) fn proxy_result(
     match name {
         "average" | "avg" => Some(mago_codex::ttype::get_float()),
         "contains" | "every" | "some" => Some(mago_codex::ttype::get_bool()),
-        "each" | "filter" | "reject" | "skipUntil" | "skipWhile" | "sortBy" | "sortByDesc" | "takeUntil"
-        | "takeWhile" | "unique" => generic(collection_class, get_int(), value.clone()),
+        "each" | "filter" | "reject" | "skipUntil" | "skipWhile" | "sortBy" | "sortByDesc"
+        | "takeUntil" | "takeWhile" | "unique" => {
+            generic(collection_class, get_int(), value.clone())
+        }
         "keyBy" => generic(collection_class, benevolent(), value.clone()),
-        "first" => Some(TUnion::from_vec(value.types.iter().cloned().chain([TAtomic::Null]).collect())),
+        "first" => Some(TUnion::from_vec(
+            value.types.iter().cloned().chain([TAtomic::Null]).collect(),
+        )),
         "flatMap" => generic(support, get_int(), mago_codex::ttype::get_mixed()),
-        "groupBy" | "partition" => generic(collection_class, get_int(), generic(collection_class, get_int(), value.clone())?),
+        "groupBy" | "partition" => generic(
+            collection_class,
+            get_int(),
+            generic(collection_class, get_int(), value.clone())?,
+        ),
         "map" => generic(support, benevolent(), returned()?),
         "max" | "min" => returned(),
-        "sum" => union_comparator::is_contained_by(codebase, &get_int(), &returned()?, false, false, true, &mut ComparisonResult::new())
-            .then(get_int),
+        "sum" => union_comparator::is_contained_by(
+            codebase,
+            &get_int(),
+            &returned()?,
+            false,
+            false,
+            true,
+            &mut ComparisonResult::new(),
+        )
+        .then(get_int),
         _ => None,
     }
 }

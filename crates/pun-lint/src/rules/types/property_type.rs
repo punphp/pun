@@ -656,14 +656,29 @@ fn union_declaration(
             let object = many.iter().any(|n| n == "object");
             let iterable = many.iter().any(|n| n == "iterable");
             many.retain(|n| {
-                !(object && (n.starts_with('\\') || matches!(n.as_str(), "self" | "parent") || n.contains('&'))) && !(iterable && n == "array")
+                !(object
+                    && (n.starts_with('\\')
+                        || matches!(n.as_str(), "self" | "parent")
+                        || n.contains('&')))
+                    && !(iterable && n == "array")
             });
             // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
-            let plain: Vec<String> = many.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
-            many.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            let plain: Vec<String> = many
+                .iter()
+                .filter(|n| !n.contains('&'))
+                .map(|n| n.to_ascii_lowercase())
+                .collect();
+            many.retain(|n| {
+                !n.contains('&')
+                    || !n
+                        .split('&')
+                        .any(|part| plain.contains(&part.to_ascii_lowercase()))
+            });
             match many.as_slice() {
                 [one] => return Some(one.clone()),
-                [a, b] if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') => {
+                [a, b]
+                    if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') =>
+                {
                     let other = if a == "null" { b } else { a };
                     return Some(format!("?{other}"));
                 }
@@ -894,11 +909,19 @@ fn parent_classes(facts: &Facts, view: &ClassView<'_, '_>) -> Vec<String> {
 /// (it passes `inline_public` false for one): a child class may redeclare it untyped, so only a final class's protected
 /// property passes, and `ParentPropertyLookupGuard` must allow it: no trait the class uses reads it, it is no reserved
 /// Symfony command property, and no parent class (all of them known) declares it or reads it in a method.
-pub(crate) fn is_safe_protected_property(facts: &Facts, view: &ClassView<'_, '_>, name: &[u8]) -> bool {
+pub(crate) fn is_safe_protected_property(
+    facts: &Facts,
+    view: &ClassView<'_, '_>,
+    name: &[u8],
+) -> bool {
     let Node::Class(class) = view.node else {
         return false;
     };
-    if !class.modifiers.iter().any(|m| matches!(m, Modifier::Final(_))) {
+    if !class
+        .modifiers
+        .iter()
+        .any(|m| matches!(m, Modifier::Final(_)))
+    {
         return false;
     }
     let traits = view.members.iter().filter_map(|m| match m {
@@ -906,28 +929,46 @@ pub(crate) fn is_safe_protected_property(facts: &Facts, view: &ClassView<'_, '_>
         _ => None,
     });
     let trait_names: Vec<String> = traits
-        .flat_map(|u| u.trait_names.iter().map(|id| resolve_class_name(&view.path, id)))
+        .flat_map(|u| {
+            u.trait_names
+                .iter()
+                .map(|id| resolve_class_name(&view.path, id))
+        })
         .collect();
     let source_of = |class: &str| {
         let c = facts.codebase.get_class_like(class.as_bytes())?;
         let source = facts.source_of(c.span.file_id)?;
-        source.get(c.span.start.offset as usize..c.span.end.offset as usize).map(str::to_string)
+        source
+            .get(c.span.start.offset as usize..c.span.end.offset as usize)
+            .map(str::to_string)
     };
-    if trait_names.iter().any(|t| source_of(t).is_some_and(|text| fetches(&text, name, None, false))) {
+    if trait_names
+        .iter()
+        .any(|t| source_of(t).is_some_and(|text| fetches(&text, name, None, false)))
+    {
         return false;
     }
     if matches!(name, b"defaultName" | b"defaultDescription")
-        && facts.codebase.is_instance_of(view.name.as_bytes(), b"Symfony\\Component\\Console\\Command\\Command")
+        && facts.codebase.is_instance_of(
+            view.name.as_bytes(),
+            b"Symfony\\Component\\Console\\Command\\Command",
+        )
     {
         return false;
     }
     let parents = parent_classes(facts, view);
     // parent class not autoloaded
-    if parents.iter().any(|p| facts.codebase.get_class_like(p.as_bytes()).is_none()) {
+    if parents
+        .iter()
+        .any(|p| facts.codebase.get_class_like(p.as_bytes()).is_none())
+    {
         return false;
     }
     !parents.iter().any(|parent| {
-        facts.codebase.get_declaring_property(parent.as_bytes(), &dollar(name)).is_some()
+        facts
+            .codebase
+            .get_declaring_property(parent.as_bytes(), &dollar(name))
+            .is_some()
             || source_of(parent).is_some_and(|text| fetches(&text, name, Some(&view.name), false))
     })
 }
@@ -1342,7 +1383,10 @@ fn method_exists_narrowed(
     if !matches!(
         native.types.as_ref(),
         [TAtomic::Object(TObject::HasMethod(_))]
-            | [TAtomic::Object(TObject::HasMethod(_)), TAtomic::Scalar(TScalar::ClassLikeString(_))]
+            | [
+                TAtomic::Object(TObject::HasMethod(_)),
+                TAtomic::Scalar(TScalar::ClassLikeString(_))
+            ]
     ) {
         return None;
     }
@@ -1585,7 +1629,11 @@ pub(crate) struct VarTag<'s> {
 
 impl<'s> VarTag<'s> {
     /// The property's annotation context, even without a doc comment. An unreadable `@var` stays `Err` in `tag`.
-    pub(crate) fn of(ctx: &crate::Context<'s>, property: &Property<'_>, ancestors: &[Node<'_, '_>]) -> Self {
+    pub(crate) fn of(
+        ctx: &crate::Context<'s>,
+        property: &Property<'_>,
+        ancestors: &[Node<'_, '_>],
+    ) -> Self {
         let annotated = Annotated::property(ctx, property, ancestors);
         let tag = match &annotated.doc {
             Some(doc) => typed_tag(doc, "@var", None),
@@ -1813,7 +1861,10 @@ fn sort_order(a: &Ty, b: &Ty) -> std::cmp::Ordering {
     };
     rank(a).cmp(&rank(b)).then_with(|| match (a, b) {
         (Ty::Float(Scalar::Literal(x)), Ty::Float(Scalar::Literal(y))) => {
-            let (x, y) = (x.parse::<f64>().unwrap_or(0.0), y.parse::<f64>().unwrap_or(0.0));
+            let (x, y) = (
+                x.parse::<f64>().unwrap_or(0.0),
+                y.parse::<f64>().unwrap_or(0.0),
+            );
             x.partial_cmp(&y).unwrap_or(Ordering::Equal)
         }
         (Ty::Str(Scalar::Literal(x)), Ty::Str(Scalar::Literal(y))) => compare_strings(x, y),

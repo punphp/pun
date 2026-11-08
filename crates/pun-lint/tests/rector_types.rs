@@ -47,9 +47,9 @@ use pun_lint::rules::{
     AddPropertyTypeSetup, AddPropertyTypeSetupDocblock, AddReturnTypeFromCast,
     AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
     AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
-    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTryCatch, AddReturnTypeFromTypedCall,
-    AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
-    NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
+    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTryCatch,
+    AddReturnTypeFromTypedCall, AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar,
+    AddUnionReturn, NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {

@@ -91,8 +91,7 @@ impl Rule for AddPropertyTypeSetupDocblock {
             let at = variable_span(prop).start;
             edits.push(Edit::new(Span::new(at, at), format!("{declaration} ")));
             if is_dead_after(&facts, &view, &tag, &declaration)
-                && let Some(e) =
-                    VarTag::of(ctx, prop.property, &view.path).remove(ctx.source)
+                && let Some(e) = VarTag::of(ctx, prop.property, &view.path).remove(ctx.source)
             {
                 edits.extend(e);
             }

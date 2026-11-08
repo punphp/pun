@@ -347,12 +347,16 @@ fn argument_settings_preserve_defaults_and_report_unmapped_overrides() {
         for types in [false, true] {
             for references in [false, true] {
                 for this_only in [false, true] {
-                    let neon = format!("parameters:\n    level: {level}\n    checkFunctionArgumentTypes: {types}\n    checkArgumentsPassedByReference: {references}\n    checkThisOnly: {this_only}\n");
+                    let neon = format!(
+                        "parameters:\n    level: {level}\n    checkFunctionArgumentTypes: {types}\n    checkArgumentsPassedByReference: {references}\n    checkThisOnly: {this_only}\n"
+                    );
                     let d = project(&neon, &[]);
                     let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
-                    let settings = [("checkFunctionArgumentTypes", types, level >= 5),
+                    let settings = [
+                        ("checkFunctionArgumentTypes", types, level >= 5),
                         ("checkArgumentsPassedByReference", references, level >= 5),
-                        ("checkThisOnly", this_only, level < 2)];
+                        ("checkThisOnly", this_only, level < 2),
+                    ];
                     let mut unsupported: Vec<_> = settings.iter().filter(|(_, value, default)| value != default)
                         .map(|(name, _, _)| (format!("parameter {name}"), if *name == "checkThisOnly" {
                             "independent receiver eligibility has no pun.toml option yet".to_string()
@@ -369,7 +373,11 @@ fn argument_settings_preserve_defaults_and_report_unmapped_overrides() {
                     assert_eq!(a.level(), level, "{neon}\n{text}");
                     let parameters = a.parameters(&d);
                     for (name, _, default) in settings {
-                        assert_eq!(parameters.get_str(name), Some(&V::Bool(default)), "{neon}\n{text}");
+                        assert_eq!(
+                            parameters.get_str(name),
+                            Some(&V::Bool(default)),
+                            "{neon}\n{text}"
+                        );
                     }
                     std::fs::remove_dir_all(d).unwrap();
                 }
@@ -506,7 +514,11 @@ fn composes_the_level_extensions_and_parameters() {
     // the duplicate: both on in [lint.rules].
     assert_eq!(done.lint, 2);
     for rule in ["style/no-empty", "dead-code/no-duplicate-array-key"] {
-        assert!(parts.lint_rules.contains(&(rule.into(), "\"error\"".into())));
+        assert!(
+            parts
+                .lint_rules
+                .contains(&(rule.into(), "\"error\"".into()))
+        );
     }
     // Laravel locked without Larastan: the whole `laravel` group off, no line per Larastan rule.
     let (done, parts, _) = at_in(5, &[], &[], &[("composer.lock", super::LARAVEL_LOCK)], "");

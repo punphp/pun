@@ -37,7 +37,9 @@ impl Rule for AddParamTypeVariableCall {
     ) {
         let body = match node {
             Node::Method(m) => {
-                let MethodBody::Concrete(body) = &m.body else { return };
+                let MethodBody::Concrete(body) = &m.body else {
+                    return;
+                };
                 Node::Block(body)
             }
             Node::Function(f) => Node::Block(&f.body),
@@ -76,7 +78,11 @@ impl Rule for AddParamTypeVariableCall {
                     continue;
                 }
                 let object = TUnion::from_vec(vec![object.clone()]);
-                let Some(declaration) = param_declaration(&object, &facts.codebase, ctx.php_version) else { continue };
+                let Some(declaration) =
+                    param_declaration(&object, &facts.codebase, ctx.php_version)
+                else {
+                    continue;
+                };
                 edits.push(add_hint(param, &declaration));
             }
         }
@@ -109,7 +115,8 @@ fn call_argument_types(facts: &Facts, body: Node<'_, '_>, name: &[u8]) -> Vec<Op
         let Node::FunctionCall(call) = node else {
             return Flow::Continue;
         };
-        if !matches!(unparenthesize(call.function), Expression::Variable(Variable::Direct(v)) if v.name == name) {
+        if !matches!(unparenthesize(call.function), Expression::Variable(Variable::Direct(v)) if v.name == name)
+        {
             return Flow::Continue;
         }
         for (position, arg) in call.argument_list.arguments.iter().enumerate() {
@@ -124,7 +131,9 @@ fn call_argument_types(facts: &Facts, body: Node<'_, '_>, name: &[u8]) -> Vec<Op
             let object = value.and_then(|v| object_type(facts, v));
             positions[position] = match (&positions[position], object) {
                 (Position::Blocked, _) | (_, None) => Position::Blocked,
-                (Position::Object(_, seen), Some((_, class))) if *seen != class => Position::Blocked,
+                (Position::Object(_, seen), Some((_, class))) if *seen != class => {
+                    Position::Blocked
+                }
                 (_, Some((object, class))) => Position::Object(object, class),
             };
         }

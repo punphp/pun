@@ -143,7 +143,10 @@ impl<'s, 'a, 'ast, 'arena> TypeScope<'s, 'a, 'ast, 'arena> {
                 // Rector 2.8.4: a `self`, `static` or `parent` name inside a union has no scope, so
                 // `NameNodeMapper::createClassReferenceType()` finds no class and maps it to `mixed`, which makes the
                 // union `mixed` (checked on the oracle: `?self` still maps, `\stdClass|self` does not)
-                if members.iter().any(|h| matches!(h, Hint::Self_(_) | Hint::Static(_) | Hint::Parent(_))) {
+                if members
+                    .iter()
+                    .any(|h| matches!(h, Hint::Self_(_) | Hint::Static(_) | Hint::Parent(_)))
+                {
                     return RType::mixed();
                 }
                 create_union(

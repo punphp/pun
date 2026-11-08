@@ -248,7 +248,9 @@ fn parse(
     };
     let analyse_php_id = match explicit {
         true => php.to_id(),
-        false => composer.platform_php_id().unwrap_or(PhpVersion::NEWEST.to_id()),
+        false => composer
+            .platform_php_id()
+            .unwrap_or(PhpVersion::NEWEST.to_id()),
     };
     let files = Files::from(files);
     let gates = schema::Gates { php, composer };

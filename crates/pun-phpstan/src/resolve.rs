@@ -17,7 +17,8 @@ thread_local! {
 
 /// Runs `f` with the `typeAliases` parameter's global type aliases (name, type string) in effect.
 pub fn with_type_aliases<R>(aliases: &[(String, String)], f: impl FnOnce() -> R) -> R {
-    let previous = GLOBAL_ALIASES.with(|g| std::mem::replace(&mut g.borrow_mut().0, aliases.to_vec()));
+    let previous =
+        GLOBAL_ALIASES.with(|g| std::mem::replace(&mut g.borrow_mut().0, aliases.to_vec()));
     let out = f();
     GLOBAL_ALIASES.with(|g| g.borrow_mut().0 = previous);
     out
@@ -32,7 +33,10 @@ thread_local! {
 /// Runs `f` with `extensions` (TypeNodeResolverExtension) answering an identifier (no arguments), a generic type
 /// node (its resolved arguments) or a union of two identifiers (`|`, the two resolved) before the built-in types, on
 /// this thread.
-pub fn with_type_nodes<R>(extensions: &dyn Fn(&str, &[Type]) -> Option<Type>, f: impl FnOnce() -> R) -> R {
+pub fn with_type_nodes<R>(
+    extensions: &dyn Fn(&str, &[Type]) -> Option<Type>,
+    f: impl FnOnce() -> R,
+) -> R {
     struct Restore(Option<*const TypeNodes>);
     impl Drop for Restore {
         fn drop(&mut self) {
@@ -314,11 +318,16 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             // (`callable(mixed $x): ($x is int ? true : false)`); kept as a plain conditional return here.
             let ret = r(ret);
             // ponytail: a pure or static callable keeps no purity or staticness (described as a plain one)
-            let pure = ["pure-callable", "pure-closure", "static-pure-closure"].contains(&ident.to_ascii_lowercase().as_str());
+            let pure = ["pure-callable", "pure-closure", "static-pure-closure"]
+                .contains(&ident.to_ascii_lowercase().as_str());
             if pure && ret == Type::Void {
                 return Type::Error;
             }
-            let sig = Box::new(Signature { params, ret, templates });
+            let sig = Box::new(Signature {
+                params,
+                ret,
+                templates,
+            });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
                 Type::Object(c, args, _) if args.is_empty() && c == "Closure" => Type::Closure(sig),
@@ -332,23 +341,38 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             unsealed,
         } => {
             let template_key = items.iter().any(|i| matches!(&i.key, Some(ShapeKey::Ident(n)) if matches!(scope.template(n), Some(Type::Template(_)))));
-            let late_extras = unsealed.as_ref().and_then(|(k, _)| k.as_ref()).is_some_and(|k| contains_template(&r(k)));
+            let late_extras = unsealed
+                .as_ref()
+                .and_then(|(k, _)| k.as_ref())
+                .is_some_and(|k| contains_template(&r(k)));
             if template_key || late_extras {
                 return crate::types::LateArrayShape {
-                    items: items.iter().map(|i| {
-                        let key = i.key.as_ref().map(|k| match k {
-                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.as_bytes().to_vec())),
-                            ShapeKey::Str(n) => Type::ConstString(n.clone()),
-                            ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
-                            ShapeKey::Fetch(c, n) => constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope),
-                        });
-                        (key, r(&i.value), i.optional)
-                    }).collect(),
-                    unsealed: (!sealed).then(|| unsealed.as_ref().map_or_else(
-                        || (None, mixed()), |(k, v)| (k.as_ref().map(|k| array_key(r(k))), r(v))
-                    )),
+                    items: items
+                        .iter()
+                        .map(|i| {
+                            let key = i.key.as_ref().map(|k| match k {
+                                ShapeKey::Ident(n) => scope
+                                    .template(n)
+                                    .filter(|t| matches!(t, Type::Template(_)))
+                                    .unwrap_or_else(|| Type::ConstString(n.as_bytes().to_vec())),
+                                ShapeKey::Str(n) => Type::ConstString(n.clone()),
+                                ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
+                                ShapeKey::Fetch(c, n) => {
+                                    constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope)
+                                }
+                            });
+                            (key, r(&i.value), i.optional)
+                        })
+                        .collect(),
+                    unsealed: (!sealed).then(|| {
+                        unsealed.as_ref().map_or_else(
+                            || (None, mixed()),
+                            |(k, v)| (k.as_ref().map(|k| array_key(r(k))), r(v)),
+                        )
+                    }),
                     kind: kind.clone(),
-                }.create();
+                }
+                .create();
             }
             let mut builder = ShapeBuilder::new();
             let mut explicit = Vec::new();
@@ -475,7 +499,12 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         | Type::Array(..)
         | Type::ConstArray(_)
         | Type::Iterable(..) => Type::Error,
-        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
+        Type::ConstString(s)
+            if std::str::from_utf8(s)
+                .ok()
+                .and_then(|s| s.parse::<i64>().ok())
+                .is_some_and(|i| i.to_string().as_bytes() == s) =>
+        {
             Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("int"))
         }
         _ => t.clone(),
@@ -541,7 +570,11 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "literal-string" => return accessory(string(), &[A::LiteralString]),
         "class-string" | "interface-string" | "trait-string" => return Type::ClassString(None),
         "enum-string" => {
-            return Type::ClassString(Some(Box::new(Type::Object("UnitEnum".into(), vec![], false))));
+            return Type::ClassString(Some(Box::new(Type::Object(
+                "UnitEnum".into(),
+                vec![],
+                false,
+            ))));
         }
         "callable-string" => return Type::Intersection(vec![string(), Type::Callable(None)]),
         "array-key" => return Type::Benevolent(vec![Type::Int, Type::String]),
@@ -575,7 +608,9 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "non-empty-array" => return accessory(Type::array(mixed(), mixed()), &[A::NonEmptyArray]),
         "iterable" => return Type::Iterable(Box::new(mixed()), Box::new(mixed())),
         "callable" | "pure-callable" => return Type::Callable(None),
-        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![], false),
+        "pure-closure" | "static-closure" | "static-pure-closure" => {
+            return Type::Object("Closure".into(), vec![], false);
+        }
         "resource" | "open-resource" | "closed-resource" => return Type::Resource,
         "mixed" => return explicit_mixed(),
         "void" => return Type::Void,
@@ -823,7 +858,9 @@ pub fn resolve_late(t: &Type) -> Type {
 fn offset_value(t: &Type, o: &Type) -> Option<Type> {
     let key = array_key(o.clone());
     Some(match t.unreasoned() {
-        Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => Type::Mixed { explicit: *explicit },
+        Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => Type::Mixed {
+            explicit: *explicit,
+        },
         Type::Error => Type::Mixed { explicit: false },
         Type::ConstArray(a) => {
             if !matches!(key, Type::ConstInt(_) | Type::ConstString(_)) {
@@ -849,18 +886,37 @@ fn offset_value(t: &Type, o: &Type) -> Option<Type> {
             // reflection. Project class providers currently expose method names, not variants;
             // keep that operation unresolved rather than inventing a mixed return type.
             let class = symbols::lookup(name);
-            if class.as_ref().is_some_and(|c| c.name.eq_ignore_ascii_case("ArrayAccess")
-                || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("ArrayAccess"))) {
+            if class.as_ref().is_some_and(|c| {
+                c.name.eq_ignore_ascii_case("ArrayAccess")
+                    || c.ancestors
+                        .iter()
+                        .any(|a| a.eq_ignore_ascii_case("ArrayAccess"))
+            }) {
                 return None;
             }
             // isExtraOffsetAccessibleClass(): unknown, interface and non-final classes may
             // support offsets. A known final class cannot, except PHPStan's extra classes.
-            let extra = ["DOMNamedNodeMap", "Dom\\NamedNodeMap", "DOMNodeList", "Dom\\NodeList",
-                "Dom\\HTMLCollection", "Dom\\DtdNamedNodeMap", "PDORow", "ResourceBundle",
-                "FFI\\CData", "SimpleXMLElement", "Threaded"];
-            if class.as_ref().is_some_and(|c| c.is_final && !c.is_interface
-                && !extra.iter().any(|name| c.name.eq_ignore_ascii_case(name)
-                    || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case(name)))) {
+            let extra = [
+                "DOMNamedNodeMap",
+                "Dom\\NamedNodeMap",
+                "DOMNodeList",
+                "Dom\\NodeList",
+                "Dom\\HTMLCollection",
+                "Dom\\DtdNamedNodeMap",
+                "PDORow",
+                "ResourceBundle",
+                "FFI\\CData",
+                "SimpleXMLElement",
+                "Threaded",
+            ];
+            if class.as_ref().is_some_and(|c| {
+                c.is_final
+                    && !c.is_interface
+                    && !extra.iter().any(|name| {
+                        c.name.eq_ignore_ascii_case(name)
+                            || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case(name))
+                    })
+            }) {
                 Type::Error
             } else {
                 mixed()
@@ -872,16 +928,31 @@ fn offset_value(t: &Type, o: &Type) -> Option<Type> {
             offset_value(array, o)?
         }
         Type::String => match key {
-            Type::ConstInt(_) | Type::Int => intersect(vec![Type::String, Type::Accessory(Accessory::NonEmptyString)]),
+            Type::ConstInt(_) | Type::Int => intersect(vec![
+                Type::String,
+                Type::Accessory(Accessory::NonEmptyString),
+            ]),
             _ => Type::Error,
         },
-        Type::NonexistentParent | Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
-            Type::Error
-        }
+        Type::NonexistentParent
+        | Type::Int
+        | Type::ConstInt(_)
+        | Type::Float
+        | Type::ConstFloat(_)
+        | Type::Bool
+        | Type::ConstBool(_)
+        | Type::Null => Type::Error,
         Type::Union(types) => {
-            let found: Vec<Type> = types.iter().map(|m| offset_value(m, o)).collect::<Option<_>>()?;
+            let found: Vec<Type> = types
+                .iter()
+                .map(|m| offset_value(m, o))
+                .collect::<Option<_>>()?;
             let found: Vec<Type> = found.into_iter().filter(|f| *f != Type::Error).collect();
-            if found.is_empty() { Type::Error } else { union(found) }
+            if found.is_empty() {
+                Type::Error
+            } else {
+                union(found)
+            }
         }
         _ => return None,
     })
@@ -892,9 +963,15 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
     if let Type::Template(tt) = t {
         // (a template's enum cases are its bound's; one bounded by a backed-enum interface has none)
         let backed = |c: &symbols::Class| {
-            !c.is_enum && (c.name.eq_ignore_ascii_case("BackedEnum") || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("BackedEnum")))
+            !c.is_enum
+                && (c.name.eq_ignore_ascii_case("BackedEnum")
+                    || c.ancestors
+                        .iter()
+                        .any(|a| a.eq_ignore_ascii_case("BackedEnum")))
         };
-        if value && matches!(&tt.bound, Type::Object(n, _, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
+        if value
+            && matches!(&tt.bound, Type::Object(n, _, _) if symbols::lookup(n).is_some_and(|c| backed(&c)))
+        {
             return Type::Union(vec![Type::Int, Type::String]);
         }
         return key_or_value_of(&tt.bound, value);
@@ -904,13 +981,21 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
             .filter(|c| c.is_enum)
             .map(|c| (c.case_values.clone(), c.name.clone())),
         Type::EnumCase(class, case) => symbols::lookup(class).map(|c| {
-            let values = c.case_values.iter().filter(|(n, _)| n == case).cloned().collect();
+            let values = c
+                .case_values
+                .iter()
+                .filter(|(n, _)| n == case)
+                .cloned()
+                .collect();
             (values, c.name.clone())
         }),
         _ => None,
     };
     if value && let Some((values, class)) = cases {
-        let mut types: Vec<Type> = values.iter().map(|(_, v)| resolve_str(v, Some(&class))).collect();
+        let mut types: Vec<Type> = values
+            .iter()
+            .map(|(_, v)| resolve_str(v, Some(&class)))
+            .collect();
         return match types.len() {
             0 => Type::Never(NeverKind::Implicit),
             1 => types.pop().expect("one"),
@@ -920,7 +1005,11 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
     if t.is_iterable().no() {
         return Type::Error;
     }
-    if value { t.iterable_value_type() } else { t.iterable_key_type() }
+    if value {
+        t.iterable_value_type()
+    } else {
+        t.iterable_key_type()
+    }
 }
 
 fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
@@ -1127,7 +1216,12 @@ pub fn const_expr(c: &ConstExpr, scope: &dyn Scope) -> Type {
                 return Type::EnumCase(reflection.name.clone(), name.clone());
             }
             std::iter::once(reflection.clone())
-                .chain(reflection.ancestors.iter().filter_map(|a| symbols::lookup(a)))
+                .chain(
+                    reflection
+                        .ancestors
+                        .iter()
+                        .filter_map(|a| symbols::lookup(a)),
+                )
                 .find_map(|c| {
                     c.constants
                         .iter()

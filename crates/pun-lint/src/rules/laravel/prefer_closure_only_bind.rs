@@ -43,8 +43,8 @@ impl Rule for PreferClosureOnlyBind {
     ) {
         let Node::MethodCall(call) = node else { return };
         // `bindIf()` and `singletonIf()` pass the abstract to `bound()`, where a closure fails.
-        let Some(method) = member_name(&call.method)
-            .filter(|n| is_name(n, "bind") || is_name(n, "singleton"))
+        let Some(method) =
+            member_name(&call.method).filter(|n| is_name(n, "bind") || is_name(n, "singleton"))
         else {
             return;
         };
@@ -57,7 +57,8 @@ impl Rule for PreferClosureOnlyBind {
             return;
         }
         let list = &call.argument_list;
-        let (Some(first), Some(second)) = (get_arg(list, "abstract", 0), get_arg(list, "concrete", 1))
+        let (Some(first), Some(second)) =
+            (get_arg(list, "abstract", 0), get_arg(list, "concrete", 1))
         else {
             return;
         };
@@ -108,8 +109,16 @@ impl Rule for PreferClosureOnlyBind {
         );
         if let Some(shared) = shared {
             let span = node_span(shared.value());
-            let name = if matches!(shared, Argument::Named(_)) { "" } else { "shared: " };
-            let start = if name.is_empty() { node_span(shared).start } else { span.start };
+            let name = if matches!(shared, Argument::Named(_)) {
+                ""
+            } else {
+                "shared: "
+            };
+            let start = if name.is_empty() {
+                node_span(shared).start
+            } else {
+                span.start
+            };
             args.push_str(&format!(", {name}{}", &ctx.source[start..span.end]));
         }
         let all = Span::new(

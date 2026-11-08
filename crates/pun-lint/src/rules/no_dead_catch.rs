@@ -53,8 +53,8 @@ impl Rule for NoDeadCatch {
             let skip = catches[key + 1..].iter().any(|next| match class(next) {
                 None => true,
                 Some(next_class) => {
-                    let catches_anything = ["Throwable", "Exception"]
-                        .contains(&next_class.trim_start_matches('\\'));
+                    let catches_anything =
+                        ["Throwable", "Exception"].contains(&next_class.trim_start_matches('\\'));
                     (catches_anything || !is_provably_unrelated(ctx, &own, &next_class))
                         && !just_rethrows(next)
                 }

@@ -186,7 +186,10 @@ struct Opts {
 
 impl Opts {
     fn of(c: &Checker) -> Opts {
-        Opts { iterables: c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES), callables: c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE) }
+        Opts {
+            iterables: c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES),
+            callables: c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE),
+        }
     }
 }
 
@@ -198,7 +201,9 @@ pub(super) fn callables_without_signature(ty: &Type, on: bool) -> Vec<String> {
         if matches!(ty, Type::Template(_)) {
             return;
         }
-        if matches!(ty, Type::Callable(None)) || matches!(ty, Type::Object(class, _, _) if class == "Closure") {
+        if matches!(ty, Type::Callable(None))
+            || matches!(ty, Type::Object(class, _, _) if class == "Closure")
+        {
             out.borrow_mut().push(ty.describe(Level::TypeOnly));
         }
         ty.traverse(&|inner| {
@@ -261,8 +266,14 @@ fn check(ty: &Type, m: Messages, opts: Opts, out: &mut Found) {
     }
     for callable in callables_without_signature(ty, opts.callables) {
         let message = match m.parameter {
-            Some(p) => format!("{} has {p} with no signature specified for {callable}.", m.subject),
-            None => format!("{}{} has no signature specified for {callable}.", m.subject, m.owner),
+            Some(p) => format!(
+                "{} has {p} with no signature specified for {callable}.",
+                m.subject
+            ),
+            None => format!(
+                "{}{} has no signature specified for {callable}.",
+                m.subject, m.owner
+            ),
         };
         out.push(("missingType.callable", message, None));
     }
@@ -273,7 +284,12 @@ fn check(ty: &Type, m: Messages, opts: Opts, out: &mut Found) {
 pub(super) fn parameter(c: &Checker, ty: &Type, subject: &str, parameter: &str) -> Found {
     let mut out = Vec::new();
     if c.level >= 6 {
-        let m = Messages { subject, parameter: Some(parameter), owner: "", missing: ("", String::new()) };
+        let m = Messages {
+            subject,
+            parameter: Some(parameter),
+            owner: "",
+            missing: ("", String::new()),
+        };
         check(ty, m, Opts::of(c), &mut out);
     }
     out.retain(|(id, _, _)| !id.is_empty());
@@ -512,7 +528,9 @@ fn class_level(
         .expect("a declared class-like is in the codebase");
     let display = declared::original_name(k);
     let iterables = Opts::of(c);
-    let doc = c.doc_before(c.file.id, span.start.offset).map(|(_, entry)| entry);
+    let doc = c
+        .doc_before(c.file.id, span.start.offset)
+        .map(|(_, entry)| entry);
     let found = declared::with_classes(c, || {
         let mut out: Found = Vec::new();
         let generics_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str, &str) -> String| {
@@ -624,7 +642,9 @@ fn class_level(
                     )
                 });
                 callables_of(&ty, &mut out, &|callable| {
-                    format!("{kind} {display} has PHPDoc tag @mixin with no signature specified for {callable}.")
+                    format!(
+                        "{kind} {display} has PHPDoc tag @mixin with no signature specified for {callable}."
+                    )
                 });
             }
             for node in &parsed.ancestors {

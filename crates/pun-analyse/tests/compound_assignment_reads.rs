@@ -56,7 +56,10 @@ fn compound_read_diagnostics_match_phpstan_for_implemented_rules() {
         );
         project.level = level;
         project.php_version = 80500;
-        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
+        project.options.set(
+            pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            true,
+        );
         let mut got: Vec<_> = pun_analyse::run(&project)
             .unwrap()
             .into_iter()
@@ -77,24 +80,23 @@ fn compound_read_diagnostics_match_phpstan_for_implemented_rules() {
             .collect();
         got.sort();
         let level = i64::from(level);
-        let got: Vec<Value> = serde_json::from_value::<Vec<Value>>(serde_json::to_value(got).unwrap())
-            .unwrap()
-            .into_iter()
-            .filter(|record| !gap(level, record))
-            .collect();
+        let got: Vec<Value> =
+            serde_json::from_value::<Vec<Value>>(serde_json::to_value(got).unwrap())
+                .unwrap()
+                .into_iter()
+                .filter(|record| !gap(level, record))
+                .collect();
         // Keep the complete capture. As in levels.rs, compare every record for an implemented rule.
         let want: Vec<_> = expected["diagnostics"][&level.to_string()]
             .as_array()
             .unwrap()
             .iter()
-            .filter(|record| pun_analyse::reports(record[2].as_str().unwrap()) && !gap(level, record))
+            .filter(|record| {
+                pun_analyse::reports(record[2].as_str().unwrap()) && !gap(level, record)
+            })
             .cloned()
             .collect();
-        assert_eq!(
-            json!(got),
-            json!(want),
-            "level {level}"
-        );
+        assert_eq!(json!(got), json!(want), "level {level}");
     }
 }
 

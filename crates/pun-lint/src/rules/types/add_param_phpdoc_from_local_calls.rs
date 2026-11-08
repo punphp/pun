@@ -7,7 +7,8 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{
-    Argument, ArgumentList, Call, ClassLikeMemberSelector, Expression, Node, NodeKind, PartialApplication,
+    Argument, ArgumentList, Call, ClassLikeMemberSelector, Expression, Node, NodeKind,
+    PartialApplication,
 };
 use pun_phpstan::types::{Type, mixed, union};
 
@@ -15,8 +16,8 @@ use super::docblock::{class_name, docs_report, is_array_hint, methods};
 use super::facts::facts;
 use super::names::resolve_class_name;
 use crate::rules::phpdoc_writer::type_mapper::{
-    create_mixed_passed_or_union_type,
-    const_array_item_type, const_array_key_type, is_mixed, is_useful_array_tag,
+    const_array_item_type, const_array_key_type, create_mixed_passed_or_union_type, is_mixed,
+    is_useful_array_tag,
 };
 use crate::rules::phpdoc_writer::{DocTarget, decorate_param, expr_type};
 use crate::syntax::is_this;
@@ -81,7 +82,11 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                 let resolved = types
                     .iter()
                     .find(|(key, _)| *key == Key::Position(position))
-                    .or_else(|| types.iter().find(|(key, _)| *key == Key::Name(param_name.clone())));
+                    .or_else(|| {
+                        types
+                            .iter()
+                            .find(|(key, _)| *key == Key::Name(param_name.clone()))
+                    });
                 let Some((_, resolved)) = resolved else {
                     continue;
                 };
@@ -94,9 +99,13 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                 }
                 // the param default value must always be accepted: unite with the default type
                 if let Some(default) = &param.default_value {
-                    resolved = union(vec![resolved, expr_type(ctx, &scope, default.value).unwrap_or_else(mixed)]);
+                    resolved = union(vec![
+                        resolved,
+                        expr_type(ctx, &scope, default.value).unwrap_or_else(mixed),
+                    ]);
                 }
-                changed |= decorate_param(&mut info, &resolved, &param_name, param.ellipsis.is_some());
+                changed |=
+                    decorate_param(&mut info, &resolved, &param_name, param.ellipsis.is_some());
             }
             if changed {
                 changes.push((target, info));
@@ -142,9 +151,15 @@ fn local_method_calls<'ast, 'arena>(
     for method in methods(&class.members) {
         find(Node::Method(method), &mut |n| {
             let (caller, selector, args): (Caller<'_, '_>, _, LocalCall<'ast, 'arena>) = match n {
-                Node::Call(Call::Method(c)) => (Caller::Object(c.object), &c.method, Some(&c.argument_list)),
-                Node::Call(Call::StaticMethod(c)) => (Caller::Class(c.class), &c.method, Some(&c.argument_list)),
-                Node::PartialApplication(PartialApplication::Method(c)) => (Caller::Object(c.object), &c.method, None),
+                Node::Call(Call::Method(c)) => {
+                    (Caller::Object(c.object), &c.method, Some(&c.argument_list))
+                }
+                Node::Call(Call::StaticMethod(c)) => {
+                    (Caller::Class(c.class), &c.method, Some(&c.argument_list))
+                }
+                Node::PartialApplication(PartialApplication::Method(c)) => {
+                    (Caller::Object(c.object), &c.method, None)
+                }
                 // `self::run(...)`: PHPStan 2.3 gives the class of a static method callable no type, so the call's
                 // class is no class name and it is not a local call (as for `self::run(...)` in
                 // no_unused_test_method_param)
@@ -181,10 +196,17 @@ enum Caller<'ast, 'arena> {
 }
 
 /// `ClassNameFromObjectTypeResolver::resolve()` of the caller's type: its one class name.
-fn caller_class(ctx: &Context<'_>, scope: &[Node<'_, '_>], class_name: &str, caller: Caller<'_, '_>) -> Option<String> {
+fn caller_class(
+    ctx: &Context<'_>,
+    scope: &[Node<'_, '_>],
+    class_name: &str,
+    caller: Caller<'_, '_>,
+) -> Option<String> {
     let expr = match caller {
         Caller::Object(expr) if is_this(expr) => return Some(class_name.to_string()),
-        Caller::Class(Expression::Self_(_) | Expression::Static(_)) => return Some(class_name.to_string()),
+        Caller::Class(Expression::Self_(_) | Expression::Static(_)) => {
+            return Some(class_name.to_string());
+        }
         // `NameTypeResolver::resolveParent()`: the parent classes
         Caller::Class(Expression::Parent(_)) => return None,
         Caller::Class(Expression::Identifier(id)) => return Some(resolve_class_name(scope, id)),
@@ -217,7 +239,11 @@ enum Key {
 }
 
 /// `CallTypesResolver::resolveTypesFromCalls()`: each position's (or name's) type, the types of all calls united.
-fn resolve_types_from_calls(ctx: &Context<'_>, scope: &[Node<'_, '_>], calls: &[LocalCall<'_, '_>]) -> Vec<(Key, Type)> {
+fn resolve_types_from_calls(
+    ctx: &Context<'_>,
+    scope: &[Node<'_, '_>],
+    calls: &[LocalCall<'_, '_>],
+) -> Vec<(Key, Type)> {
     let mut by_position: Vec<(Key, Vec<Type>)> = Vec::new();
     for call in calls {
         // a first-class callable can be called with anything
@@ -228,7 +254,10 @@ fn resolve_types_from_calls(ctx: &Context<'_>, scope: &[Node<'_, '_>], calls: &[
             let (key, value) = match arg {
                 Argument::Positional(p) if p.ellipsis.is_some() => return vec![],
                 Argument::Positional(p) => (Key::Position(position), p.value),
-                Argument::Named(n) => (Key::Name(String::from_utf8_lossy(n.name.value).into_owned()), n.value),
+                Argument::Named(n) => (
+                    Key::Name(String::from_utf8_lossy(n.name.value).into_owned()),
+                    n.value,
+                ),
             };
             // skip empty array, as it doesn't add any value
             if let Expression::Array(a) = value
@@ -258,7 +287,14 @@ fn resolve_types_from_calls(ctx: &Context<'_>, scope: &[Node<'_, '_>], calls: &[
 fn normalize_type(ctx: &Context<'_>, t: Type) -> Type {
     match t {
         Type::This(name) => Type::Object(name, vec![], false),
-        Type::Object(name, _, _) if facts(ctx).codebase.get_class_like(name.as_bytes()).is_none() => mixed(),
+        Type::Object(name, _, _)
+            if facts(ctx)
+                .codebase
+                .get_class_like(name.as_bytes())
+                .is_none() =>
+        {
+            mixed()
+        }
         t => t,
     }
 }
@@ -266,7 +302,10 @@ fn normalize_type(ctx: &Context<'_>, t: Type) -> Type {
 /// `unionToSingleType()` with `$removeMixedArray`. (`narrowParentObjectTreeToSingleObjectChildType()` gives its type
 /// back: its loop tests the first type against itself too.)
 fn union_to_single_type(types: Vec<Type>) -> Type {
-    let types: Vec<Type> = types.into_iter().filter(|t| !is_array_mixed_mixed_type(t)).collect();
+    let types: Vec<Type> = types
+        .into_iter()
+        .filter(|t| !is_array_mixed_mixed_type(t))
+        .collect();
     let united = create_mixed_passed_or_union_type(&types, false);
     if let Type::Union(members) = &united
         && members

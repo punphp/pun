@@ -1196,8 +1196,12 @@ impl<'s> Session<'s> {
             }
             match d.view {
                 Some(v) => {
-                    let edit = DocTarget::in_tokens(source, &crate::rules::php_parser::lex(source), self.view.docs[v].node_start)
-                        .edit(source, &doc.print());
+                    let edit = DocTarget::in_tokens(
+                        source,
+                        &crate::rules::php_parser::lex(source),
+                        self.view.docs[v].node_start,
+                    )
+                    .edit(source, &doc.print());
                     edits.push((edit.span, edit.text));
                 }
                 // a `Nop` printed anew: its comments, then the empty statement on the next line (its indentation

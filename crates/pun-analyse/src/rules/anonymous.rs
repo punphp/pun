@@ -46,7 +46,9 @@ pub(crate) fn names(
     };
     collect.walk_program(program, &mut ());
     // PHPStan's file names are absolute; a run's are relative to its working directory
-    let path = relative.get(&absolute(std::path::Path::new(&*String::from_utf8_lossy(&file.name))));
+    let path = relative.get(&absolute(std::path::Path::new(&*String::from_utf8_lossy(
+        &file.name,
+    ))));
     let lines: Vec<u32> = collect
         .classes
         .iter()

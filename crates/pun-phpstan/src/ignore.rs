@@ -384,7 +384,8 @@ impl IgnoredErrors {
                 && pun_tokens::php_compat::str_replace(b"\n", b"\r\n", &without_cr) != code;
             for (raw, line) in items {
                 if let Value::Array(a) = &raw
-                    && a.keys().any(|k| !matches!(k, Key::Str(k) if ENTRY_KEYS.contains(&k.as_str())))
+                    && a.keys()
+                        .any(|k| !matches!(k, Key::Str(k) if ENTRY_KEYS.contains(&k.as_str())))
                 {
                     continue;
                 }
@@ -396,7 +397,15 @@ impl IgnoredErrors {
                 root.set("parameters".into(), Value::Array(wrapped));
                 let values = crate::di::process(root, "", &file, &relative, &known)
                     .ok()
-                    .and_then(|p| p.get_str("parameters")?.as_array()?.get_str("ignoreErrors")?.as_array()?.values().next().cloned())
+                    .and_then(|p| {
+                        p.get_str("parameters")?
+                            .as_array()?
+                            .get_str("ignoreErrors")?
+                            .as_array()?
+                            .values()
+                            .next()
+                            .cloned()
+                    })
                     .and_then(|v| crate::di::expand(&v, &known, None).ok());
                 let values = match values {
                     Some(Value::Array(a)) => a,
@@ -407,7 +416,11 @@ impl IgnoredErrors {
                     }
                     _ => continue,
                 };
-                if values.is_empty() || values.get_str("count").is_some_and(|c| !matches!(c, Value::Int(_))) {
+                if values.is_empty()
+                    || values
+                        .get_str("count")
+                        .is_some_and(|c| !matches!(c, Value::Int(_)))
+                {
                     continue;
                 }
                 let key = match values.get_str("path") {
@@ -415,13 +428,16 @@ impl IgnoredErrors {
                     Some(Value::Str(p)) => normalize_path(&absolutize_path(&cwd, p)),
                     _ => continue,
                 };
-                self.config_entries.entry(key).or_default().push(ConfigEntry {
-                    file: file.clone(),
-                    values,
-                    raw,
-                    line: Some(line as i64),
-                    mixed_line_breaks,
-                });
+                self.config_entries
+                    .entry(key)
+                    .or_default()
+                    .push(ConfigEntry {
+                        file: file.clone(),
+                        values,
+                        raw,
+                        line: Some(line as i64),
+                        mixed_line_breaks,
+                    });
             }
         }
         self.current_working_directory = cwd;
@@ -430,7 +446,12 @@ impl IgnoredErrors {
 
     /// Pun's `[[analyse.ignore]]` entries as the config file's own (pun.toml, `file`): unmatched or over-counted ones
     /// are fixable as IgnoreErrorsConfigFixer fixes the entries of a NEON file.
-    pub fn with_config_entries(mut self, file: &str, entries: &Array, current_working_directory: &str) -> IgnoredErrors {
+    pub fn with_config_entries(
+        mut self,
+        file: &str,
+        entries: &Array,
+        current_working_directory: &str,
+    ) -> IgnoredErrors {
         for raw in entries.values() {
             let values = match raw {
                 Value::Array(a) => a.clone(),
@@ -442,16 +463,21 @@ impl IgnoredErrors {
             };
             let key = match values.get_str("path") {
                 None if values.get_str("paths").is_none() => String::new(),
-                Some(Value::Str(p)) => normalize_path(&absolutize_path(current_working_directory, p)),
+                Some(Value::Str(p)) => {
+                    normalize_path(&absolutize_path(current_working_directory, p))
+                }
                 _ => continue,
             };
-            self.config_entries.entry(key).or_default().push(ConfigEntry {
-                file: file.to_string(),
-                values,
-                raw: raw.clone(),
-                line: None,
-                mixed_line_breaks: false,
-            });
+            self.config_entries
+                .entry(key)
+                .or_default()
+                .push(ConfigEntry {
+                    file: file.to_string(),
+                    values,
+                    raw: raw.clone(),
+                    line: None,
+                    mixed_line_breaks: false,
+                });
         }
         self.current_working_directory = current_working_directory.to_string();
         self
@@ -472,16 +498,24 @@ impl IgnoredErrors {
         if path.is_none() && isset(&e, "paths").is_some() {
             return Vec::new();
         }
-        let key = path.map_or_else(String::new, |p| normalize_path(&absolutize_path(&self.current_working_directory, &p)));
+        let key = path.map_or_else(String::new, |p| {
+            normalize_path(&absolutize_path(&self.current_working_directory, &p))
+        });
         let Some(entries) = self.config_entries.get(&key) else {
             return Vec::new();
         };
         let mut found = Vec::new();
         'entries: for entry in entries {
             let mut list_field = None;
-            for (field, matched_list) in [("message", "messages"), ("rawMessage", "rawMessages"), ("identifier", "identifiers")] {
+            for (field, matched_list) in [
+                ("message", "messages"),
+                ("rawMessage", "rawMessages"),
+                ("identifier", "identifiers"),
+            ] {
                 let Some(expected) = isset(&e, field) else {
-                    if entry.values.contains(&Key::from(field)) || entry.values.contains(&Key::from(matched_list)) {
+                    if entry.values.contains(&Key::from(field))
+                        || entry.values.contains(&Key::from(matched_list))
+                    {
                         continue 'entries;
                     }
                     continue;
@@ -536,7 +570,9 @@ impl IgnoredErrors {
             return false;
         };
         let written = matches!(&entry.raw, Value::Array(a) if a.contains(&Key::from("count")));
-        entry.values.get_str("count") == isset(ignore, "count") && written && !entry.mixed_line_breaks
+        entry.values.get_str("count") == isset(ignore, "count")
+            && written
+            && !entry.mixed_line_breaks
     }
 
     /// Pun's `rule` key: an entry with one ignores only errors whose identifier `rule_of` maps to that rule.
@@ -743,7 +779,8 @@ impl IgnoredErrors {
                 _ => match real_path {
                     Some(p) => {
                         if analysed_files.contains(&p) && !only_files {
-                            let mut error = Error::new(not_matched(), p, None).non_ignorable("ignore.unmatched");
+                            let mut error = Error::new(not_matched(), p, None)
+                                .non_ignorable("ignore.unmatched");
                             error.fixable = self.removes_unmatched(u);
                             out.errors.push(error);
                         }
@@ -752,7 +789,8 @@ impl IgnoredErrors {
                     None if !only_files => match self.entry_location(u) {
                         Some((file, line)) => out.errors.push(Error {
                             fixable: self.removes_unmatched(u),
-                            ..Error::new(not_matched(), file, Some(line)).non_ignorable("ignore.unmatched")
+                            ..Error::new(not_matched(), file, Some(line))
+                                .non_ignorable("ignore.unmatched")
                         }),
                         None => out.string_errors.push(not_matched()),
                     },
@@ -860,14 +898,22 @@ pub fn ignores_without_comments(
 /// `ignore.allLineErrors` error is fixable where LineIgnoreFixer turns the ignore into one of the identifiers of the
 /// ignorable errors reported on its line, which all have one.
 pub fn fix_all_line_errors(file: &str, code: Option<&[u8]>, errors: &mut [Error]) {
-    let all_line = |e: &Error| e.identifier.as_deref() == Some("ignore.allLineErrors") && e.file == file;
-    let lines: Vec<i64> = errors.iter().filter(|e| all_line(e)).filter_map(|e| e.line).collect();
+    let all_line =
+        |e: &Error| e.identifier.as_deref() == Some("ignore.allLineErrors") && e.file == file;
+    let lines: Vec<i64> = errors
+        .iter()
+        .filter(|e| all_line(e))
+        .filter_map(|e| e.line)
+        .collect();
     let Some(code) = code.filter(|_| !lines.is_empty()) else {
         return;
     };
     let mut fixable: HashMap<i64, bool> = HashMap::new();
     for e in errors.iter() {
-        let Some(line) = e.line.filter(|l| e.file == file && e.can_be_ignored && lines.contains(l)) else {
+        let Some(line) = e
+            .line
+            .filter(|l| e.file == file && e.can_be_ignored && lines.contains(l))
+        else {
             continue;
         };
         // an error without an identifier cannot be ignored by one
@@ -878,7 +924,9 @@ pub fn fix_all_line_errors(file: &str, code: Option<&[u8]>, errors: &mut [Error]
     for e in errors.iter_mut().filter(|e| all_line(e)) {
         let Some(line) = e.line else { continue };
         if fixable.get(&line) == Some(&true) {
-            e.fixable = *fixed.entry(line).or_insert_with(|| crate::fixers::line_ignore(code, line));
+            e.fixable = *fixed
+                .entry(line)
+                .or_insert_with(|| crate::fixers::line_ignore(code, line));
         }
     }
 }
@@ -886,11 +934,16 @@ pub fn fix_all_line_errors(file: &str, code: Option<&[u8]>, errors: &mut [Error]
 /// `reportUnmatchedIgnoredErrors` (AnalyserResultFinalizer): errors for the ignore comments nothing matched.
 /// `code` is the file's contents (`null` when it is not a file); the errors are fixable where UnmatchedIgnoreFixer
 /// removes the ignore.
-pub fn unmatched_line_errors(file: &str, code: Option<&[u8]>, unmatched: &LinesToIgnore) -> Vec<Error> {
+pub fn unmatched_line_errors(
+    file: &str,
+    code: Option<&[u8]>,
+    unmatched: &LinesToIgnore,
+) -> Vec<Error> {
     let mut errors = Vec::new();
     for (&line, ids) in unmatched {
         let error = |message: String, identifier: &str, name: Option<&str>| Error {
-            fixable: code.is_some_and(|code| crate::fixers::unmatched_ignore(code, line, name).is_some()),
+            fixable: code
+                .is_some_and(|code| crate::fixers::unmatched_ignore(code, line, name).is_some()),
             ..Error::new(message, file, Some(line)).non_ignorable(identifier)
         };
         match ids {
@@ -943,17 +996,26 @@ impl InstalledPackages {
     fn of(project_paths: &[String]) -> InstalledPackages {
         let mut vendor_dirs = Vec::new();
         let mut packages = Vec::new();
-        let json = |p: &str| -> Option<serde_json::Value> { serde_json::from_slice(&std::fs::read(p).ok()?).ok() };
+        let json = |p: &str| -> Option<serde_json::Value> {
+            serde_json::from_slice(&std::fs::read(p).ok()?).ok()
+        };
         for root in project_paths {
             // ComposerHelper::getComposerConfig() / getVendorDirFromComposerConfig()
             let Some(composer) = json(&format!("{root}/composer.json")) else {
                 continue;
             };
-            let vendor = composer["config"]["vendor-dir"].as_str().unwrap_or("vendor").trim_matches('/').to_string();
+            let vendor = composer["config"]["vendor-dir"]
+                .as_str()
+                .unwrap_or("vendor")
+                .trim_matches('/')
+                .to_string();
             let vendor = format!("{root}/{vendor}");
             vendor_dirs.push(normalize_path(&vendor));
             let installed = json(&format!("{vendor}/composer/installed.json"));
-            let list = installed.as_ref().and_then(|i| i.get("packages").unwrap_or(i).as_array().cloned()).unwrap_or_default();
+            let list = installed
+                .as_ref()
+                .and_then(|i| i.get("packages").unwrap_or(i).as_array().cloned())
+                .unwrap_or_default();
             for p in list {
                 let Some(path) = p["install-path"].as_str() else {
                     continue;
@@ -970,12 +1032,19 @@ impl InstalledPackages {
             }
         }
         packages.sort_by_key(|(p, _)| std::cmp::Reverse(p.len()));
-        InstalledPackages { vendor_dirs, packages }
+        InstalledPackages {
+            vendor_dirs,
+            packages,
+        }
     }
 
     fn has_file(&self, file: &str) -> bool {
         let file = normalize_path(file);
-        if !self.vendor_dirs.iter().any(|v| file.starts_with(v.as_str())) {
+        if !self
+            .vendor_dirs
+            .iter()
+            .any(|v| file.starts_with(v.as_str()))
+        {
             return false;
         }
         // a file of no package, or of one that is not the project's own code

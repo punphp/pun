@@ -9,7 +9,11 @@ use super::Checker;
 pub(super) const IDENTIFIERS: &[&str] = &["new.dateInterval"];
 
 pub(super) fn instantiation(c: &mut Checker, new: &Instantiation) {
-    if !c.toggled.on.contains(crate::rules::driver::Toggles::DATE_INTERVAL) {
+    if !c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::DATE_INTERVAL)
+    {
         return;
     }
     let Expression::Identifier(id) = new.class else {
@@ -37,7 +41,9 @@ pub(super) fn instantiation(c: &mut Checker, new: &Instantiation) {
 
 /// `date_interval_initialize()`: the exception message of `new DateInterval($format)`, whose `%s` stops at a NUL.
 fn construct(format: &[u8]) -> Result<(), String> {
-    let printed = || String::from_utf8_lossy(format.split(|b| *b == 0).next().unwrap_or_default()).into_owned();
+    let printed = || {
+        String::from_utf8_lossy(format.split(|b| *b == 0).next().unwrap_or_default()).into_owned()
+    };
     let parsed = strtointerval(format);
     if parsed.error {
         Err(format!("Unknown or bad format ({})", printed()))
@@ -87,13 +93,20 @@ fn strtointerval(s: &[u8]) -> Parsed {
 }
 
 fn digits(s: &[u8], at: usize) -> usize {
-    s.get(at..).unwrap_or_default().iter().take_while(|b| b.is_ascii_digit()).count()
+    s.get(at..)
+        .unwrap_or_default()
+        .iter()
+        .take_while(|b| b.is_ascii_digit())
+        .count()
 }
 
 /// Whether `s[at..]` starts with the fixed-length `pattern`.
 fn fixed(s: &[u8], at: usize, pattern: &[Unit]) -> bool {
     pattern.len() <= s.len().saturating_sub(at)
-        && pattern.iter().enumerate().all(|(i, class)| class.matches(&s[at + i..]))
+        && pattern
+            .iter()
+            .enumerate()
+            .all(|(i, class)| class.matches(&s[at + i..]))
 }
 
 /// One position of a fixed-length scanner rule.
@@ -140,32 +153,88 @@ fn monthlzz(a: u8, b: u8) -> bool {
 
 /// `"0" [1-9] | [1-2][0-9] | "3" [01]`
 fn daylz(a: u8, b: u8) -> bool {
-    matches!((a, b), (b'0', b'1'..=b'9') | (b'1' | b'2', b'0'..=b'9') | (b'3', b'0' | b'1'))
+    matches!(
+        (a, b),
+        (b'0', b'1'..=b'9') | (b'1' | b'2', b'0'..=b'9') | (b'3', b'0' | b'1')
+    )
 }
 
 /// `"0" [0-9] | [1-2][0-9] | "3" [01]`
 fn daylzz(a: u8, b: u8) -> bool {
-    matches!((a, b), (b'0' | b'1' | b'2', b'0'..=b'9') | (b'3', b'0' | b'1'))
+    matches!(
+        (a, b),
+        (b'0' | b'1' | b'2', b'0'..=b'9') | (b'3', b'0' | b'1')
+    )
 }
 
 use Unit::{Byte, Digit, Pair, Rest};
 
 /// `datetimebasic = year4 monthlz daylz "T" hour24lz minutelz secondlz "Z"`
 const DATETIME_BASIC: [Unit; 16] = [
-    Digit, Digit, Digit, Digit, Pair(monthlz), Rest, Pair(daylz), Rest, Byte(b'T'), Pair(hour24lz), Rest,
-    Pair(minutelz), Rest, Pair(minutelz), Rest, Byte(b'Z'),
+    Digit,
+    Digit,
+    Digit,
+    Digit,
+    Pair(monthlz),
+    Rest,
+    Pair(daylz),
+    Rest,
+    Byte(b'T'),
+    Pair(hour24lz),
+    Rest,
+    Pair(minutelz),
+    Rest,
+    Pair(minutelz),
+    Rest,
+    Byte(b'Z'),
 ];
 
 /// `datetimeextended = year4 "-" monthlz "-" daylz "T" hour24lz ':' minutelz ':' secondlz "Z"`
 const DATETIME_EXTENDED: [Unit; 20] = [
-    Digit, Digit, Digit, Digit, Byte(b'-'), Pair(monthlz), Rest, Byte(b'-'), Pair(daylz), Rest,
-    Byte(b'T'), Pair(hour24lz), Rest, Byte(b':'), Pair(minutelz), Rest, Byte(b':'), Pair(minutelz), Rest, Byte(b'Z'),
+    Digit,
+    Digit,
+    Digit,
+    Digit,
+    Byte(b'-'),
+    Pair(monthlz),
+    Rest,
+    Byte(b'-'),
+    Pair(daylz),
+    Rest,
+    Byte(b'T'),
+    Pair(hour24lz),
+    Rest,
+    Byte(b':'),
+    Pair(minutelz),
+    Rest,
+    Byte(b':'),
+    Pair(minutelz),
+    Rest,
+    Byte(b'Z'),
 ];
 
 /// `combinedrep = "P" year4 "-" monthlzz "-" daylzz "T" hour24lz ':' minutelz ':' secondlz`
 const COMBINED: [Unit; 20] = [
-    Byte(b'P'), Digit, Digit, Digit, Digit, Byte(b'-'), Pair(monthlzz), Rest, Byte(b'-'), Pair(daylzz),
-    Rest, Byte(b'T'), Pair(hour24lz), Rest, Byte(b':'), Pair(minutelz), Rest, Byte(b':'), Pair(minutelz), Rest,
+    Byte(b'P'),
+    Digit,
+    Digit,
+    Digit,
+    Digit,
+    Byte(b'-'),
+    Pair(monthlzz),
+    Rest,
+    Byte(b'-'),
+    Pair(daylzz),
+    Rest,
+    Byte(b'T'),
+    Pair(hour24lz),
+    Rest,
+    Byte(b':'),
+    Pair(minutelz),
+    Rest,
+    Byte(b':'),
+    Pair(minutelz),
+    Rest,
 ];
 
 /// The length of `period = "P" (number "Y")? (number "M")? (number "W")? (number "D")? ("T" (number "H")? (number
@@ -206,7 +275,10 @@ fn token(s: &[u8], at: usize, parsed: &mut Parsed) -> usize {
     let combined = fixed(s, at, &COMBINED).then_some(COMBINED.len());
     let rules = [recurrences, datetime, period, combined];
     let longest = rules.iter().flatten().max().copied().unwrap_or(0);
-    match rules.iter().position(|r| longest > 0 && *r == Some(longest)) {
+    match rules
+        .iter()
+        .position(|r| longest > 0 && *r == Some(longest))
+    {
         // recurrences
         Some(0) => {}
         Some(1) => {
@@ -267,7 +339,14 @@ mod tests {
     #[test]
     fn matches_php() {
         let ok = |s: &[u8]| assert_eq!(construct(s), Ok(()), "{}", String::from_utf8_lossy(s));
-        let bad = |s: &[u8], m: &str| assert_eq!(construct(s), Err(m.to_string()), "{}", String::from_utf8_lossy(s));
+        let bad = |s: &[u8], m: &str| {
+            assert_eq!(
+                construct(s),
+                Err(m.to_string()),
+                "{}",
+                String::from_utf8_lossy(s)
+            );
+        };
         ok(b"P1D");
         ok(b"P1W2D");
         ok(b"P1Y2M3DT4H5M6S");
@@ -293,14 +372,26 @@ mod tests {
         bad(b"P-1D", "Unknown or bad format (P-1D)");
         bad(b"P1D\0x", "Unknown or bad format (P1D)");
         bad(b"P1D1Y", "Unknown or bad format (P1D1Y)");
-        bad(b"P1234567890123D", "Unknown or bad format (P1234567890123D)");
-        bad(b"P0001-13-03T04:05:06", "Unknown or bad format (P0001-13-03T04:05:06)");
+        bad(
+            b"P1234567890123D",
+            "Unknown or bad format (P1234567890123D)",
+        );
+        bad(
+            b"P0001-13-03T04:05:06",
+            "Unknown or bad format (P0001-13-03T04:05:06)",
+        );
         bad(b"PT1HT1M", "Unknown or bad format (PT1HT1M)");
         bad(b"R", "Unknown or bad format (R)");
         bad(b"\r", "Unknown or bad format (\r)");
         bad(b"R5", "Failed to parse interval (R5)");
         bad(b"   ", "Failed to parse interval (   )");
-        bad(b"2008-03-01T13:00:00Z", "Failed to parse interval (2008-03-01T13:00:00Z)");
-        bad(b"2008-03-01T25:00:00Z/2009-05-11T15:30:00Z", "Unknown or bad format (2008-03-01T25:00:00Z/2009-05-11T15:30:00Z)");
+        bad(
+            b"2008-03-01T13:00:00Z",
+            "Failed to parse interval (2008-03-01T13:00:00Z)",
+        );
+        bad(
+            b"2008-03-01T25:00:00Z/2009-05-11T15:30:00Z",
+            "Unknown or bad format (2008-03-01T25:00:00Z/2009-05-11T15:30:00Z)",
+        );
     }
 }

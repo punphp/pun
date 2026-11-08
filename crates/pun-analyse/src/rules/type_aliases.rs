@@ -132,7 +132,13 @@ fn upsert<T>(list: &mut Vec<T>, key: impl Fn(&T) -> &str, item: T) {
 /// The type alias tags of class-like `k`'s PHPDoc (`resolveTypeAliasTags()` and `resolveTypeAliasImportTags()`), in
 /// `scope`.
 /// The tags [`alias_doc()`] reads.
-const ALIAS_TAGS: [&str; 5] = ["@phan-type", "@psalm-type", "@phpstan-type", "@psalm-import-type", "@phpstan-import-type"];
+const ALIAS_TAGS: [&str; 5] = [
+    "@phan-type",
+    "@psalm-type",
+    "@phpstan-type",
+    "@psalm-import-type",
+    "@phpstan-import-type",
+];
 
 fn alias_doc(c: &Checker, k: &ClassLikeMetadata, scope: NameScope) -> Option<AliasDoc> {
     let (_, entry) = c.doc_before(k.span.file_id, k.span.start.offset)?;
@@ -364,14 +370,23 @@ fn without_aliases<R>(c: &Checker, f: impl FnOnce() -> R) -> R {
 /// The type aliases class-like `k` defines or imports, resolved (FileTypeMapper's `typeAliasesMap` of its members'
 /// PHPDocs): the NameScope of a member's PHPDoc tries them just before the templates.
 /// A trait's (`k`) in the context of `using`, the class using it.
-pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&ClassLikeMetadata>) -> Vec<(String, Type)> {
+pub(super) fn class_aliases(
+    c: &Checker,
+    k: &ClassLikeMetadata,
+    using: Option<&ClassLikeMetadata>,
+) -> Vec<(String, Type)> {
     if c.resolving_aliases.swap(true, Relaxed) {
         return Vec::new();
     }
     // (a PHPDoc without alias tags defines and imports none, so its scope need not be built)
-    let tagged = c.doc_before(k.span.file_id, k.span.start.offset).is_some_and(|(_, entry)| {
-        entry.tags.iter().any(|(tag, _)| ALIAS_TAGS.contains(&tag.as_str()))
-    });
+    let tagged = c
+        .doc_before(k.span.file_id, k.span.start.offset)
+        .is_some_and(|(_, entry)| {
+            entry
+                .tags
+                .iter()
+                .any(|(tag, _)| ALIAS_TAGS.contains(&tag.as_str()))
+        });
     if !tagged {
         c.resolving_aliases.store(false, Relaxed);
         return Vec::new();
@@ -379,7 +394,10 @@ pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&C
     let resolver = Resolver::new(c);
     let class = original_name(k);
     if let Some(doc) = using.and_then(|u| in_context(c, k, u)) {
-        resolver.docs.borrow_mut().insert(class.to_ascii_lowercase(), Some(Rc::new(doc)));
+        resolver
+            .docs
+            .borrow_mut()
+            .insert(class.to_ascii_lowercase(), Some(Rc::new(doc)));
     }
     let aliases = resolver.doc(&class).map_or_else(Vec::new, |doc| {
         let names = doc.names();
@@ -579,7 +597,12 @@ fn definition_context(r: &Resolver, k: &ClassLikeMetadata, display: &str, out: &
             _ => "Class",
         };
         let subject = format!("{kind} {display}");
-        out.extend(missing_types::parameter(r.c, &ty.0, &subject, &format!("type alias {name}")));
+        out.extend(missing_types::parameter(
+            r.c,
+            &ty.0,
+            &subject,
+            &format!("type alias {name}"),
+        ));
     }
 }
 
@@ -703,28 +726,32 @@ fn report(c: &mut Checker, at: Span, found: Vec<Found>) {
 /// LocalTypeAliasesRule on a class, interface or enum declaration.
 pub(super) fn class_like(c: &mut Checker, at: Span) {
     let mut found = Vec::new();
-    without_aliases(c, || with_classes(c, || {
-        let r = Resolver::new(c);
-        // (the walk entered the class)
-        let k = c.class_scope().expect("a class scope");
-        let display = original_name(k);
-        definition_context(&r, k, &display, &mut found);
-        if let Some(doc) = r.doc(&display) {
-            use_context(&r, &doc, &mut found);
-        }
-    }));
+    without_aliases(c, || {
+        with_classes(c, || {
+            let r = Resolver::new(c);
+            // (the walk entered the class)
+            let k = c.class_scope().expect("a class scope");
+            let display = original_name(k);
+            definition_context(&r, k, &display, &mut found);
+            if let Some(doc) = r.doc(&display) {
+                use_context(&r, &doc, &mut found);
+            }
+        });
+    });
     report(c, at, found);
 }
 
 /// LocalTypeTraitAliasesRule on a trait declaration (outside a class's context).
 pub(super) fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     let mut found = Vec::new();
-    without_aliases(c, || with_classes(c, || {
-        let r = Resolver::new(c);
-        if let Some(k) = c.codebase.get_class_like(name.as_bytes()) {
-            definition_context(&r, k, &original_name(k), &mut found);
-        }
-    }));
+    without_aliases(c, || {
+        with_classes(c, || {
+            let r = Resolver::new(c);
+            if let Some(k) = c.codebase.get_class_like(name.as_bytes()) {
+                definition_context(&r, k, &original_name(k), &mut found);
+            }
+        });
+    });
     report(c, at, found);
 }
 
@@ -744,17 +771,19 @@ fn in_context(c: &Checker, k: &ClassLikeMetadata, using: &ClassLikeMetadata) -> 
 pub(super) fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     let using = c.codebase.get_class_like(class.as_bytes());
     let mut found = Vec::new();
-    without_aliases(c, || with_classes(c, || {
-        let r = Resolver::new(c);
-        let k = c.codebase.get_class_like(name.as_bytes());
-        // (the walked class using the trait is in the codebase)
-        let doc = k.zip(using).and_then(|(k, u)| in_context(c, k, u));
-        if let Some(doc) = doc.map(Rc::new) {
-            r.docs
-                .borrow_mut()
-                .insert(doc.alias_class.to_ascii_lowercase(), Some(doc.clone()));
-            use_context(&r, &doc, &mut found);
-        }
-    }));
+    without_aliases(c, || {
+        with_classes(c, || {
+            let r = Resolver::new(c);
+            let k = c.codebase.get_class_like(name.as_bytes());
+            // (the walked class using the trait is in the codebase)
+            let doc = k.zip(using).and_then(|(k, u)| in_context(c, k, u));
+            if let Some(doc) = doc.map(Rc::new) {
+                r.docs
+                    .borrow_mut()
+                    .insert(doc.alias_class.to_ascii_lowercase(), Some(doc.clone()));
+                use_context(&r, &doc, &mut found);
+            }
+        });
+    });
     report(c, at, found);
 }

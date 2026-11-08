@@ -151,7 +151,11 @@ pub(super) fn check<'arena>(
                 None,
             );
         }
-        let counts = attribute.argument_list.as_ref().map(params::count_partial).unwrap_or_default();
+        let counts = attribute
+            .argument_list
+            .as_ref()
+            .map(params::count_partial)
+            .unwrap_or_default();
         params::check(
             c,
             &params::select(c, constructor.variants(), &counts),
@@ -201,8 +205,12 @@ fn attribute_flags(c: &Checker, class: &ClassLikeMetadata) -> Option<i64> {
     let mut appended = Vec::new();
     for (i, argument) in arguments.into_iter().enumerate() {
         match argument.name {
-            None => { reordered.insert(i, argument); }
-            Some(name) if name.as_bytes() == b"flags" => { reordered.entry(0).or_insert(argument); }
+            None => {
+                reordered.insert(i, argument);
+            }
+            Some(name) if name.as_bytes() == b"flags" => {
+                reordered.entry(0).or_insert(argument);
+            }
             _ => appended.push(argument),
         }
     }
@@ -213,7 +221,9 @@ fn attribute_flags(c: &Checker, class: &ClassLikeMetadata) -> Option<i64> {
         if (1..last).any(|i| !reordered.contains_key(&i)) {
             return None;
         }
-        let Some(argument) = reordered.get(&0) else { return Some(TARGET_ALL) };
+        let Some(argument) = reordered.get(&0) else {
+            return Some(TARGET_ALL);
+        };
         *argument
     };
     // the flags must be a ConstantIntegerType: Mago's scan type, with class and global constants resolved
@@ -390,7 +400,11 @@ pub(super) fn property_hook<'arena>(c: &mut Checker<'_, 'arena>, h: &PropertyHoo
     let lists = h.attribute_lists.as_slice();
     check(c, lists, TARGET_METHOD, "method");
     for list in lists {
-        if let Some(attribute) = list.attributes.iter().find(|a| name(c, a).eq_ignore_ascii_case("nodiscard")) {
+        if let Some(attribute) = list
+            .attributes
+            .iter()
+            .find(|a| name(c, a).eq_ignore_ascii_case("nodiscard"))
+        {
             let name = name(c, attribute);
             c.report_non_ignorable(
                 attribute,

@@ -187,10 +187,12 @@ fn match_regex(
     let only_optional_top_level_group = list.only_optional_top_level_group();
     let only_top_level_alternation = list.only_top_level_alternation();
 
-    let branches = (!matches_all && only_optional_top_level_group.is_none() && !m.contains_unmatched_as_null())
-        .then_some(only_top_level_alternation)
-        .flatten()
-        .map(|id| &walk.alternations[id]);
+    let branches = (!matches_all
+        && only_optional_top_level_group.is_none()
+        && !m.contains_unmatched_as_null())
+    .then_some(only_top_level_alternation)
+    .flatten()
+    .map(|id| &walk.alternations[id]);
     if list.has_duplicate_names_outside_of_alternation_branches(branches) {
         // which of the groups sharing a name sets the named offset is only modelled
         // for groups in different branches of a top level alternation
@@ -333,7 +335,15 @@ impl Matcher {
             );
             // marks are keyed by the index of the match that set them, matches without a mark are left out
             let by_match = self.matches_all && self.contains_pattern_order();
-            set_offset(&mut shape, Key::Str("MARK".into()), Value { by_match, ..Value::str(marks) }, true);
+            set_offset(
+                &mut shape,
+                Key::Str("MARK".into()),
+                Value {
+                    by_match,
+                    ..Value::str(marks)
+                },
+                true,
+            );
         }
         if self.matches_all && self.contains_set_order() {
             return Out::SetOrder(vec![shape], self.was_matched.yes());
@@ -566,7 +576,10 @@ impl GroupList {
 
     /// `hasDuplicateNamesOutsideOfAlternationBranches()`: groups sharing a name (allowed by (?J)) are only understood
     /// when each of them is in a different branch of the given alternation.
-    fn has_duplicate_names_outside_of_alternation_branches(&self, alternation: Option<&groups::Alternation>) -> bool {
+    fn has_duplicate_names_outside_of_alternation_branches(
+        &self,
+        alternation: Option<&groups::Alternation>,
+    ) -> bool {
         let mut by_name: Vec<(&str, Vec<i64>)> = Vec::new();
         for group in &self.0 {
             let Some(name) = &group.name else { continue };
@@ -576,19 +589,27 @@ impl GroupList {
             }
         }
         let branch_of = |id: i64| {
-            alternation?.combinations.iter().rev().find(|(_, ids)| ids.contains(&id)).map(|(branch, _)| *branch)
+            alternation?
+                .combinations
+                .iter()
+                .rev()
+                .find(|(_, ids)| ids.contains(&id))
+                .map(|(branch, _)| *branch)
         };
-        by_name.iter().filter(|(_, ids)| ids.len() > 1).any(|(_, ids)| {
-            let mut branches = Vec::new();
-            ids.iter().any(|id| match branch_of(*id) {
-                None => true,
-                Some(branch) if branches.contains(&branch) => true,
-                Some(branch) => {
-                    branches.push(branch);
-                    false
-                }
+        by_name
+            .iter()
+            .filter(|(_, ids)| ids.len() > 1)
+            .any(|(_, ids)| {
+                let mut branches = Vec::new();
+                ids.iter().any(|id| match branch_of(*id) {
+                    None => true,
+                    Some(branch) if branches.contains(&branch) => true,
+                    Some(branch) => {
+                        branches.push(branch);
+                        false
+                    }
+                })
             })
-        })
     }
 
     fn only_optional_top_level_group(&self) -> Option<Capturing> {
@@ -913,7 +934,8 @@ fn value_union(value: &Value) -> TUnion {
     }
     if value.by_match {
         return TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
-            TKeyedArray::new_with_parameters(Arc::new(get_int_range(Some(0), None)), Arc::new(ty)).with_non_empty(true),
+            TKeyedArray::new_with_parameters(Arc::new(get_int_range(Some(0), None)), Arc::new(ty))
+                .with_non_empty(true),
         )));
     }
     match value.list {

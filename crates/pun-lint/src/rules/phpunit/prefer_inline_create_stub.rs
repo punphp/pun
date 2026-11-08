@@ -216,8 +216,7 @@ impl Rule for PreferInlineCreateStub {
             for (i, text) in inserted[m].iter().enumerate() {
                 if !text.is_empty() {
                     let start = node_span(list.stmts[i]).start;
-                    let at = first_comment(ctx.source, list.before(ctx, i), start)
-                        .unwrap_or(start);
+                    let at = first_comment(ctx.source, list.before(ctx, i), start).unwrap_or(start);
                     edits.push(Edit::new(Span::new(at, at), text.clone()));
                 }
             }

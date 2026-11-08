@@ -36,7 +36,8 @@ impl Rule for PreferToBeIn {
             |values| match values {
                 [needle, haystack, strict]
                     if is_constant(strict, "true")
-                        && (type_is(ctx, haystack, Is::Array) == Trinary::Yes || type_is(ctx, haystack, Is::Iterable) == Trinary::Yes) =>
+                        && (type_is(ctx, haystack, Is::Array) == Trinary::Yes
+                            || type_is(ctx, haystack, Is::Iterable) == Trinary::Yes) =>
                 {
                     Some((*needle, vec![*haystack]))
                 }

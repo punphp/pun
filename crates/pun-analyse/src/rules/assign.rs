@@ -229,7 +229,9 @@ fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
         for (key, value, role) in items {
             // applyWrite(KIND_LIST) enters the value on itemScope. Only a written key's ExpressionResult
             // transfers that scope into the running result; an unkeyed item keeps the original scope.
-            if let Some(key) = key && let Some(identity) = c.assignment_key(value) {
+            if let Some(key) = key
+                && let Some(identity) = c.assignment_key(value)
+            {
                 c.assign.enter.insert(key.span(), identity);
             }
             mark_assigned(c, value, role);
@@ -345,7 +347,8 @@ pub(super) fn unset(c: &mut Checker, u: &Unset) {
 pub(super) fn array_append(c: &mut Checker, a: &ArrayAppend) {
     let span = a.span();
     if c.assign.assigned.contains(&span)
-        || c.assignment_key(&Expression::ArrayAppend(a.clone())).is_some_and(|key| c.assign.expressions.contains(&key))
+        || c.assignment_key(&Expression::ArrayAppend(a.clone()))
+            .is_some_and(|key| c.assign.expressions.contains(&key))
         || c.assign
             .virtual_targets
             .iter()
@@ -463,12 +466,24 @@ fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
                 let ty = c.phpstan_type(f.function)?;
                 let all = super::types::callables::acceptors(c, &ty, f.function.span(), &mut None)?;
                 let counts = super::params::count(&f.argument_list);
-                let acceptor = super::params::select_metadata(c, super::params::Variants { all, named: None }, &counts);
-                Some(acceptor.names.into_iter().zip(acceptor.by_ref).zip(acceptor.variadics.iter()).map(|((name, by_ref), variadic)| Param {
-                    name: name.into_bytes(),
-                    by_ref: by_ref == ByRef::CreatesNewVariable,
-                    variadic,
-                }).collect())
+                let acceptor = super::params::select_metadata(
+                    c,
+                    super::params::Variants { all, named: None },
+                    &counts,
+                );
+                Some(
+                    acceptor
+                        .names
+                        .into_iter()
+                        .zip(acceptor.by_ref)
+                        .zip(acceptor.variadics.iter())
+                        .map(|((name, by_ref), variadic)| Param {
+                            name: name.into_bytes(),
+                            by_ref: by_ref == ByRef::CreatesNewVariable,
+                            variadic,
+                        })
+                        .collect(),
+                )
             }
         },
         Callee::Method(m) => {
@@ -551,7 +566,10 @@ pub(super) fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
 }
 
 /// The argument [`function_virtual_assign()`] assigns.
-pub(super) fn virtual_assigned<'e, 'arena>(c: &Checker, call: &'e FunctionCall<'arena>) -> Option<&'e Expression<'arena>> {
+pub(super) fn virtual_assigned<'e, 'arena>(
+    c: &Checker,
+    call: &'e FunctionCall<'arena>,
+) -> Option<&'e Expression<'arena>> {
     let Expression::Identifier(id) = call.function else {
         return None;
     };
@@ -600,7 +618,12 @@ pub(super) fn arguments(c: &mut Checker, call: Callee) {
     };
     // AssignToByRefExprFromForeachRule reads the VariableAssignNode of every variable passed by reference
     let variables = !c.by_ref_foreach.is_empty()
-        && args.arguments.iter().any(|a| matches!(unparen(a.value()), Expression::Variable(Variable::Direct(_))));
+        && args.arguments.iter().any(|a| {
+            matches!(
+                unparen(a.value()),
+                Expression::Variable(Variable::Direct(_))
+            )
+        });
     if !variables && !args.arguments.iter().any(|a| by_ref_candidate(a.value())) {
         return;
     }
@@ -639,7 +662,9 @@ pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> BitSet {
         .map(|(i, arg)| {
             let param = match arg {
                 Argument::Named(a) => params.iter().find(|p| p.name == a.name.value),
-                Argument::Positional(_) => params.get(i).or_else(|| params.last().filter(|p| p.variadic)),
+                Argument::Positional(_) => params
+                    .get(i)
+                    .or_else(|| params.last().filter(|p| p.variadic)),
             };
             param.is_some_and(|p| p.by_ref)
         })
@@ -657,7 +682,9 @@ pub(super) fn by_ref_call_arguments(c: &Checker, call: Callee, args: &ArgumentLi
         .map(|(i, arg)| {
             let param = match arg {
                 Argument::Named(a) => params.iter().find(|p| p.name == a.name.value),
-                Argument::Positional(_) => params.get(i).or_else(|| params.last().filter(|p| p.variadic)),
+                Argument::Positional(_) => params
+                    .get(i)
+                    .or_else(|| params.last().filter(|p| p.variadic)),
             };
             param.is_some_and(|p| p.by_ref)
         })

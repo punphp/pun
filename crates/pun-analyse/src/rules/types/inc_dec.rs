@@ -14,7 +14,9 @@ pub(super) const IDENTIFIERS: &[&str] =
 /// The operand whose type the rule reads.
 pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
     match e {
-        Expression::UnaryPrefix(u) if u.operator.is_increment_or_decrement() => spans.push(u.operand.span()),
+        Expression::UnaryPrefix(u) if u.operator.is_increment_or_decrement() => {
+            spans.push(u.operand.span());
+        }
         Expression::UnaryPostfix(u) => spans.push(u.operand.span()),
         _ => {}
     }
@@ -29,14 +31,27 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
     }
     let dec = operator == "--";
     let version = c.php_version;
-    let deprecated_string = if dec { version >= 80300 } else { version >= 80500 };
+    let deprecated_string = if dec {
+        version >= 80300
+    } else {
+        version >= 80500
+    };
     let string = if deprecated_string {
-        Type::Intersection(vec![Type::String, Type::Accessory(Accessory::NumericString)])
+        Type::Intersection(vec![
+            Type::String,
+            Type::Accessory(Accessory::NumericString),
+        ])
     } else {
         Type::String
     };
     let object = |name: &str| Type::Object(name.into(), vec![], false);
-    let mut allowed = vec![Type::Float, Type::Int, string, object("SimpleXMLElement"), object("GMP")];
+    let mut allowed = vec![
+        Type::Float,
+        Type::Int,
+        string,
+        object("SimpleXMLElement"),
+        object("GMP"),
+    ];
     let deprecated_null = version >= 80300 && dec;
     if !deprecated_null {
         allowed.push(Type::Null);
@@ -57,7 +72,11 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
     let mut tips = Vec::new();
     let may = |is: fn(&Type) -> pun_phpstan::types::Tri| !is(&t).no();
     if deprecated_string && may(Type::is_string) {
-        let f = if dec { "str_decrement" } else { "str_increment" };
+        let f = if dec {
+            "str_decrement"
+        } else {
+            "str_increment"
+        };
         tips.push(format!(
             "Operator {operator} is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use {f}()."
         ));
@@ -66,16 +85,28 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
         tips.push(format!("Operator {operator} is deprecated for null."));
     }
     if deprecated_bool && may(Type::is_boolean) {
-        let bool = declared::with_classes(c, || intersect(vec![t.clone(), Type::Bool]).describe(Level::Value));
+        let bool = declared::with_classes(c, || {
+            intersect(vec![t.clone(), Type::Bool]).describe(Level::Value)
+        });
         tips.push(format!("Operator {operator} is deprecated for {bool}."));
     }
     let tip = match tips.as_slice() {
         [] => None,
         [one] => Some(one.clone()),
-        many => Some(many.iter().map(|t| format!("• {t}")).collect::<Vec<_>>().join("\n")),
+        many => Some(
+            many.iter()
+                .map(|t| format!("• {t}"))
+                .collect::<Vec<_>>()
+                .join("\n"),
+        ),
     };
     let described = declared::with_classes(c, || t.describe(Level::Value));
-    c.report(operand, &format!("{kind}.type"), format!("Cannot use {operator} on {described}."), tip.as_deref());
+    c.report(
+        operand,
+        &format!("{kind}.type"),
+        format!("Cannot use {operator} on {described}."),
+        tip.as_deref(),
+    );
 }
 
 fn check(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
@@ -89,7 +120,12 @@ fn check(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
         types(c, operand, kind, operator);
         return;
     }
-    c.report(operand, &format!("{kind}.expr"), format!("Cannot use {operator} on a non-variable."), None);
+    c.report(
+        operand,
+        &format!("{kind}.expr"),
+        format!("Cannot use {operator} on a non-variable."),
+        None,
+    );
 }
 
 pub(in super::super) fn prefix(c: &mut Checker, u: &UnaryPrefix) {

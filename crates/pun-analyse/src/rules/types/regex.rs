@@ -18,7 +18,11 @@ fn name(c: &Checker, call: &FunctionCall) -> Option<String> {
     let Expression::Identifier(id) = call.function else {
         return None;
     };
-    Some(c.written_or_resolved(id).trim_start_matches('\\').to_ascii_lowercase())
+    Some(
+        c.written_or_resolved(id)
+            .trim_start_matches('\\')
+            .to_ascii_lowercase(),
+    )
 }
 
 fn first_argument<'a, 'arena>(call: &'a FunctionCall<'arena>) -> Option<&'a Expression<'arena>> {
@@ -30,7 +34,13 @@ pub(super) fn typed(call: &FunctionCall, out: &mut Vec<Span>) {
     let Expression::Identifier(id) = call.function else {
         return;
     };
-    if !id.value().to_ascii_lowercase().rsplit(|b| *b == b'\\').next().is_some_and(|n| n.starts_with(b"preg_")) {
+    if !id
+        .value()
+        .to_ascii_lowercase()
+        .rsplit(|b| *b == b'\\')
+        .next()
+        .is_some_and(|n| n.starts_with(b"preg_"))
+    {
         return;
     }
     for (i, a) in call.argument_list.arguments.iter().enumerate() {
@@ -67,12 +77,23 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
         return;
     }
     // (the arguments are not empty)
-    let Some(pattern) = first_argument(call) else { return };
+    let Some(pattern) = first_argument(call) else {
+        return;
+    };
     let mut patterns: Vec<Vec<u8>> = Vec::new();
-    let atoms: Vec<TAtomic> = c.type_of(pattern).map(|t| t.types.to_vec()).unwrap_or_default();
+    let atoms: Vec<TAtomic> = c
+        .type_of(pattern)
+        .map(|t| t.types.to_vec())
+        .unwrap_or_default();
     if matches!(
         name.as_str(),
-        "preg_match" | "preg_match_all" | "preg_split" | "preg_grep" | "preg_replace" | "preg_replace_callback" | "preg_filter"
+        "preg_match"
+            | "preg_match_all"
+            | "preg_split"
+            | "preg_grep"
+            | "preg_replace"
+            | "preg_replace_callback"
+            | "preg_filter"
     ) {
         let strings = if matches!(unparen(pattern), Expression::Binary(b) if matches!(b.operator, BinaryOperator::StringConcat(_)))
         {
@@ -82,7 +103,10 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
         };
         patterns.extend(strings);
     }
-    if matches!(name.as_str(), "preg_replace" | "preg_replace_callback" | "preg_filter") {
+    if matches!(
+        name.as_str(),
+        "preg_replace" | "preg_replace_callback" | "preg_filter"
+    ) {
         for a in &atoms {
             if let TAtomic::Array(arr) = a {
                 for v in values(arr) {
@@ -97,7 +121,12 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
                 && k.parameters.is_none()
                 && let Some(items) = &k.known_items
             {
-                patterns.extend(items.keys().filter_map(ArrayKey::get_string).map(<[u8]>::to_vec));
+                patterns.extend(
+                    items
+                        .keys()
+                        .filter_map(ArrayKey::get_string)
+                        .map(<[u8]>::to_vec),
+                );
             }
         }
     }
@@ -117,8 +146,16 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
 /// The values of a constant array (`getConstantArrays()`).
 fn values(a: &TArray) -> Vec<&mago_codex::ttype::union::TUnion> {
     match a {
-        TArray::List(l) if l.element_type.is_never() => l.known_elements.iter().flat_map(|k| k.values().map(|(_, v)| v)).collect(),
-        TArray::Keyed(k) if k.parameters.is_none() => k.known_items.iter().flat_map(|k| k.values().map(|(_, v)| v)).collect(),
+        TArray::List(l) if l.element_type.is_never() => l
+            .known_elements
+            .iter()
+            .flat_map(|k| k.values().map(|(_, v)| v))
+            .collect(),
+        TArray::Keyed(k) if k.parameters.is_none() => k
+            .known_items
+            .iter()
+            .flat_map(|k| k.values().map(|(_, v)| v))
+            .collect(),
         _ => Vec::new(),
     }
 }
@@ -139,14 +176,17 @@ fn constant_strings(c: &Checker, e: &Expression) -> Vec<Vec<u8>> {
         return Vec::new();
     };
     let strings = atom_strings(t);
-    if strings.len() == t.types.len() { strings } else { Vec::new() }
+    if strings.len() == t.types.len() {
+        strings
+    } else {
+        Vec::new()
+    }
 }
 
 /// `RegexExpressionHelper::resolvePatternConcat()`: a `preg_quote()` call stands for `(?:.*)`.
 fn concat(c: &Checker, e: &Expression) -> Vec<Vec<u8>> {
     match unparen(e) {
-        Expression::Call(Call::Function(f))
-            if matches!(f.function, Expression::Identifier(id) if id.value().rsplit(|b| *b == b'\\').next().is_some_and(|n| n.eq_ignore_ascii_case(b"preg_quote"))) =>
+        Expression::Call(Call::Function(f)) if matches!(f.function, Expression::Identifier(id) if id.value().rsplit(|b| *b == b'\\').next().is_some_and(|n| n.eq_ignore_ascii_case(b"preg_quote"))) =>
         {
             vec![b"(?:.*)".to_vec()]
         }
@@ -166,11 +206,18 @@ fn concat(c: &Checker, e: &Expression) -> Vec<Vec<u8>> {
 
 /// `ArgumentsNormalizer::reorderFuncArguments()`'s argument for parameter `index` named `parameter`.
 // ponytail: positional or named, not unpacked arguments
-pub(in crate::rules) fn argument<'a, 'arena>(call: &'a FunctionCall<'arena>, index: usize, parameter: &str) -> Option<&'a Expression<'arena>> {
+pub(in crate::rules) fn argument<'a, 'arena>(
+    call: &'a FunctionCall<'arena>,
+    index: usize,
+    parameter: &str,
+) -> Option<&'a Expression<'arena>> {
     let args = &call.argument_list.arguments;
     args.iter()
         .find(|a| matches!(a, Argument::Named(n) if n.name.value == parameter.as_bytes()))
-        .or_else(|| args.get(index).filter(|a| matches!(a, Argument::Positional(p) if p.ellipsis.is_none())))
+        .or_else(|| {
+            args.get(index)
+                .filter(|a| matches!(a, Argument::Positional(p) if p.ellipsis.is_none()))
+        })
         .map(|a| a.value())
 }
 
@@ -178,7 +225,13 @@ pub(in crate::rules) fn argument<'a, 'arena>(call: &'a FunctionCall<'arena>, ind
 fn quoting(c: &mut Checker, call: &FunctionCall, name: &str) {
     if !matches!(
         name,
-        "preg_match" | "preg_match_all" | "preg_filter" | "preg_grep" | "preg_replace" | "preg_replace_callback" | "preg_split"
+        "preg_match"
+            | "preg_match_all"
+            | "preg_filter"
+            | "preg_grep"
+            | "preg_replace"
+            | "preg_replace_callback"
+            | "preg_split"
     ) {
         return;
     }
@@ -187,13 +240,17 @@ fn quoting(c: &mut Checker, call: &FunctionCall, name: &str) {
     };
     // preg_replace, preg_replace_callback and preg_filter also take an array of patterns, each one in its own right
     // (another function's array pattern is no concatenation, so it is skipped below)
-    let patterns: Vec<&Expression> = if matches!(pattern, Expression::Array(_) | Expression::LegacyArray(_))
-        && matches!(name, "preg_filter" | "preg_replace" | "preg_replace_callback")
-    {
-        items(pattern)
-    } else {
-        vec![pattern]
-    };
+    let patterns: Vec<&Expression> =
+        if matches!(pattern, Expression::Array(_) | Expression::LegacyArray(_))
+            && matches!(
+                name,
+                "preg_filter" | "preg_replace" | "preg_replace_callback"
+            )
+        {
+            items(pattern)
+        } else {
+            vec![pattern]
+        };
     for pattern in patterns {
         if let Expression::Binary(concat) = unparen(pattern)
             && matches!(concat.operator, BinaryOperator::StringConcat(_))
@@ -206,10 +263,14 @@ fn quoting(c: &mut Checker, call: &FunctionCall, name: &str) {
 /// The values of an array literal's items (an unpacked one too, as `$item->value`).
 fn items<'a, 'arena>(e: &'a Expression<'arena>) -> Vec<&'a Expression<'arena>> {
     let elements = match unparen(e) {
-        Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. }) => elements,
+        Expression::Array(Array { elements, .. })
+        | Expression::LegacyArray(LegacyArray { elements, .. }) => elements,
         _ => return vec![],
     };
-    elements.iter().filter_map(ArrayElement::get_value).collect()
+    elements
+        .iter()
+        .filter_map(ArrayElement::get_value)
+        .collect()
 }
 
 fn quote_delimiters(c: &mut Checker, concat: &Binary) {
@@ -220,8 +281,10 @@ fn quote_delimiters(c: &mut Checker, concat: &Binary) {
     {
         left = b.lhs;
     }
-    let delimiters: Vec<char> =
-        constant_strings(c, left).iter().filter_map(|s| String::from_utf8_lossy(s).trim_start().chars().next()).collect();
+    let delimiters: Vec<char> = constant_strings(c, left)
+        .iter()
+        .filter_map(|s| String::from_utf8_lossy(s).trim_start().chars().next())
+        .collect();
     if !delimiters.is_empty() {
         validate(c, concat, &delimiters);
     }
@@ -231,14 +294,14 @@ fn quote_delimiters(c: &mut Checker, concat: &Binary) {
 fn validate(c: &mut Checker, concat: &Binary, delimiters: &[char]) {
     for side in [concat.lhs, concat.rhs] {
         match unparen(side) {
-            Expression::Call(Call::Function(f))
-                if matches!(f.function, Expression::Identifier(id) if id.value().strip_prefix(b"\\").unwrap_or(id.value()).eq_ignore_ascii_case(b"preg_quote")) =>
-            {
+            Expression::Call(Call::Function(f)) if matches!(f.function, Expression::Identifier(id) if id.value().strip_prefix(b"\\").unwrap_or(id.value()).eq_ignore_ascii_case(b"preg_quote")) => {
                 if let Some(message) = pregquote(c, f, delimiters) {
                     c.report(f.span(), "argument.invalidPregQuote", message, None);
                 }
             }
-            Expression::Binary(b) if matches!(b.operator, BinaryOperator::StringConcat(_)) => validate(c, b, delimiters),
+            Expression::Binary(b) if matches!(b.operator, BinaryOperator::StringConcat(_)) => {
+                validate(c, b, delimiters);
+            }
             _ => {}
         }
     }
@@ -251,7 +314,11 @@ fn default_escaped(d: char) -> bool {
 
 /// `validatePregQuote()`.
 fn pregquote(c: &Checker, call: &FunctionCall, delimiters: &[char]) -> Option<String> {
-    let delimiters: Vec<char> = delimiters.iter().copied().filter(|d| !default_escaped(*d)).collect();
+    let delimiters: Vec<char> = delimiters
+        .iter()
+        .copied()
+        .filter(|d| !default_escaped(*d))
+        .collect();
     if delimiters.is_empty() {
         return None;
     }
@@ -261,12 +328,19 @@ fn pregquote(c: &Checker, call: &FunctionCall, delimiters: &[char]) -> Option<St
             _ => "Call to preg_quote() is missing delimiter parameter to be effective.".to_string(),
         });
     };
-    constant_strings(c, quote).iter().map(|q| String::from_utf8_lossy(q).into_owned()).find_map(|q| {
-        // a delimiter of more than one character is never escaped by default
-        let escaped = q.chars().count() == 1 && q.chars().all(default_escaped);
-        (!escaped && !delimiters.iter().any(|d| q == d.to_string())).then(|| match delimiters.as_slice() {
-            [d] => format!("Call to preg_quote() uses invalid delimiter {q} while pattern uses {d}."),
-            _ => format!("Call to preg_quote() uses invalid delimiter {q}."),
+    constant_strings(c, quote)
+        .iter()
+        .map(|q| String::from_utf8_lossy(q).into_owned())
+        .find_map(|q| {
+            // a delimiter of more than one character is never escaped by default
+            let escaped = q.chars().count() == 1 && q.chars().all(default_escaped);
+            (!escaped && !delimiters.iter().any(|d| q == d.to_string())).then(|| {
+                match delimiters.as_slice() {
+                    [d] => format!(
+                        "Call to preg_quote() uses invalid delimiter {q} while pattern uses {d}."
+                    ),
+                    _ => format!("Call to preg_quote() uses invalid delimiter {q}."),
+                }
+            })
         })
-    })
 }

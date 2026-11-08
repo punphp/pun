@@ -89,9 +89,8 @@ impl Rule for PreferStubVar {
                 // the format-preserving printer reprints the changed members only, the separators stay as written
                 let start = members[0].as_ptr() as usize;
                 let last = members[members.len() - 1];
-                let full = &doc.text_all()[start - doc.text_all().as_ptr() as usize..][..last.as_ptr() as usize
-                    + last.len()
-                    - start];
+                let full = &doc.text_all()[start - doc.text_all().as_ptr() as usize..]
+                    [..last.as_ptr() as usize + last.len() - start];
                 let mut out = String::new();
                 let mut at = 0;
                 for (member, new) in members.iter().zip(&printed) {

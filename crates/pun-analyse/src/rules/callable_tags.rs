@@ -27,8 +27,20 @@ pub(super) fn function_like(c: &mut Checker, at: Span, params: &FunctionLikePara
     // `resolveParamImmediatelyInvokedCallable()`: by name, a later tag keeping an earlier one's place
     let mut invoked: Vec<(String, bool)> = Vec::new();
     for (names, immediately) in [
-        (["@param-immediately-invoked-callable", "@phpstan-param-immediately-invoked-callable"], true),
-        (["@param-later-invoked-callable", "@phpstan-param-later-invoked-callable"], false),
+        (
+            [
+                "@param-immediately-invoked-callable",
+                "@phpstan-param-immediately-invoked-callable",
+            ],
+            true,
+        ),
+        (
+            [
+                "@param-later-invoked-callable",
+                "@phpstan-param-later-invoked-callable",
+            ],
+            false,
+        ),
     ] {
         for name in names {
             for tag in tags.iter().filter(|t| t.name == name) {

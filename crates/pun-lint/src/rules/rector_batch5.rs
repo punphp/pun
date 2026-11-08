@@ -309,7 +309,9 @@ pub(crate) fn method_without_params(ctx: &crate::Context<'_>, method: &Method<'_
 }
 
 /// The statements of the namespace that holds the node `ancestors` leads to, or of the file without one.
-pub(crate) fn scope_statements<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<String>, Vec<&'a Statement<'a>>) {
+pub(crate) fn scope_statements<'a>(
+    ancestors: &[Node<'a, 'a>],
+) -> (Option<String>, Vec<&'a Statement<'a>>) {
     for node in ancestors.iter().rev() {
         if let Node::Namespace(ns) = node {
             let name = ns
@@ -396,7 +398,11 @@ pub(crate) fn imported_function(ancestors: &[Node<'_, '_>], local: &[u8]) -> Opt
 
 /// The function (`function`) or constant a `use function` / `use const` import of the scope gives `local`: function
 /// names compare without case, constant names with it.
-pub(crate) fn imported_member(ancestors: &[Node<'_, '_>], local: &[u8], function: bool) -> Option<String> {
+pub(crate) fn imported_member(
+    ancestors: &[Node<'_, '_>],
+    local: &[u8],
+    function: bool,
+) -> Option<String> {
     let wanted = |t: &UseType<'_>| {
         if function {
             t.is_function()
@@ -622,12 +628,14 @@ pub(crate) fn remove_items(
 
 /// [`remove_items`] for the statements of a list, with the empty list printed as [`remove`] prints it, and a
 /// trailing `Nop` kept as the last item.
-pub(crate) fn remove_statements(ctx: &crate::Context<'_>, list: &List<'_>, removed: &[bool]) -> Vec<Edit> {
+pub(crate) fn remove_statements(
+    ctx: &crate::Context<'_>,
+    list: &List<'_>,
+    removed: &[bool],
+) -> Vec<Edit> {
     let source = ctx.source;
     let mut spans: Vec<Span> = list.stmts.iter().map(|s| node_span(*s)).collect();
-    let mut froms: Vec<usize> = (0..list.stmts.len())
-        .map(|i| list.before(ctx, i))
-        .collect();
+    let mut froms: Vec<usize> = (0..list.stmts.len()).map(|i| list.before(ctx, i)).collect();
     let mut flags = removed.to_vec();
     if let Some(nop) = list.nop_span(source) {
         froms.push(spans.last().map_or(list.inner.start, |s| s.end));

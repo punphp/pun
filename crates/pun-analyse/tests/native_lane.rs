@@ -1137,8 +1137,8 @@ function example(bool $more, bool $halt): void {
 
 #[test]
 fn if_certainty_tips_distinguish_documented_and_native_constants() {
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/native-conditions");
+    let root =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/native-conditions");
     let expected: serde_json::Value =
         serde_json::from_str(include_str!("fixtures/native-conditions/expected.json")).unwrap();
     let mut project = pun_analyse::Project::new(vec![root.join("conditions.php")], vec![]);
@@ -1147,7 +1147,15 @@ fn if_certainty_tips_distinguish_documented_and_native_constants() {
     let mut actual: Vec<_> = pun_analyse::run(&project)
         .unwrap()
         .into_iter()
-        .map(|error| (error.line, error.identifier, error.message, error.tip, error.can_be_ignored))
+        .map(|error| {
+            (
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
         .collect();
     actual.sort();
     assert_eq!(serde_json::to_value(actual).unwrap(), expected);

@@ -7,8 +7,8 @@ use mago_syntax::cst::{Construct, Expression, Literal, MethodCall, Node, NodeKin
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    func_call, has_not, identifier, is_expect_chain, is_name, matcher_subject, set_call_arguments,
-    subject_holder, type_is, Is, Trinary,
+    Is, Trinary, func_call, has_not, identifier, is_expect_chain, is_name, matcher_subject,
+    set_call_arguments, subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};

@@ -16,15 +16,18 @@ use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
-use mago_syntax::cst::{Access, ArrayAccess, ClassLikeMemberSelector, ArrayElement, Expression, Literal, MethodBody, Modifier, Node, NodeKind, Variable};
+use mago_syntax::cst::{
+    Access, ArrayAccess, ArrayElement, ClassLikeMemberSelector, Expression, Literal, MethodBody,
+    Modifier, Node, NodeKind, Variable,
+};
 use pun_problem::Safety;
 
+use super::add_param_type_property::is_legal;
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
 use super::names::resolve_class_name;
 use super::param::{Flow, add_hint, param_declaration, traverse};
-use super::add_param_type_property::is_legal;
 use crate::rules::class_method::type_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -65,9 +68,14 @@ impl Rule for AddParamTypeDimFetchKey {
         if !matches!(in_class, Some(Node::Class(_) | Node::AnonymousClass(_))) {
             return;
         }
-        let MethodBody::Concrete(body) = &method.body else { return };
+        let MethodBody::Concrete(body) = &method.body else {
+            return;
+        };
         let facts = facts(ctx);
-        if !method.modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))
+        if !method
+            .modifiers
+            .iter()
+            .any(|m| matches!(m, Modifier::Private(_)))
             && class_scope(ancestors)
                 .is_some_and(|scope| has_parent_class_method(&facts, &scope, method.name.value))
         {
@@ -93,7 +101,9 @@ impl Rule for AddParamTypeDimFetchKey {
                 continue;
             }
             let class = class_scope(ancestors).and_then(|scope| scope.name);
-            let Some((key, order)) = last_key_type(&facts, class.as_deref(), ancestors, body, &fetches) else {
+            let Some((key, order)) =
+                last_key_type(&facts, class.as_deref(), ancestors, body, &fetches)
+            else {
                 continue;
             };
             // a constant array's `int` and `string` keys keep their order (PHPStan's union of them is not sorted)
@@ -213,18 +223,25 @@ fn declared_property_type<'f>(
     expr: &Expression<'_>,
 ) -> Option<&'f TUnion> {
     let class_of = |object: &Expression<'_>| {
-        let [TAtomic::Object(TObject::Named(owner))] = type_of(facts, object)?.types.as_ref() else { return None };
+        let [TAtomic::Object(TObject::Named(owner))] = type_of(facts, object)?.types.as_ref()
+        else {
+            return None;
+        };
         Some(String::from_utf8_lossy(owner.name.as_bytes()).into_owned())
     };
     let (class, name) = match unparenthesize(expr) {
         // `$this->items`, or the property of another object of a class
         Expression::Access(Access::Property(fetch)) => {
-            let ClassLikeMemberSelector::Identifier(name) = &fetch.property else { return None };
+            let ClassLikeMemberSelector::Identifier(name) = &fetch.property else {
+                return None;
+            };
             (class_of(fetch.object)?, [b"$", name.value].concat())
         }
         // `static::$items`, `self::$items`, `Other::$items`, `$object::$items`
         Expression::Access(Access::StaticProperty(fetch)) => {
-            let Variable::Direct(v) = &fetch.property else { return None };
+            let Variable::Direct(v) = &fetch.property else {
+                return None;
+            };
             let owner = match unparenthesize(fetch.class) {
                 Expression::Static(_) | Expression::Self_(_) => class.to_string(),
                 Expression::Identifier(id) => resolve_class_name(ancestors, id),
@@ -234,7 +251,9 @@ fn declared_property_type<'f>(
         }
         _ => return None,
     };
-    let property = facts.documented().get_declaring_property(class.as_bytes(), &name)?;
+    let property = facts
+        .documented()
+        .get_declaring_property(class.as_bytes(), &name)?;
     property.type_metadata.as_ref().map(|t| &t.type_union)
 }
 
@@ -246,8 +265,11 @@ fn key_type(array: &TArray) -> Option<Option<TUnion>> {
         TArray::Keyed(keyed) => match (&keyed.known_items, &keyed.parameters) {
             (None, Some(_)) if keyed.non_empty => None,
             (None, Some((key, _))) => Some(
-                (!key.types.iter().any(|a| matches!(a, TAtomic::Mixed(_) | TAtomic::Scalar(TScalar::ArrayKey))))
-                    .then(|| (**key).clone()),
+                (!key
+                    .types
+                    .iter()
+                    .any(|a| matches!(a, TAtomic::Mixed(_) | TAtomic::Scalar(TScalar::ArrayKey))))
+                .then(|| (**key).clone()),
             ),
             (Some(items), None) => {
                 let mut kinds: Vec<TAtomic> = Vec::new();
@@ -265,7 +287,9 @@ fn key_type(array: &TArray) -> Option<Option<TUnion>> {
             _ => None,
         },
         TArray::List(list) if list.non_empty && list.known_elements.is_none() => None,
-        TArray::List(_) => Some(Some(TUnion::from_vec(vec![TAtomic::Scalar(TScalar::int())]))),
+        TArray::List(_) => Some(Some(TUnion::from_vec(vec![
+            TAtomic::Scalar(TScalar::int()),
+        ]))),
     }
 }
 

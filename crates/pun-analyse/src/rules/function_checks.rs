@@ -53,7 +53,9 @@ pub(super) fn typed_expressions<'arena>(
                 "printf" | "sprintf" => &[0],
                 "sscanf" | "fscanf" => &[1],
                 "vprintf" | "vsprintf" => &[0, 1],
-                "filter_var" | "filter_input" | "filter_var_array" | "filter_input_array" => &[0, 1, 2, 3],
+                "filter_var" | "filter_input" | "filter_var_array" | "filter_input_array" => {
+                    &[0, 1, 2, 3]
+                }
                 _ => &[],
             };
             self.spans.extend(
@@ -119,18 +121,38 @@ fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bo
         return;
     }
     let constant = |name: &str| {
-        c.builtins.constants.get(name).and_then(|v| v.parse::<i64>().ok()).expect("a PHP 8.5 filter constant")
+        c.builtins
+            .constants
+            .get(name)
+            .and_then(|v| v.parse::<i64>().ok())
+            .expect("a PHP 8.5 filter constant")
     };
-    let (null, throw) = (constant("FILTER_NULL_ON_FAILURE"), constant("FILTER_THROW_ON_FAILURE"));
+    let (null, throw) = (
+        constant("FILTER_NULL_ON_FAILURE"),
+        constant("FILTER_THROW_ON_FAILURE"),
+    );
     let flags: Vec<&Expression> = match options {
-        Expression::Array(Array { elements, .. }) if per_key => elements.iter().filter_map(ArrayElement::get_value).collect(),
-        _ if per_key && c.type_of(options).is_some_and(|t| !t.types.iter().any(|t| matches!(t, TAtomic::Array(_) | TAtomic::Mixed(_)))) => vec![],
+        Expression::Array(Array { elements, .. }) if per_key => elements
+            .iter()
+            .filter_map(ArrayElement::get_value)
+            .collect(),
+        _ if per_key
+            && c.type_of(options).is_some_and(|t| {
+                !t.types
+                    .iter()
+                    .any(|t| matches!(t, TAtomic::Array(_) | TAtomic::Mixed(_)))
+            }) =>
+        {
+            vec![]
+        }
         _ => vec![options],
     };
     for flags in flags {
         // hasFlag(): yes when every constant value has the flag, maybe without constant values
         if let Some(values) = flag_values(c, flags)
-            && values.iter().all(|v| v & null == null && v & throw == throw)
+            && values
+                .iter()
+                .all(|v| v & null == null && v & throw == throw)
         {
             c.report(
                 call,

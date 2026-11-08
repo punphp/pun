@@ -6,7 +6,8 @@
 
 use mago_syntax::cst::{
     Access, ArgumentList, ArrayElement, Call, ClassLikeConstantSelector, ClassLikeMemberSelector,
-    CompositeString, Expression, StringPart, Literal, MethodCall, Node, NodeKind, PropertyAccess, TokenSeparatedSequence,
+    CompositeString, Expression, Literal, MethodCall, Node, NodeKind, PropertyAccess, StringPart,
+    TokenSeparatedSequence,
 };
 use pun_problem::{Safety, Span};
 
@@ -25,8 +26,15 @@ pub struct PreferChainedExpect {
 }
 
 /// `SUBJECT_TRANSFORMING_METHODS`: a chain with one of these is joined to the next statement with `->and()`.
-const SUBJECT_TRANSFORMING_METHODS: [&[u8]; 7] =
-    [b"and", b"json", b"each", b"match", b"sequence", b"unless", b"when"];
+const SUBJECT_TRANSFORMING_METHODS: [&[u8]; 7] = [
+    b"and",
+    b"json",
+    b"each",
+    b"match",
+    b"sequence",
+    b"unless",
+    b"when",
+];
 
 /// An expression of the chain being built: an old method call kept whole, or a node Rector makes.
 #[derive(Clone)]
@@ -260,7 +268,9 @@ fn is_side_effect_free(expr: &Expression<'_>) -> bool {
         })
     };
     match unparenthesize(expr) {
-        Expression::CompositeString(CompositeString::Interpolated(s)) => parts_free(s.parts.as_slice()),
+        Expression::CompositeString(CompositeString::Interpolated(s)) => {
+            parts_free(s.parts.as_slice())
+        }
         Expression::CompositeString(CompositeString::Document(d)) => parts_free(d.parts.as_slice()),
         Expression::Variable(_)
         | Expression::Literal(_)

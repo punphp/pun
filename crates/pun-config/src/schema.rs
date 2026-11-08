@@ -681,8 +681,12 @@ pub(crate) fn lint(path: &Path, t: LintToml, files: &Files, gates: &Gates) -> Re
     if !t.sets.is_empty() || !groups.is_empty() {
         // a rule without a native port (`ported = false`, one upstream added since the last port) is in no set
         // or group Pun runs
-        let ported = |e: &toml::Value| e.get("ported").and_then(toml::Value::as_bool) != Some(false);
-        for (id, e) in rules().iter().filter(|(id, e)| id.starts_with("lint/") && ported(e)) {
+        let ported =
+            |e: &toml::Value| e.get("ported").and_then(toml::Value::as_bool) != Some(false);
+        for (id, e) in rules()
+            .iter()
+            .filter(|(id, e)| id.starts_with("lint/") && ported(e))
+        {
             let group = group_of(id);
             let level = match groups.get(group) {
                 Some(l) => *l,

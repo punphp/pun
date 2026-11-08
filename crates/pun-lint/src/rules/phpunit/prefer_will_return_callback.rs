@@ -578,11 +578,8 @@ fn print_closure(
                     ));
                 }
                 Change::Throw(throw) => {
-                    let before = previous_token_end(
-                        ctx,
-                        body.left_brace.end.offset as usize,
-                        r_span.start,
-                    );
+                    let before =
+                        previous_token_end(ctx, body.left_brace.end.offset as usize, r_span.start);
                     let start = first_comment(source, before, r_span.start).unwrap_or(r_span.start);
                     let printed = reindent(source, node_span(*throw), &cut, "");
                     edits.push(Edit::new(

@@ -82,8 +82,7 @@ impl Rule for AddPropertyTypeSetup {
                 {
                     let class = doc_class(&view.path, written);
                     if !class.eq_ignore_ascii_case(MOCK_OBJECT)
-                        && let Some(e) =
-                            var.set(ctx.source, &format!("\\{MOCK_OBJECT}&\\{class}"))
+                        && let Some(e) = var.set(ctx.source, &format!("\\{MOCK_OBJECT}&\\{class}"))
                     {
                         edits.extend(e);
                     }

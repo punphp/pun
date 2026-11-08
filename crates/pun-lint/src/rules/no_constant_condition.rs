@@ -64,9 +64,8 @@ impl Rule for NoConstantCondition {
         let indent = line_indent(source, span.start);
         // `$node->getComments() !== []`: comments before the `if`, which php-parser keeps with it
         let commented = list.with_comments(ctx, index).start != span.start;
-        let dead = view.stmts.is_empty()
-            && !commented
-            && !has_side_effect(ancestors, view.condition);
+        let dead =
+            view.stmts.is_empty() && !commented && !has_side_effect(ancestors, view.condition);
         // A trailing else would run when the negated if condition is true, which the original empty if body never
         // did, so an `if` with a kept `elseif` and an `else` keeps its condition
         let edits = if !dead || (!kept.is_empty() && else_.is_some()) {
@@ -76,10 +75,7 @@ impl Rule for NoConstantCondition {
             if elseifs_changed && kept.is_empty() {
                 // an emptied `elseifs` list: php-parser prints the `if` anew
                 let condition = &source[range(unparenthesize(view.condition))];
-                let mut text = format!(
-                    "if ({condition}) {}",
-                    braced(ctx, &view.stmts, indent)
-                );
+                let mut text = format!("if ({condition}) {}", braced(ctx, &view.stmts, indent));
                 if let Some((else_list, else_span)) = else_ {
                     text.push(' ');
                     text.push_str(&else_text(ctx, &view, else_list, *else_span, indent));
@@ -155,7 +151,13 @@ fn elseif_text(ctx: &crate::Context<'_>, view: &IfView<'_>, i: usize, indent: &s
 }
 
 /// [`elseif_text`] for the `else`.
-fn else_text(ctx: &crate::Context<'_>, view: &IfView<'_>, list: &List<'_>, span: Span, indent: &str) -> String {
+fn else_text(
+    ctx: &crate::Context<'_>,
+    view: &IfView<'_>,
+    list: &List<'_>,
+    span: Span,
+    indent: &str,
+) -> String {
     let source = ctx.source;
     if view.colon {
         return format!("else {}", braced(ctx, list, indent));

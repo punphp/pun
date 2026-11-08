@@ -37,7 +37,9 @@ fn class_use_items<'a>(
             },
             _ => (None, None),
         };
-        let plain = sequence.into_iter().flat_map(|s| s.items.iter().map(|i| (None, i)));
+        let plain = sequence
+            .into_iter()
+            .flat_map(|s| s.items.iter().map(|i| (None, i)));
         let grouped = list.into_iter().flat_map(|l| {
             (l.items.iter())
                 .filter(|i| i.r#type.is_none())

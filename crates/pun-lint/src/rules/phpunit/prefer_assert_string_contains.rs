@@ -86,7 +86,10 @@ impl Rule for PreferAssertStringContains {
             // Upstream renames the call before it finds no function call to take the arguments from, and returns
             // null: Rector 2.8.4 prints a file only when a rule reported a change there, so the rename stays only
             // beside a reported one (Pun counts this rule's own).
-            if !ancestors.first().is_some_and(|program| has_reported_change(*program)) {
+            if !ancestors
+                .first()
+                .is_some_and(|program| has_reported_change(*program))
+            {
                 return;
             }
             out.push(Report::fixed(

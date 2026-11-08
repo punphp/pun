@@ -132,7 +132,10 @@ fn dynamic_call_on_anonymous_class() {
         .check(Path::new("f.php"), code)
         .unwrap();
     let messages: Vec<&str> = found.iter().map(|p| p.message.as_str()).collect();
-    assert_eq!(messages, ["Variable method call on class@anonymous/f.php:4."]);
+    assert_eq!(
+        messages,
+        ["Variable method call on class@anonymous/f.php:4."]
+    );
 }
 
 /// A rule called on every node, not only the kinds of its `targets()`.

@@ -53,7 +53,8 @@ impl PartialEq for Type {
             (T::This(a), T::This(b)) => a == b,
             (T::IntRange(a, x), T::IntRange(b, y)) => a == b && x == y,
             (T::ClassString(a), T::ClassString(b)) => a == b,
-            (T::SubtractedObject {
+            (
+                T::SubtractedObject {
                     object: a,
                     excluded: x,
                 },
@@ -75,22 +76,30 @@ impl PartialEq for Type {
             (T::Closure(a), T::Closure(b)) => a == b,
             (T::Union(a), T::Union(b))
             | (T::Benevolent(a), T::Benevolent(b))
-            | (T::Intersection(a), T::Intersection(b)) => a.len() == b.len() && {
-                // UnionType/IntersectionType::equals(): match each alternative once, without sorting the
-                // stored members. Their written order still selects the first reflected union method.
-                let mut remaining: Vec<_> = b.iter().collect();
-                a.iter().all(|inner| {
-                    let Some(i) = remaining.iter().position(|other| inner == *other) else { return false };
-                    remaining.remove(i);
-                    true
-                })
-            },
+            | (T::Intersection(a), T::Intersection(b)) => {
+                a.len() == b.len() && {
+                    // UnionType/IntersectionType::equals(): match each alternative once, without sorting the
+                    // stored members. Their written order still selects the first reflected union method.
+                    let mut remaining: Vec<_> = b.iter().collect();
+                    a.iter().all(|inner| {
+                        let Some(i) = remaining.iter().position(|other| inner == *other) else {
+                            return false;
+                        };
+                        remaining.remove(i);
+                        true
+                    })
+                }
+            }
             (T::Accessory(a), T::Accessory(b)) => a == b,
             (T::Conditional(a), T::Conditional(b)) => a == b,
             // TemplateTypeTrait::equals() omits the strategy. StrictMixedType::equals() also accepts its
             // template subclass (the reverse comparison still uses TemplateTypeTrait).
-            (T::Template(a), T::Template(b)) if matches!(a.bound, T::StrictMixed) =>
-                a.name == b.name && a.scope == b.scope && a.bound == b.bound && a.default == b.default,
+            (T::Template(a), T::Template(b)) if matches!(a.bound, T::StrictMixed) => {
+                a.name == b.name
+                    && a.scope == b.scope
+                    && a.bound == b.bound
+                    && a.default == b.default
+            }
             (T::Template(a), T::Template(b)) => a == b,
             (T::ObjectShape(a), T::ObjectShape(b)) => a == b,
             (T::Projection(a, x), T::Projection(b, y)) => a == b && x == y,

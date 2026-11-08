@@ -337,7 +337,9 @@ pub(crate) fn type_hash(t: &RType) -> String {
             type_hash(&RType::T((**key).clone())),
             value.describe(Level::Precise)
         ),
-        RType::T(Type::Object(_, args, _)) if !args.is_empty() => t.to_sub().describe(Level::Precise),
+        RType::T(Type::Object(_, args, _)) if !args.is_empty() => {
+            t.to_sub().describe(Level::Precise)
+        }
         RType::Object(Object::Shortened { full, .. } | Object::Aliased { full, .. }) => {
             full.clone()
         }

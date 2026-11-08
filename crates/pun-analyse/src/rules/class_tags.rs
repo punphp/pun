@@ -57,7 +57,12 @@ fn tags(c: &Checker, k: &ClassLikeMetadata, scope: &NameScope) -> Tags {
     };
     let mut out = Tags::default();
     let mut methods = Vec::new();
-    for value in named(&["@method", "@phan-method", "@psalm-method", "@phpstan-method"]) {
+    for value in named(&[
+        "@method",
+        "@phan-method",
+        "@psalm-method",
+        "@phpstan-method",
+    ]) {
         let TagValue::Method {
             ret,
             name,
@@ -90,7 +95,10 @@ fn tags(c: &Checker, k: &ClassLikeMetadata, scope: &NameScope) -> Tags {
             }
             types.push((description.clone(), ty));
             if let Some(default) = &p.default {
-                types.push((format!("{description} default value"), const_expr(default, &scope)));
+                types.push((
+                    format!("{description} default value"),
+                    const_expr(default, &scope),
+                ));
             }
         }
         let ret = ret.as_ref().map_or_else(mixed, |n| resolve_in(n, &scope));
@@ -102,8 +110,16 @@ fn tags(c: &Checker, k: &ClassLikeMetadata, scope: &NameScope) -> Tags {
     let mut properties: Vec<(String, (Option<Type>, Option<Type>))> = Vec::new();
     for (names, read, write) in [
         (&["@property", "@phpstan-property"][..], true, true),
-        (&["@property-read", "@phpstan-property-read"][..], true, false),
-        (&["@property-write", "@phpstan-property-write"][..], false, true),
+        (
+            &["@property-read", "@phpstan-property-read"][..],
+            true,
+            false,
+        ),
+        (
+            &["@property-write", "@phpstan-property-write"][..],
+            false,
+            true,
+        ),
     ] {
         for value in named(names) {
             let TagValue::TypedName(node, name) = value else {
@@ -182,7 +198,13 @@ struct Found {
 impl Found {
     /// The use-context checks of one type: its referenced classes, unresolvability and generic types. `what` is
     /// the subject of the messages ("PHPDoc tag @mixin"), `trait_id` the identifier of a trait reference.
-    fn type_checks(&mut self, ty: &Type, what: &str, trait_id: &'static str, generic: &GenericMessages) {
+    fn type_checks(
+        &mut self,
+        ty: &Type,
+        what: &str,
+        trait_id: &'static str,
+        generic: &GenericMessages,
+    ) {
         for class in generics::referenced_classes(ty) {
             match symbols::lookup(&class) {
                 None => self.errors.push((
@@ -200,8 +222,7 @@ impl Found {
         }
         let mut found = generics::Found::default();
         generics::generic_object_check(ty, generic, &mut found);
-        self.errors
-            .extend(found.errors);
+        self.errors.extend(found.errors);
     }
 }
 
@@ -247,7 +268,12 @@ fn use_context(tags: &Tags, display: &str, out: &mut Found) {
             ));
             continue;
         }
-        out.type_checks(ty, "PHPDoc tag @mixin", "mixin.trait", &messages("PHPDoc tag @mixin"));
+        out.type_checks(
+            ty,
+            "PHPDoc tag @mixin",
+            "mixin.trait",
+            &messages("PHPDoc tag @mixin"),
+        );
     }
 }
 
@@ -305,7 +331,10 @@ pub(super) fn trait_definition(c: &mut Checker, at: Span, name: &str) {
         .expect("a declared trait is in the codebase");
     let mut found = Found::default();
     declared::with_classes(c, || {
-        definition_context(&tags(c, k, &declared::class_scope(c, k.span, k)), &mut found);
+        definition_context(
+            &tags(c, k, &declared::class_scope(c, k.span, k)),
+            &mut found,
+        );
     });
     report(c, at, found);
 }
@@ -318,7 +347,10 @@ pub(super) fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     }
     // (the class's walk put both in the codebase)
     let k = c.codebase.get_class_like(name.as_bytes()).expect("a trait");
-    let using = c.codebase.get_class_like(class.as_bytes()).expect("a class");
+    let using = c
+        .codebase
+        .get_class_like(class.as_bytes())
+        .expect("a class");
     let mut found = Found::default();
     declared::with_classes(c, || {
         let mut scope = declared::class_scope(c, k.span, k);
