@@ -303,11 +303,9 @@ fn file_with_only_an_opening_tag_gets_no_strict_types_declaration() {
         Box::new(rules::RequireStrictTypesInTests),
     ] {
         let linter = Linter::new(vec![rule], 80400);
-        assert!(
-            linter
-                .check(Path::new("a.php"), "<?php\n")
-                .unwrap()
-                .is_empty()
+        assert_eq!(
+            linter.check(Path::new("a.php"), "<?php\n").unwrap(),
+            [] as [pun_problem::Problem; 0]
         );
     }
 }

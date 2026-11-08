@@ -209,7 +209,7 @@ static TOKENS: LazyLock<Vec<(String, Rgb, Rgb)>> = LazyLock::new(|| {
 pub(crate) fn nearest_256((r, g, b): (u8, u8, u8)) -> u8 {
     const LEVELS: [i32; 6] = [0, 95, 135, 175, 215, 255];
     let dist = |c: (i32, i32, i32)| {
-        (c.0 - r as i32).pow(2) + (c.1 - g as i32).pow(2) + (c.2 - b as i32).pow(2)
+        (c.0 - i32::from(r)).pow(2) + (c.1 - i32::from(g)).pow(2) + (c.2 - i32::from(b)).pow(2)
     };
     (16..=255u8)
         .min_by_key(|&i| {
@@ -217,7 +217,7 @@ pub(crate) fn nearest_256((r, g, b): (u8, u8, u8)) -> u8 {
                 let n = (i - 16) as usize;
                 (LEVELS[n / 36], LEVELS[n / 6 % 6], LEVELS[n % 6])
             } else {
-                let v = 8 + 10 * (i - 232) as i32;
+                let v = 8 + 10 * i32::from(i - 232);
                 (v, v, v)
             };
             dist(c)

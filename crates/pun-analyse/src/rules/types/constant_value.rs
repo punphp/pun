@@ -6,11 +6,18 @@
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Level, StrictMixed, Type, accepts_reasons, decide_type, is_super_type_of, recommended_level};
+use pun_phpstan::types::{
+    Level, StrictMixed, Type, accepts_reasons, decide_type, is_super_type_of, recommended_level,
+};
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &["classConstant.value", "classConstant.phpDocType", "constant.value", "constant.defineValue"];
+pub(super) const IDENTIFIERS: &[&str] = &[
+    "classConstant.value",
+    "classConstant.phpDocType",
+    "constant.value",
+    "constant.defineValue",
+];
 
 /// The values, whose types the rule reads.
 pub(super) fn typed(k: &ClassLikeConstant, spans: &mut Vec<Span>) {
@@ -27,14 +34,19 @@ pub(in super::super) fn global_constant(c: &mut Checker, k: &Constant) {
     if c.toggled.constant_types.is_none() {
         return;
     }
-    let at = k.attribute_lists.first().map_or(k.span(), |a| a.span().join(k.span()));
-    for item in k.items.iter() {
+    let at = k
+        .attribute_lists
+        .first()
+        .map_or(k.span(), |a| a.span().join(k.span()));
+    for item in &k.items {
         let name = String::from_utf8_lossy(item.name.value);
         let name = match c.namespaces.last() {
             Some(Some(namespace)) => format!("{namespace}\\{name}"),
             _ => name.into_owned(),
         };
-        let Some(value) = c.phpstan_type(item.value) else { continue };
+        let Some(value) = c.phpstan_type(item.value) else {
+            continue;
+        };
         configured_value(c, at, "constant.value", &name, &value);
     }
 }
@@ -44,25 +56,43 @@ pub(in super::super) fn define_value(c: &mut Checker, call: &FunctionCall) {
     if c.toggled.constant_types.is_none() {
         return;
     }
-    let Expression::Identifier(id) = call.function else { return };
+    let Expression::Identifier(id) = call.function else {
+        return;
+    };
     if !super::super::dead_code::node_name(c.names, id).eq_ignore_ascii_case(b"define") {
         return;
     }
-    let [name, value, ..] = call.argument_list.arguments.as_slice() else { return };
-    let Some(names) = c.phpstan_type(name.value()).map(|t| t.constant_strings()) else { return };
+    let [name, value, ..] = call.argument_list.arguments.as_slice() else {
+        return;
+    };
+    let Some(names) = c.phpstan_type(name.value()).map(|t| t.constant_strings()) else {
+        return;
+    };
     if names.is_empty() {
         return;
     }
-    let Some(value) = c.phpstan_type(value.value()) else { return };
+    let Some(value) = c.phpstan_type(value.value()) else {
+        return;
+    };
     for name in names.iter().filter(|n| !n.is_empty()) {
-        configured_value(c, call.span(), "constant.defineValue", &String::from_utf8_lossy(name), &value);
+        configured_value(
+            c,
+            call.span(),
+            "constant.defineValue",
+            &String::from_utf8_lossy(name),
+            &value,
+        );
     }
 }
 
 /// `ConstantResolver::getConfiguredGlobalConstantType()` against the value: `accepts($valueType, true)`.
 fn configured_value(c: &mut Checker, at: Span, identifier: &str, name: &str, value: &Type) {
-    let Some(types) = &c.toggled.constant_types else { return };
-    let Some((_, configured)) = types.iter().find(|(n, _)| n == name) else { return };
+    let Some(types) = &c.toggled.constant_types else {
+        return;
+    };
+    let Some((_, configured)) = types.iter().find(|(n, _)| n == name) else {
+        return;
+    };
     let found = declared::with_classes(c, || {
         let configured = pun_phpstan::resolve::resolve_str(configured, None);
         if pun_phpstan::types::accepts(&configured, value, true).yes() {
@@ -74,10 +104,16 @@ fn configured_value(c: &mut Checker, at: Span, identifier: &str, name: &str, val
             value.describe(recommended_level(&configured, Some(value)))
         );
         // acceptsReasonsTip(): one reason as is, more as a bullet list
-        let tip = match accepts_reasons(&configured, value, true, StrictMixed::default()).as_slice() {
+        let tip = match accepts_reasons(&configured, value, true, StrictMixed::default()).as_slice()
+        {
             [] => None,
             [one] => Some(one.clone()),
-            all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+            all => Some(
+                all.iter()
+                    .map(|r| format!("• {r}"))
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            ),
         };
         Some((message, tip))
     });
@@ -90,32 +126,42 @@ pub(in super::super) fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
     if c.level < 2 {
         return;
     }
-    let Some(context) = c.class_scope() else { return };
+    let Some(context) = c.class_scope() else {
+        return;
+    };
     let display = c.display(context);
-    for item in k.items.iter() {
-        let Some(value) = c.phpstan_type(item.value) else { continue };
+    for item in &k.items {
+        let Some(value) = c.phpstan_type(item.value) else {
+            continue;
+        };
         let name = String::from_utf8_lossy(item.name.value);
         let found = declared::with_classes(c, || {
-            let native = k.hint.as_ref().map(|h| declared::native(c, h, Some(context)));
+            let native = k
+                .hint
+                .as_ref()
+                .map(|h| declared::native(c, h, Some(context)));
             let phpdoc = declared::constant(c, k.span(), item.name.value, context);
             let level = |t| recommended_level(t, Some(&value));
             match (phpdoc, native) {
                 (None, None) => None,
-                (None, Some(native)) => (!pun_phpstan::types::accepts(&native, &value, true).yes()).then(|| {
-                    let message = format!(
-                        "Constant {display}::{name} ({}) does not accept value {}.",
-                        native.describe(Level::TypeOnly),
-                        value.describe(Level::Value)
-                    );
-                    ("classConstant.value", message, true)
-                }),
+                (None, Some(native)) => (!pun_phpstan::types::accepts(&native, &value, true).yes())
+                    .then(|| {
+                        let message = format!(
+                            "Constant {display}::{name} ({}) does not accept value {}.",
+                            native.describe(Level::TypeOnly),
+                            value.describe(Level::Value)
+                        );
+                        ("classConstant.value", message, true)
+                    }),
                 (Some(phpdoc), None) => {
                     let fits = is_super_type_of(&phpdoc, &value);
                     let relation = if fits.no() {
                         "is incompatible with"
                     } else if fits.maybe() {
                         "is not subtype of"
-                    } else { return None };
+                    } else {
+                        return None;
+                    };
                     let message = format!(
                         "PHPDoc tag @var for constant {display}::{name} with type {} {relation} value {}.",
                         phpdoc.describe(level(&phpdoc)),
@@ -137,7 +183,9 @@ pub(in super::super) fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
             }
         });
         match found {
-            Some((identifier, message, true)) => c.report_non_ignorable(k, identifier, message, None),
+            Some((identifier, message, true)) => {
+                c.report_non_ignorable(k, identifier, message, None);
+            }
             Some((identifier, message, false)) => c.report(k, identifier, message, None),
             None => {}
         }

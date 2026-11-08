@@ -157,7 +157,11 @@ impl Rule for PreferConstructorInjection {
                     head,
                     args,
                 };
-                let first = list.arguments.iter().next().map(|a| a.value());
+                let first = list
+                    .arguments
+                    .iter()
+                    .next()
+                    .map(mago_syntax::cst::Argument::value);
                 match (item, first) {
                     (
                         Injection::Argument {

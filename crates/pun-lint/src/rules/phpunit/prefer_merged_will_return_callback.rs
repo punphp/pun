@@ -139,7 +139,7 @@ impl Rule for PreferMergedWillReturnCallback {
         }
         match (&closure.return_type_hint, &declared) {
             (Some(hint), Some(declared)) => {
-                edits.push(Edit::new(node_span(&hint.hint), declared.clone()))
+                edits.push(Edit::new(node_span(&hint.hint), declared.clone()));
             }
             (Some(hint), None) => {
                 let end = match &closure.use_clause {

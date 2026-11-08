@@ -177,7 +177,7 @@ pub(crate) struct Session<'s> {
 }
 
 impl<'s> Session<'s> {
-    pub fn new(ctx: &'s Context<'s>, program: &Program<'_>) -> Session<'s> {
+    pub(crate) fn new(ctx: &'s Context<'s>, program: &Program<'_>) -> Session<'s> {
         let source = ctx.source;
         let view = FileView::of(source, program);
         let names = view
@@ -252,7 +252,7 @@ impl<'s> Session<'s> {
                 None => (
                     self.namespace_at(span.start),
                     None,
-                    nop_run(&tokens, span.end).0,
+                    nop_run(tokens, span.end).0,
                 ),
             };
             let scope = Scope {
@@ -296,23 +296,23 @@ impl<'s> Session<'s> {
     }
 
     /// The number of `Name` nodes ([`FileView::names`]).
-    pub fn name_count(&self) -> usize {
+    pub(crate) fn name_count(&self) -> usize {
         self.names.len()
     }
 
     /// What the name `i` stands for now (`FullyQualified::toString()` of a fully qualified one), `None` for a name
     /// that is not fully qualified.
-    pub fn fully_qualified(&self, i: usize) -> Option<&str> {
+    pub(crate) fn fully_qualified(&self, i: usize) -> Option<&str> {
         self.names[i].fq.then_some(self.names[i].name.as_str())
     }
 
     /// `Name::toString()` of the name `i` now.
-    pub fn name_string(&self, i: usize) -> String {
+    pub(crate) fn name_string(&self, i: usize) -> String {
         self.names[i].name.clone()
     }
 
     /// `new FullyQualified($new)` in place of the name `i`.
-    pub fn rename(&mut self, i: usize, new: &str) {
+    pub(crate) fn rename(&mut self, i: usize, new: &str) {
         let state = &mut self.names[i];
         state.fq = true;
         state.name = new.to_string();
@@ -323,7 +323,7 @@ impl<'s> Session<'s> {
     /// What a round of the file leaves for the next (`FileProcessor::processFile()` runs the post rectors again on
     /// a changed file): the `FileNode`'s `PendingImports` and `UsedImports`, `ShortNameResolver`'s cache by path, and
     /// the docs.
-    pub fn carry(&self) -> Carry {
+    pub(crate) fn carry(&self) -> Carry {
         Carry {
             pending: self.pending.clone(),
             used: self.used.clone(),
@@ -333,7 +333,7 @@ impl<'s> Session<'s> {
     }
 
     /// Start as the next round after the one that left `carry`.
-    pub fn resume(&mut self, carry: Carry) {
+    pub(crate) fn resume(&mut self, carry: Carry) {
         self.pending = carry.pending;
         self.used = carry.used;
         self.short_names = carry.short_names;
@@ -343,44 +343,44 @@ impl<'s> Session<'s> {
     }
 
     /// `RenamedNameCollector::add()`.
-    pub fn collect_renamed(&mut self, old: &str) {
+    pub(crate) fn collect_renamed(&mut self, old: &str) {
         if !self.renamed.iter().any(|r| r == old) {
             self.renamed.push(old.to_string());
         }
     }
 
     /// Drop an `implements` name of a class (`array_unique()` on `$class->implements`).
-    pub fn remove_implements(&mut self, span: Span) {
+    pub(crate) fn remove_implements(&mut self, span: Span) {
         self.implements_removed.push(span);
     }
 
     /// The doc comments the rules read: their index, the view's doc, and the doc.
-    pub fn doc_indexes(&self) -> Vec<usize> {
+    pub(crate) fn doc_indexes(&self) -> Vec<usize> {
         (0..self.docs.len()).collect()
     }
 
     /// The view's doc of the doc `i` (`None` for one no node takes).
-    pub fn doc_view(&self, i: usize) -> Option<&super::view::DocView> {
+    pub(crate) fn doc_view(&self, i: usize) -> Option<&super::view::DocView> {
         self.docs[i].view.map(|v| &self.view.docs[v])
     }
 
     /// Whether `createFromNode()` reads the doc `i`.
-    pub fn doc_is_last(&self, i: usize) -> bool {
+    pub(crate) fn doc_is_last(&self, i: usize) -> bool {
         self.docs[i].last
     }
 
     /// The doc `i`, `None` where Pun does not read it as Rector does.
-    pub fn doc(&self, i: usize) -> Option<&Doc> {
+    pub(crate) fn doc(&self, i: usize) -> Option<&Doc> {
         self.docs[i].doc.as_ref()
     }
 
     /// The doc `i` to change.
-    pub fn doc_mut(&mut self, i: usize) -> Option<&mut Doc> {
+    pub(crate) fn doc_mut(&mut self, i: usize) -> Option<&mut Doc> {
         self.docs[i].doc.as_mut()
     }
 
     /// The scope a doc was read in: its namespace, class, and the file's imports then.
-    pub fn doc_scope(&self, i: usize) -> Scope<'_> {
+    pub(crate) fn doc_scope(&self, i: usize) -> Scope<'_> {
         Scope {
             namespace: self.docs[i].namespace.as_deref(),
             class: self.docs[i].class.as_deref(),
@@ -389,7 +389,7 @@ impl<'s> Session<'s> {
     }
 
     /// Give up on the file: Pun does not follow Rector here.
-    pub fn unsupported(&mut self) {
+    pub(crate) fn unsupported(&mut self) {
         self.unsupported = true;
     }
 
@@ -482,7 +482,7 @@ impl<'s> Session<'s> {
 
     /// Run the post rectors and print the file: the new source (the old one where nothing changed), `None` where Pun
     /// does not follow Rector. `has_renames` is whether `RenamedClassesDataCollector` holds renames.
-    pub fn finish(&mut self, options: Options, has_renames: bool) -> Option<String> {
+    pub(crate) fn finish(&mut self, options: Options, has_renames: bool) -> Option<String> {
         if self.unsupported {
             return None;
         }
@@ -598,7 +598,7 @@ impl<'s> Session<'s> {
         let state = &mut self.names[i];
         state.fq = false;
         state.original = None;
-        state.name = text.clone();
+        state.name.clone_from(&text);
         state.text = Some(text);
     }
 
@@ -1006,7 +1006,6 @@ impl<'s> Session<'s> {
                 list.cleared[*i] = true;
             }
         };
-        let mut new_uses = new_uses;
         for key in 0..list.items.len() {
             if matches!(list.items[key], Item::Nop(_)) {
                 continue;
@@ -1022,7 +1021,7 @@ impl<'s> Session<'s> {
             }
             let mut added = vec![Item::Nop(None)];
             added.extend(new_uses);
-            list.items.splice(key + 1..key + 1, added);
+            list.items.splice((key + 1)..=key, added);
             return;
         }
         mirror(list, &mut new_uses, 0);
@@ -1082,10 +1081,8 @@ impl<'s> Session<'s> {
                         is_import_used(i, case_sensitive, list_names, namespace.as_deref())
                     })
                     .collect();
-                let mut at = 0;
-                for flag in list.kept[k].iter_mut().filter(|f| **f) {
+                for (at, flag) in list.kept[k].iter_mut().filter(|f| **f).enumerate() {
                     *flag = used[at];
-                    at += 1;
                 }
                 if used.iter().any(|u| *u) {
                     new_items.push(item.clone());
@@ -1480,7 +1477,7 @@ impl<'s> Session<'s> {
                     let span = root.stmts[*i].span;
                     match (list.reprinted[*i], root.stmts[*i].kind) {
                         (true, StmtKind::Use(k)) => {
-                            text.push_str(&print_use(&self.current_uses_of(r, k)))
+                            text.push_str(&print_use(&self.current_uses_of(r, k)));
                         }
                         // `pStmt_InlineHTML()`: `?>`, the line break the closing tag took (`hasLeadingNewline`, also
                         // set on HTML that starts the file), the HTML, `<?php `
@@ -1506,7 +1503,7 @@ impl<'s> Session<'s> {
                     }
                 }
                 Item::New { kind, name, .. } => {
-                    text.push_str(&print_use(&new_use_view(*kind, name)))
+                    text.push_str(&print_use(&new_use_view(*kind, name)));
                 }
                 Item::Nop(_) => {}
             }

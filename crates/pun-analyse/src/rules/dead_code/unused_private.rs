@@ -84,7 +84,7 @@ struct Gatherer<'g, 'a, 'arena> {
     constructor: Vec<String>,
 }
 
-impl<'g, 'a, 'arena> Gatherer<'g, 'a, 'arena> {
+impl Gatherer<'_, '_, '_> {
     fn on<'e, 'x>(&self, e: &'e Expression<'x>) -> On<'e, 'x> {
         match unparen(e) {
             e if is_this(e) => On::Class,
@@ -626,7 +626,7 @@ fn traits<'c>(c: &'c Checker, k: &ClassLikeMetadata) -> Vec<&'c ClassLikeMetadat
     let mut out: Vec<&ClassLikeMetadata> = Vec::new();
     let mut pending = vec![k];
     while let Some(t) = pending.pop() {
-        for name in t.used_traits.iter() {
+        for name in &t.used_traits {
             if let Some(t) = c.codebase.get_class_like(name.as_bytes())
                 && t.kind == SymbolKind::Trait
                 && !out.iter().any(|x| x.name == t.name)
@@ -671,7 +671,7 @@ pub(in super::super) fn class(
     for member in members {
         match member {
             ClassLikeMember::Constant(k) if k.modifiers.contains_private() => {
-                for item in k.items.iter() {
+                for item in &k.items {
                     constants.insert(text(item.name.value), c.line_of(item.span()));
                 }
             }
@@ -726,7 +726,7 @@ pub(in super::super) fn class(
         if !m.name.value.eq_ignore_ascii_case(b"__construct") || k.kind != SymbolKind::Class {
             continue;
         }
-        for p in m.parameter_list.parameters.iter() {
+        for p in &m.parameter_list.parameters {
             if !p.modifiers.contains_private() {
                 continue;
             }
@@ -781,11 +781,11 @@ pub(in super::super) fn class(
         found.extend(in_file.into_iter().map(|t| (i, t)));
     }
     for (i, t) in &found {
-        for member in t.members.iter() {
+        for member in &t.members {
             if let ClassLikeMember::Constant(k) = member
                 && k.modifiers.contains_private()
             {
-                for item in k.items.iter() {
+                for item in &k.items {
                     let line = i64::from(files[*i].line_number(item.span().start.offset)) + 1;
                     constants.entry(text(item.name.value)).or_insert(line);
                 }
@@ -854,7 +854,7 @@ pub(in super::super) fn class(
             constructor: constructor.clone(),
         };
         for (_, t) in found.iter().filter(|(j, _)| *j == i) {
-            for member in t.members.iter() {
+            for member in &t.members {
                 g.node(Node::ClassLikeMember(member));
             }
         }
@@ -982,7 +982,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
             match s {
                 ClassLikeMemberSelector::Variable(v) if self.depth > 0 => self.spans.push(v.span()),
                 ClassLikeMemberSelector::Expression(e) if self.depth > 0 => {
-                    self.spans.push(e.expression.span())
+                    self.spans.push(e.expression.span());
                 }
                 _ => {}
             }
@@ -1003,36 +1003,36 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         }
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
+        fn walk_in_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {
             self.depth += 1;
         }
-        fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
+        fn walk_out_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {
             self.depth -= 1;
         }
-        fn walk_in_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
+        fn walk_in_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {
             self.depth += 1;
         }
-        fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
+        fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {
             self.depth -= 1;
         }
-        fn walk_in_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
+        fn walk_in_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {
             self.depth += 1;
         }
-        fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
+        fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {
             self.depth -= 1;
         }
-        fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, _: &mut ()) {
+        fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, (): &mut ()) {
             self.push(m.object);
             self.selector(&m.method);
         }
-        fn walk_in_array(&mut self, a: &'ast Array<'arena>, _: &mut ()) {
+        fn walk_in_array(&mut self, a: &'ast Array<'arena>, (): &mut ()) {
             if let [ArrayElement::Value(_), ArrayElement::Value(second)] = a.elements.as_slice()
                 && self.depth > 0
             {
                 self.spans.push(second.value.span());
             }
         }
-        fn walk_in_legacy_array(&mut self, a: &'ast LegacyArray<'arena>, _: &mut ()) {
+        fn walk_in_legacy_array(&mut self, a: &'ast LegacyArray<'arena>, (): &mut ()) {
             if let [ArrayElement::Value(_), ArrayElement::Value(second)] = a.elements.as_slice()
                 && self.depth > 0
             {
@@ -1042,23 +1042,23 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         fn walk_in_null_safe_method_call(
             &mut self,
             m: &'ast NullSafeMethodCall<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.push(m.object);
             self.selector(&m.method);
         }
-        fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, (): &mut ()) {
             self.push(m.class);
             self.selector(&m.method);
         }
-        fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+        fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, (): &mut ()) {
             self.push(p.object);
             self.selector(&p.property);
         }
         fn walk_in_null_safe_property_access(
             &mut self,
             p: &'ast NullSafePropertyAccess<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.push(p.object);
             self.selector(&p.property);
@@ -1066,7 +1066,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         fn walk_in_static_property_access(
             &mut self,
             p: &'ast StaticPropertyAccess<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.push(p.class);
             if let Some(name) = dynamic_name(&p.property).filter(|_| self.depth > 0) {
@@ -1076,7 +1076,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         fn walk_in_class_constant_access(
             &mut self,
             a: &'ast ClassConstantAccess<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.push(a.class);
         }

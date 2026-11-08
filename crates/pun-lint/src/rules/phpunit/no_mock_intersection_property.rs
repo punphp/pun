@@ -38,7 +38,7 @@ impl Rule for NoMockIntersectionProperty {
         if !is_in_test_class(ctx, &scope, None) {
             return;
         }
-        for member in members.iter() {
+        for member in members {
             let hint = match member {
                 ClassLikeMember::Property(Property::Plain(p)) => p.hint.as_ref(),
                 ClassLikeMember::Property(Property::Hooked(p)) => p.hint.as_ref(),
@@ -47,7 +47,7 @@ impl Rule for NoMockIntersectionProperty {
             let mut types = Vec::new();
             match hint {
                 Some(hint @ (Hint::Union(_) | Hint::Intersection(_))) => {
-                    flatten(hint, None, &mut types)
+                    flatten(hint, None, &mut types);
                 }
                 _ => continue,
             }

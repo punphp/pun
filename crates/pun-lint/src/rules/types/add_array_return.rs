@@ -59,7 +59,7 @@ impl Rule for AddArrayReturn {
             r.value.is_some_and(|v| {
                 facts
                     .native_type(node_span(v))
-                    .is_some_and(|t| t.is_array())
+                    .is_some_and(mago_codex::ttype::union::TUnion::is_array)
             })
         });
         if !returns.is_empty() && arrays && !has_silent_void(&place, f.body.statements.iter()) {

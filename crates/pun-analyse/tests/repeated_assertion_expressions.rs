@@ -188,7 +188,7 @@ fn default_termination_and_native_availability_are_independent() {
         .map(|record| record["start"].as_u64().unwrap())
         .collect();
     let mut unique = offsets.clone();
-    unique.sort();
+    unique.sort_unstable();
     unique.dedup();
     assert_eq!(
         offsets.len(),

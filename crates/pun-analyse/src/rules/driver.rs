@@ -4,6 +4,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
+use super::named_argument::deferred_local_ignores as local_ignores;
 use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::symbol::{SymbolIdentifier, SymbolKind};
@@ -16,7 +17,6 @@ use pun_phpstan::comments::lines_to_ignore;
 use pun_phpstan::ignore::{
     Error, fix_all_line_errors, ignores_without_comments, parse_errors, unmatched_line_errors,
 };
-use super::named_argument::deferred_local_ignores as local_ignores;
 
 use super::{
     Checker, anonymous, arrays, assign, class_names, infer::infer, property_access, reflection,
@@ -38,9 +38,18 @@ impl Natives {
     pub(crate) fn load(php_version: u32) -> Natives {
         let (classes, (throws, curl_options)) = rayon::join(
             || super::overriding::natives(php_version),
-            || (super::types::throw_points::ThrowData::load(), super::selector::curl_options()),
+            || {
+                (
+                    super::types::throw_points::ThrowData::load(),
+                    super::selector::curl_options(),
+                )
+            },
         );
-        Natives { classes, throws, curl_options }
+        Natives {
+            classes,
+            throws,
+            curl_options,
+        }
     }
 }
 
@@ -181,13 +190,20 @@ bitflags::bitflags! {
 /// Each declaration a stub with a PHPDoc patches (a method, a function, a class-like) with the stub declaration's span:
 /// PHPStan reads a stub's PHPDoc in place of the original's (StubPhpDocProvider).
 fn patched_docs(codebase: &CodebaseMetadata) -> HashMap<Span, Span> {
-    let functions = codebase.patch_function_likes.iter().filter(|(_, p)| p.has_docblock).filter_map(|(key, patch)| {
-        Some((codebase.function_likes.get(key)?.span, patch.span))
-    });
-    let classes = codebase.patch_class_likes.iter().filter(|(_, p)| p.has_docblock).filter_map(|(key, patch)| {
-        Some((codebase.class_likes.get(key)?.span, patch.span))
-    });
-    functions.chain(classes).filter(|(original, patch)| original != patch).collect()
+    let functions = codebase
+        .patch_function_likes
+        .iter()
+        .filter(|(_, p)| p.has_docblock)
+        .filter_map(|(key, patch)| Some((codebase.function_likes.get(key)?.span, patch.span)));
+    let classes = codebase
+        .patch_class_likes
+        .iter()
+        .filter(|(_, p)| p.has_docblock)
+        .filter_map(|(key, patch)| Some((codebase.class_likes.get(key)?.span, patch.span)));
+    functions
+        .chain(classes)
+        .filter(|(original, patch)| original != patch)
+        .collect()
 }
 
 impl Checks {
@@ -204,48 +220,200 @@ impl Checks {
 
 impl Checks {
     pub(crate) fn of(project: &Project, codebase: &CodebaseMetadata) -> Checks {
-        let internal_members = project.level >= 2 && project.options.contains(crate::ProjectOptions::INTERNAL_TAG);
+        let internal_members = project.level >= 2
+            && project
+                .options
+                .contains(crate::ProjectOptions::INTERNAL_TAG);
         let mut function_likes: HashMap<FileId, Vec<(Span, SymbolIdentifier)>> = HashMap::new();
         for (id, f) in codebase.function_likes.iter() {
-            function_likes.entry(f.span.file_id).or_default().push((f.span, *id));
+            function_likes
+                .entry(f.span.file_id)
+                .or_default()
+                .push((f.span, *id));
         }
         let mut larastan = project.larastan.clone();
         if let Some(l) = &mut larastan {
             l.load(project, codebase);
         }
         let mut switches = Switches::empty();
-        switches.set(Switches::CHECK_CLASS_CASE_SENSITIVITY, project.options.contains(crate::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY));
-        switches.set(Switches::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY, project.options.contains(crate::ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY));
-        switches.set(Switches::CHECK_IMPORTED_CLASS_NAME_CASE, project.options.contains(crate::ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE));
-        switches.set(Switches::CHECK_FUNCTION_NAME_CASE, project.options.contains(crate::ProjectOptions::CHECK_FUNCTION_NAME_CASE));
-        switches.set(Switches::CHECK_ARGUMENT_TYPES, project.check_function_argument_types.unwrap_or(project.level >= 5));
-        switches.set(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE, project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5));
-        switches.set(Switches::CHECK_THIS_ONLY, project.check_this_only.unwrap_or(project.level < 2));
-        switches.set(Switches::CHECK_ADVANCED_ISSET, project.check_advanced_isset.unwrap_or(project.level >= 4));
-        switches.set(Switches::CHECK_EXPLICIT_MIXED, project.check_explicit_mixed.unwrap_or(project.level >= 9));
-        switches.set(Switches::CHECK_IMPLICIT_MIXED, project.check_implicit_mixed.unwrap_or(project.level >= 10));
-        switches.set(Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN, project.treat_php_doc_types_as_certain.unwrap_or(true));
-        switches.set(Switches::GENERIC_ITERABLE_CLASSES, project.options.contains(crate::ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES));
-        switches.set(Switches::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, project.options.contains(crate::ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD));
-        switches.set(Switches::REPORT_IGNORES_WITHOUT_COMMENTS, project.options.contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS));
-        switches.set(Switches::REPORT_UNMATCHED_IGNORES, project.options.contains(crate::ProjectOptions::REPORT_UNMATCHED_IGNORES));
+        switches.set(
+            Switches::CHECK_CLASS_CASE_SENSITIVITY,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY),
+        );
+        switches.set(
+            Switches::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY),
+        );
+        switches.set(
+            Switches::CHECK_IMPORTED_CLASS_NAME_CASE,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE),
+        );
+        switches.set(
+            Switches::CHECK_FUNCTION_NAME_CASE,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_FUNCTION_NAME_CASE),
+        );
+        switches.set(
+            Switches::CHECK_ARGUMENT_TYPES,
+            project
+                .check_function_argument_types
+                .unwrap_or(project.level >= 5),
+        );
+        switches.set(
+            Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE,
+            project
+                .check_arguments_passed_by_reference
+                .unwrap_or(project.level >= 5),
+        );
+        switches.set(
+            Switches::CHECK_THIS_ONLY,
+            project.check_this_only.unwrap_or(project.level < 2),
+        );
+        switches.set(
+            Switches::CHECK_ADVANCED_ISSET,
+            project.check_advanced_isset.unwrap_or(project.level >= 4),
+        );
+        switches.set(
+            Switches::CHECK_EXPLICIT_MIXED,
+            project.check_explicit_mixed.unwrap_or(project.level >= 9),
+        );
+        switches.set(
+            Switches::CHECK_IMPLICIT_MIXED,
+            project.check_implicit_mixed.unwrap_or(project.level >= 10),
+        );
+        switches.set(
+            Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN,
+            project.treat_php_doc_types_as_certain.unwrap_or(true),
+        );
+        switches.set(
+            Switches::GENERIC_ITERABLE_CLASSES,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES),
+        );
+        switches.set(
+            Switches::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD,
+            project
+                .options
+                .contains(crate::ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD),
+        );
+        switches.set(
+            Switches::REPORT_IGNORES_WITHOUT_COMMENTS,
+            project
+                .options
+                .contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS),
+        );
+        switches.set(
+            Switches::REPORT_UNMATCHED_IGNORES,
+            project
+                .options
+                .contains(crate::ProjectOptions::REPORT_UNMATCHED_IGNORES),
+        );
         switches.set(Switches::INTERNAL_MEMBERS, internal_members);
-        switches.set(Switches::INTERNAL_TAG, project.options.contains(crate::ProjectOptions::INTERNAL_TAG));
-        switches.set(Switches::PRECISE_UNUSED_PARAMETER_LINE, project.options.contains(crate::ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE));
-        switches.set(Switches::DEPRECATIONS, project.options.contains(crate::ProjectOptions::DEPRECATION_RULES));
-        switches.set(Switches::BLEEDING_EDGE, project.options.contains(crate::ProjectOptions::BLEEDING_EDGE));
-        switches.set(Switches::UNUSED_LABEL, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_LABEL));
-        switches.set(Switches::SWITCH_CONDITION, project.options.contains(crate::ProjectOptions::SWITCH_CONDITION));
-        switches.set(Switches::SORT_WITHOUT_EFFECT, project.options.contains(crate::ProjectOptions::SORT_WITHOUT_EFFECT));
-        switches.set(Switches::NON_STRINGABLE_NAMES, project.options.contains(crate::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS));
-        switches.set(Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED, project.options.contains(crate::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED));
-        switches.set(Switches::CHECK_MAYBE_UNDEFINED_VARIABLES, project.options.contains(crate::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES));
-        switches.set(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS));
-        switches.set(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH));
-        switches.set(Switches::POLLUTE_SCOPE_WITH_BLOCK, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
-        switches.set(Switches::METHOD_PURITY_OVERRIDE, project.options.contains(crate::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE));
-        switches.set(Switches::UNINITIALIZED_PROPERTIES, project.options.contains(crate::ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES));
-        switches.set(Switches::MISSING_CALLABLE_SIGNATURE, project.options.contains(crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE));
+        switches.set(
+            Switches::INTERNAL_TAG,
+            project
+                .options
+                .contains(crate::ProjectOptions::INTERNAL_TAG),
+        );
+        switches.set(
+            Switches::PRECISE_UNUSED_PARAMETER_LINE,
+            project
+                .options
+                .contains(crate::ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE),
+        );
+        switches.set(
+            Switches::DEPRECATIONS,
+            project
+                .options
+                .contains(crate::ProjectOptions::DEPRECATION_RULES),
+        );
+        switches.set(
+            Switches::BLEEDING_EDGE,
+            project
+                .options
+                .contains(crate::ProjectOptions::BLEEDING_EDGE),
+        );
+        switches.set(
+            Switches::UNUSED_LABEL,
+            project.level >= 4
+                && project
+                    .options
+                    .contains(crate::ProjectOptions::UNUSED_LABEL),
+        );
+        switches.set(
+            Switches::SWITCH_CONDITION,
+            project
+                .options
+                .contains(crate::ProjectOptions::SWITCH_CONDITION),
+        );
+        switches.set(
+            Switches::SORT_WITHOUT_EFFECT,
+            project
+                .options
+                .contains(crate::ProjectOptions::SORT_WITHOUT_EFFECT),
+        );
+        switches.set(
+            Switches::NON_STRINGABLE_NAMES,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS),
+        );
+        switches.set(
+            Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED,
+            project
+                .options
+                .contains(crate::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED),
+        );
+        switches.set(
+            Switches::CHECK_MAYBE_UNDEFINED_VARIABLES,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES),
+        );
+        switches.set(
+            Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS,
+            project
+                .options
+                .contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS),
+        );
+        switches.set(
+            Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH,
+            project
+                .options
+                .contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH),
+        );
+        switches.set(
+            Switches::POLLUTE_SCOPE_WITH_BLOCK,
+            project
+                .options
+                .contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK),
+        );
+        switches.set(
+            Switches::METHOD_PURITY_OVERRIDE,
+            project
+                .options
+                .contains(crate::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE),
+        );
+        switches.set(
+            Switches::UNINITIALIZED_PROPERTIES,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES),
+        );
+        switches.set(
+            Switches::MISSING_CALLABLE_SIGNATURE,
+            project
+                .options
+                .contains(crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE),
+        );
         Checks {
             switches,
             natives: Natives::load(project.php_version),
@@ -253,8 +421,20 @@ impl Checks {
             php_version: project.php_version,
             relative_path: project.relative_path.clone(),
             larastan,
-            internal: (internal_members || project.options.contains(crate::ProjectOptions::DEPRECATION_RULES))
-                .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.options.contains(crate::ProjectOptions::DEPRECATION_RULES))),
+            internal: (internal_members
+                || project
+                    .options
+                    .contains(crate::ProjectOptions::DEPRECATION_RULES))
+            .then(|| {
+                super::internal::Names::of(
+                    codebase,
+                    project.php_version,
+                    internal_members,
+                    project
+                        .options
+                        .contains(crate::ProjectOptions::DEPRECATION_RULES),
+                )
+            }),
             type_aliases: project.type_aliases.clone(),
             reported: project.reported.clone(),
             method_rules: project.method_rules,
@@ -266,26 +446,86 @@ impl Checks {
             include_file: super::include_file::Settings {
                 cwd: project.current_working_directory.clone(),
                 include_paths: project.include_paths.clone(),
-                magic_dir: project.options.contains(crate::ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE),
-                path_constants: project.options.contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
+                magic_dir: project
+                    .options
+                    .contains(crate::ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE),
+                path_constants: project
+                    .options
+                    .contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
             },
             toggled: Toggled {
                 on: {
                     let mut on = Toggles::empty();
-                    on.set(Toggles::BY_REF_FOREACH, project.level >= 1 && project.options.contains(crate::ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR));
-                    on.set(Toggles::DATE_INTERVAL, project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR));
-                    on.set(Toggles::CASTABLE_TO_NUMBER, project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS));
-                    on.set(Toggles::FINITE_HAYSTACK, project.level >= 4 && project.options.contains(crate::ProjectOptions::FINITE_TYPES_IN_HAYSTACK));
-                    on.set(Toggles::UNUSED_VARIABLE, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_VARIABLE));
-                    on.set(Toggles::UNUSED_PARAMETERS, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS));
-                    on.set(Toggles::UNUSED_FLOW, project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS));
-                    on.set(Toggles::NEW_ON_NON_OBJECT, project.options.contains(crate::ProjectOptions::NEW_ON_NON_OBJECT));
+                    on.set(
+                        Toggles::BY_REF_FOREACH,
+                        project.level >= 1
+                            && project
+                                .options
+                                .contains(crate::ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR),
+                    );
+                    on.set(
+                        Toggles::DATE_INTERVAL,
+                        project.level >= 5
+                            && project
+                                .options
+                                .contains(crate::ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR),
+                    );
+                    on.set(
+                        Toggles::CASTABLE_TO_NUMBER,
+                        project.level >= 5
+                            && project.options.contains(
+                                crate::ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS,
+                            ),
+                    );
+                    on.set(
+                        Toggles::FINITE_HAYSTACK,
+                        project.level >= 4
+                            && project
+                                .options
+                                .contains(crate::ProjectOptions::FINITE_TYPES_IN_HAYSTACK),
+                    );
+                    on.set(
+                        Toggles::UNUSED_VARIABLE,
+                        project.level >= 4
+                            && project
+                                .options
+                                .contains(crate::ProjectOptions::UNUSED_VARIABLE),
+                    );
+                    on.set(
+                        Toggles::UNUSED_PARAMETERS,
+                        project.level >= 4
+                            && project
+                                .options
+                                .contains(crate::ProjectOptions::UNUSED_PARAMETERS),
+                    );
+                    on.set(
+                        Toggles::UNUSED_FLOW,
+                        project
+                            .options
+                            .contains(crate::ProjectOptions::UNUSED_PARAMETERS),
+                    );
+                    on.set(
+                        Toggles::NEW_ON_NON_OBJECT,
+                        project
+                            .options
+                            .contains(crate::ProjectOptions::NEW_ON_NON_OBJECT),
+                    );
                     on
                 },
-                constant_types: (project.level >= 2 && project.options.contains(crate::ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES))
-                    .then(|| project.dynamic_constant_types.clone()),
-                printf_types: (project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES))
-                    .then_some(project.options.contains(crate::ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES)),
+                constant_types: (project.level >= 2
+                    && project
+                        .options
+                        .contains(crate::ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES))
+                .then(|| project.dynamic_constant_types.clone()),
+                printf_types: (project.level >= 5
+                    && project
+                        .options
+                        .contains(crate::ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES))
+                .then_some(
+                    project
+                        .options
+                        .contains(crate::ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES),
+                ),
             },
             function_likes,
         }
@@ -302,7 +542,6 @@ pub(super) struct TraitUse {
 }
 
 /// A checker for one walk of `file`.
-#[allow(clippy::too_many_arguments)]
 fn checker<'a, 'arena>(
     arena: &'arena LocalArena,
     file: &'a File,
@@ -315,8 +554,14 @@ fn checker<'a, 'arena>(
     trait_class: Option<&str>,
 ) -> Checker<'a, 'arena> {
     let php_version = project.php_version;
-    let facts = &sources.scanned(file.id).expect("the scan read every walked file").facts;
-    let functions = project.function_likes.get(&file.id).map_or(&[][..], Vec::as_slice);
+    let facts = &sources
+        .scanned(file.id)
+        .expect("the scan read every walked file")
+        .facts;
+    let functions = project
+        .function_likes
+        .get(&file.id)
+        .map_or(&[][..], Vec::as_slice);
     let mut typed = super::larastan::typed_expressions(project.larastan.as_ref(), names, program);
     typed.extend(super::internal::typed_expressions(
         project.internal.as_ref(),
@@ -329,18 +574,63 @@ fn checker<'a, 'arena>(
     typed.extend(arrays::typed_expressions(program));
     typed.extend(super::names::typed_class_constants(program, project.level));
     typed.extend(super::scope::typed_method_receivers(program));
-    typed.extend(super::function_callable::typed_expressions(program, project.level));
-    typed.extend(super::method_callable::typed_expressions(program, project.level));
-    typed.extend(super::types::typed_expressions(program, &file.contents, &facts.comments, project.level,
-        project.switches.contains(Switches::CHECK_ARGUMENT_TYPES) || project.switches.contains(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE), project.switches.contains(Switches::CHECK_THIS_ONLY)));
+    typed.extend(super::function_callable::typed_expressions(
+        program,
+        project.level,
+    ));
+    typed.extend(super::method_callable::typed_expressions(
+        program,
+        project.level,
+    ));
+    typed.extend(super::types::typed_expressions(
+        program,
+        &file.contents,
+        &facts.comments,
+        project.level,
+        project.switches.contains(Switches::CHECK_ARGUMENT_TYPES)
+            || project
+                .switches
+                .contains(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE),
+        project.switches.contains(Switches::CHECK_THIS_ONLY),
+    ));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
-    typed.extend(super::dead_code::bodies(program, project.level, project.toggled.on.intersects(Toggles::UNUSED_PARAMETERS | Toggles::UNUSED_VARIABLE)));
+    typed.extend(super::dead_code::bodies(
+        program,
+        project.level,
+        project
+            .toggled
+            .on
+            .intersects(Toggles::UNUSED_PARAMETERS | Toggles::UNUSED_VARIABLE),
+    ));
     typed.extend(super::operators::typed_expressions(project.strict, program));
     typed.extend(super::types::throw_points::typed(
         program,
-        project.level >= 4 || project.exceptions.checks.contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS),
+        project.level >= 4
+            || project
+                .exceptions
+                .checks
+                .contains(crate::ExceptionChecks::MISSING_CHECKED_EXCEPTION_IN_THROWS),
     ));
-    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), &project.include_file, &facts.comments, functions);
+    let (include_typed, include_state) = super::include_file::prepare(
+        arena,
+        file,
+        program,
+        names,
+        codebase,
+        php_version,
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS),
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH),
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_BLOCK),
+        &project.include_file,
+        &facts.comments,
+        functions,
+    );
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
     let calls = if project.method_rules.call_methods {
@@ -350,9 +640,60 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class, &facts.comments, functions);
+    let (
+        mut types,
+        defined,
+        origins,
+        call_terminations,
+        named_call_scopes,
+        keep_void_types,
+        native_types,
+        nullsafe_method_receiver_types,
+        property_offset_writes,
+    ) = infer(
+        arena,
+        file,
+        program,
+        names,
+        codebase,
+        php_version,
+        project.level,
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS),
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH),
+        project
+            .switches
+            .contains(Switches::POLLUTE_SCOPE_WITH_BLOCK),
+        typed,
+        calls,
+        &mut variables,
+        &mut variable_writes,
+        &mut property_initializations,
+        project.larastan.as_ref(),
+        trait_class,
+        &facts.comments,
+        functions,
+    );
     if project.level >= 4 {
-        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), functions);
+        let (subjects, unknown) = super::dead_code::match_subject_types(
+            file,
+            program,
+            codebase,
+            php_version,
+            project
+                .switches
+                .contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS),
+            project
+                .switches
+                .contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH),
+            project
+                .switches
+                .contains(Switches::POLLUTE_SCOPE_WITH_BLOCK),
+            functions,
+        );
         types.extend(subjects);
         for span in unknown {
             types.remove(&span);
@@ -452,7 +793,11 @@ pub(crate) fn check_file(
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
-    let errors = crate::parser::errors(file, program, crate::codebase::php_version(project.php_version));
+    let errors = crate::parser::errors(
+        file,
+        program,
+        crate::codebase::php_version(project.php_version),
+    );
     if !errors.is_empty() {
         return (errors, 0);
     }
@@ -473,15 +818,25 @@ pub(crate) fn check_file(
     errors.extend(parse_errors(&name, &parse));
     project.keep_reported(&mut errors);
     let mut out = Vec::new();
-    if project.switches.contains(Switches::REPORT_IGNORES_WITHOUT_COMMENTS) {
+    if project
+        .switches
+        .contains(Switches::REPORT_IGNORES_WITHOUT_COMMENTS)
+    {
         out.extend(ignores_without_comments(&name, &mut lines, &mut unmatched));
     }
     let (kept, ignored) = local_ignores(&name, errors, &mut lines, &mut unmatched);
     let mut fixable_ignored = ignored.iter().filter(|e| e.fixable).count();
     out.extend(kept);
     fix_all_line_errors(&name, Some(&file.contents), &mut out);
-    if project.switches.contains(Switches::REPORT_UNMATCHED_IGNORES) {
-        out.extend(unmatched_line_errors(&name, Some(&file.contents), &unmatched));
+    if project
+        .switches
+        .contains(Switches::REPORT_UNMATCHED_IGNORES)
+    {
+        out.extend(unmatched_line_errors(
+            &name,
+            Some(&file.contents),
+            &unmatched,
+        ));
     }
     enum TraitWalk {
         Enter(TraitUse),
@@ -505,7 +860,8 @@ pub(crate) fn check_file(
         if !active.insert(trait_name.clone()) {
             continue;
         }
-        let (errors, uses, ignored) = in_trait_context(&name, &u, codebase, project, files, sources);
+        let (errors, uses, ignored) =
+            in_trait_context(&name, &u, codebase, project, files, sources);
         out.extend(errors);
         fixable_ignored += ignored;
         pending.push(TraitWalk::Exit(trait_name));
@@ -543,7 +899,15 @@ fn in_trait_context(
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, &file);
     let mut checker = checker(
-        &arena, &file, program, &names, codebase, project, files, sources, Some(class),
+        &arena,
+        &file,
+        program,
+        &names,
+        codebase,
+        project,
+        files,
+        sources,
+        Some(class),
     );
     let display = codebase
         .get_class_like(class.as_bytes())
@@ -555,7 +919,7 @@ fn in_trait_context(
         format!("class {display}")
     };
     checker.label = format!("{} (in context of {context})", checker.file_name());
-    checker.guards = u.php_versions.clone();
+    checker.guards.clone_from(&u.php_versions);
     checker.trait_context = Some(super::TraitContext {
         class_file: class_file.to_string(),
         class: class.to_string(),
@@ -575,16 +939,24 @@ fn in_trait_context(
     let mut errors = std::mem::take(&mut checker.errors);
     project.keep_reported(&mut errors);
     let (kept, ignored) = local_ignores(&label, errors, &mut lines, &mut unmatched);
-    (kept, checker.trait_uses, ignored.iter().filter(|e| e.fixable).count())
+    (
+        kept,
+        checker.trait_uses,
+        ignored.iter().filter(|e| e.fixable).count(),
+    )
 }
 
 /// Walk a file with the `typeAliases` parameter and Larastan's type node extensions in effect.
-fn walk<'a, 'arena>(checker: &mut super::Checker<'a, 'arena>, program: &'arena Program<'arena>, project: &Checks) {
+fn walk<'arena>(
+    checker: &mut super::Checker<'_, 'arena>,
+    program: &'arena Program<'arena>,
+    project: &Checks,
+) {
     let (codebase, larastan) = (checker.codebase, checker.larastan);
     let nodes = |name: &str, args: &[pun_phpstan::types::Type]| {
         larastan.and_then(|l| super::larastan::type_node(codebase, l, name, args))
     };
     pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
-        pun_phpstan::resolve::with_type_nodes(&nodes, || checker.walk_program(program, &mut ()))
+        pun_phpstan::resolve::with_type_nodes(&nodes, || checker.walk_program(program, &mut ()));
     });
 }

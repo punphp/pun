@@ -122,14 +122,14 @@ impl FlagWalker<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FlagWalker<'_> {
-    fn walk_in_if(&mut self, r#if: &'ast If<'arena>, _: &mut ()) {
+    fn walk_in_if(&mut self, r#if: &'ast If<'arena>, (): &mut ()) {
         self.check_condition(r#if.condition);
     }
 
     fn walk_in_if_statement_body_else_if_clause(
         &mut self,
         clause: &'ast IfStatementBodyElseIfClause<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.check_condition(clause.condition);
     }
@@ -137,12 +137,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FlagWalker<'_> {
     fn walk_in_if_colon_delimited_body_else_if_clause(
         &mut self,
         clause: &'ast IfColonDelimitedBodyElseIfClause<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.check_condition(clause.condition);
     }
 
-    fn walk_in_conditional(&mut self, conditional: &'ast Conditional<'arena>, _: &mut ()) {
+    fn walk_in_conditional(&mut self, conditional: &'ast Conditional<'arena>, (): &mut ()) {
         self.check_condition(conditional.condition);
     }
 }
@@ -153,7 +153,7 @@ struct VariableFinder<'t> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for VariableFinder<'_> {
-    fn walk_in_direct_variable(&mut self, variable: &'ast DirectVariable<'arena>, _: &mut ()) {
+    fn walk_in_direct_variable(&mut self, variable: &'ast DirectVariable<'arena>, (): &mut ()) {
         if variable.name == self.target {
             self.found = true;
         }

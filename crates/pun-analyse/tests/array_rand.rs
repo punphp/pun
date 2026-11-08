@@ -39,7 +39,15 @@ fn check_version(file: &str, level: u8, expected: &str, php_version: u32) {
         })
         .collect();
     want.sort_by(|a, b| (a.0, &a.2).cmp(&(b.0, &b.2)));
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(
+            i64,
+            std::string::String,
+            std::string::String,
+            std::option::Option<std::string::String>
+        ); 0]
+    );
     assert_eq!(got, want, "{file}");
 }
 

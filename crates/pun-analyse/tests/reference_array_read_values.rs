@@ -244,7 +244,7 @@ fn reference_array_source_observations_are_once_only_with_native_off_and_on() {
         &names,
         Settings::default().version,
     ));
-    let mut references = prelude.symbol_references.clone();
+    let mut references = prelude.symbol_references;
     populate_codebase(
         &mut codebase,
         &mut references,

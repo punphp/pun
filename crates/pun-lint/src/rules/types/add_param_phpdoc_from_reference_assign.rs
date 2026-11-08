@@ -41,7 +41,7 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
         let mut scope = ancestors.to_vec();
         scope.push(node);
         let mut changed = false;
-        for param in f.parameters.parameters.iter() {
+        for param in &f.parameters.parameters {
             if param.ampersand.is_none() || !param.hint.as_ref().is_some_and(is_array_hint) {
                 continue;
             }

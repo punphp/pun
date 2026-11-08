@@ -44,15 +44,15 @@ struct Wanted {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
         if self.in_include > 0 {
             self.spans.push(e.span());
         }
     }
-    fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
+    fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, (): &mut ()) {
         self.in_include += usize::from(included(construct).is_some());
     }
-    fn walk_out_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
+    fn walk_out_construct(&mut self, construct: &'ast Construct<'arena>, (): &mut ()) {
         self.in_include -= usize::from(included(construct).is_some());
     }
 }
@@ -628,12 +628,12 @@ fn print_expr(c: &Checker, expr: &Expression) -> String {
         }
         Expression::CompositeString(CompositeString::Interpolated(s)) => {
             let mut out = String::from("\"");
-            for part in s.parts.iter() {
+            for part in &s.parts {
                 match part {
                     StringPart::Literal(l) => out.push_str(&String::from_utf8_lossy(l.raw)),
                     StringPart::Expression(e) => out.push_str(&format!("{{{}}}", print_expr(c, e))),
                     StringPart::BracedExpression(e) => {
-                        out.push_str(&format!("{{{}}}", print_expr(c, e.expression)))
+                        out.push_str(&format!("{{{}}}", print_expr(c, e.expression)));
                     }
                 }
             }
@@ -655,7 +655,7 @@ pub(super) struct FileGuard {
 fn variables(expr: &Expression) -> Vec<Vec<u8>> {
     struct Vars(Vec<Vec<u8>>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Vars {
-        fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, _: &mut ()) {
+        fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, (): &mut ()) {
             self.0.push(v.name.to_vec());
         }
     }

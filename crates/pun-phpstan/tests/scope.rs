@@ -75,7 +75,10 @@ fn class(name: &str) -> Option<Arc<Class>> {
     let class =
         |name: &str, ancestors: &[&str], templates, constants: &[(&str, &str)], generics| Class {
             name: name.to_string(),
-            ancestors: ancestors.iter().map(|a| a.to_string()).collect(),
+            ancestors: ancestors
+                .iter()
+                .map(std::string::ToString::to_string)
+                .collect(),
             templates,
             cases: Vec::new(),
             case_values: Vec::new(),
@@ -448,7 +451,7 @@ fn constant_expressions() {
         for row in f.as_array().unwrap() {
             let input = row[1].as_str().unwrap();
             let want = row[2].as_str().unwrap();
-            let tags = phpdoc::tags(&format!("/** @method void m($a = {input}) */")).unwrap();
+            let tags = phpdoc::tags(format!("/** @method void m($a = {input}) */")).unwrap();
             let phpdoc::TagValue::Method { params, .. } = &tags[0].value else {
                 panic!("{input}: no method tag");
             };

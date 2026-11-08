@@ -75,8 +75,8 @@ impl Rule for NoUselessContinue {
         }
         let tokens = tokens(ctx);
         let list = match body {
-            Body::One(s) => body_list(&tokens, s),
-            Body::Open(s, from, to) => open_list(&tokens, s, from, to),
+            Body::One(s) => body_list(tokens, s),
+            Body::Open(s, from, to) => open_list(tokens, s, from, to),
         };
         // refactor: pop the last statement while canRemoveLastStatement.
         if list.nop {
@@ -98,7 +98,7 @@ impl Rule for NoUselessContinue {
                 format!("{} {{\n{indent}}}", header(ctx.source, node)),
             )]
         } else {
-            remove(ctx.source, &tokens, &list, &indices)
+            remove(ctx.source, tokens, &list, &indices)
         };
         out.push(Report {
             span: node_span(list.stmts[first]),

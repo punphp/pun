@@ -73,8 +73,8 @@ impl Rule for AddDataProviderIteratorReturnType {
                     }
                 }
             }
-            for list in method.attribute_lists.iter() {
-                for attribute in list.attributes.iter() {
+            for list in &method.attribute_lists {
+                for attribute in &list.attributes {
                     let name = resolve_class_name(&scope, &attribute.name);
                     if !DATA_PROVIDER_ATTRIBUTES
                         .iter()

@@ -8,7 +8,8 @@ use pun_phpstan::types::{Accessory, Level, Type, intersect, is_super_type_of};
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &["preInc.type", "postInc.type", "preDec.type", "postDec.type"];
+pub(super) const IDENTIFIERS: &[&str] =
+    &["preInc.type", "postInc.type", "preDec.type", "postDec.type"];
 
 /// The operand whose type the rule reads.
 pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {

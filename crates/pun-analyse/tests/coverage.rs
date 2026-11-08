@@ -61,7 +61,7 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
         config: Some(format!("{root}/{neon}.neon")),
         ..Options::for_project(&root)
     };
-    let config = resolve(&options).map_err(|e| e.to_string())?;
+    let config = resolve(&options)?;
     let prefix = format!("{root}/");
     let mut got: Vec<Key> = analyse(dir, &config)
         .unwrap()
@@ -231,8 +231,10 @@ fn literal_integer_division_overflow_matches_php_and_phpstan() {
         let program = parse_file(&arena, &file);
         assert!(!program.has_errors());
         let names = NameResolver::new(&arena).resolve(program);
-        let mut settings = Settings::default();
-        settings.track_native_types = native;
+        let settings = Settings {
+            track_native_types: native,
+            ..Default::default()
+        };
         let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
         let mut references = SymbolReferences::new();
         populate_codebase(

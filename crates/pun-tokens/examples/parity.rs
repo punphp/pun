@@ -8,6 +8,11 @@
 //!        (kind incl. `CT::` names, content). Uses .oracle/php-cs-fixer unless PUN_PHP_CS_FIXER is set.
 //! classy: TokensAnalyzer::get_classy_elements vs getClassyElements (type, classIndex, index).
 //! Files PHP refuses to parse (parse/fixer modes) are reported and skipped.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "a command-line tool reports on stdout and stderr"
+)]
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -210,9 +215,6 @@ pub(crate) fn run(php: &Path, mode: &str, paths: &[String], verbose: bool) -> us
         "mode={mode} files={} identical={same} mismatched={diff} skipped={skipped} tokens={tokens} mismatched_tokens={bad_tokens}",
         dump.len()
     );
-    println!(
-        "time: php {:.2?} (incl. startup), ours {:.2?}",
-        php_time, rust_time
-    );
+    println!("time: php {php_time:.2?} (incl. startup), ours {rust_time:.2?}");
     diff
 }

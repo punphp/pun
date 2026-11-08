@@ -29,6 +29,10 @@ pub(crate) struct Walk<'a> {
 impl Walk<'_> {
     /// Call the rules that target `kind` on `node`, then make `node` the innermost ancestor.
     #[inline(always)]
+    #[expect(
+        clippy::inline_always,
+        reason = "the per-node dispatch of every lint run"
+    )]
     fn enter<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,

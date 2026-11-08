@@ -14,7 +14,7 @@ use pun_phpstan::types::Type;
 
 /// Each tag of a doc comment and its value: the rest of its line and the lines after it up to the next tag, joined
 /// with a space. A tag starts a line (after the leading `*`).
-pub fn tags(doc: &[u8]) -> Vec<(String, Vec<u8>)> {
+pub(super) fn tags(doc: &[u8]) -> Vec<(String, Vec<u8>)> {
     let body = doc.strip_prefix(b"/**").unwrap_or(doc);
     let body = body.strip_suffix(b"*/").unwrap_or(body);
     let mut tags: Vec<(String, Vec<u8>)> = Vec::new();
@@ -78,7 +78,7 @@ fn type_value(value: &[u8]) -> Option<(Node, &[u8])> {
 
 /// A `@method` tag as written (`parseMethodTagValue()`).
 #[derive(Clone)]
-pub struct MethodTag {
+pub(crate) struct MethodTag {
     pub name: String,
     pub ret: Option<Node>,
     /// (name without `$`, type, whether the default is `null`)
@@ -209,7 +209,7 @@ fn method_value(value: &[u8]) -> Option<MethodTag> {
 
 /// `@template` (with its variants) as written.
 #[derive(Clone)]
-pub struct TemplateTag {
+pub(crate) struct TemplateTag {
     pub name: String,
     pub bound: Option<Node>,
     pub default: Option<Node>,
@@ -266,7 +266,7 @@ const TEMPLATE_TAGS: [&str; 4] = [
 /// The tags of one doc comment that PHPStan resolves to types, in PhpDocNodeResolver's order (a later tag of the
 /// same kind wins, except a `@psalm-` one whose type is unresolvable).
 #[derive(Clone, Default)]
-pub struct Doc {
+pub(crate) struct Doc {
     /// (tag, parameter name, type, variadic)
     pub params: Vec<(String, String, Node, bool)>,
     /// (tag, type)
@@ -301,7 +301,7 @@ pub struct Doc {
 }
 
 impl Doc {
-    pub fn parse(doc: &[u8]) -> Doc {
+    pub(crate) fn parse(doc: &[u8]) -> Doc {
         let mut out = Doc::default();
         let tags = tags(doc);
         let order = |list: &[&str], tag: &str| list.iter().position(|t| *t == tag);
@@ -465,7 +465,7 @@ impl Doc {
     }
 
     /// `resolveParamTags()`: each parameter's type, by name.
-    pub fn param_types(&self, scope: &NameScope) -> HashMap<String, (Type, bool)> {
+    pub(crate) fn param_types(&self, scope: &NameScope) -> HashMap<String, (Type, bool)> {
         let mut out = HashMap::new();
         for (tag, name, node, variadic) in &self.params {
             let ty = resolve_in(node, scope);
@@ -478,7 +478,7 @@ impl Doc {
     }
 
     /// `resolveParamOutTags()` or `resolveParamClosureThisTags()` of `tags` ([`Doc::outs`], [`Doc::closure_this`]).
-    pub fn named_types(
+    pub(crate) fn named_types(
         tags: &[(String, String, Node)],
         scope: &NameScope,
     ) -> HashMap<String, Type> {
@@ -494,7 +494,7 @@ impl Doc {
     }
 
     /// `resolveReturnTag()`.
-    pub fn return_type(&self, scope: &NameScope) -> Option<Type> {
+    pub(crate) fn return_type(&self, scope: &NameScope) -> Option<Type> {
         let mut out = None;
         for (tag, node) in &self.returns {
             let ty = resolve_in(node, scope);
@@ -508,7 +508,7 @@ impl Doc {
 
     /// `resolveVarTags()`: the named ones by name, else the unnamed ones of the last tag kind that has some (under
     /// the empty name).
-    pub fn var_types(&self, scope: &NameScope) -> Vec<(String, Type)> {
+    pub(crate) fn var_types(&self, scope: &NameScope) -> Vec<(String, Type)> {
         let mut named: Vec<(String, Type)> = Vec::new();
         let mut unnamed: Vec<(usize, Type)> = Vec::new();
         for (tag, name, node) in &self.vars {
@@ -621,7 +621,7 @@ fn template_value(value: &[u8]) -> Option<TemplateTag> {
 /// PHPStan's `NameScope`: the namespace and `use` imports of the place a PHPDoc is, the class `self` means, and the
 /// template types in scope.
 #[derive(Clone, Default)]
-pub struct NameScope {
+pub(crate) struct NameScope {
     pub names: Arc<NamespaceScope>,
     pub class: Option<String>,
     pub parent: Option<String>,
@@ -668,7 +668,7 @@ impl Scope for NameScope {
 }
 
 /// The namespaces of a file with their imports (FileTypeMapper's walk), by byte range.
-pub struct FileScopes {
+pub(crate) struct FileScopes {
     namespaces: Vec<(u32, u32, Arc<NamespaceScope>)>,
     /// The empty scope of an offset outside every namespace.
     outside: Arc<NamespaceScope>,
@@ -677,17 +677,17 @@ pub struct FileScopes {
 }
 
 impl FileScopes {
-    pub fn of(program: &Program) -> FileScopes {
+    pub(crate) fn of(program: &Program) -> FileScopes {
         let mut namespaces = Vec::new();
         let mut global = NamespaceScope::global();
         let mut any = false;
-        for s in program.statements.iter() {
+        for s in &program.statements {
             match s {
                 Statement::Namespace(n) => {
                     any = true;
                     let name = n.name.as_ref().map(|id| id.value().to_vec());
                     let mut scope = NamespaceScope::new(name);
-                    for inner in n.statements().iter() {
+                    for inner in n.statements() {
                         if let Statement::Use(u) = inner {
                             scope.populate_from_use(u);
                         }
@@ -710,14 +710,18 @@ impl FileScopes {
     }
 
     /// The `use` statements of traits between `start` and `end`: offset and written names.
-    pub fn trait_uses(&self, start: u32, end: u32) -> impl Iterator<Item = &(u32, Vec<String>)> {
+    pub(crate) fn trait_uses(
+        &self,
+        start: u32,
+        end: u32,
+    ) -> impl Iterator<Item = &(u32, Vec<String>)> {
         self.trait_uses
             .iter()
             .filter(move |(at, _)| start <= *at && *at <= end)
     }
 
     /// The namespace scope at `offset`.
-    pub fn at(&self, offset: u32) -> &Arc<NamespaceScope> {
+    pub(crate) fn at(&self, offset: u32) -> &Arc<NamespaceScope> {
         self.namespaces
             .iter()
             .find(|(start, end, _)| *start <= offset && offset <= *end)

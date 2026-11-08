@@ -35,11 +35,7 @@ impl Fixer for BlankLineAfterOpeningTagFixer {
         if !newline_found {
             return;
         }
-        let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
-            1
-        } else {
-            0
-        };
+        let open_tag_index = usize::from(tokens[0].is_kind(T_INLINE_HTML));
         let token = &tokens[open_tag_index];
         if !token.get_content().contains(&b'\n') {
             let t = Token::with_id(token.get_id(), [rtrim(token.get_content()), line_ending].concat());

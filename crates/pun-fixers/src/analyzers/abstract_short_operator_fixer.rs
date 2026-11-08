@@ -4,12 +4,12 @@ use super::alternative_syntax_analyzer::AlternativeSyntaxAnalyzer;
 use super::range_analyzer::{Range, range_equals_range};
 use pun_tokens::{BlockType, Kind::*, Proto, Token, Tokens};
 
-pub trait ShortOperator {
+pub(crate) trait ShortOperator {
     fn get_replacement_token(&self, token: &Token) -> Token;
     fn is_operator_token_candidate(&self, tokens: &Tokens, index: usize) -> bool;
 }
 
-pub fn apply_fix(fixer: &impl ShortOperator, tokens: &mut Tokens) {
+pub(crate) fn apply_fix(fixer: &impl ShortOperator, tokens: &mut Tokens) {
     let alternative_syntax_analyzer = AlternativeSyntaxAnalyzer;
     let mut index = tokens.count();
     while index > 4 {

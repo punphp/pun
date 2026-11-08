@@ -690,7 +690,7 @@ impl Fixer for BinaryOperatorSpacesFixer {
             match value {
                 Value::Null => configured.push((operator.to_string(), None)),
                 Value::String(s) if ALLOWED_VALUES.contains(&s.as_str()) => {
-                    configured.push((operator.to_string(), Some(strategy(s))))
+                    configured.push((operator.to_string(), Some(strategy(s))));
                 }
                 v => bail!(
                     "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"{operator}\", expected any of {}, got \"{}\".",

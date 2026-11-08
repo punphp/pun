@@ -18,7 +18,7 @@ use crate::bitset::BitSet;
 
 /// What these checks remember during a walk.
 #[derive(Default)]
-pub struct State {
+pub(super) struct State {
     /// `[]` fetches PHPStan visits inside `enterExpressionAssign()` for them.
     assigned: HashSet<Span>,
     /// Subtrees PHPStan only assigns virtually (VirtualAssignNodeCallback: no rule sees their nodes).
@@ -113,7 +113,7 @@ fn list_items<'e, 'arena>(
 }
 
 /// NullsafeCheck::containsNullSafe() on an expression read (a returned or referenced expression).
-pub fn contains_nullsafe(e: &Expression) -> bool {
+pub(super) fn contains_nullsafe(e: &Expression) -> bool {
     nullsafe(e, ListRole::Read)
 }
 
@@ -195,7 +195,7 @@ fn invalid_assign_var(c: &mut Checker, at: Span, var: &Expression, expr: Option<
 }
 
 /// An `Assign`, `AssignOp` or `AssignRef`.
-pub fn assignment(c: &mut Checker, a: &Assignment) {
+pub(super) fn assignment(c: &mut Checker, a: &Assignment) {
     let referenced = match (&a.operator, unparen(a.rhs)) {
         (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u))
             if u.operator.is_reference() =>
@@ -279,7 +279,7 @@ fn assign_var(c: &mut Checker, var: &Expression, role: ListRole) {
 }
 
 /// InvalidVariableAssignRule.
-pub fn variable_assign(c: &mut Checker, v: &DirectVariable) {
+pub(super) fn variable_assign(c: &mut Checker, v: &DirectVariable) {
     super::by_ref_foreach::variable_assign(c, v);
     if v.name != b"$this" {
         return;
@@ -302,7 +302,7 @@ pub fn variable_assign(c: &mut Checker, v: &DirectVariable) {
 }
 
 /// `foreach`: a variable key or value is a VariableAssignNode; any other target is assigned virtually.
-pub fn foreach(c: &mut Checker, f: &Foreach) {
+pub(super) fn foreach(c: &mut Checker, f: &Foreach) {
     let (key, value) = match &f.target {
         ForeachTarget::Value(t) => (None, t.value),
         ForeachTarget::KeyValue(t) => (Some(t.key), t.value),
@@ -321,20 +321,20 @@ pub fn foreach(c: &mut Checker, f: &Foreach) {
 }
 
 /// `catch (E $var)`.
-pub fn catch(c: &mut Checker, clause: &TryCatchClause) {
+pub(super) fn catch(c: &mut Checker, clause: &TryCatchClause) {
     if let Some(v) = &clause.variable {
         variable_assign(c, v);
     }
 }
 
 /// `++`/`--` assign their operand virtually.
-pub fn increment(c: &mut Checker, operand: &Expression) {
+pub(super) fn increment(c: &mut Checker, operand: &Expression) {
     assign_var(c, operand, ListRole::Read);
 }
 
 /// `unset($a[$k])` assigns its dim-fetch chain virtually.
-pub fn unset(c: &mut Checker, u: &Unset) {
-    for value in u.values.iter() {
+pub(super) fn unset(c: &mut Checker, u: &Unset) {
+    for value in &u.values {
         if let Expression::ArrayAccess(_) = unparen(value) {
             assign_var(c, value, ListRole::Read);
         }
@@ -342,7 +342,7 @@ pub fn unset(c: &mut Checker, u: &Unset) {
 }
 
 /// OffsetAccessWithoutDimForReadingRule.
-pub fn array_append(c: &mut Checker, a: &ArrayAppend) {
+pub(super) fn array_append(c: &mut Checker, a: &ArrayAppend) {
     let span = a.span();
     if c.assign.assigned.contains(&span)
         || c.assignment_key(&Expression::ArrayAppend(a.clone())).is_some_and(|key| c.assign.expressions.contains(&key))
@@ -423,7 +423,7 @@ fn of_syntax(params: &FunctionLikeParameterList) -> Vec<Param> {
 }
 
 /// A call whose arguments [`arguments()`] reads.
-pub enum Callee<'e, 'arena> {
+pub(super) enum Callee<'e, 'arena> {
     Function(&'e FunctionCall<'arena>),
     Method(&'e MethodCall<'arena>),
     StaticMethod(&'e StaticMethodCall<'arena>),
@@ -543,7 +543,7 @@ fn normalized_arg<'e, 'arena>(
 
 /// FuncCallHandler's processVirtualAssign() of a built-in's array argument after processArgs() (array_walk with a
 /// by-reference closure, array_pop, sort and the rest).
-pub fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
+pub(super) fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
     if let Some(array) = virtual_assigned(c, call) {
         // A mutated argument keeps its expression kind; PHPParser does not convert its arrays to List_.
         assign_var(c, array, ListRole::Read);
@@ -588,7 +588,7 @@ pub(super) fn virtual_assigned<'e, 'arena>(c: &Checker, call: &'e FunctionCall<'
 
 /// processArgs() for arguments passed by reference to a parameter that creates a new variable: a `[]` argument is
 /// visited inside `enterExpressionAssign()`, and any argument but `$this` is assigned virtually.
-pub fn arguments(c: &mut Checker, call: Callee) {
+pub(super) fn arguments(c: &mut Checker, call: Callee) {
     let args = match &call {
         Callee::Function(f) => &f.argument_list,
         Callee::Method(m) => &m.argument_list,
@@ -681,7 +681,7 @@ fn by_ref_candidate(value: &Expression) -> bool {
 }
 
 /// The method-call object or static-call class expression whose type [`callee_params()`] reads.
-pub fn typed_object<'e, 'arena>(
+pub(super) fn typed_object<'e, 'arena>(
     object: &'e Expression<'arena>,
     args: &ArgumentList<'arena>,
 ) -> Option<&'e Expression<'arena>> {
@@ -691,7 +691,7 @@ pub fn typed_object<'e, 'arena>(
 }
 
 /// The property fetch `=&` references, whose holder's type PropertyAssignRefRule reads (`$this` aside).
-pub fn referenced_property<'e, 'arena>(
+pub(super) fn referenced_property<'e, 'arena>(
     a: &'e Assignment<'arena>,
 ) -> Option<&'e PropertyAccess<'arena>> {
     let (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u)) = (&a.operator, unparen(a.rhs))
@@ -705,7 +705,7 @@ pub fn referenced_property<'e, 'arena>(
 }
 
 /// PropertyAssignRefRule.
-pub fn property_assign_ref(c: &mut Checker, a: &Assignment) {
+pub(super) fn property_assign_ref(c: &mut Checker, a: &Assignment) {
     // PhpVersion::supportsAsymmetricVisibility()
     if c.php_version < 80400 {
         return;

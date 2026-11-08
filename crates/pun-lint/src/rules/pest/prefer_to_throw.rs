@@ -66,7 +66,7 @@ impl Rule for PreferToThrow {
             return;
         }
         let mut edits = Vec::new();
-        for argument in call.argument_list.arguments.iter() {
+        for argument in &call.argument_list.arguments {
             if let Expression::Closure(closure) = unparenthesize(argument.value()) {
                 find_try(ctx, Node::Block(&closure.body), &mut edits);
             }
@@ -110,12 +110,12 @@ fn convert(ctx: &Context<'_>, t: &Try<'_>) -> Option<Edit> {
         return None;
     }
     let tokens = tokens(ctx);
-    let body = block_list(&tokens, &t.block);
+    let body = block_list(tokens, &t.block);
     if body.is_empty() {
         return None;
     }
     let message = message_assertion(ctx, &catch.block, catch.variable.as_ref().map(|v| v.name));
-    if !block_list(&tokens, &catch.block).is_empty() && message.is_none() {
+    if !block_list(tokens, &catch.block).is_empty() && message.is_none() {
         return None;
     }
     let span = node_span(t);
@@ -158,7 +158,7 @@ fn message_assertion<'a>(
     var: Option<&[u8]>,
 ) -> Option<&'a Expression<'a>> {
     let tokens = tokens(ctx);
-    let list = block_list(&tokens, block);
+    let list = block_list(tokens, block);
     let ([statement], false) = (list.stmts.as_slice(), list.nop) else {
         return None;
     };

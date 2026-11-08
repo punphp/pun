@@ -68,11 +68,7 @@ impl Rule for PreferToBeUuid {
         else {
             return;
         };
-        let wanted = if is_name(&call.method, "toBeGreaterThan") {
-            0
-        } else {
-            1
-        };
+        let wanted = u64::from(!is_name(&call.method, "toBeGreaterThan"));
         if expected.value != Some(wanted) {
             return;
         }

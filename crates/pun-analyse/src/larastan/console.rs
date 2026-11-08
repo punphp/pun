@@ -95,7 +95,7 @@ impl InputArgument {
 
     /// `new InputArgument($name, $mode, '', $default)`: a missing mode is OPTIONAL, an array's `null` default `[]`.
     fn new(name: String, mode: Option<Option<u32>>, default: Value) -> InputArgument {
-        let mode = mode.map_or(Some(2), |m| m);
+        let mode = mode.unwrap_or(Some(2));
         let default = match (mode, default) {
             (Some(m), Value::Null) if m & Self::IS_ARRAY != 0 => Value::Array(Vec::new()),
             (_, d) => d,
@@ -216,8 +216,8 @@ impl Definition {
         for a in &self.arguments {
             merged.add_argument(a.clone());
         }
-        merged.options = self.options.clone();
-        merged.shortcuts = self.shortcuts.clone();
+        merged.options.clone_from(&self.options);
+        merged.shortcuts.clone_from(&self.shortcuts);
         for o in application.options {
             if merged.option(&o.name).is_none() {
                 merged.options.push(o);
@@ -562,7 +562,7 @@ fn with_method<R>(
 struct Find<'ast, 'arena>(Span, Option<&'ast Block<'arena>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
         if m.name.span == self.0
             && let MethodBody::Concrete(body) = &m.body
         {
@@ -594,7 +594,7 @@ fn inputs(
             Expression::LegacyArray(a) => &a.elements,
             _ => return None,
         };
-        for element in elements.iter() {
+        for element in elements {
             let ArrayElement::Value(v) = element else {
                 return None;
             };
@@ -750,7 +750,7 @@ fn value(e: &Expression) -> Value {
 fn array_value(elements: &TokenSeparatedSequence<ArrayElement>) -> Value {
     let mut items: Vec<(Key, Value)> = Vec::new();
     let mut next = 0;
-    for element in elements.iter() {
+    for element in elements {
         let (key, v) = match element {
             ArrayElement::Value(v) => (Key::Int(next), v.value),
             ArrayElement::KeyValue(kv) => match value(kv.key) {
@@ -818,7 +818,7 @@ struct Configure<'n, 'd, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Configure<'_, '_, 'arena> {
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         let ClassLikeMemberSelector::Identifier(m) = &call.method else {
             return;
         };
@@ -841,7 +841,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Configure<'_, '_, 'arena> {
         self.known &= added.is_some();
     }
 
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.parent |= matches!(call.class, Expression::Parent(_))
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value.eq_ignore_ascii_case(b"configure"));
     }

@@ -215,7 +215,6 @@ impl Rule for AddRelationGenerics {
 
 impl AddRelationGenerics {
     /// The fix: the `@return` tag with `getGenericTypes()`'s generics, in place of the tag's type or added.
-    #[allow(clippy::too_many_arguments)]
     fn report(
         &self,
         ctx: &Context<'_>,
@@ -419,7 +418,7 @@ fn relation_call<'a>(
         found
     }
     let mut ret = None;
-    for statement in body.statements.iter() {
+    for statement in &body.statements {
         ret = first_return(Node::Statement(statement));
         if ret.is_some() {
             break;

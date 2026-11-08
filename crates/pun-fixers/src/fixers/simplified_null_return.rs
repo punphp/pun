@@ -8,7 +8,7 @@ const STATEMENT_END: &[Proto<'static>] = &[Proto::Char(b";"), Proto::Kind(T_CLOS
 
 struct SimplifiedNullReturnFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(SimplifiedNullReturnFixer)
 }
 

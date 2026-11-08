@@ -220,10 +220,10 @@ fn call_like_args<'a>(roots: &[Node<'a, 'a>]) -> Vec<&'a Expression<'a>> {
     let mut values = Vec::new();
     scoped(roots, &mut |node| match node {
         Node::MethodCall(call) => {
-            values.extend(call.argument_list.arguments.iter().map(Argument::value))
+            values.extend(call.argument_list.arguments.iter().map(Argument::value));
         }
         Node::StaticMethodCall(call) => {
-            values.extend(call.argument_list.arguments.iter().map(Argument::value))
+            values.extend(call.argument_list.arguments.iter().map(Argument::value));
         }
         Node::Instantiation(new) => values.extend(
             new.argument_list

@@ -17,7 +17,7 @@ use super::flow::{list, unparen};
 use super::missing_return::{late, method_name};
 use super::returns::returns;
 
-pub const IDENTIFIERS: &[&str] = &["return.unusedType", "property.unusedType"];
+pub(super) const IDENTIFIERS: &[&str] = &["return.unusedType", "property.unusedType"];
 
 /// `isConstantScalarValue()->yes()`.
 fn constant_scalar(t: &Type) -> bool {
@@ -198,36 +198,36 @@ struct Writes<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Writes<'ast, 'arena> {
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         self.assignments.push(a);
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         if u.operator.is_increment_or_decrement() {
             self.others.push(u.operand);
         }
     }
-    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
+    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, (): &mut ()) {
         self.others.push(u.operand);
     }
-    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, (): &mut ()) {
         self.calls.push(Callee::Function(f));
     }
-    fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, (): &mut ()) {
         self.calls.push(Callee::Method(m));
     }
-    fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.calls.push(Callee::StaticMethod(m));
     }
-    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, (): &mut ()) {
         self.calls.push(Callee::New(n));
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         match &f.target {
             ForeachTarget::Value(v) => self.others.push(v.value),
             ForeachTarget::KeyValue(kv) => self.others.extend([kv.key, kv.value]),
         }
     }
-    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
+    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
 }
 
 /// What an assignment writes to a property.

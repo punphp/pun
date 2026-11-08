@@ -13,7 +13,11 @@ use super::super::params::{self, Acceptor, ParamType, Variants};
 use super::super::{Checker, calls, declared, members};
 use super::flow::unparen;
 
-pub const IDENTIFIERS: &[&str] = &["callable.nonCallable", "callable.inaccessibleMethod", "callable.void"];
+pub(crate) const IDENTIFIERS: &[&str] = &[
+    "callable.nonCallable",
+    "callable.inaccessibleMethod",
+    "callable.void",
+];
 
 /// The callee expression of a call by expression.
 pub(super) fn typed(call: &FunctionCall, spans: &mut Vec<Span>) {
@@ -31,96 +35,207 @@ pub(super) fn typed_pipe(p: &Pipe, spans: &mut Vec<Span>) {
 fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
     // The PHPStan type model describes callable types without ExtendedParameterReflection's binding policy.
     // Retain it from the original signature, combining identical callable types with the same AND as PHPStan.
-    let by_ref = || s.params.iter().map(|p| if p.by_ref { ByRef::CreatesNewVariable } else { ByRef::No }).collect::<Vec<_>>();
-    let metadata = c.types.get(&source).into_iter().flat_map(|t| t.types.iter()).filter_map(|a| {
-        let signature = match a {
-            TAtomic::Callable(TCallable::Signature(s)) => s.clone(),
-            TAtomic::Callable(TCallable::Alias(id)) =>
-                mago_codex::ttype::expander::get_signature_of_function_like_identifier(id, c.codebase)?,
-            _ => return None,
-        };
-        let converted = c.to_phpstan(&TUnion::from_atomic(a.clone()));
-        let converted = match converted { Type::Union(types) => types, ty => vec![ty] };
-        if !converted.iter().any(|ty| matches!(ty, Type::Closure(t) | Type::Callable(Some(t)) if **t == *s)) {
-            return None;
-        }
-        let source = match signature.get_source() {
-            Some(FunctionLikeIdentifier::Function(name)) => c.codebase.get_function(name.as_bytes()).map(|f| (f, None)),
-            Some(FunctionLikeIdentifier::Method(class, name)) => c.codebase.get_method(class.as_bytes(), name.as_bytes())
-                .map(|f| (f, c.codebase.get_class_like(class.as_bytes()))),
-            _ => None,
-        };
-        // A builtin first-class callable retains its ExtendedParameterReflection's three-state reference policy.
-        // Signature's boolean alone cannot distinguish array_pop's ReadsArgument from sscanf's output variables.
-        let references = source.filter(|(f, class)| class.is_none() && f.flags.is_built_in())
-            .and_then(|(f, _)| c.builtins.functions.get(&f.name.to_string().to_ascii_lowercase()))
-            .and_then(|f| f.variants.iter().find(|v| v.params.len() == s.params.len()
-                && v.params.iter().zip(&s.params).all(|(p, q)| p.name == q.name && p.optional == q.optional
-                    && p.variadic == q.variadic && (p.by_ref != ByRef::No) == q.by_ref
-                    && pun_phpstan::resolve::resolve_str(&p.ty, None) == q.ty)
-                && pun_phpstan::resolve::resolve_str(&v.ret, None) == s.ret))
-            .map(|v| Acceptor::of_builtin(v).by_ref).unwrap_or_else(by_ref);
-        let bindings = match source {
-            Some((f, class)) => {
-                let bindings = declared::codex_closure_this(c, f, class);
-                s.params.iter().map(|p| bindings.contains_key(&p.name)).collect::<crate::bitset::BitSet>()
+    let by_ref = || {
+        s.params
+            .iter()
+            .map(|p| {
+                if p.by_ref {
+                    ByRef::CreatesNewVariable
+                } else {
+                    ByRef::No
+                }
+            })
+            .collect::<Vec<_>>()
+    };
+    let metadata = c
+        .types
+        .get(&source)
+        .into_iter()
+        .flat_map(|t| t.types.iter())
+        .filter_map(|a| {
+            let signature = match a {
+                TAtomic::Callable(TCallable::Signature(s)) => s.clone(),
+                TAtomic::Callable(TCallable::Alias(id)) => {
+                    mago_codex::ttype::expander::get_signature_of_function_like_identifier(
+                        id, c.codebase,
+                    )?
+                }
+                _ => return None,
+            };
+            let converted = c.to_phpstan(&TUnion::from_atomic(a.clone()));
+            let converted = match converted {
+                Type::Union(types) => types,
+                ty => vec![ty],
+            };
+            if !converted
+                .iter()
+                .any(|ty| matches!(ty, Type::Closure(t) | Type::Callable(Some(t)) if **t == *s))
+            {
+                return None;
             }
-            None => signature.parameters.iter().map(|p| p.get_closure_this_type().is_some()).collect(),
-        };
-        // Preserve late generic PHPDoc operations erased by Mago's callable expansion. Already instantiated class
-        // templates must keep the inferred callable type, not be replaced by their original declaration.
-        let mut types = source.map(|(f, class)| declared::codex_params(c, f, class).into_iter().map(Some).collect::<Vec<_>>())
-            .unwrap_or_else(|| vec![None; s.params.len()])
-            .into_iter().map(|t| t.filter(|t| {
-                let (mut own, mut class) = (false, false);
-                super::super::type_aliases::each(t, &mut |t| {
-                    if let Type::Template(t) = t {
-                        if super::arguments::is_callees(t) { own = true; } else { class = true; }
+            let source = match signature.get_source() {
+                Some(FunctionLikeIdentifier::Function(name)) => {
+                    c.codebase.get_function(name.as_bytes()).map(|f| (f, None))
+                }
+                Some(FunctionLikeIdentifier::Method(class, name)) => c
+                    .codebase
+                    .get_method(class.as_bytes(), name.as_bytes())
+                    .map(|f| (f, c.codebase.get_class_like(class.as_bytes()))),
+                _ => None,
+            };
+            // A builtin first-class callable retains its ExtendedParameterReflection's three-state reference policy.
+            // Signature's boolean alone cannot distinguish array_pop's ReadsArgument from sscanf's output variables.
+            let references = source
+                .filter(|(f, class)| class.is_none() && f.flags.is_built_in())
+                .and_then(|(f, _)| {
+                    c.builtins
+                        .functions
+                        .get(&f.name.to_string().to_ascii_lowercase())
+                })
+                .and_then(|f| {
+                    f.variants.iter().find(|v| {
+                        v.params.len() == s.params.len()
+                            && v.params.iter().zip(&s.params).all(|(p, q)| {
+                                p.name == q.name
+                                    && p.optional == q.optional
+                                    && p.variadic == q.variadic
+                                    && (p.by_ref != ByRef::No) == q.by_ref
+                                    && pun_phpstan::resolve::resolve_str(&p.ty, None) == q.ty
+                            })
+                            && pun_phpstan::resolve::resolve_str(&v.ret, None) == s.ret
+                    })
+                })
+                .map_or_else(by_ref, |v| Acceptor::of_builtin(v).by_ref);
+            let bindings = match source {
+                Some((f, class)) => {
+                    let bindings = declared::codex_closure_this(c, f, class);
+                    s.params
+                        .iter()
+                        .map(|p| bindings.contains_key(&p.name))
+                        .collect::<crate::bitset::BitSet>()
+                }
+                None => signature
+                    .parameters
+                    .iter()
+                    .map(|p| p.get_closure_this_type().is_some())
+                    .collect(),
+            };
+            // Preserve late generic PHPDoc operations erased by Mago's callable expansion. Already instantiated class
+            // templates must keep the inferred callable type, not be replaced by their original declaration.
+            let mut types = source
+                .map_or_else(
+                    || vec![None; s.params.len()],
+                    |(f, class)| {
+                        declared::codex_params(c, f, class)
+                            .into_iter()
+                            .map(Some)
+                            .collect::<Vec<_>>()
+                    },
+                )
+                .into_iter()
+                .map(|t| {
+                    t.filter(|t| {
+                        let (mut own, mut class) = (false, false);
+                        super::super::type_aliases::each(t, &mut |t| {
+                            if let Type::Template(t) = t {
+                                if super::arguments::is_callees(t) {
+                                    own = true;
+                                } else {
+                                    class = true;
+                                }
+                            }
+                        });
+                        own && !class
+                    })
+                })
+                .collect::<Vec<_>>();
+            types.resize(s.params.len(), None);
+            let named = source.map_or(pun_phpstan::types::Tri::Yes, |(f, class)| {
+                params::accepts_named(c, f, class)
+            });
+            Some((bindings, types, named, references))
+        })
+        .reduce(
+            |(mut a, mut types, named, mut references),
+             (b, other, other_named, other_references)| {
+                for i in 0..a.len().min(b.len()) {
+                    let both = a.get(i) && b.get(i);
+                    a.set(i, both);
+                }
+                for (t, o) in types.iter_mut().zip(other) {
+                    if *t != o {
+                        *t = None;
                     }
-                });
-                own && !class
-            })).collect::<Vec<_>>();
-        types.resize(s.params.len(), None);
-        let named = source.map_or(pun_phpstan::types::Tri::Yes, |(f, class)| params::accepts_named(c, f, class));
-        Some((bindings, types, named, references))
-    }).reduce(|(mut a, mut types, named, mut references), (b, other, other_named, other_references)| {
-        for i in 0..a.len().min(b.len()) { let both = a.get(i) && b.get(i); a.set(i, both); }
-        for (t, o) in types.iter_mut().zip(other) { if *t != o { *t = None; } }
-        // PassedByReference::combine(): CreatesNewVariable > ReadsArgument > No.
-        for (a, b) in references.iter_mut().zip(other_references) { if b == ByRef::CreatesNewVariable || *a == ByRef::No { *a = b; } }
-        // Identical closure signatures combine their reflections with OR; distinct callable alternatives are ANDed
-        // by check() before selecting a signature.
-        (a, types, named.or(other_named), references)
-    });
+                }
+                // PassedByReference::combine(): CreatesNewVariable > ReadsArgument > No.
+                for (a, b) in references.iter_mut().zip(other_references) {
+                    if b == ByRef::CreatesNewVariable || *a == ByRef::No {
+                        *a = b;
+                    }
+                }
+                // Identical closure signatures combine their reflections with OR; distinct callable alternatives are ANDed
+                // by check() before selecting a signature.
+                (a, types, named.or(other_named), references)
+            },
+        );
     // A PHPDoc callable type's templates other than its own are the enclosing function's, which its body sees with
     // TemplateTypeArgumentStrategy (MutatingScope's TemplateTypeHelper::toArgument() of the parameter types)
-    let sourced = c.types.get(&source).into_iter().flat_map(|t| t.types.iter()).any(|a| match a {
-        TAtomic::Callable(TCallable::Signature(s)) => s.get_source().is_some(),
-        TAtomic::Callable(TCallable::Alias(_)) => true,
-        _ => false,
-    });
+    let sourced = c
+        .types
+        .get(&source)
+        .into_iter()
+        .flat_map(|t| t.types.iter())
+        .any(|a| match a {
+            TAtomic::Callable(TCallable::Signature(s)) => s.get_source().is_some(),
+            TAtomic::Callable(TCallable::Alias(_)) => true,
+            _ => false,
+        });
     fn outer_arguments(t: &Type, own: &[pun_phpstan::types::Template]) -> Type {
         match t {
             Type::Template(tt) if super::arguments::is_callees(tt) && !own.contains(tt) => {
-                Type::Template(Box::new(pun_phpstan::types::Template { argument: true, ..(**tt).clone() }))
+                Type::Template(Box::new(pun_phpstan::types::Template {
+                    argument: true,
+                    ..(**tt).clone()
+                }))
             }
             _ => t.traverse(&|inner| outer_arguments(inner, own)),
         }
     }
-    let (bindings, types, named, references) = metadata.unwrap_or_else(||
-        (crate::bitset::BitSet::new(s.params.len()), vec![None; s.params.len()], pun_phpstan::types::Tri::Yes, by_ref()));
+    let (bindings, types, named, references) = metadata.unwrap_or_else(|| {
+        (
+            crate::bitset::BitSet::new(s.params.len()),
+            vec![None; s.params.len()],
+            pun_phpstan::types::Tri::Yes,
+            by_ref(),
+        )
+    });
     Acceptor {
         optional: s.params.iter().map(|p| p.optional || p.variadic).collect(),
         variadic: s.params.iter().any(|p| p.variadic),
         void: s.ret == Type::Void,
         names: s.params.iter().map(|p| p.name.clone()).collect(),
-        types: s.params.iter().map(|p| declared::with_classes(c, || p.ty.describe(Level::TypeOnly))).collect(),
+        types: s
+            .params
+            .iter()
+            .map(|p| declared::with_classes(c, || p.ty.describe(Level::TypeOnly)))
+            .collect(),
         variadics: s.params.iter().map(|p| p.variadic).collect(),
         builtin: false,
         accepts_named_arguments: named,
-        param_types: s.params.iter().zip(types).map(|(p, t)| ParamType::Typed(t.unwrap_or_else(|| {
-            if sourced { p.ty.clone() } else { outer_arguments(&p.ty, &s.templates) }
-        }))).collect(),
+        param_types: s
+            .params
+            .iter()
+            .zip(types)
+            .map(|(p, t)| {
+                ParamType::Typed(t.unwrap_or_else(|| {
+                    if sourced {
+                        p.ty.clone()
+                    } else {
+                        outer_arguments(&p.ty, &s.templates)
+                    }
+                }))
+            })
+            .collect(),
         by_ref: references,
         closure_this: bindings,
         class: None,
@@ -149,17 +264,31 @@ fn inaccessible() -> Acceptor {
 
 /// The acceptors of `getCallableParametersAcceptors()`; `None` when Pun does not know them. `inaccessible` gets
 /// the private or protected method a callable names out of its scope.
-pub(in super::super) fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
-    let method = |class: &str, name: &str, inaccessible: &mut Option<String>| -> Option<Vec<Acceptor>> {
-        let k = c.class_like(class).found()?;
-        let m = members::method(c, k, name.as_bytes())?;
-        if !calls::can_call(c, c.class_scope(), &m.declaring_name(), m.visibility()) {
-            let v = if m.visibility().is_private() { "private" } else { "protected" };
-            *inaccessible = Some(format!("Call to {v} method {}() of class {}.", m.name(), m.declaring_display(c)));
-            return Some(vec![self::inaccessible()]);
-        }
-        Some(m.variants().all)
-    };
+pub(in super::super) fn acceptors(
+    c: &Checker,
+    t: &Type,
+    source: Span,
+    inaccessible: &mut Option<String>,
+) -> Option<Vec<Acceptor>> {
+    let method =
+        |class: &str, name: &str, inaccessible: &mut Option<String>| -> Option<Vec<Acceptor>> {
+            let k = c.class_like(class).found()?;
+            let m = members::method(c, k, name.as_bytes())?;
+            if !calls::can_call(c, c.class_scope(), &m.declaring_name(), m.visibility()) {
+                let v = if m.visibility().is_private() {
+                    "private"
+                } else {
+                    "protected"
+                };
+                *inaccessible = Some(format!(
+                    "Call to {v} method {}() of class {}.",
+                    m.name(),
+                    m.declaring_display(c)
+                ));
+                return Some(vec![self::inaccessible()]);
+            }
+            Some(m.variants().all)
+        };
     match t {
         Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, source)]),
         Type::Callable(None) => Some(vec![self::inaccessible()]),
@@ -189,11 +318,19 @@ pub(in super::super) fn acceptors(c: &Checker, t: &Type, source: Span, inaccessi
                 Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
                 _ => return None,
             };
-            let Type::ConstString(name) = &a.values[1] else { return None };
+            let Type::ConstString(name) = &a.values[1] else {
+                return None;
+            };
             method(&class, &String::from_utf8_lossy(name), inaccessible)
         }
-        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
-        Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, source, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => {
+            method(n, "__invoke", inaccessible)
+        }
+        Type::Union(ts) => ts
+            .iter()
+            .map(|t| acceptors(c, t, source, inaccessible))
+            .collect::<Option<Vec<Vec<_>>>>()
+            .map(|v| v.concat()),
         _ => None,
     }
 }
@@ -202,10 +339,17 @@ pub(in super::super) fn acceptors(c: &Checker, t: &Type, source: Span, inaccessi
 pub(in super::super) fn pipe_by_ref(c: &mut Checker, p: &Pipe) {
     let right = unparen(p.callable);
     // RuleLevelHelper's checkThisOnly is enabled at levels 0 and 1.
-    if c.level < 2 && !matches!(right, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
+    if c.level < 2
+        && !matches!(right, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+    {
         return;
     }
-    let Some(t) = c.find_type_to_check(p.callable, &|t| declared::with_classes(c, || t.is_callable().yes())).ty else {
+    let Some(t) = c
+        .find_type_to_check(p.callable, &|t| {
+            declared::with_classes(c, || t.is_callable().yes())
+        })
+        .ty
+    else {
         return;
     };
     if !declared::with_classes(c, || t.is_callable().yes()) {
@@ -215,11 +359,15 @@ pub(in super::super) fn pipe_by_ref(c: &mut Checker, p: &Pipe) {
         return;
     };
     for acceptor in all {
-        for (by_ref, name) in acceptor.by_ref.iter().zip(&acceptor.names) {
-            if *by_ref == pun_phpstan::symbols::ByRef::No {
-                break;
-            }
-            let name = if name.is_empty() { String::new() } else { format!(" ${name}") };
+        // Only the first parameter receives the piped value.
+        if let Some((by_ref, name)) = acceptor.by_ref.iter().zip(&acceptor.names).next()
+            && *by_ref != pun_phpstan::symbols::ByRef::No
+        {
+            let name = if name.is_empty() {
+                String::new()
+            } else {
+                format!(" ${name}")
+            };
             c.report(right.span(), "pipe.byRef", format!("Parameter #1{name} of callable on the right side of pipe operator is passed by reference."), None);
             return;
         }
@@ -229,7 +377,12 @@ pub(in super::super) fn pipe_by_ref(c: &mut Checker, p: &Pipe) {
 /// CallCallablesRule on `$callable(...)`.
 pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
     if !matches!(call.function, Expression::Identifier(_)) {
-        invoke(c, call.function, &params::count(&call.argument_list), call.span());
+        invoke(
+            c,
+            call.function,
+            &params::count(&call.argument_list),
+            call.span(),
+        );
     }
 }
 
@@ -246,10 +399,17 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
     }
     let found = {
         let c = &*c;
-        c.find_type_to_check(callee, &|t| declared::with_classes(c, || t.is_callable().yes()))
+        c.find_type_to_check(callee, &|t| {
+            declared::with_classes(c, || t.is_callable().yes())
+        })
     };
     for n in &found.unknown {
-        c.report(at, "class.notFound", format!("Invoking callable on an unknown class {n}."), Some(super::super::DISCOVERING_SYMBOLS_TIP));
+        c.report(
+            at,
+            "class.notFound",
+            format!("Invoking callable on an unknown class {n}."),
+            Some(super::super::DISCOVERING_SYMBOLS_TIP),
+        );
     }
     let Some(t) = found.ty else {
         return;
@@ -257,8 +417,17 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
     let callable = declared::with_classes(c, || t.is_callable());
     let value = declared::with_classes(c, || t.describe(Level::Value));
     if callable.no() || c.level >= 7 && callable.maybe() {
-        let not = if callable.no() { "it's not" } else { "it might not be" };
-        c.report(at, "callable.nonCallable", format!("Trying to invoke {value} but {not} a callable."), None);
+        let not = if callable.no() {
+            "it's not"
+        } else {
+            "it might not be"
+        };
+        c.report(
+            at,
+            "callable.nonCallable",
+            format!("Trying to invoke {value} but {not} a callable."),
+            None,
+        );
         return;
     }
     let mut inaccessible = None;
@@ -268,9 +437,21 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
     if let Some(message) = inaccessible.filter(|_| all.len() == 1) {
         c.report(at, "callable.inaccessibleMethod", message, None);
     }
-    let described = if matches!(t, Type::Closure(_)) { "closure".to_string() } else { format!("callable {value}") };
+    let described = if matches!(t, Type::Closure(_)) {
+        "closure".to_string()
+    } else {
+        format!("callable {value}")
+    };
     let first_level = c.is_top_level(at);
-    check(c, all, counts, at, &described, params::CallKind::Callable, first_level);
+    check(
+        c,
+        all,
+        counts,
+        at,
+        &described,
+        params::CallKind::Callable,
+        first_level,
+    );
 }
 
 /// FunctionCallParametersCheck with the callable's description.
@@ -285,11 +466,18 @@ fn check(
 ) {
     // CallCallablesRule / ArgumentsNormalizer combine the whole callable type's contract with AND, before
     // signature selection (whose combineAcceptors uses OR).
-    let accepts_named = all.iter().fold(pun_phpstan::types::Tri::Yes, |accepts, a| accepts.and(a.accepts_named(c)));
+    let accepts_named = all.iter().fold(pun_phpstan::types::Tri::Yes, |accepts, a| {
+        accepts.and(a.accepts_named(c))
+    });
     let mut acceptor = params::select(c, Variants { all, named: None }, counts);
     acceptor.accepts_named_arguments = accepts_named;
     let subject = described[..1].to_ascii_uppercase() + &described[1..];
-    let call = params::Call { kind, subject: &subject, scope: Some(at), void_message: Some(format!("Result of {described} (void) is used.")) };
+    let call = params::Call {
+        kind,
+        subject: &subject,
+        scope: Some(at),
+        void_message: Some(format!("Result of {described} (void) is used.")),
+    };
     params::check(c, &acceptor, counts, at, call, first_level);
 }
 
@@ -305,7 +493,10 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
         Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
         _ => None,
     };
-    let Some((function, _)) = std::iter::once(c.names.get(&id.span())).chain(fallback).find_map(|n| c.function(n)) else {
+    let Some((function, _)) = std::iter::once(c.names.get(&id.span()))
+        .chain(fallback)
+        .find_map(|n| c.function(n))
+    else {
         return;
     };
     let function = function.as_str();
@@ -320,7 +511,11 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
     }) else {
         return;
     };
-    let rest = args.iter().enumerate().filter(|(i, _)| *i != callback).map(|(_, a)| *a);
+    let rest = args
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| *i != callback)
+        .map(|(_, a)| *a);
     let counts = if function == "call_user_func" {
         params::Counts::of(rest)
     } else {
@@ -342,7 +537,10 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
         counts
     };
     let value = args[callback].value();
-    let Some(t) = c.phpstan_type(value).filter(|t| declared::with_classes(c, || t.is_callable().yes())) else {
+    let Some(t) = c
+        .phpstan_type(value)
+        .filter(|t| declared::with_classes(c, || t.is_callable().yes()))
+    else {
         return;
     };
     let mut inaccessible = None;
@@ -351,5 +549,13 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
     };
     let first_level = c.is_top_level(call.span());
     let described = format!("callable passed to {function}()");
-    check(c, all, &counts, call.span(), &described, params::CallKind::CallUserFunc, first_level);
+    check(
+        c,
+        all,
+        &counts,
+        call.span(),
+        &described,
+        params::CallKind::CallUserFunc,
+        first_level,
+    );
 }

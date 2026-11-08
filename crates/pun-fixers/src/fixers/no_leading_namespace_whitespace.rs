@@ -66,7 +66,7 @@ impl Fixer for NoLeadingNamespaceWhitespaceFixer {
                         before_namespace_index,
                         Token::new(
                             T_WHITESPACE,
-                            &before_namespace.get_content()[..last_newline + 1],
+                            &before_namespace.get_content()[..=last_newline],
                         ),
                     );
                 }

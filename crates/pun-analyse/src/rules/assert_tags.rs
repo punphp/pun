@@ -11,7 +11,7 @@ use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of};
 use super::doc::NameScope;
 use super::{Checker, declared, generics, missing_types};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "parameter.notFound",
     "assert.unknownExpr",
     "assert.unresolvableType",
@@ -20,7 +20,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "assert.trait",
 ];
 
-pub fn function(c: &mut Checker, f: &Function) {
+pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
@@ -32,7 +32,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     report(c, f.span(), errors);
 }
 
-pub fn method(c: &mut Checker, m: &Method) {
+pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }

@@ -10,7 +10,7 @@ use pun_phpstan::types::{Level, NeverKind, Type, decide_type, is_super_type_of, 
 use super::{Checker, declared, missing_types, signatures};
 
 /// The hooks `list` of property `name` (with its `$`) declared with the native type `hint`.
-pub fn hooks<'arena>(
+pub(super) fn hooks<'arena>(
     c: &mut Checker<'_, 'arena>,
     name: &[u8],
     hint: Option<&Hint<'arena>>,
@@ -72,7 +72,7 @@ fn native_error(
 
 /// The rule's `checkMissingTypehints` checks (level 6) of the set hook parameter's type, unless its native type is
 /// the property's readable type. The parameter of a hook without a parameter list is the property's.
-pub fn missing_types<'arena>(
+pub(super) fn missing_types<'arena>(
     c: &mut Checker<'_, 'arena>,
     name: &[u8],
     hint: Option<&Hint<'arena>>,

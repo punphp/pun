@@ -109,7 +109,7 @@ struct Counts<'arena> {
 }
 
 /// `gather_and_compute_halstead`: (volume, difficulty, effort), each rounded to two decimals.
-fn halstead<'arena>(node: Node<'_, 'arena>) -> (f64, f64, f64) {
+fn halstead(node: Node<'_, '_>) -> (f64, f64, f64) {
     let mut counts = Counts::default();
     node.visit_children(|child| recurse(child, &mut counts));
     let (n1, n2) = (counts.operators.len() as f64, counts.operands.len() as f64);

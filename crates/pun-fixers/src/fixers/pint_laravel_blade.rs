@@ -193,7 +193,7 @@ mod tests {
         code.push_str("</div>\n");
         let mut tokens = Tokens::from_code(code.as_bytes());
         let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            fixer().fix(Path::new("repro.blade.php"), &mut tokens)
+            fixer().fix(Path::new("repro.blade.php"), &mut tokens);
         }))
         .unwrap_err();
         assert_eq!(

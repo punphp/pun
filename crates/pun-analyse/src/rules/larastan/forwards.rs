@@ -827,7 +827,7 @@ fn object_templates(codebase: &CodebaseMetadata, class: &[u8], object: &TNamedOb
     let metadata = codebase.get_class_like(class)?;
     let mut templates = TemplateResult::default();
     let owner = codebase.get_class_like(declaring.as_bytes())?;
-    for (name, template) in owner.template_types.iter() {
+    for (name, template) in &owner.template_types {
         let parameters = object.type_parameters.as_deref();
         // an object without arguments has its templates' defaults (`@template TAsync of bool = false`)
         let bound = match (parameters, &template.default) {

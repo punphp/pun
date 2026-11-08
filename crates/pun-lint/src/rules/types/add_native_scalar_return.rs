@@ -102,7 +102,10 @@ impl Rule for AddNumericReturn {
             .iter()
             .map(|v| facts.native_type(node_span(*v)))
             .collect();
-        let r#type = if types.iter().all(|t| t.is_some_and(|t| t.is_float())) {
+        let r#type = if types
+            .iter()
+            .all(|t| t.is_some_and(mago_codex::ttype::union::TUnion::is_float))
+        {
             "float"
         } else if types
             .iter()

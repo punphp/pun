@@ -274,7 +274,7 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
             paths_from_config = a.values().filter_map(Value::to_php_string).collect();
         }
         if paths.is_empty() {
-            paths = paths_from_config.clone();
+            paths.clone_from(&paths_from_config);
         }
     }
 
@@ -482,9 +482,13 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
 
     let mut known: Vec<String> = ["services", "parameters", "php", "extensions"]
         .iter()
-        .map(|s| s.to_string())
+        .map(std::string::ToString::to_string)
         .collect();
-    known.extend(ATTRIBUTE_EXTENSIONS.iter().map(|s| s.to_string()));
+    known.extend(
+        ATTRIBUTE_EXTENSIONS
+            .iter()
+            .map(std::string::ToString::to_string),
+    );
     for ext in section("extensions").iter().filter_map(Value::as_array) {
         known.extend(
             ext.keys()

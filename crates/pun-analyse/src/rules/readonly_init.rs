@@ -155,9 +155,13 @@ fn this_property<'e>(e: &'e Expression) -> Option<&'e [u8]> {
     }
 }
 
-impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
+impl<'x> Walk<'_, '_, 'x> {
     fn line(&self, at: impl HasSpan) -> i64 {
-        i64::from(self.ctx.sources[self.source].file.line_number(at.span().start.offset)) + 1
+        i64::from(
+            self.ctx.sources[self.source]
+                .file
+                .line_number(at.span().start.offset),
+        ) + 1
     }
 
     fn usage(&mut self, s: &State, property: &[u8], at: impl HasSpan, write: Option<bool>) {
@@ -168,16 +172,30 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
         let parent = self.parent.as_ref().map(|p| get(p, &property));
         let line = self.line(at);
         let source = self.source;
-        self.gathered.usages.push(Usage { state: get(s, &property), property, source, line, write, parent });
+        self.gathered.usages.push(Usage {
+            state: get(s, &property),
+            property,
+            source,
+            line,
+            write,
+            parent,
+        });
     }
 
     fn call(&mut self, s: &State, method: &[u8]) {
         if self.this {
-            self.gathered.calls.push(Call { method: text(method), state: s.clone() });
+            self.gathered.calls.push(Call {
+                method: text(method),
+                state: s.clone(),
+            });
         }
     }
 
-    fn statements<'a>(&mut self, list: impl IntoIterator<Item = &'a Statement<'a>>, s: &mut State) -> Flow
+    fn statements<'a>(
+        &mut self,
+        list: impl IntoIterator<Item = &'a Statement<'a>>,
+        s: &mut State,
+    ) -> Flow
     where
         'x: 'a,
     {
@@ -191,7 +209,12 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
     }
 
     /// The branches of a construct, from `s`; `s` becomes their merge (unchanged when all of them exit).
-    fn branches(&mut self, s: &mut State, branches: Vec<(Vec<Node<'_, '_>>, bool)>, fallthrough: bool) -> Flow {
+    fn branches(
+        &mut self,
+        s: &mut State,
+        branches: Vec<(Vec<Node<'_, '_>>, bool)>,
+        fallthrough: bool,
+    ) -> Flow {
         let mut ends: Vec<State> = Vec::new();
         if fallthrough {
             ends.push(s.clone());
@@ -231,7 +254,11 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
         };
         let mut entry = s.clone();
         loop {
-            let kept = (self.gathered.usages.len(), self.gathered.calls.len(), self.returns.len());
+            let kept = (
+                self.gathered.usages.len(),
+                self.gathered.calls.len(),
+                self.returns.len(),
+            );
             let (end, _) = run(self, entry.clone());
             self.gathered.usages.truncate(kept.0);
             self.gathered.calls.truncate(kept.1);
@@ -267,7 +294,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 let (branches, has_else) = match &i.body {
                     IfBody::Statement(b) => {
                         let mut out = vec![(vec![Node::Statement(b.statement)], true)];
-                        for e in b.else_if_clauses.iter() {
+                        for e in &b.else_if_clauses {
                             out.push((vec![Node::IfStatementBodyElseIfClause(e)], true));
                         }
                         if let Some(e) = &b.else_clause {
@@ -276,8 +303,9 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                         (out, b.else_clause.is_some())
                     }
                     IfBody::ColonDelimited(b) => {
-                        let mut out = vec![(b.statements.iter().map(Node::Statement).collect(), true)];
-                        for e in b.else_if_clauses.iter() {
+                        let mut out =
+                            vec![(b.statements.iter().map(Node::Statement).collect(), true)];
+                        for e in &b.else_if_clauses {
                             out.push((vec![Node::IfColonDelimitedBodyElseIfClause(e)], true));
                         }
                         if let Some(e) = &b.else_clause {
@@ -313,7 +341,9 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                             nodes.extend(e.statements.iter().map(Node::Statement));
                             (nodes, true)
                         }
-                        SwitchCase::Default(d) => (d.statements.iter().map(Node::Statement).collect(), true),
+                        SwitchCase::Default(d) => {
+                            (d.statements.iter().map(Node::Statement).collect(), true)
+                        }
                     })
                     .collect();
                 self.branches(s, branches, !has_default)
@@ -327,7 +357,8 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                     .iter()
                     .map(|arm| match arm {
                         MatchArm::Expression(a) => {
-                            let mut nodes: Vec<Node> = a.conditions.iter().map(|c| Node::Expression(c)).collect();
+                            let mut nodes: Vec<Node> =
+                                a.conditions.iter().map(|c| Node::Expression(c)).collect();
                             nodes.push(Node::Expression(a.expression));
                             (nodes, true)
                         }
@@ -340,23 +371,27 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 self.node(Node::Expression(w.condition), s);
                 let body = match &w.body {
                     WhileBody::Statement(b) => vec![Node::Statement(b)],
-                    WhileBody::ColonDelimited(b) => b.statements.iter().map(Node::Statement).collect(),
+                    WhileBody::ColonDelimited(b) => {
+                        b.statements.iter().map(Node::Statement).collect()
+                    }
                 };
                 self.looped(s, body, false);
                 Flow::Next
             }
             Node::For(f) => {
-                for e in f.initializations.iter() {
+                for e in &f.initializations {
                     if self.node(Node::Expression(e), s) == Flow::Exit {
                         return Flow::Exit;
                     }
                 }
-                for e in f.conditions.iter() {
+                for e in &f.conditions {
                     self.node(Node::Expression(e), s);
                 }
                 let mut body: Vec<Node> = match &f.body {
                     ForBody::Statement(b) => vec![Node::Statement(b)],
-                    ForBody::ColonDelimited(b) => b.statements.iter().map(Node::Statement).collect(),
+                    ForBody::ColonDelimited(b) => {
+                        b.statements.iter().map(Node::Statement).collect()
+                    }
                 };
                 body.extend(f.increments.iter().map(|e| Node::Expression(e)));
                 self.looped(s, body, false);
@@ -367,7 +402,9 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 let mut body = vec![Node::ForeachTarget(&f.target)];
                 match &f.body {
                     ForeachBody::Statement(b) => body.push(Node::Statement(b)),
-                    ForeachBody::ColonDelimited(b) => body.extend(b.statements.iter().map(Node::Statement)),
+                    ForeachBody::ColonDelimited(b) => {
+                        body.extend(b.statements.iter().map(Node::Statement));
+                    }
                 }
                 self.looped(s, body, false);
                 Flow::Next
@@ -387,7 +424,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                     ends.push(after_try.clone());
                 }
                 let catch_from = merge(&before, &after_try);
-                for clause in t.catch_clauses.iter() {
+                for clause in &t.catch_clauses {
                     let mut caught = catch_from.clone();
                     if self.statements(clause.block.statements.iter(), &mut caught) != Flow::Exit {
                         ends.push(caught);
@@ -424,7 +461,11 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 }
                 Flow::Exit
             }
-            Node::Function(_) | Node::Class(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_) => Flow::Next,
+            Node::Function(_)
+            | Node::Class(_)
+            | Node::Interface(_)
+            | Node::Trait(_)
+            | Node::Enum(_) => Flow::Next,
             Node::AnonymousClass(a) => {
                 if let Some(args) = &a.argument_list {
                     self.node(Node::PartialArgumentList(args), s);
@@ -468,7 +509,11 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                     return Flow::Exit;
                 }
                 let then = c.then.map_or_else(Vec::new, |t| vec![Node::Expression(t)]);
-                self.branches(s, vec![(then, true), (vec![Node::Expression(c.r#else)], true)], false)
+                self.branches(
+                    s,
+                    vec![(then, true), (vec![Node::Expression(c.r#else)], true)],
+                    false,
+                )
             }
             Node::Assignment(a) => self.assignment(a, s),
             Node::PropertyAccess(p) => {
@@ -551,13 +596,16 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
             }
             Node::FunctionCall(f) => {
                 let name = match f.function {
-                    Expression::Identifier(id) => Some(self.ctx.sources[self.source].names.get(&id.span())),
+                    Expression::Identifier(id) => {
+                        Some(self.ctx.sources[self.source].names.get(&id.span()))
+                    }
                     _ => None,
                 };
                 let enumerating = match f.function {
                     Expression::Identifier(id) => {
                         let names = self.ctx.sources[self.source].names;
-                        let n = super::function_checks::function_name(names, self.ctx.c.codebase, id);
+                        let n =
+                            super::function_checks::function_name(names, self.ctx.c.codebase, id);
                         n == "get_object_vars" || n == "array_walk"
                     }
                     _ => false,
@@ -571,14 +619,21 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                     for p in self.ctx.instance_properties() {
                         self.usage(s, p.as_bytes(), f, None);
                     }
-                    let line = i64::from(self.ctx.sources[0].file.line_number(self.ctx.k.span.start.offset)) + 1;
+                    let line = i64::from(
+                        self.ctx.sources[0]
+                            .file
+                            .line_number(self.ctx.k.span.start.offset),
+                    ) + 1;
                     for u in &mut self.gathered.usages[at..] {
                         (u.line, u.source) = (line, 0);
                     }
                 }
                 // the trait files' names are not the checker's
                 let (by_ref, virtual_assigned) = if self.source == 0 {
-                    (super::assign::by_ref_arguments(self.ctx.c, f), super::assign::virtual_assigned(self.ctx.c, f))
+                    (
+                        super::assign::by_ref_arguments(self.ctx.c, f),
+                        super::assign::virtual_assigned(self.ctx.c, f),
+                    )
                 } else {
                     (Default::default(), None)
                 };
@@ -590,7 +645,13 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 // processVirtualAssign() of each argument passed by reference (createsNewVariable), then FuncCallHandler's
                 // of a built-in's array argument: writes that leave the property's initialization as it was
                 // ponytail: `$this->p[...]` arguments are not offset writes here
-                let by_ref = f.argument_list.arguments.iter().zip(by_ref).filter(|(_, r)| *r).map(|(a, _)| a.value());
+                let by_ref = f
+                    .argument_list
+                    .arguments
+                    .iter()
+                    .zip(by_ref)
+                    .filter(|(_, r)| *r)
+                    .map(|(a, _)| a.value());
                 for value in by_ref.chain(virtual_assigned) {
                     if let Some(property) = this_property(value) {
                         self.usage(s, property, value, Some(false));
@@ -661,7 +722,12 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
             }
             // the write is gathered, and initializes the property, even when the value never returns
             let flow = self.node(Node::Expression(a.rhs), s);
-            let (object, array_access) = self.ctx.offsets.get(&text(property)).copied().unwrap_or((true, false));
+            let (object, array_access) = self
+                .ctx
+                .offsets
+                .get(&text(property))
+                .copied()
+                .unwrap_or((true, false));
             if object {
                 self.usage(s, property, root, None);
             }
@@ -703,7 +769,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
     }
 }
 
-impl<'c, 'x> Ctx<'c, 'x> {
+impl<'x> Ctx<'_, 'x> {
     fn name(&self) -> String {
         text(self.k.name.as_bytes())
     }
@@ -718,8 +784,13 @@ impl<'c, 'x> Ctx<'c, 'x> {
             _ => return None,
         };
         let lower = name.trim_start_matches('\\').to_ascii_lowercase();
-        (lower == self.name() || self.k.all_parent_classes.iter().any(|p| p.as_bytes() == lower.as_bytes()))
-            .then_some(lower)
+        (lower == self.name()
+            || self
+                .k
+                .all_parent_classes
+                .iter()
+                .any(|p| p.as_bytes() == lower.as_bytes()))
+        .then_some(lower)
     }
 
     /// The public and protected promoted properties `class` itself declares.
@@ -733,7 +804,9 @@ impl<'c, 'x> Ctx<'c, 'x> {
             .filter(|(name, p)| {
                 p.flags.is_promoted_property()
                     && p.read_visibility != Visibility::Private
-                    && k.declaring_property_ids.get(*name).is_some_and(|d| *d == k.name)
+                    && k.declaring_property_ids
+                        .get(*name)
+                        .is_some_and(|d| *d == k.name)
             })
             .map(|(name, _)| text(&name.as_bytes()[1..]))
             .collect();
@@ -807,23 +880,34 @@ impl<'c, 'x> Ctx<'c, 'x> {
         if flow != Flow::Exit {
             ends.insert(0, s);
         }
-        let end = ends.first().cloned().map(|first| ends[1..].iter().fold(first, |a, b| merge(&a, b)));
+        let end = ends
+            .first()
+            .cloned()
+            .map(|first| ends[1..].iter().fold(first, |a, b| merge(&a, b)));
         (walk.gathered, end)
     }
 
     /// `processCalledMethod()`: what a method of the class initializes, walked on its own.
     fn called_end(&self, method: &[u8]) -> Option<State> {
-        if self.k.kind != SymbolKind::Class || self.k.name.as_bytes().starts_with(b"{anonymous-class:") {
+        if self.k.kind != SymbolKind::Class
+            || self.k.name.as_bytes().starts_with(b"{anonymous-class:")
+        {
             return None;
         }
         let lower = text(method).to_ascii_lowercase();
-        self.methods.get(&lower).and_then(|m| self.walk(m, true, &State::new()).1)
+        self.methods
+            .get(&lower)
+            .and_then(|m| self.walk(m, true, &State::new()).1)
     }
 }
 
 /// The trait declarations `names` in `program`.
 fn traits_in<'p>(program: &'p Program<'p>, spans: &[mago_span::Span]) -> Vec<&'p Trait<'p>> {
-    fn walk<'p>(statements: &'p [Statement<'p>], spans: &[mago_span::Span], out: &mut Vec<&'p Trait<'p>>) {
+    fn walk<'p>(
+        statements: &'p [Statement<'p>],
+        spans: &[mago_span::Span],
+        out: &mut Vec<&'p Trait<'p>>,
+    ) {
         for s in statements {
             match s {
                 Statement::Trait(t) if spans.contains(&t.span()) => out.push(t),
@@ -838,18 +922,23 @@ fn traits_in<'p>(program: &'p Program<'p>, spans: &[mago_span::Span]) -> Vec<&'p
 }
 
 /// The rules on class `k` (named, or anonymous) declared with `members`.
-pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members: &[ClassLikeMember<'arena>]) {
+pub(super) fn class<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    k: &ClassLikeMetadata,
+    members: &[ClassLikeMember<'arena>],
+) {
     if k.kind != SymbolKind::Class {
         return;
     }
     let decl = c.decls.last().expect("in a class");
-    let (immutable_doc, parent, class_readonly) = (decl.immutable_doc, decl.parent.clone(), decl.is_readonly);
+    let (immutable_doc, parent, class_readonly) =
+        (decl.immutable_doc, decl.parent.clone(), decl.is_readonly);
     let immutable = immutable_doc || parent.is_some_and(|p| c.class_immutable(&p, 0));
     // the traits, with their own traits
     let mut traits: Vec<&ClassLikeMetadata> = Vec::new();
     let mut pending: Vec<&ClassLikeMetadata> = vec![k];
     while let Some(t) = pending.pop() {
-        for name in t.used_traits.iter() {
+        for name in &t.used_traits {
             if let Some(t) = c.codebase.get_class_like(name.as_bytes())
                 && t.kind == SymbolKind::Trait
                 && !traits.iter().any(|x| x.name == t.name)
@@ -868,11 +957,23 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         }
     }
     let arenas: Vec<LocalArena> = files.iter().map(|_| LocalArena::new()).collect();
-    let parsed: Vec<_> = files.iter().zip(&arenas).map(|(f, a)| parse(a, f)).collect();
+    let parsed: Vec<_> = files
+        .iter()
+        .zip(&arenas)
+        .map(|(f, a)| parse(a, f))
+        .collect();
     let display = c.display(k);
     let anonymous = k.name.as_bytes().starts_with(b"{anonymous-class:");
-    let context = if anonymous { display.clone() } else { format!("class {display}") };
-    let mut sources = vec![Source { file: c.file, names: c.names, label: None }];
+    let context = if anonymous {
+        display.clone()
+    } else {
+        format!("class {display}")
+    };
+    let mut sources = vec![Source {
+        file: c.file,
+        names: c.names,
+        label: None,
+    }];
     // (source, lowercase trait name, member)
     let mut trait_members: Vec<(usize, String, &ClassLikeMember)> = Vec::new();
     for (i, (file, (program, names))) in files.iter().zip(&parsed).enumerate() {
@@ -881,7 +982,11 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             names,
             label: Some(format!("{} (in context of {context})", text(&file.name))),
         });
-        let spans: Vec<_> = traits.iter().filter(|t| t.span.file_id == file.id).map(|t| t.span).collect();
+        let spans: Vec<_> = traits
+            .iter()
+            .filter(|t| t.span.file_id == file.id)
+            .map(|t| t.span)
+            .collect();
         for t in traits_in(program, &spans) {
             let name = traits
                 .iter()
@@ -905,14 +1010,30 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         let order = methods.len();
         let lower = text(name).to_ascii_lowercase();
         if own || !methods.contains_key(&lower) {
-            methods.insert(lower, MethodAst { name: text(name), method, source, order, constructor });
+            methods.insert(
+                lower,
+                MethodAst {
+                    name: text(name),
+                    method,
+                    source,
+                    order,
+                    constructor,
+                },
+            );
         }
     }
     let mut traits_added = false;
     for member in members {
         match member {
             ClassLikeMember::Method(m) => {
-                add(&mut methods, m.name.value, m, 0, m.name.value.eq_ignore_ascii_case(b"__construct"), true);
+                add(
+                    &mut methods,
+                    m.name.value,
+                    m,
+                    0,
+                    m.name.value.eq_ignore_ascii_case(b"__construct"),
+                    true,
+                );
             }
             ClassLikeMember::TraitUse(u) if !traits_added => {
                 traits_added = true;
@@ -937,7 +1058,7 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         let TraitUseSpecification::Concrete(spec) = &u.specification else {
             continue;
         };
-        for a in spec.adaptations.iter() {
+        for a in &spec.adaptations {
             let TraitUseAdaptation::Alias(a) = a else {
                 continue;
             };
@@ -948,23 +1069,35 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
                 TraitUseMethodReference::Identifier(m) => (None, m.value),
                 TraitUseMethodReference::Absolute(r) => {
                     // unresolved by mago-names: matched by its last segments below
-                    (Some(text(r.trait_name.value()).to_ascii_lowercase()), r.method_name.value)
+                    (
+                        Some(text(r.trait_name.value()).to_ascii_lowercase()),
+                        r.method_name.value,
+                    )
                 }
             };
-            let found = trait_members.iter().find_map(|(source, t, member)| match member {
-                ClassLikeMember::Method(m)
-                    if m.name.value.eq_ignore_ascii_case(method)
-                        && trait_name.as_ref().is_none_or(|n| {
-                            let n = n.trim_start_matches('\\');
-                            t == n || t.ends_with(&format!("\\{n}"))
-                        }) =>
-                {
-                    Some((*source, m))
-                }
-                _ => None,
-            });
+            let found = trait_members
+                .iter()
+                .find_map(|(source, t, member)| match member {
+                    ClassLikeMember::Method(m)
+                        if m.name.value.eq_ignore_ascii_case(method)
+                            && trait_name.as_ref().is_none_or(|n| {
+                                let n = n.trim_start_matches('\\');
+                                t == n || t.ends_with(&format!("\\{n}"))
+                            }) =>
+                    {
+                        Some((*source, m))
+                    }
+                    _ => None,
+                });
             if let Some((source, m)) = found {
-                add(&mut methods, alias.value, m, source, method.eq_ignore_ascii_case(b"__construct"), false);
+                add(
+                    &mut methods,
+                    alias.value,
+                    m,
+                    source,
+                    method.eq_ignore_ascii_case(b"__construct"),
+                    false,
+                );
             }
         }
     }
@@ -987,11 +1120,17 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         let Some(hint) = p.hint() else {
             continue;
         };
-        if modifiers.iter().any(|m| matches!(m, Modifier::Static(_) | Modifier::Abstract(_))) {
+        if modifiers
+            .iter()
+            .any(|m| matches!(m, Modifier::Static(_) | Modifier::Abstract(_)))
+        {
             continue;
         }
         let readonly = class_readonly || modifiers.contains_readonly();
-        let tags = c.php_doc_comment(file.id, p.span().start.offset).map(doc_tags).unwrap_or_default();
+        let tags = c
+            .php_doc_comment(file.id, p.span().start.offset)
+            .map(doc_tags)
+            .unwrap_or_default();
         let by_phpdoc = immutable || has_tag(&tags, READONLY_TAGS);
         let items: Vec<&PropertyItem> = match p {
             Property::Plain(plain) => plain.items.iter().collect(),
@@ -1006,7 +1145,10 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
                 .codebase
                 .get_declaring_property_class(k.name.as_bytes(), variable.name)
                 .and_then(|d| c.codebase.get_class_like(d.as_bytes()))
-                .zip(c.codebase.get_declaring_property(k.name.as_bytes(), variable.name));
+                .zip(
+                    c.codebase
+                        .get_declaring_property(k.name.as_bytes(), variable.name),
+                );
             if matches!(p, Property::Hooked(_))
                 && declared.is_some_and(|(d, meta)| c.property_virtual(d, meta, variable.name))
             {
@@ -1015,7 +1157,10 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             // a trait's property the parent class declares too is the parent's
             let inherited = from_trait
                 && k.direct_parent_class
-                    .and_then(|parent| c.codebase.get_declaring_property(parent.as_bytes(), variable.name))
+                    .and_then(|parent| {
+                        c.codebase
+                            .get_declaring_property(parent.as_bytes(), variable.name)
+                    })
                     .is_some_and(|meta| meta.read_visibility != Visibility::Private);
             nodes.push(PropertyNode {
                 name: text(&variable.name[1..]),
@@ -1031,11 +1176,18 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
     constructors.sort_by_key(|m| m.order);
     for m in constructors {
         let file = sources[m.source].file;
-        let tags = c.php_doc_comment(file.id, m.method.span().start.offset)
+        let tags = c
+            .php_doc_comment(file.id, m.method.span().start.offset)
             .map(doc_tags)
             .unwrap_or_default();
         let by_phpdoc = immutable || has_tag(&tags, READONLY_TAGS);
-        for p in m.method.parameter_list.parameters.iter().filter(|p| p.is_promoted_property()) {
+        for p in m
+            .method
+            .parameter_list
+            .parameters
+            .iter()
+            .filter(|p| p.is_promoted_property())
+        {
             let Some(hint) = &p.hint else {
                 continue;
             };
@@ -1069,12 +1221,19 @@ fn offsets(c: &Checker, source: &Source, hint: &Hint) -> (bool, bool) {
     match hint {
         Hint::Nullable(n) => offsets(c, source, n.hint),
         Hint::Identifier(id) => {
-            let Some(name) = source.names.resolve(&id.span()) else { return (true, false) };
+            let Some(name) = source.names.resolve(&id.span()) else {
+                return (true, false);
+            };
             (true, c.codebase.is_instance_of(name, b"ArrayAccess"))
         }
         Hint::Array(_) | Hint::Iterable(_) => (false, false),
-        Hint::Union(_) | Hint::Intersection(_) | Hint::Object(_) | Hint::Mixed(_) | Hint::Self_(_)
-        | Hint::Static(_) | Hint::Parent(_) => (true, false),
+        Hint::Union(_)
+        | Hint::Intersection(_)
+        | Hint::Object(_)
+        | Hint::Mixed(_)
+        | Hint::Self_(_)
+        | Hint::Static(_)
+        | Hint::Parent(_) => (true, false),
         _ => (false, false),
     }
 }
@@ -1084,11 +1243,18 @@ type Reported = (&'static str, String, i64, Option<(String, String)>);
 
 /// `getInitializedProperties()`: `base`, or initialized in `scope`.
 fn initialized_in(scope: &State, base: &State) -> State {
-    base.iter().map(|(p, t)| (p.clone(), t.or(get(scope, p)))).collect()
+    base.iter()
+        .map(|(p, t)| (p.clone(), t.or(get(scope, p))))
+        .collect()
 }
 
 /// ClassPropertiesNode::getUninitializedProperties() and the two rules' errors.
-fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String>, display: &str) -> Vec<Reported> {
+fn uninitialized(
+    ctx: &Ctx,
+    nodes: Vec<PropertyNode>,
+    constructor: Option<String>,
+    display: &str,
+) -> Vec<Reported> {
     let mut original: HashMap<String, PropertyNode> = HashMap::new();
     let mut initial = State::new();
     let mut uninit: Vec<String> = Vec::new();
@@ -1110,7 +1276,7 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
         if m.constructor
             && let Some(end) = &end
         {
-            carried = end.clone();
+            carried.clone_from(end);
         }
         walked.push((m.name.clone(), gathered, end));
     }
@@ -1136,11 +1302,15 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
             let constructors = vec![constructor.clone()];
             let in_constructor: Vec<String> = {
                 let left = collect(&constructors, uninit.clone());
-                uninit.iter().filter(|p| !left.contains(p)).cloned().collect()
+                uninit
+                    .iter()
+                    .filter(|p| !left.contains(p))
+                    .cloned()
+                    .collect()
             };
             // getMethodsCalledFromConstructor()
             let mut map: HashMap<String, State> = HashMap::new();
-            map.insert(constructor.clone(), initial.clone());
+            map.insert(constructor, initial.clone());
             let mut methods = constructors.clone();
             loop {
                 let (before_map, before_methods) = (map.clone(), methods.clone());
@@ -1151,7 +1321,9 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                         }
                         if in_method != "__construct" && constructors.contains(in_method) {
                             for p in &in_constructor {
-                                map.entry(in_method.clone()).or_default().insert(p.clone(), Tri::Yes);
+                                map.entry(in_method.clone())
+                                    .or_default()
+                                    .insert(p.clone(), Tri::Yes);
                             }
                         }
                         let base = map.get(in_method).unwrap_or(&initial).clone();
@@ -1217,7 +1389,11 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
     let mut out: Vec<Reported> = Vec::new();
     if ctx.c.on(crate::rules::Switches::UNINITIALIZED_PROPERTIES) {
         // UninitializedPropertyRule: the properties neither rule above reports
-        let plain = |name: &str| original.get(name).is_some_and(|n| !n.readonly && !n.readonly_by_phpdoc);
+        let plain = |name: &str| {
+            original
+                .get(name)
+                .is_some_and(|n| !n.readonly && !n.readonly_by_phpdoc)
+        };
         for name in remaining.iter().filter(|n| plain(n)) {
             let message = format!(
                 "Class {display} has an uninitialized property ${name}. Give it default value or assign it in the constructor."
@@ -1229,16 +1405,35 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                 .label
                 .clone()
                 .map(|l| (l, text(&ctx.sources[*source].file.name)));
-            out.push(("property.uninitialized", format!("Access to an uninitialized property {display}::${name}."), *line, file));
+            out.push((
+                "property.uninitialized",
+                format!("Access to an uninitialized property {display}::${name}."),
+                *line,
+                file,
+            ));
         }
     }
     for (by_phpdoc, ident, assign, label) in [
-        (false, "property.uninitializedReadonly", "assign.readOnlyProperty", "readonly"),
-        (true, "property.uninitializedReadonlyByPhpDoc", "assign.readOnlyPropertyByPhpDoc", "@readonly"),
+        (
+            false,
+            "property.uninitializedReadonly",
+            "assign.readOnlyProperty",
+            "readonly",
+        ),
+        (
+            true,
+            "property.uninitializedReadonlyByPhpDoc",
+            "assign.readOnlyPropertyByPhpDoc",
+            "@readonly",
+        ),
     ] {
         let applies = |name: &str| {
             original.get(name).is_some_and(|n| {
-                if by_phpdoc { n.readonly_by_phpdoc && !n.readonly } else { n.readonly }
+                if by_phpdoc {
+                    n.readonly_by_phpdoc && !n.readonly
+                } else {
+                    n.readonly
+                }
             })
         };
         for name in remaining.iter().filter(|n| applies(n)) {
@@ -1254,7 +1449,12 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                 .label
                 .clone()
                 .map(|l| (l, text(&ctx.sources[*source].file.name)));
-            out.push((ident, format!("Access to an uninitialized {label} property {display}::${name}."), *line, file));
+            out.push((
+                ident,
+                format!("Access to an uninitialized {label} property {display}::${name}."),
+                *line,
+                file,
+            ));
         }
         for (name, line) in additional.iter().filter(|(n, _)| applies(n)) {
             let message = if by_phpdoc {
@@ -1270,7 +1470,13 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
 
 impl Checker<'_, '_> {
     /// An error on `line` of the class's file, or of a trait's (`file`: its description and path).
-    fn report_line(&mut self, line: i64, identifier: &str, message: String, file: Option<(String, String)>) {
+    fn report_line(
+        &mut self,
+        line: i64,
+        identifier: &str,
+        message: String,
+        file: Option<(String, String)>,
+    ) {
         if self.trait_context.is_some() && !self.walk.contains(super::Walk::IN_TARGET) {
             return;
         }

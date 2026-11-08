@@ -116,7 +116,7 @@ fn version_gates() {
         .rule_ids()
     };
     assert_eq!(ids(80399), ["lint/functions/no-void-reference-return"]);
-    assert!(ids(80199).is_empty());
+    assert_eq!(ids(80199), [] as [&str; 0]);
     let found = Linter::new(vec![Box::new(rules::NoUnderscoreClass)], 80400)
         .check(Path::new("a.php"), code)
         .unwrap();

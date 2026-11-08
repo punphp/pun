@@ -12,7 +12,7 @@ struct NonPrintableCharacterFixer {
     use_escape_sequences_in_strings: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NonPrintableCharacterFixer {
         use_escape_sequences_in_strings: true,
     })

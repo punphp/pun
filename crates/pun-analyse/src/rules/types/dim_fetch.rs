@@ -10,7 +10,7 @@ use super::super::{Checker, declared, property_access, unset};
 use super::flow::unparen;
 use super::offsets::accessible;
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "array.invalidKey",
     "offsetAccess.nonArray",
     "offsetAccess.nonOffsetAccessible",
@@ -338,7 +338,7 @@ pub(in super::super) fn dim_fetch(c: &mut Checker, node: Span, holder: &Expressi
 pub(in super::super) fn watched(program: &Program) -> Vec<Span> {
     struct Fetches(Vec<Span>);
     impl<'ast, 'arena> mago_syntax::walker::MutWalker<'ast, 'arena, ()> for Fetches {
-        fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+        fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, (): &mut ()) {
             self.0.push(a.span());
         }
     }
@@ -388,7 +388,7 @@ fn destructured(
     }
     let exempt = value_span.is_some_and(|s| property_access::dim_assigned(c, s) || undefined_allowed(c, s));
     let mut i = 0;
-    for item in items.iter() {
+    for item in items {
         let (key, item_value) = match item {
             ArrayElement::KeyValue(kv) => (c.phpstan_type(kv.key), kv.value),
             ArrayElement::Value(v) => (Some(Type::ConstInt(i)), v.value),

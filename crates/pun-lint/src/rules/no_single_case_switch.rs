@@ -53,11 +53,11 @@ impl Rule for NoSingleCaseSwitch {
             SwitchCase::Expression(c) => (Node::SwitchExpressionCase(c), Some(c.expression)),
             SwitchCase::Default(c) => (Node::SwitchDefaultCase(c), None),
         };
-        let items = items(source, &tokens, case_node, condition.is_some());
+        let items = items(source, tokens, case_node, condition.is_some());
         let span = node_span(switch);
         // The comments php-parser keeps with the `switch`: from the token before it.
-        let before = previous_token_end(source, &tokens, span.start);
-        let start = comments_between(&tokens, before, span.start)
+        let before = previous_token_end(source, tokens, span.start);
+        let start = comments_between(tokens, before, span.start)
             .first()
             .map_or(span.start, |c| c.start);
         let outer = indentation(source, span.start);
@@ -67,7 +67,7 @@ impl Rule for NoSingleCaseSwitch {
                 let nl = format!("\n{}", " ".repeat(inner));
                 let body: String = items
                     .iter()
-                    .map(|item| format!("{nl}{}", item.print(source, &tokens, inner)))
+                    .map(|item| format!("{nl}{}", item.print(source, tokens, inner)))
                     .collect();
                 let cond = infix(ctx, switch.expression, "===", condition, (80, 80));
                 let code = format!("if ({cond}) {{{body}\n{}}}", " ".repeat(outer));
@@ -77,7 +77,7 @@ impl Rule for NoSingleCaseSwitch {
                 if items.is_empty() {
                     return;
                 }
-                default_edit(source, &tokens, ancestors, &items, span, start, outer)
+                default_edit(source, tokens, ancestors, &items, span, start, outer)
             }
         };
         out.push(Report {

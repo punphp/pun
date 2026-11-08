@@ -10,7 +10,7 @@ use super::Checker;
 use super::properties::{PropertyNode, is_virtual};
 
 /// Both rules on a property node of the class-like being walked.
-pub fn check(c: &mut Checker, node: &PropertyNode) {
+pub(super) fn check(c: &mut Checker, node: &PropertyNode) {
     if c.level < 3 || is_virtual(c, node) {
         return;
     }
@@ -43,7 +43,7 @@ pub fn check(c: &mut Checker, node: &PropertyNode) {
         };
         let mut flow = Flow { name, ends: Vec::new() };
         let mut end = Some(Tri::No);
-        for s in b.statements.iter() {
+        for s in &b.statements {
             let Some(before) = end else {
                 break;
             };
@@ -73,7 +73,7 @@ fn report(c: &mut Checker, hook: &PropertyHook, identifier: &str, message: Strin
     if let Some(t) = &c.trait_context
         && let Some(e) = c.errors.last_mut()
     {
-        e.file = t.class_file.clone();
+        e.file.clone_from(&t.class_file);
     }
 }
 
@@ -95,7 +95,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reads<'_> {
         }
         self.walk_expression(a.rhs, c);
     }
-    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, (): &mut ()) {
         self.found |= is_this_fetch(a, self.name);
     }
 }
@@ -155,14 +155,14 @@ impl Flow<'_> {
                 let has_else = match &i.body {
                     IfBody::Statement(b) => {
                         branches.push(self.body(b.statement, state));
-                        for e in b.else_if_clauses.iter() {
+                        for e in &b.else_if_clauses {
                             branches.push(self.body(e.statement, state));
                         }
                         b.else_clause.as_ref().map(|e| branches.push(self.body(e.statement, state))).is_some()
                     }
                     IfBody::ColonDelimited(b) => {
                         branches.push(self.statements(b.statements.as_slice(), Some(state)));
-                        for e in b.else_if_clauses.iter() {
+                        for e in &b.else_if_clauses {
                             branches.push(self.statements(e.statements.as_slice(), Some(state)));
                         }
                         b.else_clause.as_ref().map(|e| branches.push(self.statements(e.statements.as_slice(), Some(state)))).is_some()
@@ -220,7 +220,7 @@ struct Assigns<'n> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Assigns<'_> {
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         self.found |= is_fetch(a.lhs, self.name);
     }
 }

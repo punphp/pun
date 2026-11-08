@@ -241,7 +241,7 @@ fn combine(initial: &TUnion, returned: &TUnion) -> Option<Vec<TAtomic>> {
         }
         types.extend(t.types.iter().cloned());
     }
-    types.sort_by(|a, b| sort_key(a).cmp(&sort_key(b)));
+    types.sort_by_key(sort_key);
     Some(types)
 }
 

@@ -29,7 +29,7 @@ enum Kind {
 }
 
 /// A doc comment, its tokens and its child nodes.
-pub struct Doc<'s> {
+pub(crate) struct Doc<'s> {
     pub span: Span,
     text: &'s str,
     tokens: Vec<(Kind, usize, usize)>,
@@ -39,7 +39,7 @@ pub struct Doc<'s> {
 
 impl<'s> Doc<'s> {
     /// The doc comment of the node at `start`, whose ancestors are `ancestors`.
-    pub fn of(ctx: &Context<'s>, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+    pub(crate) fn of(ctx: &Context<'s>, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
         let source = ctx.source;
         // The comments come after the last token before the node, which lies inside the nearest ancestor that starts
         // before it.
@@ -57,7 +57,11 @@ impl<'s> Doc<'s> {
 
     /// [`Doc::of`] as php-parser's `getDocComment()` reads it: the last doc comment among the node's comments, which
     /// other comments may follow.
-    pub fn last_of(ctx: &Context<'s>, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+    pub(crate) fn last_of(
+        ctx: &Context<'s>,
+        ancestors: &[Node<'_, '_>],
+        start: usize,
+    ) -> Option<Self> {
         let source = ctx.source;
         let outer = ancestors
             .iter()
@@ -72,7 +76,7 @@ impl<'s> Doc<'s> {
     }
 
     /// The doc comment `text` on its own.
-    pub fn parse(text: &'s str) -> Option<Self> {
+    pub(crate) fn parse(text: &'s str) -> Option<Self> {
         Self::at(text, Span::new(0, text.len()))
     }
 
@@ -97,12 +101,12 @@ impl<'s> Doc<'s> {
     }
 
     /// The number of child nodes.
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.children.len()
     }
 
     /// The words of child `i`, its lines joined: `["@param", "mixed", "$a"]`. A blank line has none.
-    pub fn words(&self, i: usize) -> Vec<&'s str> {
+    pub(crate) fn words(&self, i: usize) -> Vec<&'s str> {
         let (from, to) = self.children[i];
         self.tokens[from..to]
             .iter()
@@ -113,7 +117,7 @@ impl<'s> Doc<'s> {
 
     /// The edit that removes the children `removed` flags, as Rector prints the doc after; `node_start` is where the
     /// node the doc belongs to starts. A doc with nothing left goes, with the white space after it.
-    pub fn remove(&self, removed: &[bool], node_start: usize) -> Edit {
+    pub(crate) fn remove(&self, removed: &[bool], node_start: usize) -> Edit {
         let printed = self.print(removed);
         if printed.is_empty() {
             return Edit::new(Span::new(self.span.start, node_start), "");
@@ -123,7 +127,7 @@ impl<'s> Doc<'s> {
 
     /// [`Doc::remove`] for a doc [`Doc::last_of`] read from `source`: a doc with nothing left goes with the white space
     /// after it, and the comments between it and the node stay.
-    pub fn remove_last(&self, source: &str, removed: &[bool]) -> Edit {
+    pub(crate) fn remove_last(&self, source: &str, removed: &[bool]) -> Edit {
         let after = &source[self.span.end..];
         self.remove(
             removed,
@@ -132,12 +136,12 @@ impl<'s> Doc<'s> {
     }
 
     /// The doc comment's text.
-    pub fn text_all(&self) -> &'s str {
+    pub(crate) fn text_all(&self) -> &'s str {
         self.text
     }
 
     /// The text of child `i`, from its first token to its last; `""` for a blank line.
-    pub fn text(&self, i: usize) -> &'s str {
+    pub(crate) fn text(&self, i: usize) -> &'s str {
         let (from, to) = self.children[i];
         if from >= to {
             return "";
@@ -146,13 +150,13 @@ impl<'s> Doc<'s> {
     }
 
     /// `printFormatPreserving()` with no child changed but the removed ones.
-    pub fn print(&self, removed: &[bool]) -> String {
+    pub(crate) fn print(&self, removed: &[bool]) -> String {
         self.print_appending(removed, &[])
     }
 
     /// [`Doc::print`] with the tags `appended` (`@name value`) added after the children (`addPhpDocTagNode()`):
     /// Rector's `PhpDocInfoPrinter::printFormatPreserving()` over phpdoc-parser's `Printer::printFormatPreserving()`.
-    pub fn print_appending(&self, removed: &[bool], appended: &[&str]) -> String {
+    pub(crate) fn print_appending(&self, removed: &[bool], appended: &[&str]) -> String {
         let empty = |i: usize| self.children[i].0 >= self.children[i].1;
         let mut kept: Vec<usize> = (0..self.children.len()).filter(|&i| !removed[i]).collect();
         // `EmptyPhpDocDetector`: nothing but empty texts left.
@@ -179,7 +183,7 @@ impl<'s> Doc<'s> {
             let parts: Vec<String> = kept
                 .iter()
                 .map(|&i| line_start(self.text(i)))
-                .chain(appended.iter().map(|a| a.to_string()))
+                .chain(appended.iter().map(std::string::ToString::to_string))
                 .map(|s| if s.is_empty() { s } else { format!(" {s}") })
                 .collect();
             return format!("/**\n *{}\n */", parts.join("\n *"));

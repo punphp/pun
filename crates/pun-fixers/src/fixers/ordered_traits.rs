@@ -120,7 +120,7 @@ impl OrderedTraitsFixer {
     fn sort(&self, tokens: &mut Tokens, elements: Vec<(usize, Tokens)>) {
         let to_trait_name = |u: &Tokens| {
             let mut s = vec![];
-            for t in u.iter() {
+            for t in u {
                 if t.equals_any(&[";".into(), "{".into()], true) {
                     break;
                 }

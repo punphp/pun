@@ -154,7 +154,7 @@ fn matches_literal(expr: &Expression<'_>, category: &str) -> Option<bool> {
             if d.parts.iter().all(|p| matches!(p, StringPart::Literal(_))) =>
         {
             let mut value = Vec::new();
-            for part in d.parts.iter() {
+            for part in &d.parts {
                 if let StringPart::Literal(l) = part {
                     value.extend_from_slice(l.value.unwrap_or(l.raw));
                 }

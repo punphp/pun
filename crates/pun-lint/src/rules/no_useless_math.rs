@@ -146,7 +146,7 @@ fn is_number(facts: &Facts, expr: &Expression<'_>) -> bool {
     is_integer(facts, expr)
         || facts
             .native_type(node_span(unparenthesize(expr)))
-            .is_some_and(|t| t.is_float())
+            .is_some_and(mago_codex::ttype::union::TUnion::is_float)
 }
 
 fn text_of<'s>(source: &'s str, expr: &Expression<'_>) -> &'s str {

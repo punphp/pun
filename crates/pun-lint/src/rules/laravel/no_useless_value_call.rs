@@ -50,9 +50,9 @@ impl Rule for NoUselessValueCall {
         }
         let value = unparenthesize(argument.value());
         let facts = facts(ctx);
-        if !facts
+        if facts
             .full_type(node_span(value))
-            .is_some_and(|t| !may_be_closure(&facts, t))
+            .is_none_or(|t| may_be_closure(&facts, t))
         {
             return;
         }

@@ -10,7 +10,12 @@ use super::Checker;
 use super::property_access::in_expression_assign;
 
 /// A `$this->name` or `$this?->name` fetch.
-pub fn read(c: &mut Checker, span: Span, object: &Expression, selector: &ClassLikeMemberSelector) {
+pub(super) fn read(
+    c: &mut Checker,
+    span: Span,
+    object: &Expression,
+    selector: &ClassLikeMemberSelector,
+) {
     let Expression::Variable(Variable::Direct(v)) = object else {
         return; // ponytail: checkThisOnly is off from level 2, which needs every expression's type
     };
@@ -44,6 +49,6 @@ pub fn read(c: &mut Checker, span: Span, object: &Expression, selector: &ClassLi
 }
 
 /// The node span a nullsafe fetch reports on.
-pub fn null_safe(c: &mut Checker, p: &NullSafePropertyAccess) {
+pub(super) fn null_safe(c: &mut Checker, p: &NullSafePropertyAccess) {
     read(c, p.span(), p.object, &p.property);
 }

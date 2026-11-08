@@ -67,8 +67,8 @@ impl Rule for NoAlwaysTrueIf {
         let source = ctx.source;
         let tokens = tokens(ctx);
         let facts = facts(ctx);
-        let edits = run_edits(source, &tokens, ancestors, &|chain| {
-            change(source, &tokens, &facts, chain)
+        let edits = run_edits(source, tokens, ancestors, &|chain| {
+            change(source, tokens, &facts, chain)
         });
         if let Some(edits) = edits {
             out.push(Report {
@@ -179,7 +179,7 @@ fn should_skip_from_variable(facts: &Facts, expr: &Expression<'_>) -> bool {
         matches!(n, Node::Expression(e @ Expression::Variable(_))
             // a variable that may be undefined (`! $scope->hasVariableType()->yes()`)
             if is_non_typed_from_param(facts, e)
-                || facts.native_type(node_span(e)).is_some_and(|t| t.possibly_undefined()))
+                || facts.native_type(node_span(e)).is_some_and(mago_codex::ttype::union::TUnion::possibly_undefined))
     })
 }
 

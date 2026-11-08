@@ -116,7 +116,7 @@ struct DumpTypeCalls<'n, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DumpTypeCalls<'_, 'arena> {
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         if let Expression::Identifier(id) = call.function
             && self
                 .names

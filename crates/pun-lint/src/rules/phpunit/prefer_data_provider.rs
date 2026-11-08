@@ -49,7 +49,7 @@ impl Rule for PreferDataProvider {
         let mut edits = Vec::new();
         let mut providers = Vec::new();
         let mut span = None;
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
@@ -254,7 +254,7 @@ fn json_string(s: &str) -> String {
             '\r' => out.push_str("\\r"),
             '\t' => out.push_str("\\t"),
             '\0'..='\u{1f}' | '\u{2028}' | '\u{2029}' => {
-                out.push_str(&format!("\\u{:04x}", c as u32))
+                out.push_str(&format!("\\u{:04x}", c as u32));
             }
             _ => out.push(c),
         }
@@ -285,7 +285,7 @@ fn json_float(value: f64) -> String {
     if value == 0.0 {
         return format!("{sign}0.0");
     }
-    if exponent < -4 || exponent >= 17 {
+    if !(-4..17).contains(&exponent) {
         let (first, rest) = digits.split_at(1);
         let rest = if rest.is_empty() { "0" } else { rest };
         let exponent_sign = if exponent < 0 { '-' } else { '+' };

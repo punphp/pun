@@ -1,6 +1,11 @@
 //! Types against PHPStan 2.3.1 (scripts/export-phpstan-symbols.php): every signature-map type string through
 //! `TypeStringResolver` + `describe()`, every type in the reflected signatures through `toPhpDocNode()` and back,
 //! and every built-in function's and method's signature on PHP 8.4 and 8.5.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "the helpers print the failing case before the test asserts"
+)]
 
 mod common;
 

@@ -30,7 +30,10 @@ fn check(file: &str) {
     // Compare every diagnostic, independent of the entry point's historical sorting policy.
     got.sort_by(|a, b| (a.0, &a.2, &a.1).cmp(&(b.0, &b.2, &b.1)));
     want.sort_by(|a, b| (a.0, &a.2, &a.1).cmp(&(b.0, &b.2, &b.1)));
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(i64, std::string::String, std::string::String); 0]
+    );
     assert_eq!(got, want, "{file}");
 }
 

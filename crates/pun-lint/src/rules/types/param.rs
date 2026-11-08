@@ -311,16 +311,15 @@ fn single(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
         // `NullType::toNativePhpTypeNode()`: a standalone `null` from PHP 8.2 (PHPStan 2.3)
         TAtomic::Null if php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE => Some("null".to_string()),
         TAtomic::Null | TAtomic::Void | TAtomic::Never | TAtomic::Mixed(_) => None,
-        TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => {
-            Some(if php_version < NULL_FALSE_TRUE_STANDALONE_TYPE {
+        TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => Some(str::to_string(
+            if php_version < NULL_FALSE_TRUE_STANDALONE_TYPE {
                 "bool"
             } else if b.is_true() {
                 "true"
             } else {
                 "false"
-            })
-            .map(str::to_string)
-        }
+            },
+        )),
         _ => member(t, codebase, php_version),
     }
 }

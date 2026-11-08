@@ -34,7 +34,11 @@ pub(crate) fn call_parts<'a>(n: &Node<'a, 'a>) -> Option<CallParts<'a>> {
         on,
         is_static,
         name: member_name(method)?,
-        arguments: list.arguments.iter().map(|a| a.value()).collect(),
+        arguments: list
+            .arguments
+            .iter()
+            .map(mago_syntax::cst::Argument::value)
+            .collect(),
     })
 }
 

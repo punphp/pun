@@ -54,7 +54,7 @@ struct PhpdocLineSpanFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocLineSpanFixer {
         spans: OPTIONS.map(|(_, d)| d),
         whitespaces_config: WhitespacesFixerConfig::default(),

@@ -13,7 +13,7 @@ use super::constants::declaring;
 use super::internal::{root_namespace, should_be_reported};
 
 /// `X::NAME`.
-pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
+pub(super) fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
     let ClassLikeConstantSelector::Identifier(name) = &a.constant else {
         return;
     };

@@ -86,7 +86,10 @@ impl ExpressionHook for Observer {
         let span = expr.span();
         let key = (span.start.offset, span.end.offset);
         let name = String::from_utf8_lossy(variable.name).into_owned();
-        let mut found = self.0.lock().unwrap_or_else(|e| e.into_inner());
+        let mut found = self
+            .0
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let entry = found.entry(key).or_insert((name, state));
         if entry.1 != state {
             entry.1 = MAYBE;

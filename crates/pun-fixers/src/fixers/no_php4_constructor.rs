@@ -7,7 +7,7 @@ use std::path::Path;
 
 struct NoPhp4ConstructorFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoPhp4ConstructorFixer)
 }
 
@@ -170,6 +170,10 @@ fn fix_parent(tokens: &mut Tokens, class_start: usize, class_end: usize) {
     }
 }
 
+#[expect(
+    clippy::never_loop,
+    reason = "upstream returns inside the first foreach pass, so only `->` is ever rewritten"
+)]
 fn fix_infinite_recursion(tokens: &mut Tokens, start: usize, end: usize) {
     for &object_operator_kind in OBJECT_OPERATOR_KINDS {
         let seq = [

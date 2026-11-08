@@ -15,7 +15,7 @@ use super::reflection::{Known, known};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// `ClassReflection::implementsInterface(Serializable::class)`.
-pub fn implements_serializable(k: &ClassLikeMetadata) -> bool {
+pub(super) fn implements_serializable(k: &ClassLikeMetadata) -> bool {
     k.all_parent_interfaces
         .iter()
         .any(|i| i.as_bytes().eq_ignore_ascii_case(b"serializable"))
@@ -88,7 +88,7 @@ impl<'a> Checker<'a, '_> {
 
 /// ExistingClassInClassExtendsRule on a parent that is a class: `class.extendsFinal` (`isFinalByKeyword()`) and
 /// `class.extendsFinalByPhpDoc` (`isFinal()` from an `@final` tag).
-pub fn extends_final(c: &mut Checker, at: Span, current: &str, parent: Known) {
+pub(super) fn extends_final(c: &mut Checker, at: Span, current: &str, parent: Known) {
     let (by_keyword, by_doc) = match parent {
         Known::User(k) => (
             c.final_by_keyword(k),
@@ -116,7 +116,13 @@ pub fn extends_final(c: &mut Checker, at: Span, current: &str, parent: Known) {
 
 /// ExistingClassInClassExtendsRule: a readonly class extends a non-readonly one, or the other way round. `current`
 /// is `Class Foo` or `Anonymous class`.
-pub fn extends_readonly(c: &mut Checker, at: Span, current: &str, readonly: bool, parent: Known) {
+pub(super) fn extends_readonly(
+    c: &mut Checker,
+    at: Span,
+    current: &str,
+    readonly: bool,
+    parent: Known,
+) {
     let parent_readonly = matches!(parent, Known::User(k) if k.flags.is_readonly());
     let name = current.strip_prefix("Class ");
     let display = parent.display();
@@ -146,7 +152,7 @@ pub fn extends_readonly(c: &mut Checker, at: Span, current: &str, readonly: bool
 }
 
 /// ExistingClassInTraitUseRule (its ClassNameCheck part, the `*.nameCase` errors, is not ported).
-pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
+pub(super) fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
     // a trait's own body is walked only in a using class's context
     let decl = c.decls.last().expect("in a class-like");
     let (kind, display) = (decl.kind, decl.display.clone());
@@ -168,7 +174,7 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
     // (an interface is never a trait's context)
     if kind == SymbolKind::Interface {
         let display = display.expect("a named interface");
-        for id in u.trait_names.iter() {
+        for id in &u.trait_names {
             let name = c.resolved(id);
             c.report_non_ignorable(
                 u,
@@ -184,7 +190,7 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
         (None, Some(d)) if !c.in_anonymous_class() => format!("Class {d}"),
         (None, _) => "Anonymous class".to_string(),
     };
-    for id in u.trait_names.iter() {
+    for id in &u.trait_names {
         let name = c.resolved(id);
         let Some(k) = known(c, &name) else {
             c.report_non_ignorable(
@@ -215,7 +221,7 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
 
 /// AbstractMethodInNonAbstractClassRule and ConsistentConstructorDeclarationRule on a method (`name` is its name, a
 /// trait method's alias).
-pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
+pub(super) fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
     let decl = c.decls.last().expect("in a class-like");
     let display = decl.display.clone().unwrap_or_default();
     let (kind, class_abstract) = (decl.kind, decl.is_abstract);
@@ -277,7 +283,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
 
 /// MissingMethodImplementationRule and MissingMagicSerializationMethodsRule (InClassNode) on the class or enum `k`
 /// declared at `at`.
-pub fn in_class(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
+pub(super) fn in_class(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     // getNativeReflection() throws IdentifierNotFound on a missing ancestor; an ancestor of the wrong kind (a class
     // implementing an enum) is a broken hierarchy PHP refuses to load, which PHPStan reports elsewhere
     let wrong_kind = |n: &mago_word::Word, kind: SymbolKind| {
@@ -421,7 +427,7 @@ fn backed(c: &Checker, k: &ClassLikeMetadata) -> bool {
 }
 
 /// SealedDefinitionTraitRule: a `@phpstan-sealed` or `@psalm-inheritors` tag with a type on a trait.
-pub fn sealed_trait<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
+pub(super) fn sealed_trait<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
     let name = c.resolved_span(t.name.span);
     let Some(doc) = c
         .codebase
@@ -456,7 +462,7 @@ fn sealed_tag(doc: &[u8]) -> bool {
 }
 
 /// InvalidCallablePropertyTypeRule on one ClassPropertyNode (`name` with its `$`).
-pub fn callable_property(c: &mut Checker, at: Span, name: &[u8], hint: Option<&Hint>) {
+pub(super) fn callable_property(c: &mut Checker, at: Span, name: &[u8], hint: Option<&Hint>) {
     if !hint.is_some_and(names_callable) {
         return;
     }
@@ -487,7 +493,7 @@ fn names_callable(hint: &Hint) -> bool {
 }
 
 /// MethodVisibilityInInterfaceRule: a private or protected method declared in an interface.
-pub fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
+pub(super) fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
     let Some(decl) = c
         .decls
         .last()
@@ -513,7 +519,7 @@ pub fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Meth
 
 /// AllowedSubTypesRule on the class-like `k` declared at `at`: each direct parent (interfaces, then the parent
 /// class) that lists its allowed subtypes must list this one.
-pub fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
+pub(super) fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     // getImmediateInterfaces() holds interfaces only (an enum named in `implements` is reported elsewhere)
     let parents: Vec<&ClassLikeMetadata> = k
         .direct_parent_interfaces

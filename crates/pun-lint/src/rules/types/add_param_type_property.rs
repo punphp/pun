@@ -57,7 +57,7 @@ impl Rule for AddParamTypeProperty {
         let facts = facts(ctx);
         let Some(class) = own_class(&facts, ancestors) else { return };
         let mut edits = Vec::new();
-        for param in method.parameter_list.parameters.iter() {
+        for param in &method.parameter_list.parameters {
             if param.hint.is_some() || param.ellipsis.is_some() {
                 continue;
             }

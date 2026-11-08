@@ -15,7 +15,7 @@ struct HeredocIndentationFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(HeredocIndentationFixer {
         start_plus_one: true,
         whitespaces_config: WhitespacesFixerConfig::default(),

@@ -10,7 +10,7 @@ use mago_syntax::cst::*;
 
 use super::super::Checker;
 
-pub const IDENTIFIERS: &[&str] = &["argument.invalidPregQuote"];
+pub(crate) const IDENTIFIERS: &[&str] = &["argument.invalidPregQuote"];
 use super::flow::unparen;
 
 /// The function's lowercase name as written (`(string) $functionCall->name`), for a call by name.

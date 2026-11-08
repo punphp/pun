@@ -73,6 +73,6 @@ fn ensure_whitespace_existence(tokens: &mut Tokens, mut index: usize, after: boo
         }
         return;
     }
-    index += if after { 0 } else { 1 };
+    index += usize::from(!after);
     tokens.insert_at(index, vec![Token::new(T_WHITESPACE, " ")]);
 }

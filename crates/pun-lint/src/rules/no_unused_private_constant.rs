@@ -92,11 +92,11 @@ impl Rule for NoUnusedPrivateConstant {
             }
             let mut seen: Vec<String> = Vec::new();
             while let Some(holder) = holders.pop() {
-                for member in holder.iter() {
+                for member in holder {
                     let ClassLikeMember::TraitUse(r#use) = member else {
                         continue;
                     };
-                    for name in r#use.trait_names.iter() {
+                    for name in &r#use.trait_names {
                         let name = resolve_class_name(ancestors, name);
                         if seen.iter().any(|s| s.eq_ignore_ascii_case(&name)) {
                             continue;

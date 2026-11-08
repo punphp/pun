@@ -12,7 +12,7 @@ use super::assign::contains_nullsafe;
 
 /// A statement ParentStmtTypesVisitor records that ContinueBreakInLoopRule reads.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum Parent {
+pub(super) enum Parent {
     /// `for`, `foreach`, `do`, `while` or `switch`.
     Loop,
     Closure,
@@ -20,7 +20,7 @@ pub enum Parent {
 
 /// What these checks remember during a walk.
 #[derive(Default)]
-pub struct State {
+pub(super) struct State {
     /// The loops and closures around a node, innermost last.
     pub parents: Vec<Parent>,
     /// Per function-like with return statements, innermost last: it returns by reference.
@@ -28,7 +28,7 @@ pub struct State {
 }
 
 /// ContinueBreakInLoopRule.
-pub fn continue_break(
+pub(super) fn continue_break(
     c: &mut Checker,
     at: impl HasSpan,
     level: Option<&Expression>,
@@ -64,8 +64,8 @@ pub fn continue_break(
 }
 
 /// ThisInGlobalStatementRule.
-pub fn global(c: &mut Checker, g: &Global) {
-    for v in g.variables.iter() {
+pub(super) fn global(c: &mut Checker, g: &Global) {
+    for v in &g.variables {
         if matches!(v, Variable::Direct(d) if d.name == b"$this") {
             c.report_non_ignorable(
                 g,
@@ -78,8 +78,8 @@ pub fn global(c: &mut Checker, g: &Global) {
 }
 
 /// ThisInStaticStatementRule.
-pub fn r#static(c: &mut Checker, s: &Static) {
-    for item in s.items.iter() {
+pub(super) fn r#static(c: &mut Checker, s: &Static) {
+    for item in &s.items {
         if item.variable().name == b"$this" {
             c.report_non_ignorable(
                 s,
@@ -92,7 +92,7 @@ pub fn r#static(c: &mut Checker, s: &Static) {
 }
 
 /// ReturnNullsafeByRefRule, for each return statement of the function-like it is in.
-pub fn r#return(c: &mut Checker, r: &Return) {
+pub(super) fn r#return(c: &mut Checker, r: &Return) {
     if c.syntax.by_ref.last() != Some(true) {
         return;
     }
@@ -107,7 +107,7 @@ pub fn r#return(c: &mut Checker, r: &Return) {
 }
 
 /// ArrowFunctionReturnNullsafeByRefRule.
-pub fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
+pub(super) fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
     if f.ampersand.is_some() && contains_nullsafe(f.expression) {
         c.report_non_ignorable(
             f,
@@ -119,7 +119,7 @@ pub fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
 }
 
 /// InvalidTypesInUnionRule on a `Node\FunctionLike`: its parameters' and return type's native types.
-pub fn function_like_types(
+pub(super) fn function_like_types(
     c: &mut Checker,
     params: Option<&FunctionLikeParameterList>,
     ret: Option<&FunctionLikeReturnTypeHint>,
@@ -135,7 +135,7 @@ pub fn function_like_types(
 }
 
 /// InvalidTypesInUnionRule's processComplexType(), also for a ClassPropertyNode's native type.
-pub fn complex_type(c: &mut Checker, hint: &Hint) {
+pub(super) fn complex_type(c: &mut Checker, hint: &Hint) {
     match hint {
         Hint::Union(_) => {
             let mut types = Vec::new();
@@ -186,10 +186,10 @@ fn standalone<'arena>(hint: &Hint<'arena>) -> Option<&'arena [u8]> {
 
 /// UsedNamesRule: the file's top-level `use` and class-like statements, and those directly in its namespaces. Each
 /// namespace declaration starts a new import scope, even for a namespace declared earlier in the file.
-pub fn used_names(c: &mut Checker, program: &Program) {
+pub(super) fn used_names(c: &mut Checker, program: &Program) {
     let mut declared: HashMap<String, Vec<String>> = HashMap::new();
     let mut file_scope = Vec::new();
-    for s in program.statements.iter() {
+    for s in &program.statements {
         if let Statement::Namespace(n) = s {
             let namespace = n
                 .name
@@ -197,7 +197,7 @@ pub fn used_names(c: &mut Checker, program: &Program) {
                 .map(|id| c.written(id.span()))
                 .unwrap_or_default();
             let mut namespace_scope = Vec::new();
-            for s in n.statements().iter() {
+            for s in n.statements() {
                 names_of(c, s, &namespace, &mut declared, &mut namespace_scope);
             }
             continue;

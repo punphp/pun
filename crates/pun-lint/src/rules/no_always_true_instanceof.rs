@@ -51,8 +51,8 @@ impl Rule for NoAlwaysTrueInstanceof {
         let source = ctx.source;
         let tokens = tokens(ctx);
         let facts = facts(ctx);
-        let edits = run_edits(source, &tokens, ancestors, &|chain| {
-            change(source, &tokens, &facts, chain)
+        let edits = run_edits(source, tokens, ancestors, &|chain| {
+            change(source, tokens, &facts, chain)
         });
         if let Some(edits) = edits {
             out.push(report(node_span(&ancestors[ancestors.len() - 1]), edits));

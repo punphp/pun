@@ -63,12 +63,12 @@ impl Rule for NoRedundantNullableCheck {
         let tokens = tokens(ctx);
         let mut chain = ancestors.to_vec();
         chain.push(node);
-        let (list, key) = enclosing(source, &tokens, &chain);
+        let (list, key) = enclosing(source, tokens, &chain);
         let Some(Statement::If(r#if)) = key.checked_sub(1).map(|k| list.stmts[k]) else {
             return;
         };
         // `shouldSkip()`: an `if` with one `return` and nothing else, on `instanceof` or its negation
-        let parts = if_parts(&tokens, r#if);
+        let parts = if_parts(tokens, r#if);
         if parts.has_else || parts.has_elseifs || parts.stmts.len() != 1 {
             return;
         }

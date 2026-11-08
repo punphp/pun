@@ -101,9 +101,8 @@ impl Rule for PreferInstanceMethod {
             for (span, arguments) in calls {
                 edits.push(this_call(ctx, span, arguments, name));
             }
-            let modifiers = (method.modifiers.first())
-                .map(|m| node_span(m).start)
-                .unwrap_or(node_span(*method).start);
+            let modifiers =
+                (method.modifiers.first()).map_or(node_span(*method).start, |m| node_span(m).start);
             let function = method.function.span.start.offset as usize;
             edits.push(Edit::new(
                 Span::new(modifiers, function),
@@ -166,11 +165,7 @@ fn static_call<'ast, 'arena>(
             &c.method,
             (
                 c.argument_list.left_parenthesis.end.offset as usize,
-                c.argument_list
-                    .arguments
-                    .iter()
-                    .map(|a| node_span(a))
-                    .collect(),
+                c.argument_list.arguments.iter().map(node_span).collect(),
             ),
         ),
         Node::StaticMethodPartialApplication(c) => (
@@ -178,11 +173,7 @@ fn static_call<'ast, 'arena>(
             &c.method,
             (
                 c.argument_list.left_parenthesis.end.offset as usize,
-                c.argument_list
-                    .arguments
-                    .iter()
-                    .map(|a| node_span(a))
-                    .collect(),
+                c.argument_list.arguments.iter().map(node_span).collect(),
             ),
         ),
         _ => return None,

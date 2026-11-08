@@ -8,7 +8,7 @@ use std::path::Path;
 
 struct PhpUnitFqcnAnnotationFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpUnitFqcnAnnotationFixer)
 }
 

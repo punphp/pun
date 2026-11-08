@@ -40,20 +40,17 @@ impl Value {
 
     fn aliases(&self) -> Aliases {
         let mut aliases = Aliases::new();
-        match self {
-            Value::Array(items) => {
-                for (k, v) in items {
-                    if let Value::String(v) = v
-                        && !v.is_empty()
-                        && v != "0"
-                    {
-                        aliases.insert(k.clone(), v.clone());
-                    } else {
-                        aliases.remove(k);
-                    }
+        if let Value::Array(items) = self {
+            for (k, v) in items {
+                if let Value::String(v) = v
+                    && !v.is_empty()
+                    && v != "0"
+                {
+                    aliases.insert(k.clone(), v.clone());
+                } else {
+                    aliases.remove(k);
                 }
             }
-            _ => {}
         }
         aliases
     }
@@ -68,8 +65,10 @@ pub(crate) fn load(root: &Path) -> Vec<(String, String)> {
         .flatten()
         .find(|p| p["name"] == "laravel/framework")
         .and_then(|p| p["install-path"].as_str())
-        .map(|p| root.join("vendor/composer").join(p))
-        .unwrap_or_else(|| root.join("vendor/laravel/framework"));
+        .map_or_else(
+            || root.join("vendor/laravel/framework"),
+            |p| root.join("vendor/composer").join(p),
+        );
     let defaults = returned(
         &framework.join("src/Illuminate/Support/Facades/Facade.php"),
         &[],
@@ -138,8 +137,7 @@ pub(crate) fn load(root: &Path) -> Vec<(String, String)> {
                     alias.clone(),
                     target
                         .as_str()
-                        .map(|s| Value::String(s.to_string()))
-                        .unwrap_or(Value::Unknown),
+                        .map_or(Value::Unknown, |s| Value::String(s.to_string())),
                 ));
             }
         }
@@ -178,7 +176,7 @@ fn returned(path: &Path, defaults: &[(String, Value)], method: bool) -> Option<V
             value: Option<Value>,
         }
         impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DefaultAliases<'_, 'arena> {
-            fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+            fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
                 if m.name.value.eq_ignore_ascii_case(b"defaultAliases")
                     && let MethodBody::Concrete(b) = &m.body
                     && let [Statement::Return(r)] = b.statements.as_slice()
@@ -212,10 +210,9 @@ fn returned(path: &Path, defaults: &[(String, Value)], method: bool) -> Option<V
 
 fn value(e: &Expression, names: &ResolvedNames, defaults: &[(String, Value)]) -> Value {
     match e {
-        Expression::Literal(Literal::String(s)) => s
-            .value
-            .map(|s| Value::String(String::from_utf8_lossy(s).into_owned()))
-            .unwrap_or(Value::Unknown),
+        Expression::Literal(Literal::String(s)) => s.value.map_or(Value::Unknown, |s| {
+            Value::String(String::from_utf8_lossy(s).into_owned())
+        }),
         Expression::Access(Access::ClassConstant(c)) => {
             if let Expression::Identifier(id) = c.class
                 && let ClassLikeConstantSelector::Identifier(k) = &c.constant
@@ -233,9 +230,7 @@ fn value(e: &Expression, names: &ResolvedNames, defaults: &[(String, Value)]) ->
             if c.argument_list.arguments.is_empty()
                 && matches!(&c.method, ClassLikeMemberSelector::Identifier(id) if id.value.eq_ignore_ascii_case(b"toArray") || id.value.eq_ignore_ascii_case(b"all")) =>
         {
-            collection(c.object, names, defaults)
-                .map(Value::Array)
-                .unwrap_or(Value::Unknown)
+            collection(c.object, names, defaults).map_or(Value::Unknown, Value::Array)
         }
         _ => Value::Unknown,
     }
@@ -247,7 +242,7 @@ fn array(
     defaults: &[(String, Value)],
 ) -> Value {
     let mut items = Vec::new();
-    for element in elements.iter() {
+    for element in elements {
         let ArrayElement::KeyValue(kv) = element else {
             return Value::Unknown;
         };

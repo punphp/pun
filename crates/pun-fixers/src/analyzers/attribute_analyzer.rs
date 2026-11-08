@@ -50,7 +50,7 @@ impl AttributeAnalyzer {
         let first_token_of_name = tokens[index].get_content();
         let mut name = name.to_vec();
         if let Some(full_name) = uses.get(first_token_of_name) {
-            namespace = full_name.clone();
+            namespace.clone_from(full_name);
             if name == first_token_of_name {
                 return namespace;
             }

@@ -440,8 +440,7 @@ fn is_entity_class(facts: &Facts, class: &str) -> bool {
     let all = crate::rules::php_parser::lex(&source);
     let from = previous_token_end(&source, &all, start);
     all.iter()
-        .filter(|t| t.start >= from && t.end <= start && t.kind == TokenKind::DocBlockComment)
-        .last()
+        .rfind(|t| t.start >= from && t.end <= start && t.kind == TokenKind::DocBlockComment)
         .is_some_and(|doc| {
             let doc = &source[doc.start..doc.end];
             ENTITY_DOCBLOCK_MARKERS.iter().any(|m| doc.contains(m))

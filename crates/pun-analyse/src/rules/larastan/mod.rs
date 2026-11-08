@@ -33,19 +33,23 @@ use pun_phpstan::{Array, Value};
 
 use super::Checker;
 
+pub(super) use crate::laravel::snake;
 pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
-pub(crate) use forwards::late_builder;
-pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
 pub(super) use config::Types as ConfigTypes;
-pub(super) use macros::{Macros, macro_method};
 pub(super) use console::Types as ConsoleTypes;
-pub(super) use helpers::{AbortIf, ContainerOffsets, Functions as HelperFunctions, Methods as HelperMethods};
-pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name, facade_mixin_method, with_method_class};
-pub(super) use crate::laravel::snake;
+pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
 pub(super) use factories::has_magic_method as factory_magic_method;
+pub(crate) use forwards::late_builder;
+pub(super) use forwards::{
+    ModelForwards, ScopeStaticCalls, Tap, builder_name, facade_mixin_method, with_method_class,
+};
+pub(super) use helpers::{
+    AbortIf, ContainerOffsets, Functions as HelperFunctions, Methods as HelperMethods,
+};
+pub(super) use macros::{Macros, macro_method};
 
 /// `preg_split('/(And|Or)(?=[A-Z])/', $finder)`: a dynamic where's column segments.
 pub(super) fn where_segments(finder: &str) -> Vec<&str> {
@@ -69,7 +73,7 @@ pub(super) fn where_segments(finder: &str) -> Vec<&str> {
     out
 }
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "larastan.uselessConstructs.with",
     "larastan.uselessConstructs.value",
     "larastan.noEnvCallsOutsideOfConfig",
@@ -197,9 +201,12 @@ impl Larastan {
     ) {
         let app = crate::Laravel {
             root: &self.root,
-            parse_casts_method: self.switches.contains(LarastanSwitches::PARSE_MODEL_CASTS_METHOD),
+            parse_casts_method: self
+                .switches
+                .contains(LarastanSwitches::PARSE_MODEL_CASTS_METHOD),
         };
-        (self.database_properties, self.table_columns) = crate::laravel::database_properties(app, project, codebase);
+        (self.database_properties, self.table_columns) =
+            crate::laravel::database_properties(app, project, codebase);
         self.models = std::sync::Arc::new(crate::laravel::models(app, project, codebase));
         self.commands = std::sync::Arc::new(crate::larastan::console::commands(project, codebase));
         self.app = std::sync::Arc::new(crate::larastan::app::App::load(&self.root));
@@ -214,7 +221,8 @@ impl Larastan {
                 &self.config_directories,
                 &self.root,
                 codebase,
-                self.switches.contains(LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE),
+                self.switches
+                    .contains(LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE),
             ));
         }
     }
@@ -241,26 +249,61 @@ impl Larastan {
         if !directories.is_empty() {
             larastan.config_directories = directories;
         }
-        larastan.switches.set(LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG, flag("noEnvCallsOutsideOfConfig", true));
-        larastan.switches.set(LarastanSwitches::NO_MODEL_MAKE, flag("noModelMake", true));
-        larastan.switches.set(LarastanSwitches::CHECK_OCTANE_COMPATIBILITY, flag("checkOctaneCompatibility", false));
-        larastan.switches.set(LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY, flag("checkModelMethodVisibility", false));
+        larastan.switches.set(
+            LarastanSwitches::NO_ENV_CALLS_OUTSIDE_OF_CONFIG,
+            flag("noEnvCallsOutsideOfConfig", true),
+        );
+        larastan
+            .switches
+            .set(LarastanSwitches::NO_MODEL_MAKE, flag("noModelMake", true));
+        larastan.switches.set(
+            LarastanSwitches::CHECK_OCTANE_COMPATIBILITY,
+            flag("checkOctaneCompatibility", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::CHECK_MODEL_METHOD_VISIBILITY,
+            flag("checkModelMethodVisibility", false),
+        );
         larastan.switches.set(
             LarastanSwitches::CHECK_AUTH_CALLS_WHEN_IN_REQUEST_SCOPE,
             flag("checkAuthCallsWhenInRequestScope", false),
         );
-        larastan.switches.set(LarastanSwitches::CHECK_MODEL_APPENDS, flag("checkModelAppends", true));
-        larastan.switches.set(LarastanSwitches::PARSE_MODEL_CASTS_METHOD, flag("parseModelCastsMethod", false));
-        larastan.switches.set(LarastanSwitches::CHECK_MODEL_PROPERTIES, flag("checkModelProperties", false));
-        larastan.switches.set(LarastanSwitches::CHECK_CONFIG_TYPES, flag("checkConfigTypes", false));
-        larastan.switches.set(LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE, flag("generalizeEnvReturnType", false));
+        larastan.switches.set(
+            LarastanSwitches::CHECK_MODEL_APPENDS,
+            flag("checkModelAppends", true),
+        );
+        larastan.switches.set(
+            LarastanSwitches::PARSE_MODEL_CASTS_METHOD,
+            flag("parseModelCastsMethod", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::CHECK_MODEL_PROPERTIES,
+            flag("checkModelProperties", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::CHECK_CONFIG_TYPES,
+            flag("checkConfigTypes", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE,
+            flag("generalizeEnvReturnType", false),
+        );
         larastan.switches.set(
             LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS,
             flag("noUnnecessaryEnumerableToArrayCalls", false),
         );
-        larastan.switches.set(LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL, flag("noUnnecessaryCollectionCall", true));
-        larastan.switches.set(LarastanSwitches::CHECK_UNUSED_VIEWS, flag("checkUnusedViews", false));
-        larastan.switches.set(LarastanSwitches::CHECK_MISSING_TRANSLATIONS, flag("checkMissingTranslations", false));
+        larastan.switches.set(
+            LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL,
+            flag("noUnnecessaryCollectionCall", true),
+        );
+        larastan.switches.set(
+            LarastanSwitches::CHECK_UNUSED_VIEWS,
+            flag("checkUnusedViews", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::CHECK_MISSING_TRANSLATIONS,
+            flag("checkMissingTranslations", false),
+        );
         let names = |k: &str| -> Vec<String> {
             params
                 .get_str(k)
@@ -273,7 +316,10 @@ impl Larastan {
                 })
                 .unwrap_or_default()
         };
-        larastan.bootstrap_files = names("bootstrapFiles").iter().map(|f| root.join(f)).collect();
+        larastan.bootstrap_files = names("bootstrapFiles")
+            .iter()
+            .map(|f| root.join(f))
+            .collect();
         larastan.view_directories = names("viewDirectories")
             .iter()
             .map(|d| root.join(d))
@@ -329,7 +375,8 @@ pub(crate) fn has_model_property(c: &Checker, k: &ClassLikeMetadata, property: &
     if c.larastan.is_none() || !is_model(c, k) {
         return false;
     }
-    let name = String::from_utf8_lossy(property.strip_prefix(b"$").unwrap_or(property)).into_owned();
+    let name =
+        String::from_utf8_lossy(property.strip_prefix(b"$").unwrap_or(property)).into_owned();
     let class = k.original_name.as_str_lossy().into_owned();
     if crate::laravel::accessor_type(c.codebase, &class, &name).is_some()
         || !k.flags.is_abstract() && has_database_property(c, &class, &name)
@@ -347,7 +394,13 @@ pub(crate) fn has_model_property(c: &Checker, k: &ClassLikeMetadata, property: &
         c.codebase
             .get_declaring_method(k.name.as_bytes(), m.as_bytes())
             .and_then(|f| f.return_type_metadata.as_ref())
-            .is_some_and(|t| is_object_of(c, &t.type_union, b"illuminate\\database\\eloquent\\relations\\relation"))
+            .is_some_and(|t| {
+                is_object_of(
+                    c,
+                    &t.type_union,
+                    b"illuminate\\database\\eloquent\\relations\\relation",
+                )
+            })
     })
 }
 
@@ -358,29 +411,61 @@ pub(crate) fn has_scope(c: &Checker, model: &str, method: &[u8]) -> bool {
 }
 
 /// [`has_scope`] on the codebase.
-pub(crate) fn is_scope(codebase: &mago_codex::metadata::CodebaseMetadata, model: &[u8], method: &[u8]) -> bool {
+pub(crate) fn is_scope(
+    codebase: &mago_codex::metadata::CodebaseMetadata,
+    model: &[u8],
+    method: &[u8],
+) -> bool {
     let Some(k) = codebase.get_class_like(model) else {
         return false;
     };
-    let attribute = codebase.get_declaring_method(k.name.as_bytes(), method).is_some_and(|m| {
-        m.method_metadata.as_ref().is_some_and(|mm| !mm.visibility.is_public())
-            && m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope"))
-    });
+    let attribute = codebase
+        .get_declaring_method(k.name.as_bytes(), method)
+        .is_some_and(|m| {
+            m.method_metadata
+                .as_ref()
+                .is_some_and(|mm| !mm.visibility.is_public())
+                && m.attributes.iter().any(|a| {
+                    a.name
+                        .as_bytes()
+                        .eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope")
+                })
+        });
     let mut scope = b"scope".to_vec();
     scope.extend(method.iter().take(1).map(u8::to_ascii_uppercase));
     scope.extend(method.iter().skip(1));
-    attribute || codebase.get_declaring_method(k.name.as_bytes(), &scope).is_some()
+    attribute
+        || codebase
+            .get_declaring_method(k.name.as_bytes(), &scope)
+            .is_some()
 }
 
 /// A model's non-public `#[Scope]` method that a call from `scope` (outside the model's classes) cannot reach, which
 /// ClassReflection::getMethod() then takes from ModelForwardsCallsExtension.
-pub(crate) fn is_hidden_scope(c: &Checker, k: &ClassLikeMetadata, method: &[u8], scope: Option<&ClassLikeMetadata>) -> bool {
+pub(crate) fn is_hidden_scope(
+    c: &Checker,
+    k: &ClassLikeMetadata,
+    method: &[u8],
+    scope: Option<&ClassLikeMetadata>,
+) -> bool {
     is_model(c, k)
         && is_scope(c.codebase, k.name.as_bytes(), method)
-        && c.codebase.get_declaring_method(k.name.as_bytes(), method).is_some_and(|m| {
-            m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope"))
+        && c.codebase
+            .get_declaring_method(k.name.as_bytes(), method)
+            .is_some_and(|m| {
+                m.attributes.iter().any(|a| {
+                    a.name
+                        .as_bytes()
+                        .eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope")
+                })
+            })
+        && !scope.is_some_and(|s| {
+            is_a(
+                c,
+                s.name.as_bytes(),
+                &k.name.as_bytes().to_ascii_lowercase(),
+            )
         })
-        && !scope.is_some_and(|s| is_a(c, s.name.as_bytes(), &k.name.as_bytes().to_ascii_lowercase()))
 }
 
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.
@@ -490,7 +575,7 @@ struct Wanted<'l, 'n, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         let Expression::Identifier(id) = call.function else {
             return;
         };
@@ -505,8 +590,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         };
         self.spans.extend(wanted.map(|a| a.value().span()));
     }
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if self.larastan.switches.contains(LarastanSwitches::CHECK_CONFIG_TYPES) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
+        if self
+            .larastan
+            .switches
+            .contains(LarastanSwitches::CHECK_CONFIG_TYPES)
+        {
             self.spans.extend(config::typed(self.names, call));
         }
         if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
@@ -521,7 +610,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         {
             self.spans.push(first.value().span());
         }
-        if self.larastan.switches.contains(LarastanSwitches::NO_MODEL_MAKE)
+        if self
+            .larastan
+            .switches
+            .contains(LarastanSwitches::NO_MODEL_MAKE)
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value == b"make")
             && !matches!(
                 call.class,
@@ -534,8 +626,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
             self.spans.push(call.class.span());
         }
     }
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        if self.larastan.switches.contains(LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS)
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
+        if self
+            .larastan
+            .switches
+            .contains(LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS)
             && collections::to_array(call).is_some()
         {
             self.spans.push(call.object.span());
@@ -543,7 +638,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
             self.spans.extend([arg.span(), call.object.span()]);
         }
-        if self.larastan.switches.contains(LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL) {
+        if self
+            .larastan
+            .switches
+            .contains(LarastanSwitches::NO_UNNECESSARY_COLLECTION_CALL)
+        {
             self.spans.extend(collections::unnecessary_typed(call));
         }
         if collectors::typed_method_call(self.larastan, call).is_some() {
@@ -552,7 +651,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if let Some((_, arg)) = console::input_call(call) {
             self.spans.extend([call.object.span(), arg.span()]);
         }
-        if self.larastan.switches.contains(LarastanSwitches::CHECK_OCTANE_COMPATIBILITY) && octane::is_binding(call) {
+        if self
+            .larastan
+            .switches
+            .contains(LarastanSwitches::CHECK_OCTANE_COMPATIBILITY)
+            && octane::is_binding(call)
+        {
             self.spans.push(call.object.span());
         }
     }
@@ -572,7 +676,10 @@ pub(crate) fn resolving_unresolvable<R>(f: impl FnOnce() -> R) -> R {
 }
 
 /// A model collection `type_node()` resolved, with its key type `key` (a two-argument collection's first).
-fn with_key(collection: pun_phpstan::types::Type, key: &pun_phpstan::types::Type) -> pun_phpstan::types::Type {
+fn with_key(
+    collection: pun_phpstan::types::Type,
+    key: &pun_phpstan::types::Type,
+) -> pun_phpstan::types::Type {
     match collection {
         pun_phpstan::types::Type::Object(name, mut args, nullable) if args.len() == 2 => {
             args[0] = key.clone();
@@ -593,27 +700,54 @@ pub(crate) fn type_node(
     args: &[pun_phpstan::types::Type],
 ) -> Option<pun_phpstan::types::Type> {
     use pun_phpstan::types::{Accessory, Type, is_super_type_of};
-    let model = || Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false);
+    let model = || {
+        Type::Object(
+            "Illuminate\\Database\\Eloquent\\Model".into(),
+            vec![],
+            false,
+        )
+    };
     match (name, args) {
         ("|", [a, b]) => {
             const BUILDER: &[u8] = b"Illuminate\\Database\\Eloquent\\Builder";
             let class = |t: &Type| match t {
-                Type::Object(n, args, _) if args.is_empty() => codebase.get_class_like(n.as_bytes()),
+                Type::Object(n, args, _) if args.is_empty() => {
+                    codebase.get_class_like(n.as_bytes())
+                }
                 _ => None,
             };
             let is_model = |t: &Type| class(t).is_some() && is_super_type_of(&model(), t).yes();
             let is_builder = |t: &Type| {
-                class(t).is_some_and(|k| k.name.as_bytes().eq_ignore_ascii_case(BUILDER) || codebase.is_instance_of(k.name.as_bytes(), BUILDER))
+                class(t).is_some_and(|k| {
+                    k.name.as_bytes().eq_ignore_ascii_case(BUILDER)
+                        || codebase.is_instance_of(k.name.as_bytes(), BUILDER)
+                })
             };
             let model = [a, b].into_iter().rfind(|t| is_model(t))?;
             let builder = [a, b].into_iter().rfind(|t| is_builder(t))?;
-            let Type::Object(builder, ..) = builder else { return None };
+            let Type::Object(builder, ..) = builder else {
+                return None;
+            };
             Some(Type::Object(builder.clone(), vec![model.clone()], false))
         }
-        ("view-string", []) => Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ViewString)])),
-        ("model-property", _) if !larastan.switches.contains(LarastanSwitches::CHECK_MODEL_PROPERTIES) => Some(Type::String),
-        ("model-property", [t]) if !is_super_type_of(&model(), t).no() && !matches!(t, Type::Never(_)) => {
-            Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ModelProperty(Box::new(t.clone())))]))
+        ("view-string", []) => Some(Type::Intersection(vec![
+            Type::String,
+            Type::Accessory(Accessory::ViewString),
+        ])),
+        ("model-property", _)
+            if !larastan
+                .switches
+                .contains(LarastanSwitches::CHECK_MODEL_PROPERTIES) =>
+        {
+            Some(Type::String)
+        }
+        ("model-property", [t])
+            if !is_super_type_of(&model(), t).no() && !matches!(t, Type::Never(_)) =>
+        {
+            Some(Type::Intersection(vec![
+                Type::String,
+                Type::Accessory(Accessory::ModelProperty(Box::new(t.clone()))),
+            ]))
         }
         ("model-property", _) => Some(Type::Error),
         // `collection-of<TKey, TModel>`: like `array<TKey, TValue>`, the optional key type comes first
@@ -622,14 +756,23 @@ pub(crate) fn type_node(
                 return None;
             }
             match type_node(codebase, larastan, name, std::slice::from_ref(t))? {
-                Type::Union(collections) => Some(pun_phpstan::types::union(collections.into_iter().map(|c| with_key(c, key)).collect())),
+                Type::Union(collections) => Some(pun_phpstan::types::union(
+                    collections.into_iter().map(|c| with_key(c, key)).collect(),
+                )),
                 c => Some(with_key(c, key)),
             }
         }
-        ("collection-of", [t]) if is_super_type_of(&model(), t).no() || matches!(t, Type::Never(_)) => None,
+        ("collection-of", [t])
+            if is_super_type_of(&model(), t).no() || matches!(t, Type::Never(_)) =>
+        {
+            None
+        }
         // FunctionReturnTypeCheck's TypeUtils::resolveLateResolvableTypes() resolves a template's CollectionOfType by
         // the template's bound (getObjectClassNames())
-        ("collection-of", [t]) if super::declared::has_template(t) && RESOLVE_UNRESOLVABLE.with(std::cell::Cell::get) => {
+        ("collection-of", [t])
+            if super::declared::has_template(t)
+                && RESOLVE_UNRESOLVABLE.with(std::cell::Cell::get) =>
+        {
             type_node(codebase, larastan, name, &[t.resolve_to_bounds()])
         }
         // ponytail: elsewhere a template's collection stays the Eloquent collection after the template is resolved
@@ -654,8 +797,15 @@ pub(crate) fn type_node(
                         .flatten()
                         .map(|p| match p.types.as_ref() {
                             // CollectionOfType's default key, `new BenevolentUnionType([new IntegerType(), new StringType()])`
-                            [TAtomic::Scalar(_)] => Some(pun_phpstan::types::Type::Benevolent(vec![Type::Int, Type::String])),
-                            [a] => object(a).map(|o| Type::Object(crate::text(o.name.as_bytes()), vec![], false)),
+                            [TAtomic::Scalar(_)] => {
+                                Some(pun_phpstan::types::Type::Benevolent(vec![
+                                    Type::Int,
+                                    Type::String,
+                                ]))
+                            }
+                            [a] => object(a).map(|o| {
+                                Type::Object(crate::text(o.name.as_bytes()), vec![], false)
+                            }),
                             _ => None,
                         })
                         .collect::<Option<Vec<_>>>()?;

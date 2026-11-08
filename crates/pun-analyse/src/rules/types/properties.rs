@@ -20,7 +20,7 @@ use super::super::property_access::{has_instance_property, has_static_property};
 use super::super::{Checker, declared};
 use super::flow::unparen;
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(crate) const IDENTIFIERS: &[&str] = &[
     "assign.propertyType",
     "property.readOnlyAssignOutOfClass",
     "property.readOnlyAssignNotOnThis",
@@ -616,7 +616,7 @@ pub(in super::super) fn increment(c: &mut Checker, operand: &Expression, operato
 
 /// `unset($this->p[$k])`, a write of `$this->p` (but not `unset($this->p)`).
 pub(in super::super) fn unset(c: &mut Checker, u: &Unset) {
-    for v in u.values.iter() {
+    for v in &u.values {
         writes(c, v, true, None);
     }
 }

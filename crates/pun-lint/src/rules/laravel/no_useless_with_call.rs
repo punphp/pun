@@ -47,7 +47,7 @@ impl Rule for NoUselessWithCall {
             [value, callback] => {
                 let facts = facts(ctx);
                 let callback = node_span(unparenthesize(callback.value()));
-                if !(facts.full_type(callback)).is_some_and(|t| !may_be_callable(&facts, t)) {
+                if (facts.full_type(callback)).is_none_or(|t| may_be_callable(&facts, t)) {
                     return;
                 }
                 value

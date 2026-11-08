@@ -42,13 +42,30 @@ pub(in super::super) fn throwable() -> Type {
 
 impl Point {
     fn explicit(at: Span, ty: Type, any: bool) -> Point {
-        Point { at, ty, explicit: true, any, throw: false, unknown: false }
+        Point {
+            at,
+            ty,
+            explicit: true,
+            any,
+            throw: false,
+            unknown: false,
+        }
     }
     fn implicit(at: Span) -> Point {
-        Point { at, ty: throwable(), explicit: false, any: true, throw: false, unknown: false }
+        Point {
+            at,
+            ty: throwable(),
+            explicit: false,
+            any: true,
+            throw: false,
+            unknown: false,
+        }
     }
     fn unknown(at: Span) -> Point {
-        Point { unknown: true, ..Point::implicit(at) }
+        Point {
+            unknown: true,
+            ..Point::implicit(at)
+        }
     }
 }
 
@@ -63,7 +80,8 @@ pub(crate) struct ThrowData {
 
 impl ThrowData {
     pub(crate) fn load() -> ThrowData {
-        let v: Value = serde_json::from_str(include_str!("../../../data/throw-types.json")).expect("throw-types.json");
+        let v: Value = serde_json::from_str(include_str!("../../../data/throw-types.json"))
+            .expect("throw-types.json");
         let strings = |v: &Value| -> HashMap<String, String> {
             v.as_object()
                 .into_iter()
@@ -76,14 +94,31 @@ impl ThrowData {
                 .into_iter()
                 .flatten()
                 .map(|(k, l)| {
-                    (k.clone(), l.as_array().into_iter().flatten().filter_map(|s| Some(s.as_str()?.to_string())).collect())
+                    (
+                        k.clone(),
+                        l.as_array()
+                            .into_iter()
+                            .flatten()
+                            .filter_map(|s| Some(s.as_str()?.to_string()))
+                            .collect(),
+                    )
                 })
                 .collect()
         };
         ThrowData {
             functions: strings(&v["functions"]),
-            methods: v["methods"].as_object().into_iter().flatten().map(|(k, m)| (k.clone(), strings(m))).collect(),
-            dynamic: v["dynamic"].as_array().into_iter().flatten().filter_map(|s| Some(s.as_str()?.to_string())).collect(),
+            methods: v["methods"]
+                .as_object()
+                .into_iter()
+                .flatten()
+                .map(|(k, m)| (k.clone(), strings(m)))
+                .collect(),
+            dynamic: v["dynamic"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(|s| Some(s.as_str()?.to_string()))
+                .collect(),
             later: lists(&v["later"]),
             immediate: lists(&v["immediate"]),
         }
@@ -91,8 +126,17 @@ impl ThrowData {
 }
 
 /// `getThrowType()` of a built-in method (`class` and `method` lowercase).
-pub(in super::super) fn builtin_method_throws(c: &Checker, class: &str, method: &str) -> Option<Type> {
-    c.natives.throws.methods.get(class)?.get(method).map(|t| resolve_str(t, None))
+pub(in super::super) fn builtin_method_throws(
+    c: &Checker,
+    class: &str,
+    method: &str,
+) -> Option<Type> {
+    c.natives
+        .throws
+        .methods
+        .get(class)?
+        .get(method)
+        .map(|t| resolve_str(t, None))
 }
 
 /// What a callee is, for its throw point.
@@ -113,8 +157,16 @@ enum Callee<'a> {
 
 /// Whether a ported Date* dynamic throw type extension gives a call `at` of the built-in method `key`
 /// (`class::method`, lowercase) an explicit throw point.
-pub(in super::super) fn date_explicit(c: &Checker, at: Span, key: &str, args: &ArgumentList) -> bool {
-    Points::new(c).date_extension(at, key, Some(args)).flatten().is_some_and(|p| p.explicit)
+pub(in super::super) fn date_explicit(
+    c: &Checker,
+    at: Span,
+    key: &str,
+    args: &ArgumentList,
+) -> bool {
+    Points::new(c)
+        .date_extension(at, key, Some(args))
+        .flatten()
+        .is_some_and(|p| p.explicit)
 }
 
 /// The throw points of a body (not of the functions and classes declared in it).
@@ -133,7 +185,14 @@ pub(in super::super) struct Points<'c, 'a, 'arena> {
 
 impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     pub(in super::super) fn new(c: &'c Checker<'a, 'arena>) -> Self {
-        Points { c, points: Vec::new(), in_throw: 0, hooked: None, dead: Vec::new(), writing: HashSet::new() }
+        Points {
+            c,
+            points: Vec::new(),
+            in_throw: 0,
+            hooked: None,
+            dead: Vec::new(),
+            writing: HashSet::new(),
+        }
     }
 
     pub(in super::super) fn in_hook(mut self, property: &[u8]) -> Self {
@@ -142,7 +201,10 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     }
 
     fn implicit_throws(&self) -> bool {
-        self.c.exceptions.checks.contains(crate::ExceptionChecks::IMPLICIT_THROWS)
+        self.c
+            .exceptions
+            .checks
+            .contains(crate::ExceptionChecks::IMPLICIT_THROWS)
     }
 
     /// An implicit point, when `implicitThrows` is on.
@@ -172,7 +234,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
             Callee::User { f, declaring, name } => {
                 // AnnotationMethodReflection: a `@method`'s throw type is its class's `__call` / `__callStatic`
                 if f.flags.is_magic_method() {
-                    let Some(class) = declaring else { return Err(()) };
+                    let Some(class) = declaring else {
+                        return Err(());
+                    };
                     let magic = if f.flags.is_static() {
                         "__callStatic"
                     } else {
@@ -194,12 +258,18 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                         let (k, m) = key.split_once("::").expect("a method key");
                         builtin_method_throws(self.c, k, m)
                     }
-                    None => self.c.natives.throws.functions.get(key).map(|t| resolve_str(t, None)),
+                    None => self
+                        .c
+                        .natives
+                        .throws
+                        .functions
+                        .get(key)
+                        .map(|t| resolve_str(t, None)),
                 }
             }
         };
         // ConditionalTypeResolver::resolveForCall() needs the arguments' types
-        if ty.as_ref().is_some_and(|t| has_conditional(t)) {
+        if ty.as_ref().is_some_and(has_conditional) {
             return Err(());
         }
         Ok(ty)
@@ -207,13 +277,19 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
 
     fn callee_of(&self, m: Member<'a>) -> Callee<'a> {
         match m {
-            Member::User { declaring, f, name, .. } => Callee::User {
+            Member::User {
+                declaring, f, name, ..
+            } => Callee::User {
                 f,
                 declaring: Some(declaring),
                 name: String::from_utf8_lossy(name.as_bytes()).into_owned(),
             },
             Member::Builtin { declaring, f } => Callee::Builtin {
-                key: format!("{}::{}", declaring.name.to_ascii_lowercase(), f.name.to_ascii_lowercase()),
+                key: format!(
+                    "{}::{}",
+                    declaring.name.to_ascii_lowercase(),
+                    f.name.to_ascii_lowercase()
+                ),
                 f,
                 class: Some(declaring.name.clone()),
             },
@@ -223,10 +299,13 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     /// The callee's return type (`getReturnType()` of its variant).
     fn return_type(&self, callee: &Callee) -> Type {
         self.with_classes(|| match callee {
-            Callee::User { f, declaring, name } => declared::codex_return_type(self.c, f, *declaring, name),
-            Callee::Builtin { f, class, .. } => {
-                resolve_str(f.variants.first().map_or("mixed", |v| v.ret.as_str()), class.as_deref())
+            Callee::User { f, declaring, name } => {
+                declared::codex_return_type(self.c, f, *declaring, name)
             }
+            Callee::Builtin { f, class, .. } => resolve_str(
+                f.variants.first().map_or("mixed", |v| v.ret.as_str()),
+                class.as_deref(),
+            ),
         })
     }
 
@@ -242,7 +321,11 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         };
         let ret = self.return_type(callee);
         let ty = ty.or_else(|| {
-            matches!(ret, Type::Never(NeverKind::Explicit | NeverKind::NonAccepting)).then(throwable)
+            matches!(
+                ret,
+                Type::Never(NeverKind::Explicit | NeverKind::NonAccepting)
+            )
+            .then(throwable)
         });
         match ty {
             Some(ty) => {
@@ -254,11 +337,14 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                 if function
                     && let Callee::Builtin { f, .. } = callee
                     && args == 0
-                    && f.variants.first().is_some_and(|v| v.params.iter().all(|p| p.optional))
+                    && f.variants
+                        .first()
+                        .is_some_and(|v| v.params.iter().all(|p| p.optional))
                 {
                     return;
                 }
-                let throwable_return = self.with_classes(|| is_super_type_of(&throwable(), &ret).yes());
+                let throwable_return =
+                    self.with_classes(|| is_super_type_of(&throwable(), &ret).yes());
                 if self.in_throw == 0 || !throwable_return {
                     self.points.push(Point::implicit(at));
                 }
@@ -269,7 +355,12 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
 
     /// The ported dynamic function throw type extensions (JsonThrowTypeExtension, AssertThrowTypeExtension): the
     /// call's throw point, `None` for the other functions.
-    fn function_extension(&self, at: Span, key: &str, list: &ArgumentList) -> Option<Option<Point>> {
+    fn function_extension(
+        &self,
+        at: Span,
+        key: &str,
+        list: &ArgumentList,
+    ) -> Option<Option<Point>> {
         let args: Vec<&Expression> = list.arguments.iter().map(|a| a.value()).collect();
         match key {
             "json_decode" | "json_encode" => {
@@ -279,8 +370,14 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     _ => None,
                 });
                 let position = if key == "json_encode" { 1 } else { 3 };
-                let positional = list.arguments.iter().nth(position).filter(|a| matches!(a, Argument::Positional(_)));
-                let Some(flags) = named.or(positional.map(|a| a.value())) else { return Some(None) };
+                let positional = list
+                    .arguments
+                    .iter()
+                    .nth(position)
+                    .filter(|a| matches!(a, Argument::Positional(_)));
+                let Some(flags) = named.or(positional.map(|a| a.value())) else {
+                    return Some(None);
+                };
                 // BitwiseFlagHelper::bitwiseOrContainsConstant() is not no
                 fn contains(c: &Checker, e: &Expression) -> Option<bool> {
                     match unparen(e) {
@@ -289,7 +386,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                             let name = String::from_utf8_lossy(k.name.value()).into_owned();
                             Some(name.trim_start_matches('\\') == "JSON_THROW_ON_ERROR")
                         }
-                        Expression::Binary(b) if matches!(b.operator, BinaryOperator::BitwiseOr(_)) => {
+                        Expression::Binary(b)
+                            if matches!(b.operator, BinaryOperator::BitwiseOr(_)) =>
+                        {
                             Some(contains(c, b.lhs)? || contains(c, b.rhs)?)
                         }
                         // exprContainsIntFlag()
@@ -307,14 +406,19 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     }
                 }
                 Some(match contains(self.c, flags) {
-                    Some(true) => Some(Point::explicit(at, Type::Object("JsonException".into(), vec![], false), false)),
+                    Some(true) => Some(Point::explicit(
+                        at,
+                        Type::Object("JsonException".into(), vec![], false),
+                        false,
+                    )),
                     Some(false) => None,
                     None => Some(Point::unknown(at)),
                 })
             }
             "assert" => {
                 let custom = args.get(1).and_then(|e| self.type_of(e));
-                let thrown = custom.filter(|t| self.with_classes(|| is_super_type_of(&throwable(), t).yes()));
+                let thrown = custom
+                    .filter(|t| self.with_classes(|| is_super_type_of(&throwable(), t).yes()));
                 Some(match (args.len() < 2, thrown) {
                     (false, Some(t)) => Some(Point::explicit(at, t, false)),
                     (false, None) if self.type_of(args[1]).is_none() => Some(Point::unknown(at)),
@@ -330,20 +434,30 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     /// constructors, `modify()`, `sub()` and `DateInterval::createFromDateString()`): the call's throw point, `None`
     /// for the other methods.
     // ponytail: a constant string argument needs PHP's date parser to tell whether it throws, so it stays unknown
-    fn date_extension(&self, at: Span, key: &str, args: Option<&ArgumentList>) -> Option<Option<Point>> {
+    fn date_extension(
+        &self,
+        at: Span,
+        key: &str,
+        args: Option<&ArgumentList>,
+    ) -> Option<Option<Point>> {
         use mago_codex::ttype::atomic::scalar::TScalar;
         let exceptions = self.c.php_version >= 80300;
         let (exception, needs_exceptions) = match key {
             "datetimezone::__construct" => ("DateInvalidTimeZoneException", false),
             "dateinterval::__construct" => ("DateMalformedIntervalStringException", false),
-            "datetime::__construct" | "datetimeimmutable::__construct" => ("DateMalformedStringException", false),
-            "datetime::modify" | "datetimeimmutable::modify" => ("DateMalformedStringException", true),
+            "datetime::__construct" | "datetimeimmutable::__construct" => {
+                ("DateMalformedStringException", false)
+            }
+            "datetime::modify" | "datetimeimmutable::modify" => {
+                ("DateMalformedStringException", true)
+            }
             // (the extension gives the reflected throw type)
             "dateinterval::createfromdatestring" => ("DateMalformedIntervalStringException", true),
             "datetime::sub" | "datetimeimmutable::sub" => ("DateInvalidOperationException", true),
             _ => return None,
         };
-        let typed = |name: &str| Point::explicit(at, Type::Object(name.into(), vec![], false), false);
+        let typed =
+            |name: &str| Point::explicit(at, Type::Object(name.into(), vec![], false), false);
         let first = args.and_then(|l| l.arguments.first()).map(|a| a.value());
         let Some(first) = first else {
             // DateInterval's constructor gives its reflected throw type
@@ -352,14 +466,26 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         if needs_exceptions && !exceptions {
             return Some(None);
         }
-        let point = typed(if exceptions || key == "dateinterval::createfromdatestring" { exception } else { "Exception" });
+        let point = typed(
+            if exceptions || key == "dateinterval::createfromdatestring" {
+                exception
+            } else {
+                "Exception"
+            },
+        );
         if key.ends_with("::sub") {
             return Some(Some(point));
         }
-        let Some(t) = self.c.type_of(first) else { return Some(Some(Point::unknown(at))) };
+        let Some(t) = self.c.type_of(first) else {
+            return Some(Some(Point::unknown(at)));
+        };
         // what is left after removing the constant strings
         let constant = |a: &TAtomic| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.get_known_literal_value().is_some());
-        Some(Some(if t.types.iter().all(constant) { Point::unknown(at) } else { point }))
+        Some(Some(if t.types.iter().all(constant) {
+            Point::unknown(at)
+        } else {
+            point
+        }))
     }
 
     /// ReflectionProvider::getFunction() of a named call.
@@ -383,13 +509,17 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     fn classes_of(&self, e: &Expression) -> Option<Vec<&'a ClassLikeMetadata>> {
         let c = self.c;
         match unparen(e) {
-            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => return Some(vec![c.class_scope()?]),
+            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                return Some(vec![c.class_scope()?]);
+            }
             Expression::Self_(_) | Expression::Static(_) => return Some(vec![c.class_scope()?]),
             Expression::Parent(_) => {
                 let parent = c.class_scope()?.direct_parent_class?;
                 return Some(vec![c.codebase.get_class_like(parent.as_bytes())?]);
             }
-            Expression::Identifier(id) => return Some(vec![c.class_like(&c.resolved(id)).found()?]),
+            Expression::Identifier(id) => {
+                return Some(vec![c.class_like(&c.resolved(id)).found()?]);
+            }
             _ => {}
         }
         let t = c.type_of(e)?;
@@ -397,15 +527,21 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         for a in t.types.iter() {
             match a {
                 TAtomic::Null => {}
-                TAtomic::Object(TObject::Named(n)) => out.push(c.codebase.get_class_like(n.name.as_bytes())?),
-                TAtomic::Object(TObject::Enum(n)) => out.push(c.codebase.get_class_like(n.name.as_bytes())?),
+                TAtomic::Object(TObject::Named(n)) => {
+                    out.push(c.codebase.get_class_like(n.name.as_bytes())?);
+                }
+                TAtomic::Object(TObject::Enum(n)) => {
+                    out.push(c.codebase.get_class_like(n.name.as_bytes())?);
+                }
                 // `getObjectTypeOrClassStringObjectType()`
                 TAtomic::Scalar(mago_codex::ttype::atomic::scalar::TScalar::ClassLikeString(k)) => {
                     match k.get_object_type(c.codebase) {
-                        TAtomic::Object(TObject::Named(n)) => out.push(c.codebase.get_class_like(n.name.as_bytes())?),
+                        TAtomic::Object(TObject::Named(n)) => {
+                            out.push(c.codebase.get_class_like(n.name.as_bytes())?);
+                        }
                         TAtomic::GenericParameter(g) => match g.constraint.types.as_ref() {
                             [TAtomic::Object(TObject::Named(n))] => {
-                                out.push(c.codebase.get_class_like(n.name.as_bytes())?)
+                                out.push(c.codebase.get_class_like(n.name.as_bytes())?);
                             }
                             _ => return None,
                         },
@@ -454,8 +590,14 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         if let [class] = classes
             && super::super::larastan::macro_method(self.c, class, name).is_some()
         {
-            if name.eq_ignore_ascii_case(b"validate") || name.eq_ignore_ascii_case(b"validateWithBag") {
-                let thrown = Type::Object("Illuminate\\Validation\\ValidationException".into(), vec![], false);
+            if name.eq_ignore_ascii_case(b"validate")
+                || name.eq_ignore_ascii_case(b"validateWithBag")
+            {
+                let thrown = Type::Object(
+                    "Illuminate\\Validation\\ValidationException".into(),
+                    vec![],
+                    false,
+                );
                 self.points.push(Point::explicit(at, thrown, true));
             } else {
                 self.implicit(at);
@@ -464,7 +606,10 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         }
         let found: Vec<Member<'a>> = classes
             .iter()
-            .filter_map(|k| members::method(self.c, k, name).or_else(|| members::annotation_method(self.c, k, name)))
+            .filter_map(|k| {
+                members::method(self.c, k, name)
+                    .or_else(|| members::annotation_method(self.c, k, name))
+            })
             .collect();
         // a union keeps its members that have the method
         if found.is_empty() {
@@ -496,8 +641,14 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         }
         let m = found.into_iter().next().expect("one method");
         if let Member::Builtin { declaring, f } = &m
-            && matches!(declaring.name.as_str(), "ReflectionMethod" | "ReflectionFunction")
-            && matches!(f.name.to_ascii_lowercase().as_str(), "invoke" | "invokeargs")
+            && matches!(
+                declaring.name.as_str(),
+                "ReflectionMethod" | "ReflectionFunction"
+            )
+            && matches!(
+                f.name.to_ascii_lowercase().as_str(),
+                "invoke" | "invokeargs"
+            )
             && !is_static
         {
             self.points.push(Point::implicit(at));
@@ -521,7 +672,11 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     /// when the type may lack it); `None` when Pun cannot tell.
     fn method_holders(&self, t: &Type, name: &str) -> Option<Vec<&'a ClassLikeMetadata>> {
         let members = self.with_classes(|| match t {
-            Type::Union(ts) => ts.iter().filter(|m| m.has_method(name).yes()).cloned().collect(),
+            Type::Union(ts) => ts
+                .iter()
+                .filter(|m| m.has_method(name).yes())
+                .cloned()
+                .collect(),
             t if t.has_method(name).yes() => vec![t.clone()],
             _ => Vec::new(),
         });
@@ -555,6 +710,10 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     }
 
     /// ImplicitToStringCallHelper: an object's `__toString()` call.
+    #[expect(
+        clippy::wrong_self_convention,
+        reason = "named after upstream's processImplicitToStringCall()"
+    )]
     fn to_string(&mut self, e: &Expression) {
         let Some(t) = self.type_of(e) else {
             self.points.push(Point::unknown(e.span()));
@@ -571,7 +730,13 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     }
 
     /// PropertyHookThrowPointsResolver::getThrowPointsFromPropertyHook() for an instance property access.
-    fn property_hook(&mut self, at: Span, object: &Expression, property: &ClassLikeMemberSelector, hook: &str) {
+    fn property_hook(
+        &mut self,
+        at: Span,
+        object: &Expression,
+        property: &ClassLikeMemberSelector,
+        hook: &str,
+    ) {
         if self.c.php_version < 80400 {
             return;
         }
@@ -597,12 +762,18 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         };
         let variable = [b"$", name.value].concat();
         let (Some(declaring), Some(p)) = (
-            self.c.codebase.get_declaring_property_class(class.name.as_bytes(), &variable),
-            self.c.codebase.get_declaring_property(class.name.as_bytes(), &variable),
+            self.c
+                .codebase
+                .get_declaring_property_class(class.name.as_bytes(), &variable),
+            self.c
+                .codebase
+                .get_declaring_property(class.name.as_bytes(), &variable),
         ) else {
             return;
         };
-        let Some(declaring) = self.c.codebase.get_class_like(declaring.as_bytes()) else { return };
+        let Some(declaring) = self.c.codebase.get_class_like(declaring.as_bytes()) else {
+            return;
+        };
         match p.hooks.get(&mago_word::word(hook.as_bytes())) {
             None => {
                 let private = p.read_visibility == Visibility::Private;
@@ -631,7 +802,12 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
 
     /// AssignHandler's property target: a TypeError when the native type may not take the value, the set hook's
     /// points, or `__set()`'s for a property the class lacks.
-    fn property_assignment(&mut self, a: &Assignment, object: &Expression, property: &ClassLikeMemberSelector) {
+    fn property_assignment(
+        &mut self,
+        a: &Assignment,
+        object: &Expression,
+        property: &ClassLikeMemberSelector,
+    ) {
         let at = a.lhs.span();
         let ClassLikeMemberSelector::Identifier(name) = property else {
             if self.c.php_version >= 80400 {
@@ -650,7 +826,11 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
             return;
         };
         let variable = [b"$", name.value].concat();
-        let Some(p) = self.c.codebase.get_declaring_property(class.name.as_bytes(), &variable) else {
+        let Some(p) = self
+            .c
+            .codebase
+            .get_declaring_property(class.name.as_bytes(), &variable)
+        else {
             if members::method(self.c, class, b"__set").is_some() {
                 self.method_on(at, &[class], b"__set", false, None);
             }
@@ -667,7 +847,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     let native = declared::from_tunion(self.c, &native.type_union, class);
                     is_super_type_of(&native, &assigned).yes()
                         || !matches!(assigned, Type::Mixed { .. })
-                            && flatten(&assigned).iter().all(|t| accepts(&native, t, true).yes())
+                            && flatten(&assigned)
+                                .iter()
+                                .all(|t| accepts(&native, t, true).yes())
                 })
             });
             match compatible {
@@ -698,7 +880,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     fn callbacks(&mut self, args: &ArgumentList, params: &[(String, bool)]) {
         for (i, a) in args.arguments.iter().enumerate() {
             let param = match a {
-                Argument::Named(n) => params.iter().find(|(name, _)| name.as_bytes() == n.name.value),
+                Argument::Named(n) => params
+                    .iter()
+                    .find(|(name, _)| name.as_bytes() == n.name.value),
                 Argument::Positional(_) => params.get(i).or_else(|| params.last()),
             };
             if !param.is_some_and(|(_, immediate)| *immediate) {
@@ -712,7 +896,10 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                         self.points.push(if p.explicit {
                             Point { at, ..p }
                         } else {
-                            Point { at, ..Point::implicit(at) }
+                            Point {
+                                at,
+                                ..Point::implicit(at)
+                            }
                         });
                     }
                 }
@@ -730,39 +917,72 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     fn immediate_params(&self, callee: &Callee) -> Vec<(String, bool)> {
         match callee {
             Callee::User { f, declaring, name } => {
-                let raw = declared::doc_at(self.c, f.span).map(|(raw, _, _)| raw).unwrap_or_default();
+                let raw = declared::doc_at(self.c, f.span)
+                    .map(|(raw, _, _)| raw)
+                    .unwrap_or_default();
                 let tagged = |tags: &[&str], p: &str| {
-                    String::from_utf8_lossy(&raw).lines().any(|l| {
+                    String::from_utf8_lossy(raw).lines().any(|l| {
                         let mut w = l.trim_start().trim_start_matches('*').split_whitespace();
-                        w.next().is_some_and(|t| tags.contains(&t)) && w.next() == Some(&format!("${p}"))
+                        w.next().is_some_and(|t| tags.contains(&t))
+                            && w.next() == Some(&format!("${p}"))
                     })
                 };
-                let types = self.with_classes(|| declared::reflected_params(self.c, f, *declaring, name));
+                let types =
+                    self.with_classes(|| declared::reflected_params(self.c, f, *declaring, name));
                 f.parameters
                     .iter()
                     .enumerate()
                     .map(|(i, p)| {
                         let n = String::from_utf8_lossy(&p.name.0.as_bytes()[1..]).into_owned();
-                        let immediate = if tagged(&["@param-immediately-invoked-callable", "@phpstan-param-immediately-invoked-callable"], &n) {
+                        let immediate = if tagged(
+                            &[
+                                "@param-immediately-invoked-callable",
+                                "@phpstan-param-immediately-invoked-callable",
+                            ],
+                            &n,
+                        ) {
                             true
-                        } else if tagged(&["@param-later-invoked-callable", "@phpstan-param-later-invoked-callable"], &n) {
+                        } else if tagged(
+                            &[
+                                "@param-later-invoked-callable",
+                                "@phpstan-param-later-invoked-callable",
+                            ],
+                            &n,
+                        ) {
                             false
                         } else {
                             // (a method's parameters are only called immediately when tagged)
-                            declaring.is_none() && types.get(i).is_some_and(|t| self.with_classes(|| finds_callable(t)))
+                            declaring.is_none()
+                                && types
+                                    .get(i)
+                                    .is_some_and(|t| self.with_classes(|| finds_callable(t)))
                         };
                         (n, immediate)
                     })
                     .collect()
             }
             Callee::Builtin { key, f, class } => {
-                let Some(v) = f.variants.first() else { return Vec::new() };
+                let Some(v) = f.variants.first() else {
+                    return Vec::new();
+                };
                 v.params
                     .iter()
                     .map(|p| {
                         let immediate = if class.is_some() {
-                            self.c.natives.throws.immediate.get(key).is_some_and(|l| l.contains(&p.name))
-                        } else if self.c.natives.throws.later.get(key).is_some_and(|l| l.contains(&p.name)) {
+                            self.c
+                                .natives
+                                .throws
+                                .immediate
+                                .get(key)
+                                .is_some_and(|l| l.contains(&p.name))
+                        } else if self
+                            .c
+                            .natives
+                            .throws
+                            .later
+                            .get(key)
+                            .is_some_and(|l| l.contains(&p.name))
+                        {
                             false
                         } else {
                             self.with_classes(|| finds_callable(&resolve_str(&p.ty, None)))
@@ -810,11 +1030,14 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         let mut later = Vec::new();
         let mut past = Type::Never(NeverKind::Implicit);
         let throwable = throwable();
-        for k in t.catch_clauses.iter() {
+        for k in &t.catch_clauses {
             let (originals, catches, original) = self.with_classes(|| {
-                let originals: Vec<Type> =
-                    catch_hints(&k.hint).into_iter().map(|h| declared::native(self.c, h, class)).collect();
-                let catches: Vec<Type> = originals.iter().map(|o| remove_object(o, &past)).collect();
+                let originals: Vec<Type> = catch_hints(&k.hint)
+                    .into_iter()
+                    .map(|h| declared::native(self.c, h, class))
+                    .collect();
+                let catches: Vec<Type> =
+                    originals.iter().map(|o| remove_object(o, &past)).collect();
                 let original = union(originals.clone());
                 (originals, catches, original)
             });
@@ -855,7 +1078,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     }
                 }
                 // implicit only
-                let broad = |name: &str| is_super_type_of(&original, &Type::Object(name.into(), vec![], false)).yes();
+                let broad = |name: &str| {
+                    is_super_type_of(&original, &Type::Object(name.into(), vec![], false)).yes()
+                };
                 if matching.is_empty() || only_throw || broad("Exception") || broad("Error") {
                     for (pi, p) in points.iter().enumerate() {
                         if p.explicit || p.ty.is_never() {
@@ -892,7 +1117,13 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                             if !p.any || is_super_type_of(&original, &throwable).yes() {
                                 return None;
                             }
-                            return Some(Point { ty, explicit: false, any: true, throw: false, ..p.clone() });
+                            return Some(Point {
+                                ty,
+                                explicit: false,
+                                any: true,
+                                throw: false,
+                                ..p.clone()
+                            });
                         }
                         Some(Point { ty, ..p.clone() })
                     })
@@ -993,18 +1224,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_in_throw(&mut self, _: &'ast Throw<'arena>, _: &mut ()) {
+    fn walk_in_throw(&mut self, _: &'ast Throw<'arena>, (): &mut ()) {
         self.in_throw += 1;
     }
-    fn walk_out_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
+    fn walk_out_throw(&mut self, t: &'ast Throw<'arena>, (): &mut ()) {
         self.in_throw -= 1;
         match self.type_of(t.exception) {
-            Some(ty) => self.points.push(Point { throw: true, ..Point::explicit(t.span(), ty, false) }),
+            Some(ty) => self.points.push(Point {
+                throw: true,
+                ..Point::explicit(t.span(), ty, false)
+            }),
             None => self.points.push(Point::unknown(t.span())),
         }
     }
 
-    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         let at = call.span();
         match unparen(call.function) {
             Expression::Identifier(_) => match self.function(call.function) {
@@ -1036,17 +1270,39 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        self.member_call(call.span(), call.object, &call.method, &call.argument_list, false);
+    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
+        self.member_call(
+            call.span(),
+            call.object,
+            &call.method,
+            &call.argument_list,
+            false,
+        );
     }
-    fn walk_out_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
-        self.member_call(call.span(), call.object, &call.method, &call.argument_list, false);
+    fn walk_out_null_safe_method_call(
+        &mut self,
+        call: &'ast NullSafeMethodCall<'arena>,
+        (): &mut (),
+    ) {
+        self.member_call(
+            call.span(),
+            call.object,
+            &call.method,
+            &call.argument_list,
+            false,
+        );
     }
-    fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        self.member_call(call.span(), call.class, &call.method, &call.argument_list, true);
+    fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
+        self.member_call(
+            call.span(),
+            call.class,
+            &call.method,
+            &call.argument_list,
+            true,
+        );
     }
 
-    fn walk_out_instantiation(&mut self, n: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_out_instantiation(&mut self, n: &'ast Instantiation<'arena>, (): &mut ()) {
         let at = n.span();
         let args = n.argument_list.as_ref().map_or(0, |l| l.arguments.len());
         let mut dynamic = false;
@@ -1099,7 +1355,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
             }
             Ok(None) => {
                 let throwable_class = class.name.as_bytes().eq_ignore_ascii_case(b"Throwable")
-                    || self.c.codebase.is_instance_of(class.name.as_bytes(), b"Throwable");
+                    || self
+                        .c
+                        .codebase
+                        .is_instance_of(class.name.as_bytes(), b"Throwable");
                 if self.in_throw == 0 || !throwable_class {
                     self.implicit(at);
                 }
@@ -1112,7 +1371,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         if let Some(l) = &a.argument_list {
             self.walk_partial_argument_list(l, context);
         }
-        for m in a.members.iter() {
+        for m in &a.members {
             if let ClassLikeMember::Method(m) = m
                 && m.name.value.eq_ignore_ascii_case(b"__construct")
                 && let MethodBody::Concrete(b) = &m.body
@@ -1124,17 +1383,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_out_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_out_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
         match b.operator {
-            BinaryOperator::Division(_) | BinaryOperator::Modulo(_) => match may_be_zero(self.c, b.rhs) {
-                Some(true) => self.points.push(Point::explicit(
-                    b.span(),
-                    Type::Object("DivisionByZeroError".into(), vec![], false),
-                    false,
-                )),
-                Some(false) => {}
-                None => self.points.push(Point::unknown(b.span())),
-            },
+            BinaryOperator::Division(_) | BinaryOperator::Modulo(_) => {
+                match may_be_zero(self.c, b.rhs) {
+                    Some(true) => self.points.push(Point::explicit(
+                        b.span(),
+                        Type::Object("DivisionByZeroError".into(), vec![], false),
+                        false,
+                    )),
+                    Some(false) => {}
+                    None => self.points.push(Point::unknown(b.span())),
+                }
+            }
             BinaryOperator::StringConcat(_) => {
                 self.to_string(b.lhs);
                 self.to_string(b.rhs);
@@ -1143,44 +1404,55 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if let AssignmentOperator::Assign(_) = a.operator
-            && matches!(unparen(a.lhs), Expression::Access(Access::Property(_)) | Expression::ArrayAccess(_))
+            && matches!(
+                unparen(a.lhs),
+                Expression::Access(Access::Property(_)) | Expression::ArrayAccess(_)
+            )
         {
             self.writing.insert(unparen(a.lhs).span());
         }
     }
-    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         match a.operator {
-            AssignmentOperator::Division(_) | AssignmentOperator::Modulo(_) => match may_be_zero(self.c, a.rhs) {
-                Some(true) => self.points.push(Point::explicit(
-                    a.span(),
-                    Type::Object("DivisionByZeroError".into(), vec![], false),
-                    false,
-                )),
-                Some(false) => {}
-                None => self.points.push(Point::unknown(a.span())),
-            },
+            AssignmentOperator::Division(_) | AssignmentOperator::Modulo(_) => {
+                match may_be_zero(self.c, a.rhs) {
+                    Some(true) => self.points.push(Point::explicit(
+                        a.span(),
+                        Type::Object("DivisionByZeroError".into(), vec![], false),
+                        false,
+                    )),
+                    Some(false) => {}
+                    None => self.points.push(Point::unknown(a.span())),
+                }
+            }
             AssignmentOperator::Concat(_) => self.to_string(a.rhs),
             _ => {}
         }
         match unparen(a.lhs) {
-            Expression::ArrayAccess(access) => self.array_access(a.lhs.span(), access.array, "offsetSet"),
-            Expression::ArrayAppend(append) => self.array_access(a.lhs.span(), append.array, "offsetSet"),
-            Expression::Access(Access::Property(p)) => self.property_assignment(a, p.object, &p.property),
+            Expression::ArrayAccess(access) => {
+                self.array_access(a.lhs.span(), access.array, "offsetSet");
+            }
+            Expression::ArrayAppend(append) => {
+                self.array_access(a.lhs.span(), append.array, "offsetSet");
+            }
+            Expression::Access(Access::Property(p)) => {
+                self.property_assignment(a, p.object, &p.property);
+            }
             _ => {}
         }
     }
 
-    fn walk_out_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+    fn walk_out_array_access(&mut self, a: &'ast ArrayAccess<'arena>, (): &mut ()) {
         if !self.writing.contains(&a.span()) {
             self.array_access(a.span(), a.array, "offsetGet");
         }
     }
 
-    fn walk_in_construct(&mut self, k: &'ast Construct<'arena>, _: &mut ()) {
+    fn walk_in_construct(&mut self, k: &'ast Construct<'arena>, (): &mut ()) {
         if let Construct::Isset(i) = k {
-            for v in i.values.iter() {
+            for v in &i.values {
                 if let Expression::ArrayAccess(a) = unparen(v) {
                     self.writing.insert(a.span());
                 }
@@ -1188,25 +1460,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
-        for v in u.values.iter() {
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
+        for v in &u.values {
             if let Expression::ArrayAccess(a) = unparen(v) {
                 self.writing.insert(a.span());
             }
         }
     }
 
-    fn walk_out_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+    fn walk_out_match(&mut self, m: &'ast Match<'arena>, (): &mut ()) {
         if !m.arms.iter().any(|a| matches!(a, MatchArm::Default(_))) && !self.c.exhaustive(m) {
-            self.points.push(Point::explicit(m.span(), Type::Object("UnhandledMatchError".into(), vec![], false), false));
+            self.points.push(Point::explicit(
+                m.span(),
+                Type::Object("UnhandledMatchError".into(), vec![], false),
+                false,
+            ));
         }
     }
 
-    fn walk_out_yield(&mut self, y: &'ast Yield<'arena>, _: &mut ()) {
+    fn walk_out_yield(&mut self, y: &'ast Yield<'arena>, (): &mut ()) {
         self.points.push(Point::implicit(y.span()));
     }
 
-    fn walk_out_construct(&mut self, k: &'ast Construct<'arena>, _: &mut ()) {
+    fn walk_out_construct(&mut self, k: &'ast Construct<'arena>, (): &mut ()) {
         match k {
             Construct::Eval(_)
             | Construct::Include(_)
@@ -1215,7 +1491,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
             | Construct::RequireOnce(_) => self.points.push(Point::implicit(k.span())),
             Construct::Print(p) => self.to_string(p.value),
             Construct::Isset(i) => {
-                for v in i.values.iter() {
+                for v in &i.values {
                     if let Expression::ArrayAccess(a) = unparen(v) {
                         self.array_access(v.span(), a.array, "offsetExists");
                     }
@@ -1225,15 +1501,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_out_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
-        for v in u.values.iter() {
+    fn walk_out_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
+        for v in &u.values {
             if let Expression::ArrayAccess(a) = unparen(v) {
                 self.array_access(v.span(), a.array, "offsetUnset");
             }
         }
     }
 
-    fn walk_out_composite_string(&mut self, s: &'ast CompositeString<'arena>, _: &mut ()) {
+    fn walk_out_composite_string(&mut self, s: &'ast CompositeString<'arena>, (): &mut ()) {
         let parts = match s {
             CompositeString::ShellExecute(s) => &s.parts,
             CompositeString::Interpolated(s) => &s.parts,
@@ -1244,47 +1520,54 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Points<'_, '_, 'arena> {
         }
     }
 
-    fn walk_out_echo(&mut self, e: &'ast Echo<'arena>, _: &mut ()) {
-        for v in e.values.iter() {
+    fn walk_out_echo(&mut self, e: &'ast Echo<'arena>, (): &mut ()) {
+        for v in &e.values {
             self.to_string(v);
         }
     }
 
-    fn walk_out_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_out_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         if let UnaryPrefixOperator::StringCast(..) = u.operator {
             self.to_string(u.operand);
         }
     }
 
-    fn walk_out_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_out_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         let at = f.expression.span();
         let Some(t) = self.c.type_of(f.expression) else {
             self.points.push(Point::unknown(at));
             return;
         };
-        if t.types.iter().all(|a| matches!(a, TAtomic::Array(_) | TAtomic::Null | TAtomic::Scalar(_))) {
+        if t.types
+            .iter()
+            .all(|a| matches!(a, TAtomic::Array(_) | TAtomic::Null | TAtomic::Scalar(_)))
+        {
             return;
         }
         // ponytail: an IteratorAggregate's getIterator() `@throws`
         self.points.push(Point::unknown(at));
     }
 
-    fn walk_out_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_out_property_access(&mut self, p: &'ast PropertyAccess<'arena>, (): &mut ()) {
         if !self.writing.contains(&p.span()) {
             self.property_hook(p.span(), p.object, &p.property, "get");
         }
     }
-    fn walk_out_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+    fn walk_out_null_safe_property_access(
+        &mut self,
+        p: &'ast NullSafePropertyAccess<'arena>,
+        (): &mut (),
+    ) {
         self.property_hook(p.span(), p.object, &p.property, "get");
     }
 
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
 }
 
 /// The expressions whose types the throw points read: receivers, thrown values, divisors, stringified values,
@@ -1301,71 +1584,81 @@ pub(in super::super) fn typed(program: &Program, wanted: bool) -> Vec<Span> {
 struct Typed(Vec<Span>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed {
-    fn walk_in_method_call(&mut self, c: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, c: &'ast MethodCall<'arena>, (): &mut ()) {
         self.0.push(c.object.span());
     }
-    fn walk_in_null_safe_method_call(&mut self, c: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_null_safe_method_call(&mut self, c: &'ast NullSafeMethodCall<'arena>, (): &mut ()) {
         self.0.push(c.object.span());
     }
-    fn walk_in_static_method_call(&mut self, c: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, c: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.0.push(c.class.span());
     }
-    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, (): &mut ()) {
         self.0.push(p.object.span());
     }
-    fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_null_safe_property_access(
+        &mut self,
+        p: &'ast NullSafePropertyAccess<'arena>,
+        (): &mut (),
+    ) {
         self.0.push(p.object.span());
     }
-    fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
+    fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, (): &mut ()) {
         self.0.push(t.exception.span());
     }
-    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
-        self.0.extend(f.argument_list.arguments.iter().map(|a| a.value().span()));
+    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, (): &mut ()) {
+        self.0
+            .extend(f.argument_list.arguments.iter().map(|a| a.value().span()));
     }
-    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, (): &mut ()) {
         self.0.push(n.class.span());
     }
-    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
         match b.operator {
             BinaryOperator::Division(_) | BinaryOperator::Modulo(_) => self.0.push(b.rhs.span()),
             BinaryOperator::StringConcat(_) => self.0.extend([b.lhs.span(), b.rhs.span()]),
             _ => {}
         }
     }
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         self.0.push(a.rhs.span());
     }
-    fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+    fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, (): &mut ()) {
         self.0.push(a.array.span());
     }
-    fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
+    fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, (): &mut ()) {
         self.0.push(a.array.span());
     }
-    fn walk_in_composite_string(&mut self, s: &'ast CompositeString<'arena>, _: &mut ()) {
+    fn walk_in_composite_string(&mut self, s: &'ast CompositeString<'arena>, (): &mut ()) {
         let parts = match s {
             CompositeString::ShellExecute(s) => &s.parts,
             CompositeString::Interpolated(s) => &s.parts,
             CompositeString::Document(s) => &s.parts,
         };
-        self.0.extend(parts.iter().filter_map(super::casts::part).map(|e| e.span()));
+        self.0.extend(
+            parts
+                .iter()
+                .filter_map(super::casts::part)
+                .map(|e| e.span()),
+        );
     }
-    fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, _: &mut ()) {
+    fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, (): &mut ()) {
         self.0.extend(e.values.iter().map(|v| v.span()));
     }
-    fn walk_in_print_construct(&mut self, p: &'ast PrintConstruct<'arena>, _: &mut ()) {
+    fn walk_in_print_construct(&mut self, p: &'ast PrintConstruct<'arena>, (): &mut ()) {
         self.0.push(p.value.span());
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         if let UnaryPrefixOperator::StringCast(..) = u.operator {
             self.0.push(u.operand.span());
         }
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         self.0.push(f.expression.span());
     }
-    fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+    fn walk_in_match(&mut self, m: &'ast Match<'arena>, (): &mut ()) {
         self.0.push(m.expression.span());
-        for arm in m.arms.iter() {
+        for arm in &m.arms {
             if let MatchArm::Expression(a) = arm {
                 self.0.extend(a.conditions.iter().map(|c| c.span()));
             }

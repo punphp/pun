@@ -9,7 +9,7 @@ use pun_problem::{Edit, Fix, Safety, Span};
 use crate::Report;
 use crate::syntax::node_span;
 
-pub struct EarlyExitPattern {
+pub(super) struct EarlyExitPattern {
     pub keyword: &'static str,
     pub title: &'static str,
     pub help: &'static str,
@@ -19,7 +19,7 @@ pub struct EarlyExitPattern {
 /// `check_early_exit`: an `if` without `else`/`elseif` whose body has more than `max_allowed_statements` statements
 /// and is not itself an early exit is reported on the `if`, with a fix that negates the condition, exits in the
 /// `if` and moves the body after it.
-pub fn check_early_exit(
+pub(super) fn check_early_exit(
     source: &str,
     if_stmt: &If<'_>,
     max_allowed_statements: usize,
@@ -153,7 +153,7 @@ fn push(if_stmt: &If<'_>, pattern: &EarlyExitPattern, edits: Vec<Edit>, out: &mu
 }
 
 /// `extract_single_if_from_statement`.
-pub fn single_if<'ast, 'arena>(stmt: &'ast Statement<'arena>) -> Option<&'ast If<'arena>> {
+pub(super) fn single_if<'ast, 'arena>(stmt: &'ast Statement<'arena>) -> Option<&'ast If<'arena>> {
     match stmt {
         Statement::If(r#if) => Some(r#if),
         Statement::Block(block) => single_if_in(block.statements.as_slice()),
@@ -162,7 +162,9 @@ pub fn single_if<'ast, 'arena>(stmt: &'ast Statement<'arena>) -> Option<&'ast If
 }
 
 /// `extract_single_if_from_statements`: the `if` that is the only statement that is not empty.
-pub fn single_if_in<'ast, 'arena>(stmts: &'ast [Statement<'arena>]) -> Option<&'ast If<'arena>> {
+pub(super) fn single_if_in<'ast, 'arena>(
+    stmts: &'ast [Statement<'arena>],
+) -> Option<&'ast If<'arena>> {
     let mut non_empty = stmts.iter().filter(|s| statement_len(s) > 0);
     match (non_empty.next(), non_empty.next()) {
         (Some(only), None) => single_if(only),

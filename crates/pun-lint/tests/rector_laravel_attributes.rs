@@ -21,7 +21,10 @@
 //! Pun/missing_item (`FillablePropertyToFillableAttributeRector`): an array with an empty item (`[, 'a']`), which
 //! php-parser does not parse, so Rector fails on the file; Pun leaves it alone.
 
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
 mod lint_c;
 
 use lint_c::run_class_stubs;

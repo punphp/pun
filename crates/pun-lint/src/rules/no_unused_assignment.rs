@@ -56,8 +56,8 @@ impl Rule for NoUnusedAssignment {
         let source = ctx.source;
         let tokens = tokens(ctx);
         let facts = facts(ctx);
-        let edits = run_edits(source, &tokens, ancestors, &|chain| {
-            change(source, &tokens, &facts, chain)
+        let edits = run_edits(source, tokens, ancestors, &|chain| {
+            change(source, tokens, &facts, chain)
         });
         if let Some(edits) = edits {
             out.push(Report {
@@ -80,7 +80,7 @@ fn body<'ast, 'arena>(chain: &[Node<'ast, 'arena>]) -> Option<&'ast Block<'arena
         return None;
     };
     let is_body = chain[..n - 2].iter().rev().take(2).any(|a| match a {
-        Node::Function(f) => std::ptr::eq(&f.body, block),
+        Node::Function(f) => std::ptr::eq(&raw const f.body, block),
         Node::Method(m) => matches!(&m.body, MethodBody::Concrete(b) if std::ptr::eq(b, block)),
         _ => false,
     });
@@ -318,7 +318,7 @@ fn object_class_names(facts: &Facts, expr: &Expression<'_>) -> Vec<String> {
                     .for_each(|t| names(t, out));
             }
             TAtomic::Object(TObject::Enum(e)) => {
-                out.push(String::from_utf8_lossy(e.name.as_bytes()).into_owned())
+                out.push(String::from_utf8_lossy(e.name.as_bytes()).into_owned());
             }
             _ => {}
         }

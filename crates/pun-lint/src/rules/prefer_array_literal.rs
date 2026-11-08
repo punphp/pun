@@ -41,7 +41,7 @@ impl Rule for PreferArrayLiteral {
                 Expression::LegacyArray(a) => &a.elements,
                 _ => return,
             };
-            for element in elements.iter() {
+            for element in elements {
                 items.push(match element {
                     ArrayElement::KeyValue(e) => {
                         format!(

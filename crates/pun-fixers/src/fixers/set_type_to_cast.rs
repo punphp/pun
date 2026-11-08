@@ -9,7 +9,7 @@ use std::path::Path;
 
 struct SetTypeToCastFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(SetTypeToCastFixer)
 }
 
@@ -41,7 +41,6 @@ fn find_settype_calls(tokens: &Tokens) -> Vec<(usize, usize, usize)> {
     candidates
 }
 
-#[expect(clippy::too_many_arguments, reason = "upstream's signature")]
 fn remove_settype_call(
     tokens: &mut Tokens,
     function_name_index: usize,

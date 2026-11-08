@@ -95,10 +95,10 @@ impl Rule for RequireConsistentReturn {
             .collect();
         if has_silent_void_documented(&place, body.statements.iter()) {
             let tokens = tokens(ctx);
-            let list = block_list(&tokens, body);
+            let list = block_list(tokens, body);
             let last = node_span(*list.stmts.last().expect("a body that returns"));
             // after the comments php-parser keeps in a `Nop` at the end, at their indent
-            let (end, from) = match comments_between(&tokens, last.end, list.inner.end).last() {
+            let (end, from) = match comments_between(tokens, last.end, list.inner.end).last() {
                 Some(c) if list.nop => (c.end, c.start),
                 _ => (last.end, last.start),
             };
@@ -216,8 +216,8 @@ fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, 
                 }
             }
             _ if is_class_name(member) && !is_keyword(&lower) => {
-                if member.starts_with('\\') {
-                    member[1..].to_string()
+                if let Some(stripped) = member.strip_prefix('\\') {
+                    stripped.to_string()
                 } else if member.contains('\\') {
                     member.to_string()
                 } else {

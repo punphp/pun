@@ -39,3 +39,6 @@ rayon.workspace = true
 pun-config.workspace = true
 pun-format.workspace = true
 pun-fixers.workspace = true
+
+[lints]
+workspace = true

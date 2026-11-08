@@ -38,7 +38,7 @@ impl Rule for PreferSelfOverStatic {
             .iter()
             .any(|m| matches!(m, Modifier::Final(_)));
         let mut edits = Vec::new();
-        for member in class.members.iter() {
+        for member in &class.members {
             accesses(Node::ClassLikeMember(member), &mut |access| {
                 if let Some(span) = convertible(class, is_final, access) {
                     edits.push(Edit::new(span, "self"));

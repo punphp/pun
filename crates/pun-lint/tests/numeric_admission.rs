@@ -86,11 +86,11 @@ fn retained_numeric_tokens_match_native_classes_without_changing_bytes_or_spans(
 struct Numbers(Vec<Value>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Numbers {
-    fn walk_out_literal_integer(&mut self, node: &'ast LiteralInteger<'arena>, _: &mut ()) {
+    fn walk_out_literal_integer(&mut self, node: &'ast LiteralInteger<'arena>, (): &mut ()) {
         self.0.push(json!({"kind":"Scalar_Int", "raw":std::str::from_utf8(node.raw).unwrap(),
             "value":node.value.unwrap(), "start":node.span.start.offset, "end":node.span.end.offset}));
     }
-    fn walk_out_literal_float(&mut self, node: &'ast LiteralFloat<'arena>, _: &mut ()) {
+    fn walk_out_literal_float(&mut self, node: &'ast LiteralFloat<'arena>, (): &mut ()) {
         self.0.push(
             json!({"kind":"Scalar_Float", "raw":std::str::from_utf8(node.raw).unwrap(),
             "value":*node.value, "start":node.span.start.offset, "end":node.span.end.offset}),
@@ -192,11 +192,9 @@ fn strict_lexer_linter_and_formatter_still_reject_native_invalid_octals() {
         "01000000000000000000000",
     ] {
         let source = format!("<?php $a={literal};");
-        assert!(
-            linter
-                .check(Path::new("numeric.php"), &source)
-                .unwrap()
-                .is_empty()
+        assert_eq!(
+            linter.check(Path::new("numeric.php"), &source).unwrap(),
+            [] as [pun_problem::Problem; 0]
         );
         assert!(pun_format::lint(source.as_bytes()).is_ok());
     }

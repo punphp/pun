@@ -23,7 +23,7 @@ pub(super) struct Method<'a> {
 }
 
 impl<'a> Method<'a> {
-    pub fn leaf(c: &Checker, receiver: &Type, declaring: members::Method<'a>) -> Self {
+    pub(super) fn leaf(c: &Checker, receiver: &Type, declaring: members::Method<'a>) -> Self {
         let (accepts, final_class) = match &declaring {
             members::Method::User {
                 declaring, name, ..
@@ -70,7 +70,7 @@ impl<'a> Method<'a> {
     }
 
     /// UnionTypeMethodReflection: first declaring class, every original variant, restrictive visibility/policy.
-    pub fn union(c: &Checker, mut methods: Vec<Self>, name: &[u8]) -> Option<Self> {
+    pub(super) fn union(c: &Checker, mut methods: Vec<Self>, name: &[u8]) -> Option<Self> {
         let mut combined = params::combine(
             &methods
                 .iter()
@@ -116,7 +116,7 @@ impl<'a> Method<'a> {
     }
 
     /// IntersectionTypeMethodReflection::getMethodWithMostParameters(): variadic wins, then width, first tie.
-    pub fn intersection(mut methods: Vec<Self>, name: &[u8]) -> Option<Self> {
+    pub(super) fn intersection(mut methods: Vec<Self>, name: &[u8]) -> Option<Self> {
         if methods.len() == 1 {
             return methods.pop();
         }
@@ -147,11 +147,11 @@ impl<'a> Method<'a> {
         Some(method)
     }
 
-    pub fn builtin(&self) -> bool {
+    pub(super) fn builtin(&self) -> bool {
         matches!(self.declaring, members::Method::Builtin { .. })
     }
 
-    pub fn visibility(&self) -> Visibility {
+    pub(super) fn visibility(&self) -> Visibility {
         if self.public {
             Visibility::Public
         } else if self.private {
@@ -162,7 +162,7 @@ impl<'a> Method<'a> {
     }
 
     /// FunctionCallParametersCheck receives these separately from the combined acceptor in PHPStan.
-    pub fn select(
+    pub(super) fn select(
         &self,
         c: &Checker,
         counts: &params::Counts,

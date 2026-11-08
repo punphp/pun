@@ -56,11 +56,11 @@ fn canonical(description: &str) -> String {
         .and_then(|s| s.strip_suffix(')'))
     {
         let mut parts: Vec<_> = inner.split('|').collect();
-        parts.sort();
+        parts.sort_unstable();
         format!("mixed~({})", parts.join("|"))
     } else {
         let mut parts: Vec<_> = description.split('|').collect();
-        parts.sort();
+        parts.sort_unstable();
         parts.join("|")
     }
 }

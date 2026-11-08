@@ -42,7 +42,7 @@ impl Rule for NoExcessiveNesting {
             match key {
                 "threshold" => self.threshold = uint(value, u64::MAX)?,
                 "function-like-threshold" => {
-                    self.function_like_threshold = Some(uint(value, u64::MAX)?)
+                    self.function_like_threshold = Some(uint(value, u64::MAX)?);
                 }
                 _ => return None,
             }
@@ -74,11 +74,7 @@ struct NestingWalker {
 }
 
 impl NestingWalker {
-    fn enter_function_like_body<'ast, 'arena>(
-        &mut self,
-        body: &'ast Block<'arena>,
-        out: &mut Vec<Report>,
-    ) {
+    fn enter_function_like_body(&mut self, body: &Block<'_>, out: &mut Vec<Report>) {
         let Some(threshold) = self.function_like_threshold else {
             return;
         };

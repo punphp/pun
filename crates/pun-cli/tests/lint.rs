@@ -559,7 +559,7 @@ fn dirty_narrows_to_the_lint_files() {
 /// the parent and trait in External.php must still protect required and used methods and resolve defaults.
 #[test]
 fn class_method_rules_see_project_declarations() {
-    let external = r#"<?php
+    let external = r"<?php
 
 abstract class Base
 {
@@ -573,8 +573,8 @@ trait CallsKept
 {
     public function callKept() { $this->kept(); }
 }
-"#;
-    let child = r#"<?php
+";
+    let child = r"<?php
 
 final class Child extends Base
 {
@@ -607,8 +607,8 @@ final class Child extends Base
     {
     }
 }
-"#;
-    let expected = r#"<?php
+";
+    let expected = r"<?php
 
 final class Child extends Base
 {
@@ -632,7 +632,7 @@ final class Child extends Base
     {
     }
 }
-"#;
+";
     let config = r#"[format]
 preset = "empty"
 

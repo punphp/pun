@@ -55,8 +55,8 @@ fn failed_construct_reads_preserve_evaluation_and_independent_errors() {
         (40, "false-argument"),
         (45, "mixed-argument"),
     ]);
-    got.sort();
-    want.sort();
+    got.sort_unstable();
+    want.sort_unstable();
     assert_eq!(got, want, "raw issues: {:?}", raw.issues);
 
     let mut got: Vec<_> = raw
@@ -80,8 +80,8 @@ fn failed_construct_reads_preserve_evaluation_and_independent_errors() {
         })
         .map(|error| error["line"].as_i64().unwrap())
         .collect();
-    got.sort();
-    want.sort();
+    got.sort_unstable();
+    want.sort_unstable();
     assert_eq!(got, want);
 
     let got: Vec<_> = raw

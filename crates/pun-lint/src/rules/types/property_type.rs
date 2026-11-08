@@ -1194,7 +1194,7 @@ pub(crate) fn is_by_ref(a: &Assignment<'_>) -> bool {
 /// Every node under the class's members, in source order (`SimpleCallableNodeTraverser` over `$classLike->stmts`).
 pub(crate) fn class_nodes<'ast, 'arena>(view: &ClassView<'ast, 'arena>) -> Vec<Node<'ast, 'arena>> {
     let mut out = Vec::new();
-    for member in view.members.iter() {
+    for member in view.members {
         let mut stack = vec![Node::ClassLikeMember(member)];
         while let Some(node) = stack.pop() {
             out.push(node);
@@ -1666,10 +1666,10 @@ pub(crate) fn is_var_tag_useless_as(tag: &TypedTag<'_>, doc_ty: &Ty, native: &Ty
     if native.is_union() && !doc_ty.is_union() {
         return true;
     }
-    if let (Ty::Object(n), Ty::Object(d)) = (native, &doc_ty) {
-        if n.eq_ignore_ascii_case(d) {
-            return true;
-        }
+    if let (Ty::Object(n), Ty::Object(d)) = (native, &doc_ty)
+        && n.eq_ignore_ascii_case(d)
+    {
+        return true;
     }
     if php_parser_and_doc_types_equal(native, &doc_ty) {
         return true;

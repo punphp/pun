@@ -22,7 +22,7 @@ struct FunctionToConstantFixer {
     functions: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(FunctionToConstantFixer { functions: vec![] })
 }
 

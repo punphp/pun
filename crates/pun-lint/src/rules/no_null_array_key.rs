@@ -7,7 +7,8 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{
-    Access, Argument, BinaryOperator, ClassLikeMemberSelector, Expression, Literal, Node, NodeKind, Variable,
+    Access, Argument, BinaryOperator, ClassLikeMemberSelector, Expression, Literal, Node, NodeKind,
+    Variable,
 };
 use pun_problem::{Edit, Fix, Safety};
 
@@ -51,7 +52,9 @@ impl Rule for NoNullArrayKey {
         }
         // `ArgsAnalyzer::resolveArgPosition($args, 'key', 0)`
         let position = (args.iter())
-            .position(|a| matches!(a, Argument::Named(n) if n.name.value.eq_ignore_ascii_case(b"key")))
+            .position(
+                |a| matches!(a, Argument::Named(n) if n.name.value.eq_ignore_ascii_case(b"key")),
+            )
             .unwrap_or(0);
         let key = unparenthesize(value(args[position]));
         let facts = facts(ctx);
@@ -78,7 +81,8 @@ impl Rule for NoNullArrayKey {
         }
         out.push(Report {
             span: node_span(key),
-            message: "PHP 8.5 deprecates a `null` key in `array_key_exists()`: pass a string.".to_string(),
+            message: "PHP 8.5 deprecates a `null` key in `array_key_exists()`: pass a string."
+                .to_string(),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
@@ -94,20 +98,30 @@ fn is_undefined(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expression
     let Expression::Variable(Variable::Direct(v)) = expr else {
         return false;
     };
-    if v.name == b"$this".as_slice() || v.name.starts_with(b"$_") || v.name == b"$GLOBALS".as_slice() {
+    if v.name == b"$this".as_slice()
+        || v.name.starts_with(b"$_")
+        || v.name == b"$GLOBALS".as_slice()
+    {
         return false;
     }
     let outer = (ancestors.iter())
-        .find(|a| matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)))
-        .map(|a| node_span(a))
-        .unwrap_or_else(|| pun_problem::Span::new(0, ctx.source.len()));
+        .find(|a| {
+            matches!(
+                a,
+                Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
+            )
+        })
+        .map_or_else(|| pun_problem::Span::new(0, ctx.source.len()), node_span);
     let text = &ctx.source.as_bytes()[outer.start..outer.end];
     let name = v.name;
     let mut count = 0;
     let mut at = 0;
     while let Some(i) = text[at..].windows(name.len()).position(|w| w == name) {
         let end = at + i + name.len();
-        if !text.get(end).is_some_and(|c| c.is_ascii_alphanumeric() || *c == b'_' || *c >= 0x80) {
+        if !text
+            .get(end)
+            .is_some_and(|c| c.is_ascii_alphanumeric() || *c == b'_' || *c >= 0x80)
+        {
             count += 1;
         }
         at = end;
@@ -137,6 +151,9 @@ fn is_undeclared_property(facts: &Facts, expr: &Expression<'_>) -> bool {
         && classes.len() == t.types.len()
         && classes.iter().all(|c| {
             facts.codebase.get_class_like(c.as_bytes()).is_some()
-                && facts.codebase.get_declaring_property(c.as_bytes(), &property).is_none()
+                && facts
+                    .codebase
+                    .get_declaring_property(c.as_bytes(), &property)
+                    .is_none()
         })
 }

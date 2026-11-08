@@ -11,11 +11,12 @@ use super::declared;
 
 use super::properties::PropertyNode;
 
-pub const IDENTIFIERS: &[&str] = &["generics.variance", "function.variance", "method.variance"];
+pub(super) const IDENTIFIERS: &[&str] =
+    &["generics.variance", "function.variance", "method.variance"];
 
 /// TemplateTypeVariance
 #[derive(Clone, Copy, PartialEq)]
-pub enum Variance {
+pub(super) enum Variance {
     Invariant,
     Covariant,
     Contravariant,
@@ -113,7 +114,9 @@ fn referenced<'t>(ty: &'t Type, position: Variance, out: &mut Vec<(&'t Template,
             s.params.iter().for_each(|p| referenced(&p.ty, contra, out));
         }
         Type::Union(types) | Type::Benevolent(types) | Type::Intersection(types) => {
-            types.iter().for_each(|t| referenced(t, position, out))
+            for t in types {
+                referenced(t, position, out);
+            }
         }
         Type::Conditional(c) => {
             if let Subject::Type(s) = &c.subject {
@@ -198,7 +201,7 @@ fn parameters_acceptor(
 }
 
 /// FunctionSignatureVarianceRule
-pub fn function(c: &mut Checker, f: &Function) {
+pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
@@ -207,7 +210,7 @@ pub fn function(c: &mut Checker, f: &Function) {
 }
 
 /// MethodSignatureVarianceRule (`method` is the name the method is analysed under).
-pub fn method(c: &mut Checker, m: &Method, method: &str) {
+pub(super) fn method(c: &mut Checker, m: &Method, method: &str) {
     if c.level < 2 {
         return;
     }
@@ -244,7 +247,7 @@ fn position(restricted: bool) -> Variance {
 }
 
 /// PropertyVarianceRule of a declared property (`decl` is where its PHPDoc is read from).
-pub fn property(c: &mut Checker, node: &PropertyNode, decl: Span, by_phpdoc: bool) {
+pub(super) fn property(c: &mut Checker, node: &PropertyNode, decl: Span, by_phpdoc: bool) {
     if c.level < 2 || node.has(|m| m.is_private()) {
         return;
     }
@@ -257,7 +260,7 @@ pub fn property(c: &mut Checker, node: &PropertyNode, decl: Span, by_phpdoc: boo
 }
 
 /// PropertyVarianceRule of constructor `m`'s promoted parameters, typed as its signature types them.
-pub fn promoted(c: &mut Checker, m: &Method) {
+pub(super) fn promoted(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }

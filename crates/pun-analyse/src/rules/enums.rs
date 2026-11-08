@@ -39,7 +39,7 @@ const MAGIC: &[&str] = &[
 ];
 
 /// EnumSanityRule.
-pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
+pub(super) fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
     let display = c
         .decls
         .last()
@@ -54,7 +54,7 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
         };
         (written, b.hint.span())
     });
-    for m in e.members.iter() {
+    for m in &e.members {
         let ClassLikeMember::Method(m) = m else {
             continue;
         };
@@ -119,7 +119,7 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
     // value => case names, in PHP's array key order
     let mut values: Vec<(String, Vec<String>)> = Vec::new();
     let mut at: HashMap<String, usize> = HashMap::new();
-    for m in e.members.iter() {
+    for m in &e.members {
         let ClassLikeMember::EnumCase(case) = m else {
             continue;
         };
@@ -282,7 +282,7 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
 }
 
 /// EnumCaseOutsideEnumRule.
-pub fn case_outside<'arena>(c: &mut Checker<'_, 'arena>, case: &EnumCase<'arena>) {
+pub(super) fn case_outside<'arena>(c: &mut Checker<'_, 'arena>, case: &EnumCase<'arena>) {
     let in_enum = c.trait_context.is_none()
         && c.decls
             .last()

@@ -33,7 +33,7 @@ impl Rule for NoProtectedConstantInFinal {
         let Some(class) = final_class(node) else {
             return;
         };
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Constant(constant) = member else {
                 continue;
             };

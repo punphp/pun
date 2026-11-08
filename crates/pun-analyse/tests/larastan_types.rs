@@ -66,7 +66,7 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
         ..Options::for_project(&root.to_string_lossy())
     })
     .unwrap();
-    let mut params = config.parameters.clone();
+    let mut params = config.parameters;
     // `-l` resolves `level` as a string; Project reads a number
     params.set(Key::from("level"), Parameter::Int(8));
     let mut project = Project::from_config(root, &params);

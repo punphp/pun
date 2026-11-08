@@ -155,12 +155,12 @@ impl Rule for NoMultipleClassesPerFile {
 struct ClassLikeCollector<'arena>(Vec<(&'static str, &'arena [u8], pun_problem::Span)>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ClassLikeCollector<'arena> {
-    fn walk_in_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, class: &'ast Class<'arena>, (): &mut ()) {
         self.0
             .push(("class", class.name.value, span(class.name.span())));
     }
 
-    fn walk_in_interface(&mut self, interface: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_in_interface(&mut self, interface: &'ast Interface<'arena>, (): &mut ()) {
         self.0.push((
             "interface",
             interface.name.value,
@@ -168,12 +168,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ClassLikeCollector<'arena> {
         ));
     }
 
-    fn walk_in_trait(&mut self, r#trait: &'ast Trait<'arena>, _: &mut ()) {
+    fn walk_in_trait(&mut self, r#trait: &'ast Trait<'arena>, (): &mut ()) {
         self.0
             .push(("trait", r#trait.name.value, span(r#trait.name.span())));
     }
 
-    fn walk_in_enum(&mut self, r#enum: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_in_enum(&mut self, r#enum: &'ast Enum<'arena>, (): &mut ()) {
         self.0
             .push(("enum", r#enum.name.value, span(r#enum.name.span())));
     }
@@ -282,7 +282,7 @@ impl Rule for RequireSortedIntegerKeys {
             return;
         }
         let mut keys = Vec::with_capacity(elements.len());
-        for element in elements.iter() {
+        for element in elements {
             let ArrayElement::KeyValue(kv) = element else {
                 return;
             };

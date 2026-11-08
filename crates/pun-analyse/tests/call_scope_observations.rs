@@ -106,7 +106,7 @@ fn describe(t: &TUnion, codebase: &CodebaseMetadata) -> String {
                 let Some(TStringLiteral::Value(s)) = s.literal else {
                     unreachable!()
                 };
-                format!("'{}'", s)
+                format!("'{s}'")
             }
             TAtomic::Object(TObject::Named(o)) => codebase
                 .get_class_like(o.get_name().as_bytes())
@@ -1292,8 +1292,10 @@ fn pricing_transports_raw_value_and_native_results_without_reprojecting_calls_or
         let baseline_audit = ResultTransport::default();
         let mut baseline_registry = PluginRegistry::with_library_providers();
         baseline_registry.register_expression_hook(baseline_audit.clone());
-        let mut settings = Settings::default();
-        settings.track_native_types = native;
+        let settings = Settings {
+            track_native_types: native,
+            ..Default::default()
+        };
         let (_, baseline, baseline_result) =
             analyze_with_settings(CODE, ORACLE, false, &baseline_registry, settings.clone());
         let observed_audit = ResultTransport::default();
@@ -1578,7 +1580,7 @@ fn check_unpack_order(code: &'static [u8], oracle: &str) {
         let actual = artifacts.expression_types.get(&(start, end)).map(|ty| {
             if ty
                 .get_single_array()
-                .is_some_and(|array| array.is_vanilla())
+                .is_some_and(mago_codex::ttype::atomic::array::TArray::is_vanilla)
             {
                 "array".to_owned()
             } else {

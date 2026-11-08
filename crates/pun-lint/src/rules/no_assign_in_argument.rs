@@ -33,7 +33,10 @@ impl Rule for NoAssignInArgument {
             }
             _ => {
                 let Node::ArgumentList(l) = node else { return };
-                l.arguments.iter().map(|a| a.value()).collect()
+                l.arguments
+                    .iter()
+                    .map(mago_syntax::cst::Argument::value)
+                    .collect()
             }
         };
         for value in values {

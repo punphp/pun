@@ -88,8 +88,10 @@ fn analyze(dead: bool, native: bool, docs: bool) -> (AnalysisArtifacts, Analysis
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
-    let mut settings = Settings::default();
-    settings.analyze_dead_code = dead;
+    let mut settings = Settings {
+        analyze_dead_code: dead,
+        ..Default::default()
+    };
     settings.track_native_types = native;
     settings.track_variable_flow = true;
     let prelude = mago_prelude::Prelude::build();

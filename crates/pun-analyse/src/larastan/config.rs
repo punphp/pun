@@ -17,14 +17,15 @@ use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
-use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
-use mago_codex::ttype::{
-    get_empty_keyed_array, get_false, get_literal_float, get_literal_int, get_literal_string, get_null, get_true,
-};
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::union::TUnion;
+use mago_codex::ttype::{
+    get_empty_keyed_array, get_false, get_literal_float, get_literal_int, get_literal_string,
+    get_null, get_true,
+};
 use mago_database::file::FileType;
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
@@ -98,7 +99,10 @@ impl Configs {
         if paths.is_empty() {
             paths = crate::php_files(&root.join("config"), &php);
         }
-        let reader = Reader { codebase, generalize_env };
+        let reader = Reader {
+            codebase,
+            generalize_env,
+        };
         // ponytail: sorted, where PHP's RecursiveDirectoryIterator follows readdir order
         Configs {
             files: paths
@@ -194,9 +198,19 @@ fn offset(ty: &TUnion, part: &str) -> Option<TUnion> {
         None => ArrayKey::String(mago_word::word(part)),
     };
     match ty.types.as_ref() {
-        [TAtomic::Array(TArray::Keyed(k))] => k.known_items.as_ref()?.get(&key).filter(|(optional, _)| !optional).map(|(_, t)| t.clone()),
+        [TAtomic::Array(TArray::Keyed(k))] => k
+            .known_items
+            .as_ref()?
+            .get(&key)
+            .filter(|(optional, _)| !optional)
+            .map(|(_, t)| t.clone()),
         [TAtomic::Array(TArray::List(l))] => match key {
-            ArrayKey::Integer(i) => l.known_elements.as_ref()?.get(&usize::try_from(i).ok()?).filter(|(optional, _)| !optional).map(|(_, t)| t.clone()),
+            ArrayKey::Integer(i) => l
+                .known_elements
+                .as_ref()?
+                .get(&usize::try_from(i).ok()?)
+                .filter(|(optional, _)| !optional)
+                .map(|(_, t)| t.clone()),
             _ => None,
         },
         _ => None,
@@ -309,27 +323,37 @@ impl Reader<'_> {
         first.walk_program(program, &mut ());
         let r = first.0?;
         let comments = crate::rules::Comments::of(&file.contents, true);
-        if let Some((_, entry)) = comments.doc_before(&file.contents, r.span().start.offset as usize)
+        if let Some((_, entry)) =
+            comments.doc_before(&file.contents, r.span().start.offset as usize)
             && let Some((_, ty)) = entry
                 .tags
                 .iter()
                 .find(|(tag, _)| tag == "@return" || tag == "@phpstan-return")
-            && let Ok((node, end)) = phpdoc::parse_prefix(&ty)
+            && let Ok((node, end)) = phpdoc::parse_prefix(ty)
         {
-            return Some(Returned::Doc(node, type_from_text(ty.get(..end).unwrap_or(&ty))));
+            return Some(Returned::Doc(
+                node,
+                type_from_text(ty.get(..end).unwrap_or(ty)),
+            ));
         }
         Some(match r.value {
-            Some(Expression::Array(a)) => {
-                Returned::Array(self.items(&a.elements, &names), self.array_type(&a.elements, &names))
-            }
-            Some(Expression::LegacyArray(a)) => {
-                Returned::Array(self.items(&a.elements, &names), self.array_type(&a.elements, &names))
-            }
+            Some(Expression::Array(a)) => Returned::Array(
+                self.items(&a.elements, &names),
+                self.array_type(&a.elements, &names),
+            ),
+            Some(Expression::LegacyArray(a)) => Returned::Array(
+                self.items(&a.elements, &names),
+                self.array_type(&a.elements, &names),
+            ),
             _ => Returned::Other,
         })
     }
 
-    fn items(&self, elements: &TokenSeparatedSequence<ArrayElement>, names: &ResolvedNames) -> Vec<Item> {
+    fn items(
+        &self,
+        elements: &TokenSeparatedSequence<ArrayElement>,
+        names: &ResolvedNames,
+    ) -> Vec<Item> {
         elements
             .iter()
             .map(|e| match e {
@@ -338,7 +362,9 @@ impl Reader<'_> {
                         Expression::Literal(Literal::String(s)) => Some(Some(
                             String::from_utf8_lossy(s.value.unwrap_or_default()).into_owned(),
                         )),
-                        Expression::Literal(Literal::Integer(i)) => Some(i.value.map(|v| v.to_string())),
+                        Expression::Literal(Literal::Integer(i)) => {
+                            Some(i.value.map(|v| v.to_string()))
+                        }
                         Expression::Literal(Literal::Float(f)) => {
                             Some(Some(pun_phpstan::types::float_to_string(*f.value)))
                         }
@@ -376,12 +402,12 @@ impl Reader<'_> {
     fn type_of(&self, e: &Expression, names: &ResolvedNames) -> Option<TUnion> {
         Some(match e {
             Expression::Parenthesized(p) => return self.type_of(p.expression, names),
-            Expression::Literal(Literal::String(s)) => match s.value {
-                Some(value) => get_literal_string(mago_word::word(value)),
-                None => return None,
-            },
+            Expression::Literal(Literal::String(s)) => {
+                let value = s.value?;
+                get_literal_string(mago_word::word(value))
+            }
             Expression::Literal(Literal::Integer(i)) => match i.value {
-                Some(value) if value <= i64::MAX as u64 => get_literal_int(value as i64),
+                Some(value) if i64::try_from(value).is_ok() => get_literal_int(value as i64),
                 _ => return None,
             },
             Expression::Literal(Literal::Float(f)) => get_literal_float(*f.value),
@@ -395,12 +421,17 @@ impl Reader<'_> {
                     if i.value.eq_ignore_ascii_case(b"class") =>
                 {
                     let name = names.get(&class.span());
-                    if [&b"self"[..], b"static", b"parent"].iter().any(|n| name.eq_ignore_ascii_case(n)) {
+                    if [&b"self"[..], b"static", b"parent"]
+                        .iter()
+                        .any(|n| name.eq_ignore_ascii_case(n))
+                    {
                         return None;
                     }
-                    TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal {
-                        value: mago_word::word(name),
-                    })))
+                    TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(
+                        TClassLikeString::Literal {
+                            value: mago_word::word(name),
+                        },
+                    )))
                 }
                 _ => return None,
             },
@@ -412,7 +443,10 @@ impl Reader<'_> {
                 let short = name.rsplit(|b| *b == b'\\').next().unwrap_or(name);
                 let arguments = &f.argument_list.arguments;
                 if short.eq_ignore_ascii_case(b"env") {
-                    if arguments.iter().any(|a| !matches!(a, Argument::Positional(_))) {
+                    if arguments
+                        .iter()
+                        .any(|a| !matches!(a, Argument::Positional(_)))
+                    {
                         return None;
                     }
                     let default = match arguments.get(1) {
@@ -422,7 +456,10 @@ impl Reader<'_> {
                     if self.generalize_env && arguments.len() >= 2 {
                         return generalize(&default);
                     }
-                    let mut types = vec![TAtomic::Scalar(TScalar::bool()), TAtomic::Scalar(TScalar::string())];
+                    let mut types = vec![
+                        TAtomic::Scalar(TScalar::bool()),
+                        TAtomic::Scalar(TScalar::string()),
+                    ];
                     types.extend(default.types.iter().cloned());
                     return Some(TUnion::from_vec(mago_codex::ttype::combiner::combine(
                         types,
@@ -430,7 +467,10 @@ impl Reader<'_> {
                         Default::default(),
                     )));
                 }
-                let function = self.codebase.get_function(name).or_else(|| self.codebase.get_function(short))?;
+                let function = self
+                    .codebase
+                    .get_function(name)
+                    .or_else(|| self.codebase.get_function(short))?;
                 if !function.template_types.is_empty() {
                     return None;
                 }
@@ -442,19 +482,30 @@ impl Reader<'_> {
 
     /// The type of an array literal (InitializerExprTypeResolver::getArrayType()): a list when its keys are
     /// `0..n`, else a shape; `None` with an unpacked item or a key Pun does not type.
-    fn array_type(&self, elements: &TokenSeparatedSequence<ArrayElement>, names: &ResolvedNames) -> Option<TUnion> {
+    fn array_type(
+        &self,
+        elements: &TokenSeparatedSequence<ArrayElement>,
+        names: &ResolvedNames,
+    ) -> Option<TUnion> {
         let mut items = KnownItems::default();
         let mut next = 0i64;
-        for element in elements.iter() {
+        for element in elements {
             let (key, value) = match element {
                 ArrayElement::KeyValue(item) => {
                     let key = match item.key {
-                        Expression::Literal(Literal::Integer(i)) => ArrayKey::Integer(i64::try_from(i.value?).ok()?),
+                        Expression::Literal(Literal::Integer(i)) => {
+                            ArrayKey::Integer(i64::try_from(i.value?).ok()?)
+                        }
                         Expression::Literal(Literal::String(s)) => {
                             let value = s.value?;
                             // a decimal integer string is an int key
-                            match std::str::from_utf8(value).ok().and_then(|v| v.parse::<i64>().ok()) {
-                                Some(i) if i.to_string().as_bytes() == value => ArrayKey::Integer(i),
+                            match std::str::from_utf8(value)
+                                .ok()
+                                .and_then(|v| v.parse::<i64>().ok())
+                            {
+                                Some(i) if i.to_string().as_bytes() == value => {
+                                    ArrayKey::Integer(i)
+                                }
                                 _ => ArrayKey::String(mago_word::word(value)),
                             }
                         }
@@ -473,13 +524,25 @@ impl Reader<'_> {
         if items.is_empty() {
             return Some(get_empty_keyed_array());
         }
-        if items.keys().enumerate().all(|(index, key)| *key == ArrayKey::Integer(index as i64)) {
-            return Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList::from_known_elements(
-                items.into_iter().enumerate().map(|(index, (_, item))| (index, item)).collect(),
-            )))));
+        if items
+            .keys()
+            .enumerate()
+            .all(|(index, key)| *key == ArrayKey::Integer(index as i64))
+        {
+            return Some(TUnion::from_atomic(TAtomic::Array(TArray::List(
+                TList::from_known_elements(
+                    items
+                        .into_iter()
+                        .enumerate()
+                        .map(|(index, (_, item))| (index, item))
+                        .collect(),
+                ),
+            ))));
         }
         Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
-            TKeyedArray::new().with_known_items(items).with_non_empty(true),
+            TKeyedArray::new()
+                .with_known_items(items)
+                .with_non_empty(true),
         ))))
     }
 }
@@ -521,13 +584,20 @@ pub(crate) fn type_from_text(ty: &[u8]) -> Option<TUnion> {
         None,
     )
     .ok()
-    .filter(|t| t.types.iter().all(|a| !matches!(a, TAtomic::GenericParameter(_) | TAtomic::Alias(_) | TAtomic::Reference(_))))
+    .filter(|t| {
+        t.types.iter().all(|a| {
+            !matches!(
+                a,
+                TAtomic::GenericParameter(_) | TAtomic::Alias(_) | TAtomic::Reference(_)
+            )
+        })
+    })
 }
 
 struct FirstReturn<'ast, 'arena>(Option<&'ast Return<'arena>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FirstReturn<'ast, 'arena> {
-    fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
+    fn walk_in_return(&mut self, r: &'ast Return<'arena>, (): &mut ()) {
         self.0.get_or_insert(r);
     }
 }

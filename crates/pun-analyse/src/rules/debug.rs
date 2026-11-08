@@ -82,7 +82,7 @@ pub(super) fn typed_expressions<'arena>(
         spans: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, 'arena> {
-        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
             let assert = assertion(self.names, self.codebase, call).is_some();
             if assert || dump(self.names, self.codebase, call.function).is_some() {
                 self.spans.extend(

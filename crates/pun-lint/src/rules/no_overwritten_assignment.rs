@@ -48,7 +48,7 @@ impl Rule for NoOverwrittenAssignment {
         let mut scope = ancestors.to_vec();
         scope.push(node);
         // php-parser's `TryCatch` holds the statements of its `try` block.
-        let in_try = matches!(ancestors.last(), Some(Node::Try(t)) if matches!(node, Node::Block(b) if std::ptr::eq(b, &t.block)));
+        let in_try = matches!(ancestors.last(), Some(Node::Try(t)) if matches!(node, Node::Block(b) if std::ptr::eq(b, &raw const t.block)));
         let side_effect =
             |expr: &Expression<'_>| call_has_side_effect(&scope, unparenthesize(expr));
         let mut removed = Vec::new();

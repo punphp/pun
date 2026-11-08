@@ -68,11 +68,11 @@ impl Rule for NoExcessiveCyclomatic {
             Node::Class(n) => self.check_class_like("Class", n.members.as_slice(), header, out),
             Node::Trait(n) => self.check_class_like("Trait", n.members.as_slice(), header, out),
             Node::AnonymousClass(n) => {
-                self.check_class_like("Class", n.members.as_slice(), header, out)
+                self.check_class_like("Class", n.members.as_slice(), header, out);
             }
             Node::Enum(n) => self.check_class_like("Enum", n.members.as_slice(), header, out),
             Node::Interface(n) => {
-                self.check_class_like("Interface", n.members.as_slice(), header, out)
+                self.check_class_like("Interface", n.members.as_slice(), header, out);
             }
             Node::Function(n) => self.check_function_like("Function", &n.body, header, out),
             Node::Closure(n) => self.check_function_like("Closure", &n.body, header, out),

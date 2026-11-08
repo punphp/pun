@@ -38,12 +38,12 @@ impl Rule for PreferEachModifier {
         };
         let tokens = tokens(ctx);
         let list = match &foreach.body {
-            ForeachBody::Statement(Statement::Block(block)) => block_list(&tokens, block),
+            ForeachBody::Statement(Statement::Block(block)) => block_list(tokens, block),
             ForeachBody::Statement(statement) => {
-                super::super::php_parser::body_list(&tokens, statement)
+                super::super::php_parser::body_list(tokens, statement)
             }
             ForeachBody::ColonDelimited(body) => open_list(
-                &tokens,
+                tokens,
                 &body.statements,
                 body.colon.end.offset as usize,
                 body.end_foreach.span.start.offset as usize,

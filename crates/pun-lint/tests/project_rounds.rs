@@ -31,7 +31,9 @@ static PROJECT: Mutex<()> = Mutex::new(());
 
 #[test]
 fn a_later_round_leaves_the_changed_class_alone() {
-    let _turn = PROJECT.lock().unwrap_or_else(|e| e.into_inner());
+    let _turn = PROJECT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
     let fixture = std::fs::read_to_string(
         root.join("rector/YieldDataProviderRector/Oracle/used_after_other.php.inc"),
@@ -59,7 +61,9 @@ fn a_later_round_leaves_the_changed_class_alone() {
 /// `.oracle/rector-ecosystem`).
 #[test]
 fn a_later_round_types_a_moved_closure() {
-    let _turn = PROJECT.lock().unwrap_or_else(|e| e.into_inner());
+    let _turn = PROJECT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let input = "<?php
 
 it('chains', function (): void {

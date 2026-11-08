@@ -17,7 +17,7 @@ use regex_automata::{Anchored, MatchKind};
 
 use super::Checker;
 
-pub const IDENTIFIERS: &[&str] = &["new.dateTime", "new.dateTimeImmutable"];
+pub(super) const IDENTIFIERS: &[&str] = &["new.dateTime", "new.dateTimeImmutable"];
 
 pub(super) fn instantiation(c: &mut Checker, new: &Instantiation) {
     if c.level < 5 {

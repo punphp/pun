@@ -112,12 +112,7 @@ fn check(file_name: &str, partial_native: bool) {
                 "declared truthiness lost: {ty:?}"
             );
         }
-        if let Some(integer) = capture["full"]["type"]
-            .as_str()
-            .unwrap()
-            .parse::<i64>()
-            .ok()
-        {
+        if let Ok(integer) = capture["full"]["type"].as_str().unwrap().parse::<i64>() {
             assert!(
                 matches!(ty.types.as_ref(), [atomic] if atomic.get_literal_int_value() == Some(integer)),
                 "overwritten scalar: {ty:?}"

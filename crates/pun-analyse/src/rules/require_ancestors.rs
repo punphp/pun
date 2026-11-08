@@ -10,7 +10,7 @@ use pun_phpstan::types::{Level, Type};
 use super::Checker;
 
 /// Both rules on class-like `k` (a class, an enum or an anonymous class) declared at `at`.
-pub fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
+pub(super) fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     if c.level < 2 {
         return;
     }

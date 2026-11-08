@@ -9,14 +9,14 @@ use pun_phpstan::types::{Level, mixed};
 
 use super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "parameter.notFound",
     "paramImmediatelyInvokedCallable.nonCallable",
     "paramLaterInvokedCallable.nonCallable",
 ];
 
 /// The function or method declared at `at` with `params`.
-pub fn function_like(c: &mut Checker, at: Span, params: &FunctionLikeParameterList) {
+pub(super) fn function_like(c: &mut Checker, at: Span, params: &FunctionLikeParameterList) {
     if c.level < 2 {
         return;
     }

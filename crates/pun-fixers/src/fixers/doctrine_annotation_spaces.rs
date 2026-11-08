@@ -21,7 +21,7 @@ struct DoctrineAnnotationSpacesFixer {
     after_array_assignments_colon: Option<bool>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(DoctrineAnnotationSpacesFixer {
         ignored_tags: vec![],
         around_parentheses: true,

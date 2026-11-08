@@ -61,11 +61,11 @@ impl Rule for PreferReturnedCondition {
         let Node::If(_) = node else { return };
         let source = ctx.source;
         let tokens = tokens(ctx);
-        let (list, index) = enclosing(source, &tokens, ancestors);
+        let (list, index) = enclosing(source, tokens, ancestors);
         let facts = facts(ctx);
         // `refactor()` changes the first pair of the list it takes
         let Some((at, (code, inner))) = (1..list.stmts.len())
-            .find_map(|k| new_return(ctx, &tokens, &facts, &list, k).map(|c| (k, c)))
+            .find_map(|k| new_return(ctx, tokens, &facts, &list, k).map(|c| (k, c)))
         else {
             return;
         };
@@ -78,14 +78,10 @@ impl Rule for PreferReturnedCondition {
         let comments: Vec<Span> = [r#if, r#return, inner]
             .into_iter()
             .flat_map(|s| {
-                comments_between(
-                    &tokens,
-                    previous_token_end(source, &tokens, s.start),
-                    s.start,
-                )
+                comments_between(tokens, previous_token_end(source, tokens, s.start), s.start)
             })
             .collect();
-        let edits = run_edits(source, &tokens, ancestors, &|chain| {
+        let edits = run_edits(source, tokens, ancestors, &|chain| {
             let span = node_span(&chain[chain.len() - 1]);
             if span == r#if {
                 Some(Change::Remove)

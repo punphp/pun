@@ -14,12 +14,12 @@ use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Type, is_super_type_of};
 
 use super::Checker;
-use crate::bitset::BitSet;
 use super::members::Method;
+use crate::bitset::BitSet;
 
 /// A `*_exists()` call known to be true; names as the string argument has them, without a leading `\`.
 #[derive(Clone, Debug, Eq)]
-pub enum Guard {
+pub(super) enum Guard {
     Class(String),
     Function(String),
     /// `defined('Foo::BAR')`: the class part lowercase, as `foo::BAR`.
@@ -54,7 +54,8 @@ pub enum Guard {
 impl PartialEq for Guard {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Method(a), Self::Method(b)) | (Self::MethodSource(a, _), Self::MethodSource(b, _)) => {
+            (Self::Method(a), Self::Method(b))
+            | (Self::MethodSource(a, _), Self::MethodSource(b, _)) => {
                 let (a, am) = a.split_once("::").expect("method receiver key");
                 let (b, bm) = b.split_once("::").expect("method receiver key");
                 a == b && am.eq_ignore_ascii_case(bm)
@@ -78,11 +79,21 @@ impl PartialEq for Guard {
 }
 
 fn expression_guard(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
+    matches!(
+        g,
+        Guard::Expr(_)
+            | Guard::MethodExists(_)
+            | Guard::ConstantFetch(..)
+            | Guard::ExprStrings(..)
+            | Guard::ExprWhen(..)
+    )
 }
 
 pub(super) fn definite_expression(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..))
+    matches!(
+        g,
+        Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..)
+    )
 }
 
 /// Remember existence predicates in a boolean variable, not the source expression's type holder. Merely
@@ -92,7 +103,7 @@ pub(super) fn remembered_guard(g: &Guard) -> bool {
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
-pub fn truthy(
+pub(super) fn truthy(
     expr: &Expression,
     var: &dyn Fn(&[u8]) -> Vec<Guard>,
     resolve: &dyn Fn(&Identifier) -> String,
@@ -139,11 +150,14 @@ fn truthy_of(
                 g.extend(truthy(b.rhs, var, resolve, function));
                 g
             }
-            BinaryOperator::Or(_) | BinaryOperator::LowOr(_) => {
-                both(truthy(b.lhs, var, resolve, function), truthy(b.rhs, var, resolve, function))
-            }
+            BinaryOperator::Or(_) | BinaryOperator::LowOr(_) => both(
+                truthy(b.lhs, var, resolve, function),
+                truthy(b.rhs, var, resolve, function),
+            ),
             BinaryOperator::Instanceof(_) => match (b.lhs, b.rhs) {
-                (Expression::Variable(Variable::Direct(v)), Expression::Identifier(id)) if v.name == b"$this" => {
+                (Expression::Variable(Variable::Direct(v)), Expression::Identifier(id))
+                    if v.name == b"$this" =>
+                {
                     vec![Guard::ThisInstanceOf(resolve(id))]
                 }
                 _ => Vec::new(),
@@ -172,20 +186,47 @@ fn truthy_of(
         Expression::Assignment(a) => truthy(a.rhs, var, resolve, function),
         Expression::Call(Call::Function(call)) => {
             if let Expression::Identifier(id) = call.function
-                && function(id).trim_start_matches('\\').eq_ignore_ascii_case("method_exists")
+                && function(id)
+                    .trim_start_matches('\\')
+                    .eq_ignore_ascii_case("method_exists")
                 && call.argument_list.arguments.len() >= 2
-                && constant_string(call.argument_list.arguments.get(1).expect("two arguments").value(), resolve).is_none()
+                && constant_string(
+                    call.argument_list
+                        .arguments
+                        .get(1)
+                        .expect("two arguments")
+                        .value(),
+                    resolve,
+                )
+                .is_none()
                 && let Some(key) = expression_key(expr, resolve, &|id| {
                     let name = function(id);
-                    if name.trim_start_matches('\\').eq_ignore_ascii_case("method_exists") { "\\method_exists".into() } else { name }
+                    if name
+                        .trim_start_matches('\\')
+                        .eq_ignore_ascii_case("method_exists")
+                    {
+                        "\\method_exists".into()
+                    } else {
+                        name
+                    }
                 })
             {
                 return vec![Guard::MethodExists(key)];
             }
-            let Some(guard) = exists_call(call, resolve) else { return Vec::new(); };
+            let Some(guard) = exists_call(call, resolve) else {
+                return Vec::new();
+            };
             let mut guards = Vec::new();
             if let Guard::Method(key) = &guard {
-                guards.push(Guard::MethodSource(key.clone(), call.argument_list.arguments.first().expect("exists receiver").value().span()));
+                guards.push(Guard::MethodSource(
+                    key.clone(),
+                    call.argument_list
+                        .arguments
+                        .first()
+                        .expect("exists receiver")
+                        .value()
+                        .span(),
+                ));
             }
             guards.push(guard);
             guards
@@ -195,7 +236,7 @@ fn truthy_of(
 }
 
 /// Guards from `expr` being false.
-pub fn falsy(
+pub(super) fn falsy(
     expr: &Expression,
     var: &dyn Fn(&[u8]) -> Vec<Guard>,
     resolve: &dyn Fn(&Identifier) -> String,
@@ -212,7 +253,7 @@ pub fn falsy(
 fn contains_call(e: &Expression) -> bool {
     struct Calls(bool);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Calls {
-        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
             self.0 |= matches!(e, Expression::Call(_));
         }
     }
@@ -226,7 +267,11 @@ fn contains_call(e: &Expression) -> bool {
 /// from its current finite values. Parentheses and imported names do not change the identity.
 /// Calls keep ExprPrinter's selector and argument syntax, not their return types or acceptors. Dynamic
 /// function callees, nullsafe calls, indirect variables and dynamic property selectors remain unavailable.
-fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
+fn expression_key(
+    e: &Expression,
+    resolve: &dyn Fn(&Identifier) -> String,
+    function: &dyn Fn(&Identifier) -> String,
+) -> Option<String> {
     let key = |e| expression_key(e, resolve, function);
     Some(match super::types::flow::unparen(e) {
         Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
@@ -237,21 +282,35 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
         Expression::Literal(Literal::Integer(i)) => format!("int({})", i.value?),
         // Escape bytes, not PHP variable spellings inside string literals: invalidating `$receiver` must
         // not invalidate a call whose argument merely contains the text '$receiver'.
-        Expression::Literal(Literal::String(s)) => format!("string({})", s.value?.iter().map(|b| format!("{b:02x}")).collect::<String>()),
+        Expression::Literal(Literal::String(s)) => format!(
+            "string({})",
+            s.value?
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>()
+        ),
         Expression::Literal(Literal::True(_)) => "true".into(),
         Expression::Literal(Literal::False(_)) => "false".into(),
         Expression::Literal(Literal::Null(_)) => "null".into(),
         Expression::Call(call) => {
             let (callee, args) = match call {
                 Call::Function(f) => {
-                    let Expression::Identifier(id) = f.function else { return None };
+                    let Expression::Identifier(id) = f.function else {
+                        return None;
+                    };
                     (function(id), &f.argument_list)
                 }
                 Call::Method(m) => {
                     let method = match &m.method {
-                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
-                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => format!("{{{}}}", String::from_utf8_lossy(v.name)),
-                        ClassLikeMemberSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
+                        ClassLikeMemberSelector::Identifier(id) => {
+                            String::from_utf8_lossy(id.value).into_owned()
+                        }
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => {
+                            format!("{{{}}}", String::from_utf8_lossy(v.name))
+                        }
+                        ClassLikeMemberSelector::Expression(e) => {
+                            object_property_key(e.expression, resolve, function)?
+                        }
                         _ => return None,
                     };
                     (format!("{}->{method}", key(m.object)?), &m.argument_list)
@@ -260,35 +319,55 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
                     // Standard::pExpr_StaticCall does not use pObjectProperty: literal strings keep their
                     // braces, but a variable prints without them, even when the source used `::{$method}`.
                     let method = match &m.method {
-                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
-                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
-                        ClassLikeMemberSelector::Expression(e) => match super::types::flow::unparen(e.expression) {
-                            Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
-                            e => format!("{{{}}}", key(e)?),
-                        },
+                        ClassLikeMemberSelector::Identifier(id) => {
+                            String::from_utf8_lossy(id.value).into_owned()
+                        }
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => {
+                            String::from_utf8_lossy(v.name).into_owned()
+                        }
+                        ClassLikeMemberSelector::Expression(e) => {
+                            match super::types::flow::unparen(e.expression) {
+                                Expression::Variable(Variable::Direct(v)) => {
+                                    String::from_utf8_lossy(v.name).into_owned()
+                                }
+                                e => format!("{{{}}}", key(e)?),
+                            }
+                        }
                         _ => return None,
                     };
                     (format!("{}::{method}", key(m.class)?), &m.argument_list)
                 }
                 _ => return None,
             };
-            let args: Option<Vec<_>> = args.arguments.iter().map(|arg| {
-                let value = key(arg.value())?;
-                Some(match arg {
-                    Argument::Named(n) => format!("{}: {value}", String::from_utf8_lossy(n.name.value)),
-                    Argument::Positional(p) => format!("{}{value}", if p.ellipsis.is_some() { "..." } else { "" }),
+            let args: Option<Vec<_>> = args
+                .arguments
+                .iter()
+                .map(|arg| {
+                    let value = key(arg.value())?;
+                    Some(match arg {
+                        Argument::Named(n) => {
+                            format!("{}: {value}", String::from_utf8_lossy(n.name.value))
+                        }
+                        Argument::Positional(p) => {
+                            format!("{}{value}", if p.ellipsis.is_some() { "..." } else { "" })
+                        }
+                    })
                 })
-            }).collect();
+                .collect();
             format!("{callee}({})", args?.join(", "))
         }
         Expression::ArrayAccess(a) => format!("{}[{}]", key(a.array)?, key(a.index)?),
         Expression::ArrayAppend(a) => format!("{}[]", key(a.array)?),
         Expression::Access(Access::Property(p)) => {
-            let ClassLikeMemberSelector::Identifier(id) = &p.property else { return None };
+            let ClassLikeMemberSelector::Identifier(id) = &p.property else {
+                return None;
+            };
             format!("{}->{}", key(p.object)?, String::from_utf8_lossy(id.value))
         }
         Expression::Access(Access::StaticProperty(p)) => {
-            let Variable::Direct(v) = &p.property else { return None };
+            let Variable::Direct(v) = &p.property else {
+                return None;
+            };
             format!("{}::{}", key(p.class)?, String::from_utf8_lossy(v.name))
         }
         Expression::Access(Access::ClassConstant(a)) => constant_key(a, resolve, function)?,
@@ -298,47 +377,83 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
 
 /// Printer::pObjectProperty(): only identifier-shaped literal strings become barewords. Neither a variable
 /// nor a class constant with that inferred string value is the same expression as the literal selector.
-fn object_property_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
+fn object_property_key(
+    e: &Expression,
+    resolve: &dyn Fn(&Identifier) -> String,
+    function: &dyn Fn(&Identifier) -> String,
+) -> Option<String> {
     static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
-        pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
+        pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$")
+            .expect("identifier regexp")
     });
     Some(match super::types::flow::unparen(e) {
-        Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
+        Expression::Literal(Literal::String(s))
+            if IDENTIFIER.is_match(s.value?).expect("byte regexp") =>
+        {
             String::from_utf8_lossy(s.value?).into_owned()
         }
         e => format!("{{{}}}", expression_key(e, resolve, function)?),
     })
 }
 
-fn constant_key(a: &ClassConstantAccess, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
+fn constant_key(
+    a: &ClassConstantAccess,
+    resolve: &dyn Fn(&Identifier) -> String,
+    function: &dyn Fn(&Identifier) -> String,
+) -> Option<String> {
     let name = match &a.constant {
         ClassLikeConstantSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
-        ClassLikeConstantSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
+        ClassLikeConstantSelector::Expression(e) => {
+            object_property_key(e.expression, resolve, function)?
+        }
         ClassLikeConstantSelector::Missing(_) => return None,
     };
-    Some(format!("{}::{name}", expression_key(a.class, resolve, function)?))
+    Some(format!(
+        "{}::{name}",
+        expression_key(a.class, resolve, function)?
+    ))
 }
 
 /// TypeSpecifier's subject entries, not every fetch evaluated by the condition. In particular a loose
 /// comparison with a nonzero number does not specify the subject in its unequal branch.
-fn constant_narrowed(e: &Expression, truthy: bool, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String, out: &mut Vec<Guard>) {
+fn constant_narrowed(
+    e: &Expression,
+    truthy: bool,
+    resolve: &dyn Fn(&Identifier) -> String,
+    function: &dyn Fn(&Identifier) -> String,
+    out: &mut Vec<Guard>,
+) {
     match super::types::flow::unparen(e) {
         Expression::Access(Access::ClassConstant(a)) => {
             if let Some(key) = constant_key(a, resolve, function) {
                 out.push(Guard::ConstantFetch(key));
             }
         }
-        Expression::Binary(b) if b.operator.is_comparison() && !matches!(b.operator, BinaryOperator::Spaceship(_)) => {
+        Expression::Binary(b)
+            if b.operator.is_comparison()
+                && !matches!(b.operator, BinaryOperator::Spaceship(_)) =>
+        {
             // Boolean-literal comparisons delegate to truthy/falsy above. Other call-containing comparisons
             // need the general TypeSpecifier subject/purity engine, not merely a printable expression key.
             if contains_call(e) {
                 return;
             }
-            if matches!(b.operator, BinaryOperator::Equal(_) | BinaryOperator::NotEqual(_) | BinaryOperator::AngledNotEqual(_)) {
+            if matches!(
+                b.operator,
+                BinaryOperator::Equal(_)
+                    | BinaryOperator::NotEqual(_)
+                    | BinaryOperator::AngledNotEqual(_)
+            ) {
                 let equal = truthy == matches!(b.operator, BinaryOperator::Equal(_));
-                let sentinel = |e: &Expression| matches!(e, Expression::Literal(Literal::Null(_) | Literal::True(_) | Literal::False(_)))
-                    || matches!(e, Expression::Literal(Literal::Integer(i)) if i.value == Some(0))
-                    || matches!(e, Expression::Literal(Literal::String(s)) if s.value == Some(b""));
+                let sentinel = |e: &Expression| {
+                    matches!(
+                        e,
+                        Expression::Literal(
+                            Literal::Null(_) | Literal::True(_) | Literal::False(_)
+                        )
+                    ) || matches!(e, Expression::Literal(Literal::Integer(i)) if i.value == Some(0))
+                        || matches!(e, Expression::Literal(Literal::String(s)) if s.value == Some(b""))
+                };
                 if !equal && !sentinel(b.lhs) && !sentinel(b.rhs) {
                     return;
                 }
@@ -367,9 +482,10 @@ fn falsy_of(
                 g.extend(falsy(b.rhs, var, resolve, function));
                 g
             }
-            BinaryOperator::And(_) | BinaryOperator::LowAnd(_) => {
-                both(falsy(b.lhs, var, resolve, function), falsy(b.rhs, var, resolve, function))
-            }
+            BinaryOperator::And(_) | BinaryOperator::LowAnd(_) => both(
+                falsy(b.lhs, var, resolve, function),
+                falsy(b.rhs, var, resolve, function),
+            ),
             BinaryOperator::Instanceof(_) => match (b.lhs, b.rhs) {
                 (Expression::Variable(Variable::Direct(v)), Expression::Identifier(id))
                     if v.name == b"$this" =>
@@ -413,7 +529,7 @@ fn both(a: Vec<Guard>, b: Vec<Guard>) -> Vec<Guard> {
 }
 
 /// The intersection of the `PHP_VERSION_ID` ranges among `guards`, `None` when none narrows it.
-pub fn version_range(guards: &[Guard]) -> Option<(Option<i64>, Option<i64>)> {
+pub(super) fn version_range(guards: &[Guard]) -> Option<(Option<i64>, Option<i64>)> {
     guards.iter().fold(None, |acc, g| match g {
         Guard::PhpVersion(lo, hi) => {
             let (alo, ahi) = acc.unwrap_or((None, None));
@@ -513,7 +629,9 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
         // a `define()` statement defines the constant for the rest of the scope
         "define" => Some(Guard::Constant(value)),
         "defined" => Some(match value.split_once("::") {
-            Some((class, constant)) => Guard::ClassConstant(format!("{}::{constant}", class.to_ascii_lowercase())),
+            Some((class, constant)) => {
+                Guard::ClassConstant(format!("{}::{constant}", class.to_ascii_lowercase()))
+            }
             None => Guard::Constant(value),
         }),
         _ => None,
@@ -521,7 +639,10 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
 }
 
 /// The bounded receivers shared by literal `method_exists()` guards and their type refinement.
-pub(super) fn method_receiver(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
+pub(super) fn method_receiver(
+    e: &Expression,
+    resolve: &dyn Fn(&Identifier) -> String,
+) -> Option<String> {
     let receiver = match e {
         Expression::Parenthesized(p) => return method_receiver(p.expression, resolve),
         Expression::Access(Access::ClassConstant(ClassConstantAccess {
@@ -534,7 +655,9 @@ pub(super) fn method_receiver(e: &Expression, resolve: &dyn Fn(&Identifier) -> S
             constant: ClassLikeConstantSelector::Identifier(c),
             ..
         })) if c.value.eq_ignore_ascii_case(b"class") => "self".to_string(),
-        Expression::Variable(Variable::Direct(v)) => return Some(String::from_utf8_lossy(v.name).into_owned()),
+        Expression::Variable(Variable::Direct(v)) => {
+            return Some(String::from_utf8_lossy(v.name).into_owned());
+        }
         _ => constant_string(e, resolve)?,
     };
     Some(receiver.trim_start_matches('\\').to_ascii_lowercase())
@@ -544,9 +667,19 @@ pub(super) fn method_receiver(e: &Expression, resolve: &dyn Fn(&Identifier) -> S
 pub(super) fn typed_method_receivers(program: &Program) -> Vec<Span> {
     struct Wanted(Vec<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
-            if matches!(exists_call(call, &|id| String::from_utf8_lossy(id.value()).into_owned()), Some(Guard::Method(_))) {
-                self.0.push(call.argument_list.arguments.first().expect("exists receiver").value().span());
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
+            if matches!(
+                exists_call(call, &|id| String::from_utf8_lossy(id.value()).into_owned()),
+                Some(Guard::Method(_))
+            ) {
+                self.0.push(
+                    call.argument_list
+                        .arguments
+                        .first()
+                        .expect("exists receiver")
+                        .value()
+                        .span(),
+                );
             }
         }
     }
@@ -571,7 +704,7 @@ fn constant_string(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> O
 
 /// Whether control never reaches the statement after `s` (PHPStan's always-terminating statements, without
 /// never-returning calls).
-pub fn terminates(s: &Statement) -> bool {
+pub(super) fn terminates(s: &Statement) -> bool {
     match s {
         Statement::Return(_) | Statement::Continue(_) | Statement::Break(_) => true,
         Statement::Expression(e) => matches!(
@@ -583,7 +716,7 @@ pub fn terminates(s: &Statement) -> bool {
     }
 }
 
-pub fn statements_terminate<'a>(mut s: impl Iterator<Item = &'a Statement<'a>>) -> bool {
+pub(super) fn statements_terminate<'a>(mut s: impl Iterator<Item = &'a Statement<'a>>) -> bool {
     s.any(terminates)
 }
 /// What a function-like body saved of its parent's scope.
@@ -593,7 +726,7 @@ pub(super) struct Saved {
     vars: HashMap<Vec<u8>, Vec<Guard>>,
 }
 
-impl<'a, 'arena> Checker<'a, 'arena> {
+impl<'arena> Checker<'_, 'arena> {
     /// `$this` is `never` here: after `if ($this instanceof Foo) { return; }` in a class that is a Foo (a trait is
     /// never an instanceof's match).
     pub(super) fn this_is_never(&self, class: &ClassLikeMetadata) -> bool {
@@ -632,11 +765,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && terminates(b.statement)
             {
                 // Receiver identities and file-existence expression types hold in the constructor alone.
-                guards.extend(
-                    self.falsy(i.condition)
-                        .into_iter()
-                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::ThisInstanceOf(_) | Guard::File(_)) && !expression_guard(g)),
-                );
+                guards.extend(self.falsy(i.condition).into_iter().filter(|g| {
+                    !matches!(
+                        g,
+                        Guard::ThisNotInstanceOf(_) | Guard::ThisInstanceOf(_) | Guard::File(_)
+                    ) && !expression_guard(g)
+                }));
             }
         }
         guards
@@ -680,7 +814,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// qualified function calls instead print the resolved fully qualified name.
     fn guard_function_name(&self, id: &Identifier) -> String {
         match id {
-            Identifier::Local(l) if !self.names.is_imported(&l.span) => String::from_utf8_lossy(l.value).into_owned(),
+            Identifier::Local(l) if !self.names.is_imported(&l.span) => {
+                String::from_utf8_lossy(l.value).into_owned()
+            }
             _ => format!("\\{}", self.resolved(id)),
         }
     }
@@ -701,18 +837,33 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// MutatingScope::getNodeKey for the supported assignment expressions. Unknown syntax has no identity.
     pub(super) fn assignment_key(&self, e: &Expression) -> Option<String> {
-        expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id))
+        expression_key(e, &|id| self.resolved(id), &|id| {
+            self.guard_function_name(id)
+        })
     }
 
     /// MethodCallCheck asks about the original selector expression, not each selected constant name.
-    pub(super) fn in_dynamic_method_exists(&self, receiver: &Expression, selector: &Expression, name: &str) -> bool {
-        let key = |e| expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id));
-        let (Some(receiver), Some(selector)) = (key(receiver), key(selector)) else { return false; };
+    pub(super) fn in_dynamic_method_exists(
+        &self,
+        receiver: &Expression,
+        selector: &Expression,
+        name: &str,
+    ) -> bool {
+        let key = |e| {
+            expression_key(e, &|id| self.resolved(id), &|id| {
+                self.guard_function_name(id)
+            })
+        };
+        let (Some(receiver), Some(selector)) = (key(receiver), key(selector)) else {
+            return false;
+        };
         let call = format!("\\method_exists({receiver}, {selector})");
         self.guards.iter().any(|guard| match guard {
             Guard::MethodExists(key) => *key == call,
             Guard::ExprWhen(key, missing) if *key == call => missing.iter().all(|path| {
-                path.iter().any(|(key, values)| *key == selector && !values.iter().any(|value| value == name))
+                path.iter().any(|(key, values)| {
+                    *key == selector && !values.iter().any(|value| value == name)
+                })
             }),
             _ => false,
         })
@@ -751,17 +902,31 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     pub(super) fn end_guard_block(&mut self) {
         let mark = self.marks.pop().expect("pushed");
         let outgoing = self.guards.split_off(mark);
-        self.guards.extend(outgoing.into_iter().filter(expression_guard));
+        self.guards
+            .extend(outgoing.into_iter().filter(expression_guard));
     }
 
     pub(super) fn has_class_constant_type(&self, a: &ClassConstantAccess, name: &str) -> bool {
-        let Some(key) = constant_key(a, &|id| self.resolved(id), &|id| self.guard_function_name(id)) else { return false };
+        let Some(key) = constant_key(a, &|id| self.resolved(id), &|id| {
+            self.guard_function_name(id)
+        }) else {
+            return false;
+        };
         self.guards.iter().any(|g| match g {
             Guard::ConstantFetch(k) => *k == key,
             Guard::ExprWhen(k, missing) if *k == key => {
-                let ClassLikeConstantSelector::Expression(selector) = &a.constant else { return false };
-                let selector = expression_key(selector.expression, &|id| self.resolved(id), &|id| self.guard_function_name(id));
-                missing.iter().all(|path| path.iter().any(|(k, values)| selector.as_ref() == Some(k) && !values.iter().any(|v| v == name)))
+                let ClassLikeConstantSelector::Expression(selector) = &a.constant else {
+                    return false;
+                };
+                let selector =
+                    expression_key(selector.expression, &|id| self.resolved(id), &|id| {
+                        self.guard_function_name(id)
+                    });
+                missing.iter().all(|path| {
+                    path.iter().any(|(k, values)| {
+                        selector.as_ref() == Some(k) && !values.iter().any(|v| v == name)
+                    })
+                })
             }
             _ => false,
         })
@@ -769,23 +934,40 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// Reflection for the bounded, single named receivers this slice can invalidate without selecting a
     /// representative from a union. Unresolved/dynamic methods are invalidating, never assumed pure.
-    fn guard_method(&self, on: &Expression, selector: &ClassLikeMemberSelector) -> Option<Method<'_>> {
-        let ClassLikeMemberSelector::Identifier(id) = selector else { return None };
+    fn guard_method(
+        &self,
+        on: &Expression,
+        selector: &ClassLikeMemberSelector,
+    ) -> Option<Method<'_>> {
+        let ClassLikeMemberSelector::Identifier(id) = selector else {
+            return None;
+        };
         let name = match super::types::flow::unparen(on) {
             Expression::Identifier(id) => self.resolved(id),
             Expression::Self_(_) | Expression::Static(_) => self.class_scope()?.name.to_string(),
             Expression::Parent(_) => self.class_scope()?.direct_parent_class?.to_string(),
             e => match self.phpstan_type(e)? {
-                Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => n,
+                Type::Object(n, _, _)
+                | Type::Static(n, _)
+                | Type::This(n)
+                | Type::EnumCase(n, _) => n,
                 _ => return None,
             },
         };
         match super::reflection::known(self, &name)? {
             super::reflection::Known::User(_) => self.method_of(&name, id.value).ok().flatten(),
             super::reflection::Known::Builtin(k) => std::iter::once(k)
-                .chain(k.ancestors.iter().filter_map(|n| self.builtins.classes.get(&n.to_ascii_lowercase())))
-                .find_map(|declaring| declaring.methods.get(&String::from_utf8_lossy(id.value).to_ascii_lowercase())
-                    .map(|f| Method::Builtin { declaring, f })),
+                .chain(
+                    k.ancestors
+                        .iter()
+                        .filter_map(|n| self.builtins.classes.get(&n.to_ascii_lowercase())),
+                )
+                .find_map(|declaring| {
+                    declaring
+                        .methods
+                        .get(&String::from_utf8_lossy(id.value).to_ascii_lowercase())
+                        .map(|f| Method::Builtin { declaring, f })
+                }),
         }
     }
 
@@ -801,13 +983,22 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 if method.variants().all.iter().all(|v| v.void) {
                     return true;
                 }
-                if let Some(pure) = super::declared::method_purity(self, declaring, f.name.as_bytes()).0 {
+                if let Some(pure) =
+                    super::declared::method_purity(self, declaring, f.name.as_bytes()).0
+                {
                     return !pure;
                 }
                 super::declared::with_classes(self, || {
-                    let ret = super::declared::codex_return(self, f, Some(declaring))
-                        .or_else(|| f.return_type_metadata.as_ref().map(|t| self.to_phpstan(&t.type_union)));
-                    ret.is_some_and(|ret| is_super_type_of(&Type::This(declaring.original_name.to_string()), &ret).yes())
+                    let ret =
+                        super::declared::codex_return(self, f, Some(declaring)).or_else(|| {
+                            f.return_type_metadata
+                                .as_ref()
+                                .map(|t| self.to_phpstan(&t.type_union))
+                        });
+                    ret.is_some_and(|ret| {
+                        is_super_type_of(&Type::This(declaring.original_name.to_string()), &ret)
+                            .yes()
+                    })
                 })
             }
         }
@@ -815,14 +1006,28 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// Whether `invalidate_constant_fetches` could remove a guard, before paying for method reflection.
     fn has_fetch_guards(&self) -> bool {
-        self.guards.iter().any(|g| matches!(g, Guard::ConstantFetch(_) | Guard::MethodExists(_) | Guard::ExprWhen(..)))
+        self.guards.iter().any(|g| {
+            matches!(
+                g,
+                Guard::ConstantFetch(_) | Guard::MethodExists(_) | Guard::ExprWhen(..)
+            )
+        })
     }
 
-    pub(super) fn invalidate_called_receiver(&mut self, on: &Expression, selector: &ClassLikeMemberSelector) {
-        if self.has_fetch_guards() && self.guard_method(on, selector).is_none_or(|m| self.invalidating_method(&m)) {
-            if let Some(key) = expression_key(on, &|id| self.resolved(id), &|id| self.guard_function_name(id)) {
-                self.invalidate_constant_fetches(&key);
-            }
+    pub(super) fn invalidate_called_receiver(
+        &mut self,
+        on: &Expression,
+        selector: &ClassLikeMemberSelector,
+    ) {
+        if self.has_fetch_guards()
+            && self
+                .guard_method(on, selector)
+                .is_none_or(|m| self.invalidating_method(&m))
+            && let Some(key) = expression_key(on, &|id| self.resolved(id), &|id| {
+                self.guard_function_name(id)
+            })
+        {
+            self.invalidate_constant_fetches(&key);
         }
     }
 
@@ -836,14 +1041,25 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     pub(super) fn invalidate_static_call(&mut self, call: &StaticMethodCall) {
         if !self.has_fetch_guards()
-            || !matches!(call.class, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_))
+            || !matches!(
+                call.class,
+                Expression::Identifier(_)
+                    | Expression::Self_(_)
+                    | Expression::Static(_)
+                    | Expression::Parent(_)
+            )
         {
             return;
         }
-        let invalidate = self.guard_method(call.class, &call.method).is_some_and(|m| {
-            self.class_scope().is_some_and(|k| k.original_name.as_bytes().eq_ignore_ascii_case(m.declaring_name().as_bytes()))
-                && self.invalidating_method(&m)
-        });
+        let invalidate = self
+            .guard_method(call.class, &call.method)
+            .is_some_and(|m| {
+                self.class_scope().is_some_and(|k| {
+                    k.original_name
+                        .as_bytes()
+                        .eq_ignore_ascii_case(m.declaring_name().as_bytes())
+                }) && self.invalidating_method(&m)
+            });
         if invalidate {
             self.invalidate_constant_fetches("$this");
         }
@@ -851,8 +1067,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn invalidate_constant_fetches(&mut self, receiver: &str) {
         let class = self.class_scope().map(|k| {
-            let parents: Vec<_> = k.all_parent_classes.iter().chain(k.all_parent_interfaces.iter())
-                .map(|n| format!("\\{n}").to_ascii_lowercase()).collect();
+            let parents: Vec<_> = k
+                .all_parent_classes
+                .iter()
+                .chain(k.all_parent_interfaces.iter())
+                .map(|n| format!("\\{n}").to_ascii_lowercase())
+                .collect();
             (format!("\\{}", k.original_name), parents)
         });
         self.retain_guards(|guard| {
@@ -872,7 +1092,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     pub(super) fn assigned_expression(&mut self, a: &Assignment) {
         self.invalidate_expression(a.lhs);
         if matches!(a.operator, AssignmentOperator::Assign(_))
-            && let Some(key) = expression_key(a.lhs, &|id| self.resolved(id), &|id| self.guard_function_name(id))
+            && let Some(key) = expression_key(a.lhs, &|id| self.resolved(id), &|id| {
+                self.guard_function_name(id)
+            })
             && let Some(ty) = self.phpstan_type(a.rhs)
         {
             let values = super::names::constant_strings(&ty);
@@ -882,7 +1104,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
     }
 
-    pub(super) fn guarded_expression(&mut self, extra: Vec<Guard>, e: &Expression<'arena>) -> Vec<Guard> {
+    pub(super) fn guarded_expression(
+        &mut self,
+        extra: Vec<Guard>,
+        e: &Expression<'arena>,
+    ) -> Vec<Guard> {
         let mut outgoing = Vec::new();
         self.with_guards(extra, |c| {
             c.walk_expression(e, &mut ());
@@ -892,7 +1118,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     pub(super) fn expression_guards(&self) -> Vec<Guard> {
-        self.guards.iter().filter(|g| expression_guard(g)).cloned().collect()
+        self.guards
+            .iter()
+            .filter(|g| expression_guard(g))
+            .cloned()
+            .collect()
     }
 
     /// ScopeOps::mergeWith: an expression holder is definite only if every surviving path has it.
@@ -901,7 +1131,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if paths.len() > 1 {
             self.assign.expressions.clear();
         }
-        self.retain_guards(|guard| !expression_guard(guard) || paths.iter().all(|p| p.contains(guard)));
+        self.retain_guards(|guard| {
+            !expression_guard(guard) || paths.iter().all(|p| p.contains(guard))
+        });
         if let Some((first, rest)) = paths.split_first() {
             for guard in first.iter().filter(|g| rest.iter().all(|p| p.contains(g))) {
                 if !self.guards.contains(guard) {
@@ -916,12 +1148,18 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 Guard::Expr(key) | Guard::MethodExists(key) | Guard::ConstantFetch(key) => key,
                 _ => continue,
             };
-            let missing: Vec<_> = paths.iter().filter(|p| !p.contains(guard)).map(|path| {
-                path.iter().filter_map(|g| match g {
-                    Guard::ExprStrings(key, values) => Some((key.clone(), values.clone())),
-                    _ => None,
-                }).collect::<Vec<_>>()
-            }).collect();
+            let missing: Vec<_> = paths
+                .iter()
+                .filter(|p| !p.contains(guard))
+                .map(|path| {
+                    path.iter()
+                        .filter_map(|g| match g {
+                            Guard::ExprStrings(key, values) => Some((key.clone(), values.clone())),
+                            _ => None,
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect();
             if !missing.is_empty() && missing.iter().all(|p| !p.is_empty()) {
                 let guard = Guard::ExprWhen(key.clone(), missing);
                 if !self.guards.contains(&guard) {
@@ -939,24 +1177,33 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             Expression::ArrayAccess(a) => return self.invalidate_expression(a.array),
             Expression::ArrayAppend(a) => return self.invalidate_expression(a.array),
             Expression::List(l) => {
-                for item in l.elements.iter() {
+                for item in &l.elements {
                     self.invalidate_element(item);
                 }
                 return;
             }
             Expression::Array(a) => {
-                for item in a.elements.iter() {
+                for item in &a.elements {
                     self.invalidate_element(item);
                 }
                 return;
             }
             _ => {}
         }
-        let Some(key) = expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id)) else { return };
+        let Some(key) = expression_key(e, &|id| self.resolved(id), &|id| {
+            self.guard_function_name(id)
+        }) else {
+            return;
+        };
         let contains_key = |expr: &str| key_contains(expr, &key);
         let contains = |guard: &Guard| match guard {
-            Guard::Expr(expr) | Guard::MethodExists(expr) | Guard::ConstantFetch(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
-            Guard::ExprWhen(expr, missing) => contains_key(expr) || missing.iter().flatten().any(|(key, _)| contains_key(key)),
+            Guard::Expr(expr)
+            | Guard::MethodExists(expr)
+            | Guard::ConstantFetch(expr)
+            | Guard::ExprStrings(expr, _) => contains_key(expr),
+            Guard::ExprWhen(expr, missing) => {
+                contains_key(expr) || missing.iter().flatten().any(|(key, _)| contains_key(key))
+            }
             _ => false,
         };
         self.retain_guards(|guard| !contains(guard));
@@ -974,7 +1221,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     pub(super) fn enter_function(&mut self, mut guards: Vec<Guard>) {
         self.assign.enter_scope();
         // the narrowed `PHP_VERSION_ID` carries into a function or class declared in the branch
-        guards.extend(self.guards.iter().filter(|g| matches!(g, Guard::PhpVersion(..))).cloned());
+        guards.extend(
+            self.guards
+                .iter()
+                .filter(|g| matches!(g, Guard::PhpVersion(..)))
+                .cloned(),
+        );
         self.saved.push(Saved {
             guards: std::mem::replace(&mut self.guards, guards),
             marks: std::mem::take(&mut self.marks),
@@ -990,8 +1242,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // PHPStan 2.3.2 (#6746): a guard like `PHP_VERSION_ID < 80400` gives only an upper bound; without a configured
             // version range (Pun has none) the lower bound is the analysed version, or as close to it as the guard
             // allows
-            Some((lo, Some(hi))) if lo.is_none_or(|l| l <= MIN) => Some((i64::from(self.php_version).min(hi), Some(hi))),
-            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => Some((lo.unwrap_or(MIN).max(MIN), hi)),
+            Some((lo, Some(hi))) if lo.is_none_or(|l| l <= MIN) => {
+                Some((i64::from(self.php_version).min(hi), Some(hi)))
+            }
+            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => {
+                Some((lo.unwrap_or(MIN).max(MIN), hi))
+            }
             _ => None,
         }
     }
@@ -1043,18 +1299,29 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 c.walk_statement(s, &mut ());
             }
             outgoing = c.expression_guards();
-            assignments = c.assign.expressions.clone();
+            assignments.clone_from(&c.assign.expressions);
             let mark = c.marks.pop().expect("pushed");
             c.guards.truncate(mark);
         });
-        (statements_terminate(statements.iter().copied()), outgoing, assignments)
+        (
+            statements_terminate(statements.iter().copied()),
+            outgoing,
+            assignments,
+        )
     }
 }
 
 fn key_contains(expr: &str, key: &str) -> bool {
     expr.match_indices(key).any(|(start, _)| {
         // `$receiverLong` and `$this->receiverLong` are not subexpressions of `$receiver`/`$this->receiver`.
-        (start == 0 || expr.as_bytes().get(start - 1).is_some_and(|b| !b.is_ascii_alphanumeric() && !matches!(*b, b'_' | b'\\') && *b < 0x80))
-            && (key.ends_with("::") || expr.as_bytes().get(start + key.len()).is_none_or(|b| !b.is_ascii_alphanumeric() && *b != b'_' && *b < 0x80))
+        (start == 0
+            || expr.as_bytes().get(start - 1).is_some_and(|b| {
+                !b.is_ascii_alphanumeric() && !matches!(*b, b'_' | b'\\') && *b < 0x80
+            }))
+            && (key.ends_with("::")
+                || expr
+                    .as_bytes()
+                    .get(start + key.len())
+                    .is_none_or(|b| !b.is_ascii_alphanumeric() && *b != b'_' && *b < 0x80))
     })
 }

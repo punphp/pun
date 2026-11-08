@@ -8,7 +8,7 @@ use super::Checker;
 use crate::text;
 
 /// `Scope::SUPERGLOBAL_VARIABLES`.
-pub const SUPERGLOBALS: [&[u8]; 9] = [
+pub(super) const SUPERGLOBALS: [&[u8]; 9] = [
     b"GLOBALS",
     b"_SERVER",
     b"_GET",
@@ -27,7 +27,11 @@ fn name<'arena>(v: &DirectVariable<'arena>) -> &'arena [u8] {
 
 /// The rules registered for `Node\FunctionLike` (functions, methods, closures, arrow functions, property hooks),
 /// reported at `at`, the node's start.
-pub fn function_like(c: &mut Checker, at: impl HasSpan + Copy, params: &FunctionLikeParameterList) {
+pub(super) fn function_like(
+    c: &mut Checker,
+    at: impl HasSpan + Copy,
+    params: &FunctionLikeParameterList,
+) {
     redefined_parameters(c, at, params);
     variadic_parameters_declaration(c, at, params);
 }
@@ -39,7 +43,7 @@ fn redefined_parameters(
     params: &FunctionLikeParameterList,
 ) {
     let mut seen: Vec<&[u8]> = Vec::new();
-    for p in params.parameters.iter() {
+    for p in &params.parameters {
         let var = name(&p.variable);
         if !seen.contains(&var) {
             seen.push(var);
@@ -75,7 +79,7 @@ fn variadic_parameters_declaration(
 }
 
 /// InvalidParameterNameRule (`Node\Param`).
-pub fn parameter(c: &mut Checker, p: &FunctionLikeParameter) {
+pub(super) fn parameter(c: &mut Checker, p: &FunctionLikeParameter) {
     let var = name(&p.variable);
     if SUPERGLOBALS.contains(&var) {
         c.report_non_ignorable(
@@ -98,7 +102,7 @@ pub fn parameter(c: &mut Checker, p: &FunctionLikeParameter) {
 }
 
 /// InvalidLexicalVariablesInClosureUseRule.
-pub fn closure_use(c: &mut Checker, closure: &Closure) {
+pub(super) fn closure_use(c: &mut Checker, closure: &Closure) {
     let Some(clause) = &closure.use_clause else {
         return;
     };
@@ -108,7 +112,7 @@ pub fn closure_use(c: &mut Checker, closure: &Closure) {
         .iter()
         .map(|p| name(&p.variable))
         .collect();
-    for u in clause.variables.iter() {
+    for u in &clause.variables {
         let var = name(&u.variable);
         let (identifier, message) = if var == b"this" {
             (
@@ -139,7 +143,7 @@ pub fn closure_use(c: &mut Checker, closure: &Closure) {
 }
 
 /// InnerFunctionRule: a named function declared inside another function-like's body.
-pub fn inner_function(c: &mut Checker, f: &Function) {
+pub(super) fn inner_function(c: &mut Checker, f: &Function) {
     if !c.in_named_function() {
         return;
     }

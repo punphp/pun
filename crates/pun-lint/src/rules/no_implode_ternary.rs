@@ -82,7 +82,7 @@ pub(super) fn is_empty_array(expr: &Expression<'_>) -> bool {
 /// php-parser's `String_` with the value `''`: an empty quoted string, or a heredoc or nowdoc without content.
 fn is_empty_string(expr: &Expression<'_>) -> bool {
     match unparenthesize(expr) {
-        Expression::Literal(Literal::String(s)) => s.value.is_some_and(|v| v.is_empty()),
+        Expression::Literal(Literal::String(s)) => s.value.is_some_and(<[u8]>::is_empty),
         Expression::CompositeString(CompositeString::Document(d)) => d.parts.is_empty(),
         _ => false,
     }

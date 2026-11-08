@@ -1,5 +1,10 @@
 //! `analyse <project dir> <phpstan.neon>`: Pun's level-0 analysis as JSON, for scripts/analyse-corpus.py.
 //! Paths are relative to the project dir. (`pun analyse` itself lands with the config rework.)
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "a command-line tool reports on stdout and stderr"
+)]
 
 use std::path::Path;
 

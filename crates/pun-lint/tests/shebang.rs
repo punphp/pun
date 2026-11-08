@@ -254,7 +254,7 @@ fn shebang_lint_fixes_keep_inline_bytes_before_the_restored_php() {
         let fixed = linter.fix(Path::new("shebang.php"), &source).unwrap();
         assert_eq!(fixed.source, format!("{prefix}$a += 1;"));
         assert_eq!(fixed.applied.len(), 1);
-        assert!(fixed.remaining.is_empty());
+        assert_eq!(fixed.remaining, [] as [pun_problem::Problem; 0]);
     }
 }
 
@@ -281,6 +281,6 @@ fn shebang_lint_native_facts_reparse_the_same_class_and_variable_return() {
             )
         );
         assert_eq!(fixed.applied.len(), 1);
-        assert!(fixed.remaining.is_empty());
+        assert_eq!(fixed.remaining, [] as [pun_problem::Problem; 0]);
     }
 }

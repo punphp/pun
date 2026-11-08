@@ -28,7 +28,7 @@ impl Rule for NoEmptyCatch {
         out: &mut Vec<Report>,
     ) {
         let Node::Try(r#try) = node else { return };
-        for catch in r#try.catch_clauses.iter() {
+        for catch in &r#try.catch_clauses {
             if !are_statements_empty(catch.block.statements.as_slice()) {
                 continue;
             }

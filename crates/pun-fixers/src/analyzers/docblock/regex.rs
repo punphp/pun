@@ -4,7 +4,7 @@
 /// `TypeExpression::REGEX_IDENTIFIER`.
 macro_rules! __regex_identifier {
     () => {
-        r#"(?:(?!(?<!\*)\d)[^\x00-\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x7f]++)"#
+        r"(?:(?!(?<!\*)\d)[^\x00-\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x7f]++)"
     };
 }
 

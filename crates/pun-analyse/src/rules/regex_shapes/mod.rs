@@ -183,7 +183,6 @@ fn stub_out_type(
     flags: Option<&Expression<'_>>,
     matches_all: bool,
 ) -> Option<TUnion> {
-    #[allow(clippy::type_complexity)]
     let (branches, otherwise, default, bound): (&[(&[i64], &str)], &str, i64, &[i64]) =
         if matches_all {
             (

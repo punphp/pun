@@ -13,7 +13,7 @@ use super::rector_batch5::modifiers_text;
 use crate::syntax::node_span;
 
 /// The class when it is `final`, extends nothing and uses no trait.
-pub fn final_class<'a>(node: Node<'a, '_>) -> Option<&'a Class<'a>> {
+pub(super) fn final_class<'a>(node: Node<'a, '_>) -> Option<&'a Class<'a>> {
     let Node::Class(c) = node else { return None };
     let class = c;
     let is_final = class
@@ -28,7 +28,7 @@ pub fn final_class<'a>(node: Node<'a, '_>) -> Option<&'a Class<'a>> {
 }
 
 /// `isProtected()`: the `protected` keyword (an asymmetric `protected(set)` is no visibility of its own).
-pub fn is_protected(modifiers: &Sequence<'_, Modifier<'_>>) -> bool {
+pub(super) fn is_protected(modifiers: &Sequence<'_, Modifier<'_>>) -> bool {
     modifiers
         .iter()
         .any(|m| matches!(m, Modifier::Protected(_)))
@@ -43,7 +43,7 @@ pub fn is_protected(modifiers: &Sequence<'_, Modifier<'_>>) -> bool {
 /// `VisibilityManipulator::makePrivate()` as php-parser prints a changed `flags`: the modifiers again in its order
 /// (`pModifiers`), each followed by a space, in place of the old ones and the blanks after them. `final` goes too
 /// (only a constructor may be both, and no caller passes one).
-pub fn make_private(source: &str, modifiers: &Sequence<'_, Modifier<'_>>) -> Edit {
+pub(super) fn make_private(source: &str, modifiers: &Sequence<'_, Modifier<'_>>) -> Edit {
     let start = node_span(modifiers.first().expect("a protected member has modifiers")).start;
     let end = node_span(modifiers.last().expect("a protected member has modifiers")).end;
     let rest = &source[end..];

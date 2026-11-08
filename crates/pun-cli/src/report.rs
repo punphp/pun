@@ -610,11 +610,9 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
                 fixed += 1;
             }
             let tag = if remaining { " [remaining]" } else { "" };
-            let ids: Vec<&str> = (r.applied.iter())
+            let (format, lint): (Vec<&str>, Vec<&str>) = (r.applied.iter())
                 .map(|f| pun_config::rule_of(f).unwrap_or(f))
-                .collect();
-            let (format, lint): (Vec<&str>, Vec<&str>) =
-                ids.into_iter().partition(|id| id.starts_with("format/"));
+                .partition(|id| id.starts_with("format/"));
             let mut item = String::new();
             if !format.is_empty() {
                 let _ = writeln!(item, "{} {}", r.rel, format.join(", "));
@@ -774,7 +772,7 @@ fn reporter(
     // A file's lint and analyse problems list with its fixers, by rule ID, once each.
     let fixers: Vec<Vec<&str>> = (results.iter())
         .map(|r| {
-            let mut all: Vec<&str> = r.applied.to_vec();
+            let mut all: Vec<&str> = r.applied.clone();
             for p in &r.problems {
                 if !all.contains(&p.rule.as_str()) {
                     all.push(&p.rule);

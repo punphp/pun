@@ -51,7 +51,7 @@ fn describe(ty: &TUnion) -> Value {
 #[derive(Default)]
 struct Dumps(Vec<(u32, Span)>);
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Dumps {
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         if let Expression::Identifier(name) = call.function
             && name.value() == b"\\PHPStan\\dumpType"
         {

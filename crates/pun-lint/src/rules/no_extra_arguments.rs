@@ -134,7 +134,7 @@ impl Rule for NoExtraArguments {
         let Some(maximum) = maximum else {
             return;
         };
-        let args: Vec<Span> = list.arguments.iter().map(|a| node_span(a)).collect();
+        let args: Vec<Span> = list.arguments.iter().map(node_span).collect();
         if args.is_empty() || args.len() <= maximum {
             return;
         }

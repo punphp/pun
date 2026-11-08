@@ -11,7 +11,7 @@ use super::super::members::{self, Method};
 use super::super::{Checker, declared};
 use super::flow::unparen;
 
-pub const IDENTIFIERS: &[&str] = &["nullsafe.neverNull"];
+pub(super) const IDENTIFIERS: &[&str] = &["nullsafe.neverNull"];
 
 const TIP: &str = "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.";
 

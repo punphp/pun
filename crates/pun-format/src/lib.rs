@@ -174,7 +174,7 @@ impl Fixer for Proxy {
         self.inner.supports(file)
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens) {
-        self.inner.fix(file, tokens)
+        self.inner.fix(file, tokens);
     }
 }
 
@@ -212,7 +212,7 @@ impl Fixer for SkipBladeFiles {
             && self.0.supports(file)
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens) {
-        self.0.fix(file, tokens)
+        self.0.fix(file, tokens);
     }
 }
 
@@ -341,7 +341,7 @@ impl Pipeline {
     }
 
     pub fn fixers(&self) -> impl Iterator<Item = &dyn Fixer> {
-        self.fixers.iter().map(|f| f.as_ref())
+        self.fixers.iter().map(std::convert::AsRef::as_ref)
     }
 
     /// Runner::fixFile: lint, run each fixer once, return `None` when the code did not change.
@@ -520,7 +520,7 @@ mod tests {
                 Some(WhitespacesFixerConfig::default()),
                 "the pipeline sets the whitespace config"
             );
-            (self.edit)(tokens)
+            (self.edit)(tokens);
         }
         fn set_whitespaces_config(&mut self, config: &WhitespacesFixerConfig) {
             self.ws = Some(config.clone());
@@ -667,7 +667,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(
-            p.fixers().map(|f| f.name()).collect::<Vec<_>>(),
+            p.fixers().map(super::Fixer::name).collect::<Vec<_>>(),
             ["round_trip", "drop_space", "upper", "z", "plain"]
         );
         assert_eq!(p.not_ported, ["missing"]);
@@ -992,7 +992,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(
-            p.fixers().map(|f| f.name()).collect::<Vec<_>>(),
+            p.fixers().map(super::Fixer::name).collect::<Vec<_>>(),
             ["modifier_keywords", "visibility_required"]
         );
     }

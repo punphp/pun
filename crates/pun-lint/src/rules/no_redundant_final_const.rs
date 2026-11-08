@@ -41,7 +41,7 @@ impl Rule for NoRedundantFinalConst {
         {
             return;
         }
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Constant(constant) = member else {
                 continue;
             };

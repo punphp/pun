@@ -1177,7 +1177,7 @@ pub(crate) fn remove_class_members(
     } else {
         ""
     });
-    for list in lists.iter() {
+    for list in lists {
         out.push_str(text(list.span()));
         out.push('\n');
         out.push_str(indent);

@@ -22,7 +22,15 @@ fn check(file: &str, oracle: &str, level: u8) {
             )
         })
         .collect();
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(
+            i64,
+            std::string::String,
+            std::string::String,
+            std::option::Option<std::string::String>
+        ); 0]
+    );
     let mut project = Project::new(vec![root.join(file)], Vec::new());
     project.php_version = 80400;
     project.level = level;

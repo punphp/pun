@@ -49,7 +49,7 @@ impl Rule for AddPropertyTypeCreateMock {
             return;
         }
         let mut edits: Vec<Edit> = Vec::new();
-        for member in view.members.iter() {
+        for member in view.members {
             let ClassLikeMember::Property(property) = member else {
                 continue;
             };
@@ -62,12 +62,11 @@ impl Rule for AddPropertyTypeCreateMock {
                 Property::Hooked(p) => (p.hint.as_ref(), &p.item),
             };
             // isAlreadyTypedWithMockObject
-            if let Some(hint) = hint {
-                if matches!(hint, Hint::Intersection(_))
-                    || is_mock_object(&facts, &hint_ty(hint, &view.path, &view))
-                {
-                    continue;
-                }
+            if let Some(hint) = hint
+                && (matches!(hint, Hint::Intersection(_))
+                    || is_mock_object(&facts, &hint_ty(hint, &view.path, &view)))
+            {
+                continue;
             }
             let prop = Prop {
                 property,

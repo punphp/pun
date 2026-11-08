@@ -244,22 +244,22 @@ impl Sources<'_, '_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
-    fn walk_in_function(&mut self, f: &'ast mago_syntax::cst::Function<'arena>, _: &mut ()) {
+    fn walk_in_function(&mut self, f: &'ast mago_syntax::cst::Function<'arena>, (): &mut ()) {
         self.enter(f.span(), &f.parameter_list);
     }
-    fn walk_out_function(&mut self, _: &'ast mago_syntax::cst::Function<'arena>, _: &mut ()) {
+    fn walk_out_function(&mut self, _: &'ast mago_syntax::cst::Function<'arena>, (): &mut ()) {
         self.leave();
     }
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
         self.enter(m.span(), &m.parameter_list);
     }
-    fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_out_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {
         self.leave();
     }
-    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.closure(f.span(), &f.parameter_list);
     }
-    fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.leave();
         if f.use_clause
             .as_ref()
@@ -268,14 +268,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
         }
     }
-    fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+    fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, (): &mut ()) {
         self.closure(f.span(), &f.parameter_list);
     }
-    fn walk_out_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {
+    fn walk_out_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {
         self.leave();
     }
 
-    fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+    fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, (): &mut ()) {
         if matches!(
             s,
             Statement::For(_)
@@ -291,7 +291,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.control_depth += 1;
         }
     }
-    fn walk_out_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+    fn walk_out_statement(&mut self, s: &'ast Statement<'arena>, (): &mut ()) {
         if matches!(
             s,
             Statement::For(_)
@@ -308,6 +308,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         }
     }
 
+    #[expect(
+        clippy::assigning_clones,
+        reason = "`next` was moved out on the previous pass"
+    )]
     fn walk_if(&mut self, i: &'ast If<'arena>, ctx: &mut ()) {
         self.walk_expression(i.condition, ctx);
         let mut branches: Vec<(Option<&Expression>, Vec<&Statement>)> = Vec::new();
@@ -372,7 +376,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         }
     }
 
-    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
         self.unset_targets
             .extend(u.values.iter().rev().map(HasSpan::span));
     }
@@ -382,7 +386,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         self.walk_expression(a.index, ctx);
         self.walk_expression(a.array, ctx);
     }
-    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
         if branching(e) {
             self.locals.clear();
             self.control_depth += 1;
@@ -399,7 +403,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
         }
     }
-    fn walk_out_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_out_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
         if branching(e) {
             self.locals.clear();
             self.control_depth -= 1;
@@ -451,7 +455,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             }
         }
     }
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         let target = match call.function {
             Expression::Identifier(id) => Some(Call {
                 name: function_checks::function_name(self.names, self.codebase, id),
@@ -463,7 +467,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         };
         self.call(call.span(), &call.argument_list, target);
     }
-    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         self.calls.pop();
         let f = match call.function {
             Expression::Identifier(id) => self.codebase.get_function(
@@ -475,7 +479,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
         }
     }
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         let target = match &call.method {
             ClassLikeMemberSelector::Identifier(name) => Some(Call {
                 name: String::from_utf8_lossy(name.value).into_owned(),
@@ -487,7 +491,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         };
         self.call(call.span(), &call.argument_list, target);
     }
-    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         self.calls.pop();
         if let ClassLikeMemberSelector::Identifier(name) = &call.method {
             let call = Arc::new(MethodCallGuard {
@@ -502,7 +506,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
         }
     }
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         let class = match call.class {
             Expression::Identifier(id) => Some(mago_word::word(self.names.get(&id.span()))),
             Expression::Self_(_) => Some(mago_word::word(b"self")),
@@ -521,15 +525,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         };
         self.call(call.span(), &call.argument_list, target);
     }
-    fn walk_out_static_method_call(&mut self, _: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_out_static_method_call(&mut self, _: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.calls.pop();
         self.locals.clear();
     }
-    fn walk_out_instantiation(&mut self, _: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_out_instantiation(&mut self, _: &'ast Instantiation<'arena>, (): &mut ()) {
         self.locals.clear();
     }
 
-    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if self.control_depth > 0 || !matches!(a.operator, AssignmentOperator::Assign(_)) {
             self.locals.clear();
             return;

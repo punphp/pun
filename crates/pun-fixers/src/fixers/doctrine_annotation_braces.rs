@@ -13,7 +13,7 @@ struct DoctrineAnnotationBracesFixer {
     with_braces: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(DoctrineAnnotationBracesFixer {
         ignored_tags: vec![],
         with_braces: false,
@@ -57,7 +57,7 @@ fn add_braces_to_annotations(tokens: &mut DocTokens) {
     while index < tokens.len() {
         if tokens[index].kind == T_AT {
             let brace = tokens.get_next_meaningful_token(index + 1);
-            if !brace.is_some_and(|b| tokens[b].kind == T_OPEN_PARENTHESIS) {
+            if brace.is_none_or(|b| tokens[b].kind != T_OPEN_PARENTHESIS) {
                 tokens.insert_at(index + 2, DocToken::new(T_OPEN_PARENTHESIS, "("));
                 tokens.insert_at(index + 3, DocToken::new(T_CLOSE_PARENTHESIS, ")"));
             }

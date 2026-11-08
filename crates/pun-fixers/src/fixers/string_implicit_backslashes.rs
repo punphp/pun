@@ -29,7 +29,7 @@ struct StringImplicitBackslashesFixer {
     heredoc: Strategy,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(StringImplicitBackslashesFixer {
         single_quoted: Strategy::Unescape,
         double_quoted: Strategy::Escape,

@@ -159,7 +159,12 @@ fn statement(c: &Checker, s: &Statement) -> Result {
         Statement::Return(_) => Some("return"),
         Statement::Expression(e) => match unparen(e.expression) {
             Expression::Throw(_) => Some("throw"),
-            _ if c.type_of(e.expression).is_some_and(|t| t.is_explicit_never()) => Some("exit point"),
+            _ if c
+                .type_of(e.expression)
+                .is_some_and(|t| t.is_explicit_never()) =>
+            {
+                Some("exit point")
+            }
             _ if terminates(c, e.expression) => Some("exit point"),
             _ => None,
         },
@@ -319,36 +324,40 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         spans: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_call(&mut self, call: &'ast Call<'arena>, _: &mut ()) {
+        fn walk_in_call(&mut self, call: &'ast Call<'arena>, (): &mut ()) {
             self.spans.push(call.span());
         }
-        fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+        fn walk_in_statement_expression(
+            &mut self,
+            s: &'ast ExpressionStatement<'arena>,
+            (): &mut (),
+        ) {
             // StatementHandler also terminates on the completed value, independently
             // of a nested expression's isAlwaysTerminating flag (notably `new`).
             self.spans.push(s.expression.span());
         }
-        fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+        fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
             if matches!(b.operator, BinaryOperator::NullCoalesce(_)) {
                 self.spans.push(b.lhs.span());
             }
         }
-        fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
             if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
                 self.spans.push(a.lhs.span());
             }
         }
-        fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+        fn walk_in_if(&mut self, i: &'ast If<'arena>, (): &mut ()) {
             self.spans.push(i.condition.span());
             self.spans
                 .extend(i.body.else_if_clauses().iter().map(|(e, _)| e.span()));
         }
-        fn walk_in_while(&mut self, w: &'ast While<'arena>, _: &mut ()) {
+        fn walk_in_while(&mut self, w: &'ast While<'arena>, (): &mut ()) {
             self.spans.push(w.condition.span());
         }
-        fn walk_in_do_while(&mut self, w: &'ast DoWhile<'arena>, _: &mut ()) {
+        fn walk_in_do_while(&mut self, w: &'ast DoWhile<'arena>, (): &mut ()) {
             self.spans.push(w.condition.span());
         }
-        fn walk_in_for(&mut self, f: &'ast For<'arena>, _: &mut ()) {
+        fn walk_in_for(&mut self, f: &'ast For<'arena>, (): &mut ()) {
             self.spans.extend(f.conditions.iter().map(|e| e.span()));
         }
     }

@@ -34,7 +34,7 @@ impl Rule for NoProtectedMethodInFinal {
         let Some(class) = final_class(node) else {
             return;
         };
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

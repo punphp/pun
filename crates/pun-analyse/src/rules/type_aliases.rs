@@ -655,7 +655,7 @@ fn use_context(r: &Resolver, doc: &AliasDoc, out: &mut Vec<Found>) {
         }
         let mut unresolvable = false;
         each(&ty, &mut |t| {
-            unresolvable |= matches!(t, Type::Never(NeverKind::Implicit))
+            unresolvable |= matches!(t, Type::Never(NeverKind::Implicit));
         });
         if unresolvable {
             out.push((
@@ -701,7 +701,7 @@ fn report(c: &mut Checker, at: Span, found: Vec<Found>) {
 }
 
 /// LocalTypeAliasesRule on a class, interface or enum declaration.
-pub fn class_like(c: &mut Checker, at: Span) {
+pub(super) fn class_like(c: &mut Checker, at: Span) {
     let mut found = Vec::new();
     without_aliases(c, || with_classes(c, || {
         let r = Resolver::new(c);
@@ -717,7 +717,7 @@ pub fn class_like(c: &mut Checker, at: Span) {
 }
 
 /// LocalTypeTraitAliasesRule on a trait declaration (outside a class's context).
-pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
+pub(super) fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     let mut found = Vec::new();
     without_aliases(c, || with_classes(c, || {
         let r = Resolver::new(c);
@@ -741,7 +741,7 @@ fn in_context(c: &Checker, k: &ClassLikeMetadata, using: &ClassLikeMetadata) -> 
 
 /// LocalTypeTraitUseAliasesRule on trait `name` in the context of `class`, the class using it (which `self` and
 /// `static` mean).
-pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
+pub(super) fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     let using = c.codebase.get_class_like(class.as_bytes());
     let mut found = Vec::new();
     without_aliases(c, || with_classes(c, || {

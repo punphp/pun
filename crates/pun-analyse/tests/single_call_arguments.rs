@@ -1,4 +1,9 @@
 //! Physical operands are shared; semantic return resolution remains per callee.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "the helpers print the failing case before the test asserts"
+)]
 use std::{
     borrow::Cow,
     collections::BTreeMap,
@@ -465,13 +470,12 @@ fn invalid_dynamic_calls_are_errors_without_making_implicit_never_terminate() {
                     artifacts.get_raw_expression_type(&span).unwrap().is_error(),
                     "{record}"
                 );
-                assert_eq!(
-                    artifacts
+                assert!(
+                    !artifacts
                         .call_terminations
                         .get(&(start, end))
                         .copied()
-                        .unwrap_or(false),
-                    false
+                        .unwrap_or(false)
                 );
                 assert_eq!(
                     flow.0.lock().unwrap()[&(start, end)],
@@ -782,7 +786,7 @@ fn signature_worker() -> PluginRegistry {
 
 #[test]
 fn external_signatures_and_magic_fallbacks_share_the_real_operand_once() {
-    const SOURCE: &[u8] = br#"<?php
+    const SOURCE: &[u8] = br"<?php
 class ProviderTarget {
     public function provided($input): int { return 1; }
     public function __call(string $name, array $arguments): string { return 'magic'; }
@@ -800,7 +804,7 @@ function exercise(ProviderTarget|OtherTarget $target): void {
     $target->withoutProvider(++$i);
     $i;
 }
-"#;
+";
     for native in [false, true] {
         let (file, outcome, result, visits) = analyze_result(
             native,

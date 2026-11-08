@@ -7,11 +7,11 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use crate::analyzers::import_processor::ImportProcessor;
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
 use indexmap::IndexMap;
 use pun_format::{Fixer, WhitespacesFixerConfig};
+use pun_tokens::NamespacesAnalyzer;
 use pun_tokens::{
     Kind::*,
     Token, Tokens,
@@ -530,7 +530,7 @@ impl Fixer for GlobalNamespaceImportFixer {
                 new_imports.push((
                     NamespaceUseType::Constant,
                     Self::import_constants(tokens, &use_declarations),
-                ))
+                ));
             }
             Some(false) => Self::fully_qualify_constants(tokens, &use_declarations),
             None => {}
@@ -548,7 +548,7 @@ impl Fixer for GlobalNamespaceImportFixer {
                 new_imports.push((
                     NamespaceUseType::Class,
                     Self::import_classes(tokens, &use_declarations),
-                ))
+                ));
             }
             Some(false) => Self::fully_qualify_classes(tokens, &use_declarations),
             None => {}

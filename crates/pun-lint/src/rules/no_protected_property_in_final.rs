@@ -34,7 +34,7 @@ impl Rule for NoProtectedPropertyInFinal {
             return;
         };
         let mut found = Vec::new();
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Property(property) = member else {
                 continue;
             };
@@ -54,7 +54,7 @@ impl Rule for NoProtectedPropertyInFinal {
             _ => None,
         });
         if let Some(construct) = construct {
-            for param in construct.parameter_list.parameters.iter() {
+            for param in &construct.parameter_list.parameters {
                 if is_protected(&param.modifiers) {
                     found.push((node_span(param), &param.modifiers));
                 }

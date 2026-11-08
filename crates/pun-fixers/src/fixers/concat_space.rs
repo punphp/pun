@@ -49,7 +49,7 @@ impl ConcatSpaceFixer {
         let offset_index = index.wrapping_add_signed(offset);
         if !tokens[offset_index].is_whitespace(None) {
             tokens.insert_at(
-                index + if offset == 1 { 1 } else { 0 },
+                index + usize::from(offset == 1),
                 vec![Token::new(T_WHITESPACE, " ")],
             );
             return;

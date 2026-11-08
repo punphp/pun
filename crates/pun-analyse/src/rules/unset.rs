@@ -16,7 +16,13 @@ use super::types::flow::unparen;
 use super::{Checker, declared, types};
 
 /// Types of unset chains/indexes and target/root observations. The first target supplies statement-entry scope.
-pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>, HashMap<Span, Vec<(Span, Vec<u8>)>>) {
+pub(super) fn expressions(
+    program: &Program,
+) -> (
+    Vec<Span>,
+    HashSet<Span>,
+    HashMap<Span, Vec<(Span, Vec<u8>)>>,
+) {
     struct Wanted {
         typed: Vec<Span>,
         scopes: HashSet<Span>,
@@ -28,7 +34,10 @@ pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>, HashM
             match unparen(e) {
                 Expression::Variable(Variable::Direct(v)) => {
                     self.scopes.insert(e.span());
-                    self.roots.entry(entry).or_default().push((e.span(), v.name.to_vec()));
+                    self.roots
+                        .entry(entry)
+                        .or_default()
+                        .push((e.span(), v.name.to_vec()));
                 }
                 Expression::ArrayAccess(a) => {
                     self.chain(a.index, entry);
@@ -41,9 +50,11 @@ pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>, HashM
         }
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+        fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
             self.scopes.extend(u.values.iter().map(HasSpan::span));
-            let Some(entry) = u.values.first().map(HasSpan::span) else { return };
+            let Some(entry) = u.values.first().map(HasSpan::span) else {
+                return;
+            };
             for e in &u.values {
                 self.chain(e, entry);
             }
@@ -66,7 +77,11 @@ pub(super) fn observe(
 ) {
     match unparen(e) {
         Expression::Variable(Variable::Direct(v)) => {
-            if context.block_context().variable_certainty(mago_word::word(v.name)).is_absent() {
+            if context
+                .block_context()
+                .variable_certainty(mago_word::word(v.name))
+                .is_absent()
+            {
                 read.insert(e.span(), mago_codex::ttype::get_error());
             } else if let Some(ty) = context.get_variable_type(v.name) {
                 read.insert(e.span(), (**ty).clone());
@@ -201,11 +216,7 @@ fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
     }
     if let Expression::Variable(Variable::Direct(v)) = unparen(e) {
         let name = String::from_utf8_lossy(&v.name[1..]);
-        let certainty = c
-            .variables
-            .scopes
-            .get(&e.span())
-            .map(|s| s.get(&name));
+        let certainty = c.variables.scopes.get(&e.span()).map(|s| s.get(&name));
         if certainty == Some(Tri::No) {
             return c.phpstan_type(e);
         }
@@ -214,11 +225,13 @@ fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
         let actual = c.phpstan_type(e)?;
         // NodeCallbackScope keeps stored reads that are narrower than the asking
         // entry scope. An incompatible virtual mutation must be priced on entry.
-        return Some(if declared::with_classes(c, || is_super_type_of(&entry, &actual).yes()) {
-            actual
-        } else {
-            entry
-        });
+        return Some(
+            if declared::with_classes(c, || is_super_type_of(&entry, &actual).yes()) {
+                actual
+            } else {
+                entry
+            },
+        );
     }
     if let Expression::ArrayAccess(a) = unparen(e)
         && let (Some(base), Some(index)) = (scope_type(c, a.array), scope_type(c, a.index))
@@ -260,16 +273,24 @@ pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
             let index = array_key(index);
             if is_super_type_of(key, &index).no() && (index.is_string().no() || constant(&index)) {
                 Type::Error
+            } else if value.as_ref() == &Type::Error {
+                pun_phpstan::types::mixed()
             } else {
-                if value.as_ref() == &Type::Error { pun_phpstan::types::mixed() } else { (**value).clone() }
+                (**value).clone()
             }
         }
         Type::ConstArray(a) => {
             fn scalar(t: &Type) -> Tri {
                 match t {
                     Type::Template(t) => scalar(&t.bound),
-                    Type::Union(ts) | Type::Benevolent(ts) => Tri::extreme_identity(ts.iter().map(scalar)),
-                    Type::ConstInt(_) | Type::ConstString(_) | Type::ConstFloat(_) | Type::ConstBool(_) | Type::Never(_) => Tri::Yes,
+                    Type::Union(ts) | Type::Benevolent(ts) => {
+                        Tri::extreme_identity(ts.iter().map(scalar))
+                    }
+                    Type::ConstInt(_)
+                    | Type::ConstString(_)
+                    | Type::ConstFloat(_)
+                    | Type::ConstBool(_)
+                    | Type::Never(_) => Tri::Yes,
                     Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Maybe,
                     _ => Tri::No,
                 }
@@ -283,7 +304,10 @@ pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
             let mut maybe_all = true;
             for (key, value) in a.keys.iter().zip(&a.values) {
                 if is_super_type_of(key, &index).no() {
-                    if matches!(key, Type::ConstInt(_)) && !index.is_string().no() && scalar_index.no() {
+                    if matches!(key, Type::ConstInt(_))
+                        && !index.is_string().no()
+                        && scalar_index.no()
+                    {
                         continue;
                     }
                     maybe_all = false;
@@ -362,7 +386,9 @@ pub(super) fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
             bound => has_offset(c, bound, offset),
         },
         Type::Conditional(conditional) => has_offset(c, &conditional.resolve(), offset),
-        Type::OffsetAccess(on, index) => late_offset(on, index).map_or(Tri::Maybe, |resolved| has_offset(c, &resolved, offset)),
+        Type::OffsetAccess(on, index) => {
+            late_offset(on, index).map_or(Tri::Maybe, |resolved| has_offset(c, &resolved, offset))
+        }
         Type::ConstArray(a) => shape_offset(a, &array_key(offset)),
         Type::Array(key, _) => {
             let offset = array_key(offset);
@@ -375,7 +401,11 @@ pub(super) fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
             is_super_type_of(&Type::IntRange(Some(0), None), offset).and(Tri::Maybe)
         }
         Type::Accessory(Accessory::HasOffsetValue(key, _)) => {
-            if key.as_ref() == &array_key(offset) { Tri::Yes } else { Tri::Maybe }
+            if key.as_ref() == &array_key(offset) {
+                Tri::Yes
+            } else {
+                Tri::Maybe
+            }
         }
         Type::ConstString(s) if is_super_type_of(&Type::Int, offset).yes() => {
             let len = s.len() as i64;
@@ -442,11 +472,26 @@ fn array_key(t: &Type) -> Type {
         Type::Union(ts) | Type::Benevolent(ts) => union(ts.iter().map(array_key).collect()),
         // MixedType::toArrayKey ignores exclusions: floats, booleans and null also cast to keys.
         // TemplateTypeTrait deliberately retains the template itself instead.
-        Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Type::Benevolent(vec![Type::Int, Type::String]),
+        Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => {
+            Type::Benevolent(vec![Type::Int, Type::String])
+        }
         Type::Conditional(conditional) => array_key(&conditional.resolve()),
-        Type::OffsetAccess(on, index) => late_offset(on, index).map_or_else(|| array_key(&pun_phpstan::types::mixed()), |resolved| array_key(&resolved)),
-        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
-            Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("canonical integer"))
+        Type::OffsetAccess(on, index) => late_offset(on, index).map_or_else(
+            || array_key(&pun_phpstan::types::mixed()),
+            |resolved| array_key(&resolved),
+        ),
+        Type::ConstString(s)
+            if std::str::from_utf8(s)
+                .ok()
+                .and_then(|s| s.parse::<i64>().ok())
+                .is_some_and(|i| i.to_string().as_bytes() == s) =>
+        {
+            Type::ConstInt(
+                std::str::from_utf8(s)
+                    .unwrap()
+                    .parse()
+                    .expect("canonical integer"),
+            )
         }
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::Bool => union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
@@ -487,7 +532,12 @@ mod tests {
     #[test]
     fn offset_type_queries_match_pinned_phpstan() {
         let arena = LocalArena::new();
-        let file = File::new(Cow::Borrowed(b"offset-queries.php"), FileType::Host, None, Cow::Borrowed(b"<?php"));
+        let file = File::new(
+            Cow::Borrowed(b"offset-queries.php"),
+            FileType::Host,
+            None,
+            Cow::Borrowed(b"<?php"),
+        );
         let program = parse_file(&arena, &file);
         let names = NameResolver::new(&arena).resolve(program);
         let codebase = CodebaseMetadata::new();
@@ -501,8 +551,20 @@ mod tests {
         let facts = super::super::Facts::of(&file.contents, program, true);
         let function_likes = std::collections::HashMap::new();
         let natives = super::super::driver::Natives::load(80400);
-        let (_, include_state) =
-            include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings, &facts.comments, &[]);
+        let (_, include_state) = include_file::prepare(
+            &arena,
+            &file,
+            program,
+            &names,
+            &codebase,
+            80400,
+            true,
+            true,
+            true,
+            &settings,
+            &facts.comments,
+            &[],
+        );
         let exceptions = crate::Exceptions::default();
         let c = Checker {
             file: &file,
@@ -563,7 +625,12 @@ mod tests {
             arrays: Default::default(),
             standalone_throws: Default::default(),
             level: 0,
-            switches: super::super::Switches::CHECK_THIS_ONLY | super::super::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN | super::super::Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED | super::super::Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS | super::super::Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH | super::super::Switches::POLLUTE_SCOPE_WITH_BLOCK,
+            switches: super::super::Switches::CHECK_THIS_ONLY
+                | super::super::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN
+                | super::super::Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED
+                | super::super::Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS
+                | super::super::Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH
+                | super::super::Switches::POLLUTE_SCOPE_WITH_BLOCK,
             method_rules: project.method_rules,
             larastan: None,
             larastan_state: Default::default(),
@@ -580,66 +647,263 @@ mod tests {
             by_ref_foreach: Vec::new(),
             errors: Vec::new(),
         };
-        let template = |bound| Type::Template(Box::new(Template {
-            name: "T".into(), scope: "function offsetQueries()".into(), bound, default: None, argument: false,
-        }));
-        let conditional = |subject, then, otherwise| Type::Conditional(Box::new(Conditional {
-            subject: Subject::Type(subject), target: Type::Int, then, otherwise, negated: false,
-        }));
+        let template = |bound| {
+            Type::Template(Box::new(Template {
+                name: "T".into(),
+                scope: "function offsetQueries()".into(),
+                bound,
+                default: None,
+                argument: false,
+            }))
+        };
+        let conditional = |subject, then, otherwise| {
+            Type::Conditional(Box::new(Conditional {
+                subject: Subject::Type(subject),
+                target: Type::Int,
+                then,
+                otherwise,
+                negated: false,
+            }))
+        };
         let array = Type::array(mixed(), mixed());
-        let excluded = Type::mixed_subtracted(false, Type::Union(vec![
-            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![], false),
-        ]));
+        let excluded = Type::mixed_subtracted(
+            false,
+            Type::Union(vec![
+                Type::String,
+                array.clone(),
+                Type::Object("ArrayAccess".into(), vec![], false),
+            ]),
+        );
         let shape = pun_phpstan::resolve::resolve_str("array{0: int}", None);
         let open = Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
-            keys: vec![], values: vec![], next_auto_indexes: vec![0], optional: vec![],
-            is_list: pun_phpstan::types::Tri::No, unsealed: Some((Type::String, Type::Int)),
+            keys: vec![],
+            values: vec![],
+            next_auto_indexes: vec![0],
+            optional: vec![],
+            is_list: pun_phpstan::types::Tri::No,
+            unsealed: Some((Type::String, Type::Int)),
         }));
         let rows = [
             ("mixed", mixed()),
             ("not-zero", Type::mixed_subtracted(false, Type::ConstInt(0))),
-            ("not-array-keys", Type::mixed_subtracted(false, Type::Union(vec![Type::Int, Type::String]))),
-            ("not-string-array", Type::mixed_subtracted(false, Type::Union(vec![Type::String, array.clone()]))),
+            (
+                "not-array-keys",
+                Type::mixed_subtracted(false, Type::Union(vec![Type::Int, Type::String])),
+            ),
+            (
+                "not-string-array",
+                Type::mixed_subtracted(false, Type::Union(vec![Type::String, array.clone()])),
+            ),
             ("not-offsets", excluded.clone()),
             ("template-not-offsets", template(excluded.clone())),
             ("union-no", Type::Union(vec![excluded.clone(), Type::Int])),
-            ("union-maybe", Type::Union(vec![excluded.clone(), Type::String])),
-            ("benevolent-no", Type::Benevolent(vec![excluded.clone(), Type::Int])),
-            ("intersection-array", Type::Intersection(vec![excluded.clone(), array])),
-            ("conditional-array", conditional(Type::Int, shape.clone(), Type::Int)),
-            ("conditional-union", conditional(mixed(), shape.clone(), Type::String)),
-            ("conditional-key", conditional(Type::Int, Type::ConstInt(1), Type::ConstInt(0))),
-            ("late-array", Type::OffsetAccess(Box::new(template(Type::array(Type::String, shape.clone()))), Box::new(Type::ConstString("inner".into())))),
-            ("late-key", Type::OffsetAccess(Box::new(template(Type::array(Type::String, Type::ConstInt(1)))), Box::new(Type::ConstString("inner".into())))),
-            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()], false)), Box::new(Type::ConstInt(0)))),
-            ("late-array-error", Type::OffsetAccess(Box::new(Type::array(Type::String, Type::Error)), Box::new(Type::ConstString("inner".into())))),
-            ("late-array-invalid-key", Type::OffsetAccess(Box::new(Type::array(Type::Int, Type::ConstInt(1))), Box::new(Type::ConstString("inner".into())))),
-            ("late-shape-error", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
-                keys: vec![Type::ConstInt(0)], values: vec![Type::Error], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::Yes, unsealed: None,
-            }))), Box::new(Type::ConstInt(0)))),
-            ("late-shape-template-value", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
-                keys: vec![Type::ConstInt(0)], values: vec![template(Type::Float)], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::Yes, unsealed: None,
-            }))), Box::new(Type::ConstInt(0)))),
-            ("late-array-template-value", Type::OffsetAccess(Box::new(template(Type::array(Type::String, template(Type::Float)))), Box::new(Type::ConstString("inner".into())))),
-            ("late-array-template-mixed", Type::OffsetAccess(Box::new(Type::array(Type::String, template(excluded.clone()))), Box::new(Type::ConstString("inner".into())))),
-            ("late-template-mixed-container", Type::OffsetAccess(Box::new(template(excluded)), Box::new(Type::ConstInt(0)))),
-            ("late-conditional-container", Type::OffsetAccess(Box::new(conditional(Type::Int, Type::array(Type::String, Type::ConstInt(1)), Type::Int)), Box::new(Type::ConstString("inner".into())))),
-            ("late-open", Type::OffsetAccess(Box::new(open.clone()), Box::new(Type::ConstString("inner".into())))),
-            ("late-open-template", Type::OffsetAccess(Box::new(template(open.clone())), Box::new(Type::ConstString("inner".into())))),
-            ("late-unknown-shape", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: mixed}", None)), Box::new(Type::String))),
-            ("late-shape-general", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)), Box::new(Type::String))),
-            ("late-shape-numeric", Type::OffsetAccess(Box::new(shape.clone()), Box::new(Type::String))),
-            ("late-shape-bad-union", Type::OffsetAccess(Box::new(shape.clone()), Box::new(Type::Union(vec![Type::ConstString("bad".into()), Type::ConstString("missing".into())])))),
-            ("late-shape-mixed-key", Type::OffsetAccess(Box::new(shape.clone()), Box::new(template(mixed())))),
-            ("late-shape-template-key", Type::OffsetAccess(Box::new(shape), Box::new(template(Type::ConstString("bad".into()))))),
-            ("late-shape-nonstring", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)), Box::new(Type::Int))),
-            ("late-open-incompatible", Type::OffsetAccess(Box::new(open), Box::new(Type::Int))),
-            ("late-shape-covered-extra", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
-                keys: vec![Type::ConstInt(0)], values: vec![template(Type::Float)], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::No, unsealed: Some((Type::String, Type::Int)),
-            }))), Box::new(Type::ConstInt(0)))),
+            (
+                "union-maybe",
+                Type::Union(vec![excluded.clone(), Type::String]),
+            ),
+            (
+                "benevolent-no",
+                Type::Benevolent(vec![excluded.clone(), Type::Int]),
+            ),
+            (
+                "intersection-array",
+                Type::Intersection(vec![excluded.clone(), array]),
+            ),
+            (
+                "conditional-array",
+                conditional(Type::Int, shape.clone(), Type::Int),
+            ),
+            (
+                "conditional-union",
+                conditional(mixed(), shape.clone(), Type::String),
+            ),
+            (
+                "conditional-key",
+                conditional(Type::Int, Type::ConstInt(1), Type::ConstInt(0)),
+            ),
+            (
+                "late-array",
+                Type::OffsetAccess(
+                    Box::new(template(Type::array(Type::String, shape.clone()))),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-key",
+                Type::OffsetAccess(
+                    Box::new(template(Type::array(Type::String, Type::ConstInt(1)))),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-object-mixed",
+                Type::OffsetAccess(
+                    Box::new(Type::Object(
+                        "ArrayAccess".into(),
+                        vec![Type::Int, mixed()],
+                        false,
+                    )),
+                    Box::new(Type::ConstInt(0)),
+                ),
+            ),
+            (
+                "late-array-error",
+                Type::OffsetAccess(
+                    Box::new(Type::array(Type::String, Type::Error)),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-array-invalid-key",
+                Type::OffsetAccess(
+                    Box::new(Type::array(Type::Int, Type::ConstInt(1))),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-shape-error",
+                Type::OffsetAccess(
+                    Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                        keys: vec![Type::ConstInt(0)],
+                        values: vec![Type::Error],
+                        next_auto_indexes: vec![1],
+                        optional: vec![],
+                        is_list: pun_phpstan::types::Tri::Yes,
+                        unsealed: None,
+                    }))),
+                    Box::new(Type::ConstInt(0)),
+                ),
+            ),
+            (
+                "late-shape-template-value",
+                Type::OffsetAccess(
+                    Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                        keys: vec![Type::ConstInt(0)],
+                        values: vec![template(Type::Float)],
+                        next_auto_indexes: vec![1],
+                        optional: vec![],
+                        is_list: pun_phpstan::types::Tri::Yes,
+                        unsealed: None,
+                    }))),
+                    Box::new(Type::ConstInt(0)),
+                ),
+            ),
+            (
+                "late-array-template-value",
+                Type::OffsetAccess(
+                    Box::new(template(Type::array(Type::String, template(Type::Float)))),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-array-template-mixed",
+                Type::OffsetAccess(
+                    Box::new(Type::array(Type::String, template(excluded.clone()))),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-template-mixed-container",
+                Type::OffsetAccess(Box::new(template(excluded)), Box::new(Type::ConstInt(0))),
+            ),
+            (
+                "late-conditional-container",
+                Type::OffsetAccess(
+                    Box::new(conditional(
+                        Type::Int,
+                        Type::array(Type::String, Type::ConstInt(1)),
+                        Type::Int,
+                    )),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-open",
+                Type::OffsetAccess(
+                    Box::new(open.clone()),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-open-template",
+                Type::OffsetAccess(
+                    Box::new(template(open.clone())),
+                    Box::new(Type::ConstString("inner".into())),
+                ),
+            ),
+            (
+                "late-unknown-shape",
+                Type::OffsetAccess(
+                    Box::new(pun_phpstan::resolve::resolve_str(
+                        "array{inner: mixed}",
+                        None,
+                    )),
+                    Box::new(Type::String),
+                ),
+            ),
+            (
+                "late-shape-general",
+                Type::OffsetAccess(
+                    Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)),
+                    Box::new(Type::String),
+                ),
+            ),
+            (
+                "late-shape-numeric",
+                Type::OffsetAccess(Box::new(shape.clone()), Box::new(Type::String)),
+            ),
+            (
+                "late-shape-bad-union",
+                Type::OffsetAccess(
+                    Box::new(shape.clone()),
+                    Box::new(Type::Union(vec![
+                        Type::ConstString("bad".into()),
+                        Type::ConstString("missing".into()),
+                    ])),
+                ),
+            ),
+            (
+                "late-shape-mixed-key",
+                Type::OffsetAccess(Box::new(shape.clone()), Box::new(template(mixed()))),
+            ),
+            (
+                "late-shape-template-key",
+                Type::OffsetAccess(
+                    Box::new(shape),
+                    Box::new(template(Type::ConstString("bad".into()))),
+                ),
+            ),
+            (
+                "late-shape-nonstring",
+                Type::OffsetAccess(
+                    Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)),
+                    Box::new(Type::Int),
+                ),
+            ),
+            (
+                "late-open-incompatible",
+                Type::OffsetAccess(Box::new(open), Box::new(Type::Int)),
+            ),
+            (
+                "late-shape-covered-extra",
+                Type::OffsetAccess(
+                    Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                        keys: vec![Type::ConstInt(0)],
+                        values: vec![template(Type::Float)],
+                        next_auto_indexes: vec![1],
+                        optional: vec![],
+                        is_list: pun_phpstan::types::Tri::No,
+                        unsealed: Some((Type::String, Type::Int)),
+                    }))),
+                    Box::new(Type::ConstInt(0)),
+                ),
+            ),
             ("template-key", template(Type::Int)),
         ];
-        let expected: Value = serde_json::from_str(include_str!("../../tests/fixtures/unset/capability-types.json")).unwrap();
+        let expected: Value = serde_json::from_str(include_str!(
+            "../../tests/fixtures/unset/capability-types.json"
+        ))
+        .unwrap();
         let tri = |result| match result {
             pun_phpstan::types::Tri::Yes => "yes",
             pun_phpstan::types::Tri::No => "no",

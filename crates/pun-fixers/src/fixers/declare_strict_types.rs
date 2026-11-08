@@ -82,11 +82,7 @@ impl Fixer for DeclareStrictTypesFixer {
         self.whitespaces_config = config.clone();
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
-            1
-        } else {
-            0
-        };
+        let open_tag_index = usize::from(tokens[0].is_kind(T_INLINE_HTML));
         let declaration = get_strict_types_declaration(tokens);
         if self.strategy == Strategy::Remove {
             if let Some(declaration) = declaration {

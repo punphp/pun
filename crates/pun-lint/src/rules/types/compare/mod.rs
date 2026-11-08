@@ -44,6 +44,10 @@ pub(crate) enum Object {
     },
     NonExisting(String),
     /// `SelfObjectType`: `self` in a PHPDoc.
+    #[expect(
+        clippy::enum_variant_names,
+        reason = "named after PHPStan's SelfObjectType"
+    )]
     SelfObject(String),
     /// `SelfStaticType`, a `ThisType`: `self` as a native type.
     SelfStatic(String),
@@ -367,7 +371,7 @@ fn normalized(t: &RType) -> Type {
         }
         RType::Object(_) => plain(&t.to_sub()),
         RType::Union(types) => {
-            let changed = types.iter().any(|t| t.is_object_type());
+            let changed = types.iter().any(RType::is_object_type);
             let members: Vec<Type> = types.iter().map(normalized).collect();
             if changed {
                 union(members)

@@ -61,13 +61,13 @@ pub(crate) struct Annotation {
 
 impl Annotation {
     /// `getOriginalContent()`.
-    pub fn original(&self) -> &str {
+    pub(crate) fn original(&self) -> &str {
         &self.original
     }
 
     /// `DoctrineAnnotationTagValueNode::__toString()` (the node is always changed): the values in parentheses, or
     /// the empty parentheses as written.
-    pub fn values_string(&self) -> String {
+    pub(crate) fn values_string(&self) -> String {
         match self.values.is_empty() {
             false => format!("({})", parser::join(&self.values)),
             // empty brackets
@@ -133,7 +133,7 @@ impl Other {
                 }
             }
             phpdoc::TagValue::TypeAlias(_, Ok(ty)) | phpdoc::TagValue::Assert { ty, .. } => {
-                walk(ty, false, f)
+                walk(ty, false, f);
             }
             phpdoc::TagValue::TypeAliasImport(_, from, _) => f(from, false),
             _ => {}
@@ -397,7 +397,7 @@ impl Doc {
     /// template), at the node the doc belongs to. `None` where Pun does not follow how Rector's
     /// `DoctrineAnnotationDecorator` draws the children: a `@\Class` inside a text, nested annotations split over
     /// tags (`mergeNestedDoctrineAnnotations()`), arguments Rector's parsers never finish reading.
-    pub fn parse(
+    pub(crate) fn parse(
         text: &str,
         resolve_tag: &dyn Fn(&str) -> String,
         narrow: &dyn Fn(&str) -> Option<String>,
@@ -440,7 +440,7 @@ impl Doc {
     }
 
     /// The doc's `IdentifierTypeNode`s, in traversal order.
-    pub fn idents(&self) -> Vec<Ident> {
+    pub(crate) fn idents(&self) -> Vec<Ident> {
         let mut out = Vec::new();
         for (child, c) in self.children.iter().enumerate() {
             let mut index = 0;
@@ -485,7 +485,7 @@ impl Doc {
     }
 
     /// Replace the identifier `ident` by `name`: its child is reprinted.
-    pub fn set_ident(&mut self, ident: &Ident, name: &str) {
+    pub(crate) fn set_ident(&mut self, ident: &Ident, name: &str) {
         let child = &mut self.children[ident.child];
         child.changed = true;
         match &mut child.value {
@@ -504,7 +504,7 @@ impl Doc {
             }
             // the annotation's own identifier, never printed (the tag's name is), or a nested one
             Value::Annotation(annotation) if ident.index == 0 => {
-                annotation.identifier = name.to_string()
+                annotation.identifier = name.to_string();
             }
             Value::Annotation(annotation) => {
                 let mut index = 0;
@@ -535,26 +535,26 @@ impl Doc {
     }
 
     /// Mark the child `child` changed (a value inside a Doctrine annotation was set).
-    pub fn set_changed(&mut self, child: usize) {
+    pub(crate) fn set_changed(&mut self, child: usize) {
         self.children[child].changed = true;
     }
 
     /// `NameImportingPhpDocNodeVisitor::enterSpacelessPhpDocTagNode()`: the annotation `child` named `name` (its
     /// `@` included), its value reprinted as `processDoctrineAnnotationTagValueNode()` marks it changed.
-    pub fn set_tag(&mut self, child: usize, name: &str) {
+    pub(crate) fn set_tag(&mut self, child: usize, name: &str) {
         self.children[child].tag = Some(name.to_string());
         self.set_changed(child);
     }
 
     /// `hasByTypes(NodeTypes::TYPE_AWARE_NODES)`.
-    pub fn has_type_aware(&self) -> bool {
+    pub(crate) fn has_type_aware(&self) -> bool {
         self.children.iter().any(is_type_aware)
     }
 
     /// `PhpDocInfo::getByAnnotationClasses()`: the first annotation of the first of `classes` that has one
     /// (`DoctrineAnnotationTagValueNode::hasClassName()`: its identifier without `@`, or the class it resolves to),
     /// nested ones included, as its child and that class.
-    pub fn find_annotation<'c>(&self, classes: &[&'c str]) -> Option<(usize, &'c str)> {
+    pub(crate) fn find_annotation<'c>(&self, classes: &[&'c str]) -> Option<(usize, &'c str)> {
         for class in classes {
             let is = |identifier: &str, resolved: &str| has_class_name(identifier, resolved, class);
             for (i, child) in self.children.iter().enumerate() {
@@ -570,7 +570,7 @@ impl Doc {
     }
 
     /// [`Self::find_annotation`]'s annotation: its child, the class it resolves to and its values.
-    pub fn annotation_mut(
+    pub(crate) fn annotation_mut(
         &mut self,
         classes: &[&str],
     ) -> Option<(usize, &str, &mut Vec<ArrayItem>)> {
@@ -594,7 +594,7 @@ impl Doc {
     /// `getAnnotationClassNames()`, `getConstFetchNodeClassNames()`, `getGenericTagClassNames()`,
     /// `getInlineGenericUsesTagClassNames()` and `getArrayItemNodeClassNames()`; `resolve` is
     /// `NameScope::resolveStringName()` where the doc is.
-    pub fn used_names(&self, resolve: &dyn Fn(&str) -> String) -> Vec<String> {
+    pub(crate) fn used_names(&self, resolve: &dyn Fn(&str) -> String) -> Vec<String> {
         let mut names: Vec<String> = self
             .idents()
             .into_iter()
@@ -629,7 +629,7 @@ impl Doc {
                         }
                         true => match child.tag.as_deref() {
                             Some("@uses" | "@used-by" | "@see") => {
-                                names.push(resolve(value.split("::").next().unwrap_or_default()))
+                                names.push(resolve(value.split("::").next().unwrap_or_default()));
                             }
                             _ => names.push(value.clone()),
                         },
@@ -691,7 +691,7 @@ impl Doc {
 
     /// The names `ShortNameResolver::resolveFromStmtsDocBlocks()` reads, in order: the names of the tags that do not
     /// start with a lower-case letter, and every identifier.
-    pub fn short_names(&self) -> Vec<String> {
+    pub(crate) fn short_names(&self) -> Vec<String> {
         let idents = self.idents();
         let mut names = Vec::new();
         for (i, child) in self.children.iter().enumerate() {
@@ -713,14 +713,14 @@ impl Doc {
 
     /// `PhpDocTagRemover::removeTagValueFromNode()`, a `NODE_REMOVE` traversal: the child `i` goes, the others keep
     /// their keys (`unset()`).
-    pub fn remove(&mut self, i: usize) {
+    pub(crate) fn remove(&mut self, i: usize) {
         let child = self.children.remove(i);
         let key = self.keys.remove(i);
         self.removed.push((key, child));
     }
 
     /// `$phpDocNode->children[$key] = new PhpDocTextNode($text)`: the child `i` becomes a new text node.
-    pub fn replace_with_text(&mut self, i: usize, text: String) {
+    pub(crate) fn replace_with_text(&mut self, i: usize, text: String) {
         let text = Child {
             start_end: None,
             id: 0,
@@ -750,7 +750,7 @@ impl Doc {
     }
 
     /// Whether every changed child can be printed as Rector prints it.
-    pub fn reprintable(&self) -> bool {
+    pub(crate) fn reprintable(&self) -> bool {
         self.children
             .iter()
             .filter(|c| c.changed || c.start_end.is_none())
@@ -758,12 +758,12 @@ impl Doc {
     }
 
     /// Whether a child changed.
-    pub fn is_changed(&self) -> bool {
+    pub(crate) fn is_changed(&self) -> bool {
         self.children.iter().any(|c| c.changed)
     }
 
     /// `PhpDocInfoPrinter::printFormatPreserving()`. Call it only when [`Self::reprintable`] holds.
-    pub fn print(&self) -> String {
+    pub(crate) fn print(&self) -> String {
         // `EmptyPhpDocDetector::isPhpDocNodeEmpty()`
         if self
             .children
@@ -885,12 +885,14 @@ fn walk(node: &mut Node, parent_template: bool, f: &mut dyn FnMut(&mut String, b
     match node {
         Node::Ident(name) => f(name, parent_template),
         Node::Nullable(inner) | Node::Array(inner) | Node::Projection(_, inner) => {
-            walk(inner, false, f)
+            walk(inner, false, f);
         }
         Node::Union(types) | Node::Inter(types) => types.iter_mut().for_each(|t| walk(t, false, f)),
         Node::Generic { base, args } => {
             f(base, false);
-            args.iter_mut().for_each(|t| walk(t, false, f));
+            for t in args.iter_mut() {
+                walk(t, false, f);
+            }
         }
         Node::Callable {
             ident, templates, params, ret,
@@ -901,7 +903,9 @@ fn walk(node: &mut Node, parent_template: bool, f: &mut dyn FnMut(&mut String, b
                     walk(node, true, f);
                 }
             }
-            params.iter_mut().for_each(|p| walk(&mut p.ty, false, f));
+            for p in params.iter_mut() {
+                walk(&mut p.ty, false, f);
+            }
             walk(ret, false, f);
         }
         Node::ArrayShape {
@@ -955,7 +959,7 @@ fn const_fetches(node: &Node, f: &mut dyn FnMut(&str)) {
     match node {
         Node::Const(phpdoc::ConstExpr::Fetch(class, _)) if !class.is_empty() => f(class),
         Node::Nullable(inner) | Node::Array(inner) | Node::Projection(_, inner) => {
-            const_fetches(inner, f)
+            const_fetches(inner, f);
         }
         Node::Union(types) | Node::Inter(types) => types.iter().for_each(|t| const_fetches(t, f)),
         Node::Generic { args, .. } => args.iter().for_each(|t| const_fetches(t, f)),
@@ -993,7 +997,7 @@ fn other(tag: phpdoc::Tag, value: &str, description: impl Fn(usize) -> String) -
                     .iter()
                     .find(|t| t.ty == t::VARIABLE)?
                     .end,
-            )
+            );
         }
         phpdoc::TagValue::Deprecated => description_at = Some(0),
         _ => {}
@@ -1381,7 +1385,6 @@ fn transform(
 
 /// `processDoctrine()`: `values` are the printed arguments of a `DoctrineTagValueNode` (with its `description`) or
 /// an `InvalidTagValueNode`'s value. A name that is no class (a template) leaves the tag as it is.
-#[allow(clippy::too_many_arguments)]
 fn process_doctrine(
     slots: &mut Slots,
     child: &Child,

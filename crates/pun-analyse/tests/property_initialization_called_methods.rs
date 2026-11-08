@@ -70,7 +70,7 @@ impl StatementHook for CalledMethodVisits {
 
 fn check_called_methods(source: &[u8], capture: &str, scanned: Option<&[u8]>) {
     let records: Vec<Value> = serde_json::from_str(capture).unwrap();
-    assert!(!records.is_empty());
+    assert_ne!(records, [] as [serde_json::Value; 0]);
     let arena = LocalArena::new();
     let file = File::ephemeral(
         Cow::Owned(format!("{}.php", CalledMethodVisits::meta().id).into_bytes()),
@@ -106,18 +106,20 @@ fn check_called_methods(source: &[u8], capture: &str, scanned: Option<&[u8]>) {
             Settings::default().version,
         ));
         let operand = b"$this->value";
-        absent_requests.extend(scanned.windows(operand.len()).enumerate().filter_map(
-            |(start, value)| {
-                (value == operand).then(|| PropertyInitializationRequest {
+        absent_requests.extend(
+            scanned
+                .windows(operand.len())
+                .enumerate()
+                .filter(|&(_start, value)| value == operand)
+                .map(|(start, _value)| PropertyInitializationRequest {
                     expression: Span::new(
                         stub.id,
                         Position::new(start as u32),
                         Position::new((start + operand.len()) as u32),
                     ),
                     property: word("value"),
-                })
-            },
-        ));
+                }),
+        );
     }
     populate_codebase(
         &mut codebase,
@@ -227,8 +229,9 @@ fn check_called_methods(source: &[u8], capture: &str, scanned: Option<&[u8]>) {
                             .property_initialization_observations
                             .get(&request.expression)
                             .and_then(|markers| markers.get(&request.property))
-                            .map(|certainty| Value::String(format!("{certainty:?}")))
-                            .unwrap_or(Value::Null);
+                            .map_or(Value::Null, |certainty| {
+                                Value::String(format!("{certainty:?}"))
+                            });
                         record
                     })
                     .collect();

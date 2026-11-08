@@ -56,7 +56,7 @@ impl Rule for NoUselessCatch {
         }
         let tokens = tokens(ctx);
         // isEmpty: no statement, or one Nop.
-        let empty = |b| block_list(&tokens, b).stmts.is_empty();
+        let empty = |b| block_list(tokens, b).stmts.is_empty();
         // not empty stmts on finally always executed
         if r#try
             .finally_clause
@@ -65,13 +65,13 @@ impl Rule for NoUselessCatch {
         {
             return;
         }
-        let (list, key) = enclosing(source, &tokens, ancestors);
+        let (list, key) = enclosing(source, tokens, ancestors);
         let edits = if empty(&r#try.block) {
-            remove(source, &tokens, &list, &[key])
+            remove(source, tokens, &list, &[key])
         } else {
             // Not empty, so the cheap look found the one catch that throws.
             let catch = &r#try.catch_clauses.as_slice()[0];
-            let catch_list = block_list(&tokens, &catch.block);
+            let catch_list = block_list(tokens, &catch.block);
             let Some(Statement::Expression(first)) = catch_list.stmts.first() else {
                 return;
             };
@@ -89,17 +89,17 @@ impl Rule for NoUselessCatch {
                 return;
             }
             // return $node->stmts: the try's statements take its place.
-            let try_list = block_list(&tokens, &r#try.block);
+            let try_list = block_list(tokens, &r#try.block);
             let span = node_span(r#try);
             let indent = line_indent(source, span.start);
             let text = if list.frame == Frame::Bare && try_list.len() > 1 {
                 let inner = format!("{indent}    ");
                 format!(
                     "{{\n{inner}{}\n{indent}}}",
-                    statement_lines(source, &tokens, &try_list, &inner)
+                    statement_lines(source, tokens, &try_list, &inner)
                 )
             } else {
-                let mut text = moved_text(source, &tokens, &try_list, indent);
+                let mut text = moved_text(source, tokens, &try_list, indent);
                 // php-parser prints the Nop of a trailing comment as an empty line.
                 if try_list.nop && key + 1 < list.stmts.len() {
                     text.push('\n');

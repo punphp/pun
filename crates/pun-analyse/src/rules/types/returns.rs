@@ -11,7 +11,7 @@ use super::super::missing_types::declaring;
 use super::super::{Checker, declared};
 use super::missing_return::{generator_return, late, method_name};
 
-pub const IDENTIFIERS: &[&str] = &["return.type", "return.empty", "return.void"];
+pub(super) const IDENTIFIERS: &[&str] = &["return.type", "return.empty", "return.void"];
 
 /// A body's own `return` statements (not those of nested functions and classes) and whether it yields.
 #[derive(Default)]
@@ -24,29 +24,29 @@ pub(super) struct Returns<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Returns<'ast, 'arena> {
-    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, (): &mut ()) {
         self.statements.push(s.expression.span());
     }
-    fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
+    fn walk_in_return(&mut self, r: &'ast Return<'arena>, (): &mut ()) {
         self.returns.push(r);
     }
-    fn walk_in_yield(&mut self, y: &'ast Yield<'arena>, _: &mut ()) {
+    fn walk_in_yield(&mut self, y: &'ast Yield<'arena>, (): &mut ()) {
         self.yields.push(y);
         self.generator = true;
     }
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
-    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
+    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
 }
 
 pub(super) fn returns<'ast, 'arena>(b: &'ast Block<'arena>) -> Returns<'ast, 'arena> {
     let mut r = Returns::default();
-    for s in b.statements.iter() {
+    for s in &b.statements {
         r.walk_statement(s, &mut ());
     }
     r
@@ -159,7 +159,7 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
 struct ContainsYield(bool);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ContainsYield {
-    fn walk_in_yield(&mut self, _: &'ast Yield<'arena>, _: &mut ()) {
+    fn walk_in_yield(&mut self, _: &'ast Yield<'arena>, (): &mut ()) {
         self.0 = true;
     }
 }
@@ -168,7 +168,7 @@ fn body(c: &mut Checker, b: &Block, ret: &Type, of: &str) {
     let r = returns(b);
     let mut contains_yield = ContainsYield(r.generator);
     if !contains_yield.0 {
-        for s in b.statements.iter() {
+        for s in &b.statements {
             contains_yield.walk_statement(s, &mut ());
         }
     }
@@ -251,7 +251,7 @@ pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], hint: Option<&Hint>,
     let Some(context) = c.class_scope() else { return };
     let display = c.display(context);
     let property = String::from_utf8_lossy(name).into_owned();
-    for h in list.hooks.iter() {
+    for h in &list.hooks {
         let PropertyHookBody::Concrete(body) = &h.body else {
             continue;
         };

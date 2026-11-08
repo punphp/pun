@@ -126,7 +126,7 @@ fn capture_producer_matches_independently_observed_write_identities() {
         records: Vec<Value>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Captures<'_> {
-        fn walk_in_closure(&mut self, closure: &'ast Closure<'arena>, _: &mut ()) {
+        fn walk_in_closure(&mut self, closure: &'ast Closure<'arena>, (): &mut ()) {
             let Some(uses) = &closure.use_clause else {
                 return;
             };

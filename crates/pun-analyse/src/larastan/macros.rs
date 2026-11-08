@@ -56,7 +56,12 @@ enum Definition {
 }
 
 impl Macros {
-    pub(crate) fn load(files: &[PathBuf], root: &Path, codebase: &CodebaseMetadata, app: &App) -> Macros {
+    pub(crate) fn load(
+        files: &[PathBuf],
+        root: &Path,
+        codebase: &CodebaseMetadata,
+        app: &App,
+    ) -> Macros {
         let mut files: Vec<PathBuf> = files.to_vec();
         let php = ["php".to_string()];
         files.extend(crate::php_files(&root.join("app/Providers"), &php));
@@ -72,7 +77,10 @@ impl Macros {
             }
             files.extend(read_files.read(&path));
         }
-        let mut macros = Macros { accessors: std::mem::take(&mut read_files.accessors), ..Macros::default() };
+        let mut macros = Macros {
+            accessors: std::mem::take(&mut read_files.accessors),
+            ..Macros::default()
+        };
         for (class, name, definition) in read_files.registrations {
             // `Facade::macro()` forwards to the facade's root
             let Some(home) = home(codebase, &class).or_else(|| {
@@ -95,39 +103,69 @@ impl Macros {
                 t.map_or_else(get_mixed, |t| t.type_union.clone())
             };
             let found = match definition {
-                Definition::Closure(ty) => Macro { ty: ty.unwrap_or_else(get_mixed), instance: None },
+                Definition::Closure(ty) => Macro {
+                    ty: ty.unwrap_or_else(get_mixed),
+                    instance: None,
+                },
                 Definition::Function(function) => {
-                    let Some(f) = codebase.get_function(function.trim_start_matches('\\').as_bytes()) else {
+                    let Some(f) =
+                        codebase.get_function(function.trim_start_matches('\\').as_bytes())
+                    else {
                         continue;
                     };
-                    Macro { ty: return_type(f.return_type_metadata.as_ref()), instance: Some((holder, name.clone())) }
+                    Macro {
+                        ty: return_type(f.return_type_metadata.as_ref()),
+                        instance: Some((holder, name.clone())),
+                    }
                 }
                 Definition::Method(class, method) => {
-                    let local = read_files.methods.get(&(class.to_ascii_lowercase(), method.to_ascii_lowercase()));
-                    match (codebase.get_method(class.as_bytes(), method.as_bytes()), local) {
+                    let local = read_files
+                        .methods
+                        .get(&(class.to_ascii_lowercase(), method.to_ascii_lowercase()));
+                    match (
+                        codebase.get_method(class.as_bytes(), method.as_bytes()),
+                        local,
+                    ) {
                         (Some(m), _) => {
                             let declaring = m
                                 .method_metadata
                                 .as_ref()
                                 .filter(|mm| !mm.is_static)
-                                .and_then(|_| codebase.get_declaring_method_class(class.as_bytes(), method.as_bytes()))
+                                .and_then(|_| {
+                                    codebase.get_declaring_method_class(
+                                        class.as_bytes(),
+                                        method.as_bytes(),
+                                    )
+                                })
                                 .and_then(|d| codebase.get_class_like(d.as_bytes()));
                             Macro {
                                 ty: return_type(m.return_type_metadata.as_ref()),
                                 instance: declaring.map(|d| {
-                                    let name = String::from_utf8_lossy(m.original_name.as_bytes()).into_owned();
-                                    (String::from_utf8_lossy(d.original_name.as_bytes()).into_owned(), name)
+                                    let name = String::from_utf8_lossy(m.original_name.as_bytes())
+                                        .into_owned();
+                                    (
+                                        String::from_utf8_lossy(d.original_name.as_bytes())
+                                            .into_owned(),
+                                        name,
+                                    )
                                 }),
                             }
                         }
-                        (None, Some(local)) => Macro { ty: local.ty.clone().unwrap_or_else(get_mixed), instance: local.instance.clone() },
+                        (None, Some(local)) => Macro {
+                            ty: local.ty.clone().unwrap_or_else(get_mixed),
+                            instance: local.instance.clone(),
+                        },
                         (None, None) => continue,
                     }
                 }
             };
             // a later registration replaces an earlier one, as `static::$macros[$name] =` does; Mago asks for a
             // method by its lowercase name
-            macros.macros.entry(home).or_default().insert(name.to_ascii_lowercase(), found);
+            macros
+                .macros
+                .entry(home)
+                .or_default()
+                .insert(name.to_ascii_lowercase(), found);
         }
         macros
     }
@@ -135,15 +173,24 @@ impl Macros {
     /// The `$macros` homes MacroMethodsClassReflectionExtension::hasMethod() reads for a class, and those the calls
     /// ModelForwardsCallsExtension, RelationForwardsCallsExtension and EloquentBuilderForwardsCallsExtension forward
     /// reach.
-    pub(crate) fn homes(&self, codebase: &CodebaseMetadata, app: &App, class: &[u8]) -> Vec<String> {
+    pub(crate) fn homes(
+        &self,
+        codebase: &CodebaseMetadata,
+        app: &App,
+        class: &[u8],
+    ) -> Vec<String> {
         const MODEL: &[u8] = b"Illuminate\\Database\\Eloquent\\Model";
         const RELATION: &[u8] = b"Illuminate\\Database\\Eloquent\\Relations\\Relation";
         const FACADE: &[u8] = b"Illuminate\\Support\\Facades\\Facade";
         let builder = String::from_utf8_lossy(BUILDER).into_owned();
         let query_builder = String::from_utf8_lossy(QUERY_BUILDER).into_owned();
-        let Some(k) = codebase.get_class_like(class) else { return Vec::new() };
+        let Some(k) = codebase.get_class_like(class) else {
+            return Vec::new();
+        };
         let name = String::from_utf8_lossy(k.original_name.as_bytes()).into_owned();
-        let is = |parent: &[u8]| class.eq_ignore_ascii_case(parent) || codebase.is_instance_of(class, parent);
+        let is = |parent: &[u8]| {
+            class.eq_ignore_ascii_case(parent) || codebase.is_instance_of(class, parent)
+        };
         let mut homes: Vec<String> = Vec::new();
         if k.kind.is_interface() && name.starts_with("Illuminate\\Contracts") {
             if let Some(concrete) = app.resolve(&name)
@@ -161,10 +208,16 @@ impl Macros {
         } else if is(FACADE) {
             let classes: Vec<String> = match name.to_ascii_lowercase().as_str() {
                 "illuminate\\support\\facades\\auth" => {
-                    vec!["Illuminate\\Auth\\SessionGuard".into(), "Illuminate\\Auth\\RequestGuard".into()]
+                    vec![
+                        "Illuminate\\Auth\\SessionGuard".into(),
+                        "Illuminate\\Auth\\RequestGuard".into(),
+                    ]
                 }
                 "illuminate\\support\\facades\\cache" => {
-                    vec!["Illuminate\\Cache\\CacheManager".into(), "Illuminate\\Cache\\Repository".into()]
+                    vec![
+                        "Illuminate\\Cache\\CacheManager".into(),
+                        "Illuminate\\Cache\\Repository".into(),
+                    ]
                 }
                 _ => self.facade_root(app, &name).into_iter().collect(),
             };
@@ -189,7 +242,9 @@ impl Macros {
     /// The class of a facade's root (`getFacadeRoot()`): what the container makes for its accessor, or the class
     /// the accessor names.
     pub(crate) fn facade_root(&self, app: &App, facade: &str) -> Option<String> {
-        let accessor = self.accessors.get(&facade.trim_start_matches('\\').to_ascii_lowercase())?;
+        let accessor = self
+            .accessors
+            .get(&facade.trim_start_matches('\\').to_ascii_lowercase())?;
         Some(app.resolve(accessor).unwrap_or(accessor).to_string())
     }
 }
@@ -209,7 +264,9 @@ pub(crate) fn home(codebase: &CodebaseMetadata, class: &str) -> Option<String> {
     if !macroable(codebase, current.name.as_bytes()) {
         return None;
     }
-    while let Some(parent) = current.direct_parent_class.and_then(|p| codebase.get_class_like(p.as_bytes()))
+    while let Some(parent) = current
+        .direct_parent_class
+        .and_then(|p| codebase.get_class_like(p.as_bytes()))
         && macroable(codebase, parent.name.as_bytes())
     {
         current = parent;
@@ -272,11 +329,20 @@ impl Walker<'_, '_, '_> {
     /// An included file's path: a string, or `__DIR__` followed by one.
     fn include(&mut self, e: &Expression) {
         let path = match e {
-            Expression::Literal(Literal::String(s)) => s.value.map(|v| self.dir.join(String::from_utf8_lossy(v).as_ref())),
+            Expression::Literal(Literal::String(s)) => s
+                .value
+                .map(|v| self.dir.join(String::from_utf8_lossy(v).as_ref())),
             Expression::Binary(b) if b.operator.is_concatenation() => match (b.lhs, b.rhs) {
-                (Expression::MagicConstant(MagicConstant::Directory(_)), Expression::Literal(Literal::String(s))) => s
-                    .value
-                    .map(|v| PathBuf::from(format!("{}{}", self.dir.display(), String::from_utf8_lossy(v)))),
+                (
+                    Expression::MagicConstant(MagicConstant::Directory(_)),
+                    Expression::Literal(Literal::String(s)),
+                ) => s.value.map(|v| {
+                    PathBuf::from(format!(
+                        "{}{}",
+                        self.dir.display(),
+                        String::from_utf8_lossy(v)
+                    ))
+                }),
                 _ => None,
             },
             _ => None,
@@ -287,9 +353,13 @@ impl Walker<'_, '_, '_> {
     /// A class named by an expression: `X::class`, `self::class`, `static::class`, or a string.
     fn class_of(&self, e: &Expression) -> Option<String> {
         match e {
-            Expression::Literal(Literal::String(s)) => Some(String::from_utf8_lossy(s.value?).into_owned()),
+            Expression::Literal(Literal::String(s)) => {
+                Some(String::from_utf8_lossy(s.value?).into_owned())
+            }
             Expression::Access(Access::ClassConstant(c)) => match (&c.class, &c.constant) {
-                (class, ClassLikeConstantSelector::Identifier(i)) if i.value.eq_ignore_ascii_case(b"class") => {
+                (class, ClassLikeConstantSelector::Identifier(i))
+                    if i.value.eq_ignore_ascii_case(b"class") =>
+                {
                     match class {
                         Expression::Self_(_) | Expression::Static(_) => self.class.clone(),
                         Expression::Identifier(id) => Some(self.name(id)),
@@ -305,7 +375,9 @@ impl Walker<'_, '_, '_> {
     /// A string definition: its constant value, `X::class . '::method'` included.
     fn string(&self, e: &Expression) -> Option<String> {
         match e {
-            Expression::Literal(Literal::String(s)) => Some(String::from_utf8_lossy(s.value?).into_owned()),
+            Expression::Literal(Literal::String(s)) => {
+                Some(String::from_utf8_lossy(s.value?).into_owned())
+            }
             Expression::Binary(b) if b.operator.is_concatenation() => {
                 let left = self.string(b.lhs).or_else(|| self.class_of(b.lhs))?;
                 Some(left + &self.string(b.rhs)?)
@@ -316,18 +388,20 @@ impl Walker<'_, '_, '_> {
 
     fn definition(&self, e: &Expression) -> Option<Definition> {
         match e {
-            Expression::Closure(c) => {
-                Some(Definition::Closure(c.return_type_hint.as_ref().and_then(|h| self.hint(&h.hint))))
-            }
-            Expression::ArrowFunction(f) => {
-                Some(Definition::Closure(f.return_type_hint.as_ref().and_then(|h| self.hint(&h.hint))))
-            }
+            Expression::Closure(c) => Some(Definition::Closure(
+                c.return_type_hint.as_ref().and_then(|h| self.hint(&h.hint)),
+            )),
+            Expression::ArrowFunction(f) => Some(Definition::Closure(
+                f.return_type_hint.as_ref().and_then(|h| self.hint(&h.hint)),
+            )),
             Expression::Array(a) => self.callable_array(&a.elements),
             Expression::LegacyArray(a) => self.callable_array(&a.elements),
             e => {
                 let s = self.string(e)?;
                 Some(match s.split_once("::") {
-                    Some((class, method)) => Definition::Method(class.to_string(), method.to_string()),
+                    Some((class, method)) => {
+                        Definition::Method(class.to_string(), method.to_string())
+                    }
                     None => Definition::Function(s),
                 })
             }
@@ -335,18 +409,26 @@ impl Walker<'_, '_, '_> {
     }
 
     /// `[$this, 'method']` or `[X::class, 'method']`.
-    fn callable_array(&self, elements: &TokenSeparatedSequence<ArrayElement>) -> Option<Definition> {
+    fn callable_array(
+        &self,
+        elements: &TokenSeparatedSequence<ArrayElement>,
+    ) -> Option<Definition> {
         let [ArrayElement::Value(object), ArrayElement::Value(method)] = elements.as_slice() else {
             return None;
         };
         let class = match object.value {
-            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => self.class.clone()?,
+            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                self.class.clone()?
+            }
             e => self.class_of(e)?,
         };
         let Expression::Literal(Literal::String(m)) = method.value else {
             return None;
         };
-        Some(Definition::Method(class, String::from_utf8_lossy(m.value?).into_owned()))
+        Some(Definition::Method(
+            class,
+            String::from_utf8_lossy(m.value?).into_owned(),
+        ))
     }
 
     /// A native type hint's type (TypehintHelper::decideTypeFromReflection()); `None` for `self`, `static` and
@@ -361,7 +443,9 @@ impl Walker<'_, '_, '_> {
             Hint::Parenthesized(p) => format!("({})", self.hint_text(p.hint)?),
             Hint::Nullable(n) => format!("?{}", self.hint_text(n.hint)?),
             Hint::Union(u) => format!("{}|{}", self.hint_text(u.left)?, self.hint_text(u.right)?),
-            Hint::Intersection(i) => format!("{}&{}", self.hint_text(i.left)?, self.hint_text(i.right)?),
+            Hint::Intersection(i) => {
+                format!("{}&{}", self.hint_text(i.left)?, self.hint_text(i.right)?)
+            }
             Hint::Static(_) | Hint::Self_(_) | Hint::Parent(_) => return None,
             Hint::Null(k) | Hint::True(k) | Hint::False(k) | Hint::Array(k) | Hint::Callable(k) => {
                 String::from_utf8_lossy(k.value).to_ascii_lowercase()
@@ -380,64 +464,106 @@ impl Walker<'_, '_, '_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Walker<'_, '_, 'arena> {
-    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
-        self.namespace = n.name.as_ref().map_or_else(String::new, |n| String::from_utf8_lossy(n.value()).into_owned());
+    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, (): &mut ()) {
+        self.namespace = n.name.as_ref().map_or_else(String::new, |n| {
+            String::from_utf8_lossy(n.value()).into_owned()
+        });
     }
 
-    fn walk_in_class(&mut self, c: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, c: &'ast Class<'arena>, (): &mut ()) {
         let name = String::from_utf8_lossy(c.name.value).into_owned();
-        self.class = Some(if self.namespace.is_empty() { name } else { format!("{}\\{name}", self.namespace) });
+        self.class = Some(if self.namespace.is_empty() {
+            name
+        } else {
+            format!("{}\\{name}", self.namespace)
+        });
     }
 
-    fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_out_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {
         self.class = None;
     }
 
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
         if let Some(class) = &self.class {
             let ty = m.return_type_hint.as_ref().and_then(|h| self.hint(&h.hint));
-            let key = (class.to_ascii_lowercase(), String::from_utf8_lossy(m.name.value).to_ascii_lowercase());
+            let key = (
+                class.to_ascii_lowercase(),
+                String::from_utf8_lossy(m.name.value).to_ascii_lowercase(),
+            );
             if m.name.value.eq_ignore_ascii_case(b"getFacadeAccessor")
                 && let MethodBody::Concrete(body) = &m.body
-                && let [Statement::Return(Return { value: Some(value), .. })] = body.statements.as_slice()
+                && let [
+                    Statement::Return(Return {
+                        value: Some(value), ..
+                    }),
+                ] = body.statements.as_slice()
                 && let Some(accessor) = self.class_of(value)
             {
-                self.reader.accessors.insert(class.to_ascii_lowercase(), accessor);
+                self.reader
+                    .accessors
+                    .insert(class.to_ascii_lowercase(), accessor);
             }
             let is_static = m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)));
-            let instance = (!is_static).then(|| (class.clone(), String::from_utf8_lossy(m.name.value).into_owned()));
+            let instance = (!is_static).then(|| {
+                (
+                    class.clone(),
+                    String::from_utf8_lossy(m.name.value).into_owned(),
+                )
+            });
             self.reader.methods.insert(key, Local { ty, instance });
         }
     }
 
-    fn walk_in_include_construct(&mut self, c: &'ast IncludeConstruct<'arena>, _: &mut ()) {
+    fn walk_in_include_construct(&mut self, c: &'ast IncludeConstruct<'arena>, (): &mut ()) {
         self.include(c.value);
     }
 
-    fn walk_in_include_once_construct(&mut self, c: &'ast IncludeOnceConstruct<'arena>, _: &mut ()) {
+    fn walk_in_include_once_construct(
+        &mut self,
+        c: &'ast IncludeOnceConstruct<'arena>,
+        (): &mut (),
+    ) {
         self.include(c.value);
     }
 
-    fn walk_in_require_construct(&mut self, c: &'ast RequireConstruct<'arena>, _: &mut ()) {
+    fn walk_in_require_construct(&mut self, c: &'ast RequireConstruct<'arena>, (): &mut ()) {
         self.include(c.value);
     }
 
-    fn walk_in_require_once_construct(&mut self, c: &'ast RequireOnceConstruct<'arena>, _: &mut ()) {
+    fn walk_in_require_once_construct(
+        &mut self,
+        c: &'ast RequireOnceConstruct<'arena>,
+        (): &mut (),
+    ) {
         self.include(c.value);
     }
 
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        let ClassLikeMemberSelector::Identifier(method) = &call.method else { return };
-        let Expression::Identifier(class) = call.class else { return };
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
+        let ClassLikeMemberSelector::Identifier(method) = &call.method else {
+            return;
+        };
+        let Expression::Identifier(class) = call.class else {
+            return;
+        };
         if !method.value.eq_ignore_ascii_case(b"macro") {
             return;
         }
         let arguments = &call.argument_list.arguments;
-        let (Some(name), Some(definition)) = (arguments.get(0), arguments.get(1)) else { return };
-        let Expression::Literal(Literal::String(name)) = name.value() else { return };
+        let (Some(name), Some(definition)) = (arguments.get(0), arguments.get(1)) else {
+            return;
+        };
+        let Expression::Literal(Literal::String(name)) = name.value() else {
+            return;
+        };
         let Some(name) = name.value else { return };
-        let Some(definition) = self.definition(definition.value()) else { return };
+        let Some(definition) = self.definition(definition.value()) else {
+            return;
+        };
         let class = self.name(class);
-        self.reader.registrations.push((class, String::from_utf8_lossy(name).into_owned(), definition));
+        self.reader.registrations.push((
+            class,
+            String::from_utf8_lossy(name).into_owned(),
+            definition,
+        ));
     }
 }

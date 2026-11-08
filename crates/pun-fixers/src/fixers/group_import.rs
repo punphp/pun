@@ -17,7 +17,7 @@ struct GroupImportFixer {
     group_types: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(GroupImportFixer {
         group_types: ALLOWED_TYPES.iter().map(|s| s.to_string()).collect(),
     })

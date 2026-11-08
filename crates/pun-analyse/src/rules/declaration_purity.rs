@@ -238,7 +238,7 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
             m.modifiers.contains_final()
                 || has_final_tag(raw)
                 || context.flags.is_final()
-                || has_final_tag(&class_raw),
+                || has_final_tag(class_raw),
         ),
         raw,
     };
@@ -257,7 +257,7 @@ pub(super) fn hooks(c: &mut Checker, property: &[u8], list: &PropertyHookList) {
     let class_raw = declared::doc_at(c, context.span)
         .map(|(raw, _, _)| raw)
         .unwrap_or_default();
-    for h in list.hooks.iter() {
+    for h in &list.hooks {
         let PropertyHookBody::Concrete(body) = &h.body else {
             continue;
         };
@@ -308,7 +308,7 @@ pub(super) fn hooks(c: &mut Checker, property: &[u8], list: &PropertyHookList) {
             method: Some(
                 h.modifiers.iter().any(|m| matches!(m, Modifier::Final(_)))
                     || context.flags.is_final()
-                    || has_final_tag(&class_raw),
+                    || has_final_tag(class_raw),
             ),
             raw,
         };
@@ -479,7 +479,7 @@ fn void_pure_function(c: &mut Checker, f: &Function, phpdoc: &[pun_phpstan::phpd
         let raw = declared::doc_at(c, class.span)
             .map(|(raw, _, _)| raw)
             .unwrap_or_default();
-        if declarations::doc_tags(&raw)
+        if declarations::doc_tags(raw)
             .iter()
             .any(|tag| tag == "@phpstan-all-methods-impure")
         {

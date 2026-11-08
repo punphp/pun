@@ -37,9 +37,9 @@ fn every_option_is_mapped() {
             .iter()
             .map(|d| d["name"].as_str().unwrap())
             .collect();
-        names.sort();
+        names.sort_unstable();
         let mut mapped: Vec<&str> = opts.iter().map(|o| o.upstream.as_str()).collect();
-        mapped.sort();
+        mapped.sort_unstable();
         assert_eq!(mapped, names, "{id}");
         for d in defs.as_array().unwrap() {
             let o = opts.iter().find(|o| o.upstream == d["name"]).unwrap();
@@ -56,8 +56,8 @@ fn every_option_is_mapped() {
                 .collect();
             let mut got: Vec<&str> = o.values.iter().map(|(_, u)| u.as_str()).collect();
             if !want.is_empty() && !matches!(o.kind, Kind::Map) {
-                want.sort();
-                got.sort();
+                want.sort_unstable();
+                got.sort_unstable();
                 assert_eq!(got, want, "{id} {}", o.name);
             }
             // Upstream's null has a spelling or is the option left out, exactly when upstream takes it, and the

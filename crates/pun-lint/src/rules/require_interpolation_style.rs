@@ -89,7 +89,7 @@ fn prefer_interpolation(node: Node<'_, '_>, ancestors: &[Node<'_, '_>], out: &mu
         match parts[0] {
             Part::Interpolable(s) => edits.push(edit(s.start.offset, s.start.offset, "\"{")),
             Part::Literal { span: s, .. } => {
-                edits.push(edit(s.start.offset, s.start.offset + 1, "\""))
+                edits.push(edit(s.start.offset, s.start.offset + 1, "\""));
             }
         }
         match parts[parts.len() - 1] {
@@ -181,14 +181,14 @@ fn prefer_concatenation(node: Node<'_, '_>, out: &mut Vec<Report>) {
         match parts[0] {
             StringPart::Literal(_) => {}
             StringPart::BracedExpression(braced) => {
-                edits.push(edit(left.start.offset, braced.left_brace.end.offset, ""))
+                edits.push(edit(left.start.offset, braced.left_brace.end.offset, ""));
             }
             StringPart::Expression(_) => edits.push(edit(left.start.offset, left.end.offset, "")),
         }
         match parts[parts.len() - 1] {
             StringPart::Literal(_) => {}
             StringPart::BracedExpression(braced) => {
-                edits.push(edit(braced.right_brace.start.offset, right.end.offset, ""))
+                edits.push(edit(braced.right_brace.start.offset, right.end.offset, ""));
             }
             StringPart::Expression(_) => edits.push(edit(right.start.offset, right.end.offset, "")),
         }

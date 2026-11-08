@@ -55,7 +55,7 @@ impl Rule for PreferSimpleMockExpectation {
             Expression::Array(array) if has_assert_inside => {
                 let mut new = Vec::new();
                 // `new Arg($arrayItem->value)`: the key and the spread go
-                for element in array.elements.iter() {
+                for element in &array.elements {
                     let item = match element {
                         ArrayElement::KeyValue(kv) => kv.value,
                         ArrayElement::Value(v) => v.value,

@@ -72,18 +72,18 @@ impl Rule for NoTypedPropertyInstanceof {
         let source = ctx.source;
         let tokens = tokens(ctx);
         let facts = facts(ctx);
-        let visited = visited_ifs(ctx, &tokens, &facts, &class);
+        let visited = visited_ifs(ctx, tokens, &facts, &class);
         if !visited.contains(&node_span(r#if).start) {
             return;
         }
-        let edits = run_edits(source, &tokens, ancestors, &|chain| {
+        let edits = run_edits(source, tokens, ancestors, &|chain| {
             let Node::Statement(Statement::If(sibling)) = chain[chain.len() - 1] else {
                 return None;
             };
             if !visited.contains(&node_span(sibling).start) {
                 return None;
             }
-            change(ctx, &tokens, &facts, &class, sibling, chain)
+            change(ctx, tokens, &facts, &class, sibling, chain)
         });
         if let Some(edits) = edits {
             out.push(Report {
@@ -118,7 +118,7 @@ fn visited_ifs(
 ) -> Vec<usize> {
     let mut changed = Vec::new();
     let mut stopped = false;
-    for member in class.members.iter() {
+    for member in class.members {
         let ClassLikeMember::Method(m) = member else {
             continue;
         };
@@ -259,7 +259,7 @@ fn property_type(
         return None;
     };
     let mut found = None;
-    for statement in body.statements.iter() {
+    for statement in &body.statements {
         let Statement::Expression(e) = statement else {
             continue;
         };

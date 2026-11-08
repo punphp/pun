@@ -327,8 +327,8 @@ fn holder_reprint(
                 format!("if ({})", text(r#if.condition.span())),
             )];
             let mut previous = end;
-            let clauses = (if_body.else_if_clauses.iter().map(|c| c.span()))
-                .chain(if_body.else_clause.iter().map(|c| c.span()));
+            let clauses = (if_body.else_if_clauses.iter().map(mago_span::HasSpan::span))
+                .chain(if_body.else_clause.iter().map(mago_span::HasSpan::span));
             for clause in clauses {
                 let clause = node_span(&clause);
                 edits.push(Edit::new(

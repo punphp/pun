@@ -9,7 +9,7 @@ const MAGIC_METHODS: &[&[u8]] = &[b"__clone", b"__construct", b"__destruct", b"_
 
 struct StaticPrivateMethodFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(StaticPrivateMethodFixer)
 }
 

@@ -97,7 +97,7 @@ fn check_native_array_map(case: &str) {
     #[derive(Default)]
     struct Dumps(Vec<(u32, mago_span::Span)>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Dumps {
-        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
             if let Expression::Identifier(name) = call.function
                 && name.value() == b"\\PHPStan\\dumpType"
             {
@@ -187,7 +187,7 @@ fn library_array_projections_produce_ordinary_values() {
     use mago_php_version::PHPVersion;
     use mago_syntax::parser::parse_file;
 
-    let source = r#"<?php
+    let source = r"<?php
 namespace {
 function array_map(?callable $callback, array $array, array ...$arrays): array { return []; }
 function array_pad(array $array, int $length, mixed $value): array { return []; }
@@ -241,7 +241,7 @@ function probe(array $numbers, array $open, int $index, callable $callback, mixe
     }
 }
 }
-"#;
+";
     let arena = LocalArena::new();
     let file = File::ephemeral(
         Cow::Borrowed(b"callable-array-values.php"),

@@ -26,11 +26,7 @@ impl Fixer for LinebreakAfterOpeningTagFixer {
         self.whitespaces_config = config.clone();
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
-            1
-        } else {
-            0
-        };
+        let open_tag_index = usize::from(tokens[0].is_kind(T_INLINE_HTML));
         if tokens[open_tag_index].get_content().contains(&b'\n') {
             return;
         }

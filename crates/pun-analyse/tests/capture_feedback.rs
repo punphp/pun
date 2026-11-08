@@ -118,8 +118,10 @@ fn readonly_capture_feedback_matches_asymmetric_phpstan_full_and_native_scopes()
         let program = parse_file(&arena, &file);
         assert!(!program.has_errors());
         let names = NameResolver::new(&arena).resolve(program);
-        let mut settings = Settings::default();
-        settings.track_native_types = native;
+        let settings = Settings {
+            track_native_types: native,
+            ..Default::default()
+        };
         let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
         let mut references = SymbolReferences::new();
         populate_codebase(
@@ -140,7 +142,7 @@ fn readonly_capture_feedback_matches_asymmetric_phpstan_full_and_native_scopes()
         for (label, want) in expected {
             let start = want["start"].as_u64().unwrap() as u32;
             let (end, full, actual_native, _) = &reads[&start];
-            assert_eq!(*end as u64, want["end"].as_u64().unwrap(), "{label}");
+            assert_eq!(u64::from(*end), want["end"].as_u64().unwrap(), "{label}");
             let want_native = native.then(|| display(want["native"].as_str().unwrap()));
             let full = display(full);
             let actual_native = actual_native.as_deref().map(display);

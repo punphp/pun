@@ -15,7 +15,7 @@ fn check(file: &str, level: u8) {
         .filter(|error| error[0] == file)
         .cloned()
         .collect();
-    assert!(!expected.is_empty());
+    assert_ne!(expected, [] as [serde_json::Value; 0]);
     let mut project = Project::new(vec![root.join(file)], Vec::new());
     project.level = level;
     project

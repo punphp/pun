@@ -50,8 +50,8 @@ impl Rule for NoDuplicateArrayKey {
             .map(|&i| {
                 Edit::new(
                     Span::new(
-                        with_comments(ctx.source, &tokens, &items[i]),
-                        with_comments(ctx.source, &tokens, &items[i + 1]),
+                        with_comments(ctx.source, tokens, &items[i]),
+                        with_comments(ctx.source, tokens, &items[i + 1]),
                     ),
                     "",
                 )

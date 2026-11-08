@@ -180,7 +180,7 @@ fn scanner_flags(source: &'static str, oracle: &str, resolved_globals: bool) {
     let names = NameResolver::new(&arena).resolve(program);
     struct Expressions<'ast, 'arena>(HashMap<Span, &'ast Expression<'arena>>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Expressions<'ast, 'arena> {
-        fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
             self.0.insert(expression.span(), expression);
         }
     }

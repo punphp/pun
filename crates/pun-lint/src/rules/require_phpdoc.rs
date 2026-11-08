@@ -99,7 +99,7 @@ impl Rule for RequirePhpdoc {
         out: &mut Vec<Report>,
     ) {
         let Node::Program(program) = node else { return };
-        for statement in program.statements.iter() {
+        for statement in &program.statements {
             self.check_statement(program, statement, out);
         }
     }
@@ -114,10 +114,10 @@ impl RequirePhpdoc {
     ) {
         match statement {
             Statement::Function(f) => {
-                self.check(program, f, FUNCTIONS, "function", &[f.name.value], out)
+                self.check(program, f, FUNCTIONS, "function", &[f.name.value], out);
             }
             Statement::Namespace(namespace) => {
-                for inner in namespace.statements().iter() {
+                for inner in namespace.statements() {
                     self.check_statement(program, inner, out);
                 }
             }
@@ -176,7 +176,7 @@ impl RequirePhpdoc {
                     );
                 }
                 ClassLikeMember::Method(m) => {
-                    self.check(program, m, METHODS, "method", &[m.name.value], out)
+                    self.check(program, m, METHODS, "method", &[m.name.value], out);
                 }
                 ClassLikeMember::Property(p) => {
                     let names = match p {

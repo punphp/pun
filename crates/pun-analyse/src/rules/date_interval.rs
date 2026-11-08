@@ -6,7 +6,7 @@ use mago_syntax::cst::*;
 
 use super::Checker;
 
-pub const IDENTIFIERS: &[&str] = &["new.dateInterval"];
+pub(super) const IDENTIFIERS: &[&str] = &["new.dateInterval"];
 
 pub(super) fn instantiation(c: &mut Checker, new: &Instantiation) {
     if !c.toggled.on.contains(crate::rules::driver::Toggles::DATE_INTERVAL) {

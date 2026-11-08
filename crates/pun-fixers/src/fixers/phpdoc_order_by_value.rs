@@ -32,7 +32,7 @@ struct PhpdocOrderByValueFixer {
     annotations: Vec<(String, String)>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocOrderByValueFixer {
         annotations: vec![],
     })

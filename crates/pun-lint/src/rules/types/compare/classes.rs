@@ -46,7 +46,7 @@ fn build(codebase: &CodebaseMetadata, name: &str) -> Option<Class> {
     // BetterReflection's nominal hierarchy: the declared parents and interfaces, followed up
     let mut pending: Vec<&[u8]> = (k.direct_parent_class.iter())
         .chain(k.direct_parent_interfaces.iter())
-        .map(|a| a.as_bytes())
+        .map(mago_word::Word::as_bytes)
         .collect();
     let mut ancestors = Vec::new();
     let mut seen = HashSet::from([k.name.as_bytes().to_ascii_lowercase()]);
@@ -59,7 +59,7 @@ fn build(codebase: &CodebaseMetadata, name: &str) -> Option<Class> {
             pending.extend(
                 (parent.direct_parent_class.iter())
                     .chain(parent.direct_parent_interfaces.iter())
-                    .map(|a| a.as_bytes()),
+                    .map(mago_word::Word::as_bytes),
             );
         }
     }

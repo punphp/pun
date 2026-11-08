@@ -390,7 +390,7 @@ fn check_types(name: &'static str, source: &'static [u8]) {
                 row["expression"].as_str().unwrap().as_bytes()
             );
             let ty = artifacts.get_expression_type(&span);
-            let actual = ty.map(describe).unwrap_or(Value::Null);
+            let actual = ty.map_or(Value::Null, describe);
             let want = json!({"type": row["type"], "error": row["error"], "kind": row["kind"]});
             if canonical(actual.clone()) != canonical(want.clone()) {
                 failures.push(json!({"expression": row["expression"], "start": start, "actual": actual, "expected": want}));
@@ -424,8 +424,7 @@ fn check_types(name: &'static str, source: &'static [u8]) {
             if row["expression"].as_str().unwrap().starts_with("new ") {
                 let raw = artifacts
                     .get_raw_expression_type(&span)
-                    .map(describe)
-                    .unwrap_or(Value::Null);
+                    .map_or(Value::Null, describe);
                 if canonical(raw.clone()) != canonical(want.clone()) {
                     failures.push(json!({"expression": row["expression"], "start": start, "raw": raw, "expected": want}));
                 }

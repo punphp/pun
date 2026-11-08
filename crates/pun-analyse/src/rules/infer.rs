@@ -9,10 +9,12 @@ use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::observations::CallScopeRequest;
 pub(super) use mago_analyzer::observations::NamedCallScope;
-use mago_analyzer::property_initialization::{PropertyInitializationCertainty, PropertyInitializationRequest};
 use mago_analyzer::plugin::context::InvocationInfo;
 use mago_analyzer::plugin::{
     ExpressionHook, ExpressionHookResult, HookContext, HookResult, Provider, ProviderMeta,
+};
+use mago_analyzer::property_initialization::{
+    PropertyInitializationCertainty, PropertyInitializationRequest,
 };
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
@@ -43,29 +45,29 @@ struct TypedExpressions<'n, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> {
-    fn walk_in_closure(&mut self, closure: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_in_closure(&mut self, closure: &'ast Closure<'arena>, (): &mut ()) {
         // The capture rule needs a completed body even when no expression type was requested.
         if self.level >= 1 && closure.use_clause.is_some() {
             self.spans.push(closure.span());
         }
     }
 
-    fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
+    fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, (): &mut ()) {
         if self.level >= 1 {
             self.spans.extend(dead_code::typed_variable(v));
         }
     }
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         // CallToFunctionParametersRule reads resolved keep-void types from level 0.
         self.spans.push(call.span());
         self.spans
             .extend(dead_code::typed_arguments(call, self.names, self.level));
     }
-    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, (): &mut ()) {
         self.spans
             .extend(dead_code::typed_statement(s, self.level, self.php_version));
     }
-    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
         // `$this` is described without its type
         if matches!(b.operator, BinaryOperator::Instanceof(_))
             && !matches!(b.lhs, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
@@ -78,7 +80,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> 
             self.spans.push(b.lhs.span());
         }
     }
-    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, (): &mut ()) {
         if !matches!(
             new.class,
             Expression::Identifier(_)
@@ -90,7 +92,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> 
             self.spans.push(new.class.span());
         }
     }
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         // Constant dynamic names can be checked on `$this` or with checkThisOnly disabled below level 2.
         if self.level >= 2 || !matches!(call.method, ClassLikeMemberSelector::Identifier(_)) {
             self.spans.push(call.span());
@@ -98,19 +100,23 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> 
         self.spans
             .extend(assign::typed_object(call.object, &call.argument_list).map(HasSpan::span));
     }
-    fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_null_safe_method_call(
+        &mut self,
+        call: &'ast NullSafeMethodCall<'arena>,
+        (): &mut (),
+    ) {
         if self.level >= 2 {
             self.spans.push(call.span());
         }
     }
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if let Some(fetch) = assign::referenced_property(a)
             && !matches!(fetch.object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
         {
             self.spans.push(fetch.object.span());
         }
     }
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.spans.push(call.span());
         self.spans
             .extend(assign::typed_object(call.class, &call.argument_list).map(HasSpan::span));
@@ -118,7 +124,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> 
 }
 
 /// Runs Mago's analyzer over the file when a rule needs an expression's type (most files need none).
-#[allow(clippy::too_many_arguments)]
 pub(super) fn infer<'arena>(
     arena: &'arena LocalArena,
     file: &File,
@@ -139,7 +144,17 @@ pub(super) fn infer<'arena>(
     trait_class: Option<&str>,
     comments: &super::Comments,
     functions: &[(Span, origins::Function)],
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
+) -> (
+    HashMap<Span, TUnion>,
+    HashMap<Span, Tri>,
+    Origins,
+    HashMap<(u32, u32), bool>,
+    HashMap<Span, Vec<NamedCallScope>>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
@@ -157,9 +172,35 @@ pub(super) fn infer<'arena>(
     if level >= 3 {
         watched.extend(super::types::dim_fetches(program));
     }
-    let by_ref = if level >= 3 { super::types::param_out::watched(program) } else { Vec::new() };
+    let by_ref = if level >= 3 {
+        super::types::param_out::watched(program)
+    } else {
+        Vec::new()
+    };
     wanted.extend(by_ref.iter().map(|(body, _)| *body));
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations), by_ref, larastan, trait_class, comments, functions)
+    analyse_observed(
+        arena,
+        file,
+        program,
+        names,
+        codebase,
+        php_version,
+        pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach,
+        pollute_scope_with_block,
+        wanted,
+        watched,
+        calls,
+        Some(variables),
+        Some(variable_writes),
+        initializations,
+        Some(property_initializations),
+        by_ref,
+        larastan,
+        trait_class,
+        comments,
+        functions,
+    )
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -177,11 +218,42 @@ pub(super) fn analyse<'arena>(
     watched: Vec<Span>,
     comments: &super::Comments,
     functions: &[(Span, origins::Function)],
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), None, None, comments, functions)
+) -> (
+    HashMap<Span, TUnion>,
+    HashMap<Span, Tri>,
+    Origins,
+    HashMap<(u32, u32), bool>,
+    HashMap<Span, Vec<NamedCallScope>>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+) {
+    analyse_observed(
+        arena,
+        file,
+        program,
+        names,
+        codebase,
+        php_version,
+        pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach,
+        pollute_scope_with_block,
+        wanted,
+        watched,
+        Vec::new(),
+        None,
+        None,
+        Vec::new(),
+        None,
+        Vec::new(),
+        None,
+        None,
+        comments,
+        functions,
+    )
 }
 
-#[allow(clippy::too_many_arguments)]
 fn analyse_observed<'arena>(
     arena: &'arena LocalArena,
     file: &File,
@@ -204,9 +276,23 @@ fn analyse_observed<'arena>(
     trait_class: Option<&str>,
     comments: &super::Comments,
     functions: &[(Span, origins::Function)],
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
+) -> (
+    HashMap<Span, TUnion>,
+    HashMap<Span, Tri>,
+    Origins,
+    HashMap<(u32, u32), bool>,
+    HashMap<Span, Vec<NamedCallScope>>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+    HashMap<Span, TUnion>,
+) {
     let mut wanted = wanted;
-    wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));
+    wanted.extend(
+        calls
+            .iter()
+            .flat_map(|call| call.expressions.iter().copied()),
+    );
     let (compact_calls, offset_names) = if variables.is_some() {
         let (typed, compact_calls, offset_names) = variables::typed_expressions(program, names);
         wanted.extend(typed);
@@ -219,12 +305,16 @@ fn analyse_observed<'arena>(
     }
     let origins = origins::collect(file, comments, functions, program, names, codebase);
     for call in &mut calls {
-        call.expressions.extend(origins::dependencies(&origins, &call.expressions));
+        call.expressions
+            .extend(origins::dependencies(&origins, &call.expressions));
     }
     wanted.extend(origins::dependencies(&origins, &wanted));
     // Array conversion needs each key/value's actual inferred type, not just the enclosing wanted span.
     // Retain only literals inside requested expressions; unrelated declarations must stay prunable.
-    let mut children = ArrayChildren { wanted: &wanted, spans: Vec::new() };
+    let mut children = ArrayChildren {
+        wanted: &wanted,
+        spans: Vec::new(),
+    };
     children.walk_program(program, &mut ());
     let children = children.spans;
     wanted.extend(children);
@@ -232,7 +322,10 @@ fn analyse_observed<'arena>(
     let mut registry = super::return_types::registry(&file.contents, names, larastan);
     super::regex_shapes::register(&mut registry, php_version);
     let found = Arc::new(Mutex::new(Found {
-        allowed: variables.as_ref().map(|_| variables::allowed_expressions(program)).unwrap_or_default(),
+        allowed: variables
+            .as_ref()
+            .map(|_| variables::allowed_expressions(program))
+            .unwrap_or_default(),
         ..Found::default()
     }));
     if !watched.is_empty() || variables.is_some() {
@@ -240,7 +333,13 @@ fn analyse_observed<'arena>(
             .into_iter()
             .map(|s| {
                 let text = &file.contents[s.start.offset as usize..s.end.offset as usize];
-                (s, text.iter().filter(|b| !b.is_ascii_whitespace()).copied().collect())
+                (
+                    s,
+                    text.iter()
+                        .filter(|b| !b.is_ascii_whitespace())
+                        .copied()
+                        .collect(),
+                )
             })
             .collect();
         let (_, unset_scopes, unset_roots) = super::unset::expressions(program);
@@ -267,8 +366,10 @@ fn analyse_observed<'arena>(
         registry.register_expression_hook(o.clone());
     }
     let mut settings = Settings::new(crate::codebase::php_version(php_version));
-    settings.pollute_scope_with_loop_initial_assignments = pollute_scope_with_loop_initial_assignments;
-    settings.pollute_scope_with_always_iterable_foreach = pollute_scope_with_always_iterable_foreach;
+    settings.pollute_scope_with_loop_initial_assignments =
+        pollute_scope_with_loop_initial_assignments;
+    settings.pollute_scope_with_always_iterable_foreach =
+        pollute_scope_with_always_iterable_foreach;
     settings.pollute_scope_with_block = pollute_scope_with_block;
     settings.track_native_types = true;
     settings.track_variable_flow = variable_writes.is_some();
@@ -277,7 +378,10 @@ fn analyse_observed<'arena>(
     // Without Larastan's forwarding extensions, a named mixin's method is the mixin type's own
     settings.mixin_receiver_binding = larastan.is_some();
     let retain_methods = !initializations.is_empty();
-    settings.property_initialization_observations = initializations.iter().map(|(_, request)| *request).collect();
+    settings.property_initialization_observations = initializations
+        .iter()
+        .map(|(_, request)| *request)
+        .collect();
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
@@ -296,10 +400,17 @@ fn analyse_observed<'arena>(
     let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         analyzer.analyze_with_artifacts(program, &mut result)
     }));
-    let Ok(Ok(artifacts)) = analysed else { return Default::default() };
+    let Ok(Ok(artifacts)) = analysed else {
+        return Default::default();
+    };
     let mut keep_void_types: HashMap<Span, TUnion> = wanted
         .iter()
-        .filter_map(|span| Some((*span, artifacts.get_keep_void_expression_type(span)?.clone())))
+        .filter_map(|span| {
+            Some((
+                *span,
+                artifacts.get_keep_void_expression_type(span)?.clone(),
+            ))
+        })
         .collect();
     let mut native_types: HashMap<Span, TUnion> = wanted
         .iter()
@@ -309,7 +420,8 @@ fn analyse_observed<'arena>(
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))
         .collect();
-    let mut found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
+    let mut found =
+        std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
     types.extend(found.read);
     keep_void_types.extend(found.keep_void_types);
     for (span, ty) in found.native_read {
@@ -323,7 +435,12 @@ fn analyse_observed<'arena>(
         *variables = std::mem::take(&mut found.variables);
         variables.allowed = std::mem::take(&mut found.allowed);
         if let Some(o) = param_out {
-            variables.param_out = std::mem::take(&mut *o.found.lock().expect("no hook panics while holding the lock"));
+            variables.param_out = std::mem::take(
+                &mut *o
+                    .found
+                    .lock()
+                    .expect("no hook panics while holding the lock"),
+            );
         }
     }
     if let Some(variable_writes) = variable_writes {
@@ -333,11 +450,32 @@ fn analyse_observed<'arena>(
         // Route the real before-position to its rule operand (`??=` does not visit the target).
         // Missing operands stay absent;
         // neither types nor lexical writes substitute an incoming scope answer.
-        property_initializations.extend(initializations.into_iter().filter_map(|(operand, request)| {
-            Some((operand, *artifacts.property_initialization_observations.get(&request.expression)?.get(&request.property)?))
-        }));
+        property_initializations.extend(initializations.into_iter().filter_map(
+            |(operand, request)| {
+                Some((
+                    operand,
+                    *artifacts
+                        .property_initialization_observations
+                        .get(&request.expression)?
+                        .get(&request.property)?,
+                ))
+            },
+        ));
     }
-    (types, found.defined, origins, artifacts.call_terminations.into_iter().collect(), artifacts.call_scope_observations.into_iter().collect(), keep_void_types, native_types, artifacts.nullsafe_method_receiver_types.into_iter().collect(), artifacts.property_offset_writes.into_iter().collect())
+    (
+        types,
+        found.defined,
+        origins,
+        artifacts.call_terminations.into_iter().collect(),
+        artifacts.call_scope_observations.into_iter().collect(),
+        keep_void_types,
+        native_types,
+        artifacts
+            .nullsafe_method_receiver_types
+            .into_iter()
+            .collect(),
+        artifacts.property_offset_writes.into_iter().collect(),
+    )
 }
 
 /// The plain assignments whose target is a variable or its offsets (`$a['x'][0] = ...`).
@@ -345,7 +483,7 @@ fn analyse_observed<'arena>(
 struct Assignments(HashMap<Span, (Span, Vec<u8>)>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Assignments {
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if !a.operator.is_assign() {
             return;
         }
@@ -365,18 +503,22 @@ struct ArrayChildren<'s> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
-    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
         let elements = match e {
             Expression::Array(a) => &a.elements,
             Expression::LegacyArray(a) => &a.elements,
             _ => return,
         };
         let span = e.span();
-        if !self.wanted.iter().any(|w| w.start.offset <= span.start.offset && w.end.offset >= span.end.offset) {
+        if !self
+            .wanted
+            .iter()
+            .any(|w| w.start.offset <= span.start.offset && w.end.offset >= span.end.offset)
+        {
             return;
         }
         self.spans.push(span);
-        for element in elements.iter() {
+        for element in elements {
             if let ArrayElement::KeyValue(kv) = element {
                 self.spans.push(kv.key.span());
             }
@@ -424,7 +566,14 @@ struct Found {
 /// A loop body is analysed more than once; differing answers are a maybe. An answer from a branch Mago marked impossible
 /// (an `isset()` of a variable absent on the first pass) only counts until a possible branch answers: PHPStan checks the
 /// body once, in the loop's generalized scope.
-fn merge(entry: &mut Tri, now: Tri, span: Span, impossible: bool, possible: &mut HashSet<Span>, inserted: bool) {
+fn merge(
+    entry: &mut Tri,
+    now: Tri,
+    span: Span,
+    impossible: bool,
+    possible: &mut HashSet<Span>,
+    inserted: bool,
+) {
     if impossible {
         if !inserted && !possible.contains(&span) && *entry != now {
             *entry = Tri::Maybe;
@@ -438,7 +587,8 @@ fn merge(entry: &mut Tri, now: Tri, span: Span, impossible: bool, possible: &mut
 
 impl Provider for Definedness {
     fn meta() -> &'static ProviderMeta {
-        static META: ProviderMeta = ProviderMeta::new("pun-definedness", "definedness", "variable certainty");
+        static META: ProviderMeta =
+            ProviderMeta::new("pun-definedness", "definedness", "variable certainty");
         &META
     }
 }
@@ -453,52 +603,82 @@ impl ExpressionHook for Definedness {
         invocation: &InvocationInfo<'_, '_, '_>,
         context: &mut HookContext<'_, '_>,
     ) -> HookResult<()> {
-        let mut found = self.found.lock().expect("no hook panics while holding the lock");
+        let mut found = self
+            .found
+            .lock()
+            .expect("no hook panics while holding the lock");
         let mut non_creating = HashSet::new();
-        variables::allow_arguments(invocation, self.builtins, &mut found.allowed, &mut non_creating);
+        variables::allow_arguments(
+            invocation,
+            self.builtins,
+            &mut found.allowed,
+            &mut non_creating,
+        );
         if !non_creating.is_empty() {
             context.mark_non_creating_references(non_creating);
         }
         Ok(())
     }
 
-    fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
+    fn before_expression(
+        &self,
+        expr: &Expression<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<ExpressionHookResult> {
         let span = expr.span();
         {
-            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            let mut found = self
+                .found
+                .lock()
+                .expect("no hook panics while holding the lock");
             if let Some(roots) = self.unset_roots.get(&span) {
                 // UnsetRule sees one entry scope for all targets. Actual virtual writes
                 // still run sequentially; retain only the roots the rule will read.
                 for (at, name) in roots {
-                    let ty = context.get_variable_type(name).map_or_else(
-                        mago_codex::ttype::get_error,
-                        |ty| (**ty).clone(),
-                    );
+                    let ty = context
+                        .get_variable_type(name)
+                        .map_or_else(mago_codex::ttype::get_error, |ty| (**ty).clone());
                     found.variables.unset_entries.insert(*at, ty);
-                    found.variables.scopes.insert(*at, variables::Certainty::of(context));
+                    found
+                        .variables
+                        .scopes
+                        .insert(*at, variables::Certainty::of(context));
                 }
             }
             if self.unset_scopes.contains(&span) {
-                found.variables.scopes.entry(span).or_insert_with(|| variables::Certainty::of(context));
+                found
+                    .variables
+                    .scopes
+                    .entry(span)
+                    .or_insert_with(|| variables::Certainty::of(context));
                 super::unset::observe(expr, context, &mut found.read);
             }
             match expr {
                 // Isset/empty can inspect a property without analysing its receiver expression. Preserve the
                 // real incoming root read, as for unset, so allowed-undefined accesses still see No vs Maybe.
                 Expression::Construct(Construct::Isset(i)) => {
-                    for value in i.values.iter() {
+                    for value in &i.values {
                         super::unset::observe(value, context, &mut found.read);
                     }
                 }
-                Expression::Construct(Construct::Empty(e)) => super::unset::observe(e.value, context, &mut found.read),
-                Expression::Array(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
-                Expression::LegacyArray(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
+                Expression::Construct(Construct::Empty(e)) => {
+                    super::unset::observe(e.value, context, &mut found.read);
+                }
+                Expression::Array(a) => {
+                    literal_reference_reads(a.elements.as_slice(), &mut found.allowed);
+                }
+                Expression::LegacyArray(a) => {
+                    literal_reference_reads(a.elements.as_slice(), &mut found.allowed);
+                }
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::ArrayAccess(a) => {
                     if let Expression::Variable(Variable::Direct(v)) = a.array
                         && let Some(ty) = context.get_variable_type(v.name)
                     {
-                        found.variables.dim_receivers.insert(v.span(), (**ty).clone());
+                        found
+                            .variables
+                            .dim_receivers
+                            .insert(v.span(), (**ty).clone());
                     }
                 }
                 Expression::Access(Access::StaticProperty(p)) => {
@@ -507,7 +687,10 @@ impl ExpressionHook for Definedness {
                     }
                 }
                 Expression::Call(Call::Function(_)) if self.compact_calls.contains(&span) => {
-                    found.variables.compact_scopes.insert(span, variables::Certainty::of(context));
+                    found
+                        .variables
+                        .compact_scopes
+                        .insert(span, variables::Certainty::of(context));
                 }
                 Expression::Closure(c) => {
                     if let Some(uses) = &c.use_clause {
@@ -519,7 +702,9 @@ impl ExpressionHook for Definedness {
                     }
                 }
                 Expression::ArrowFunction(f) => {
-                    found.arrows.insert(f.span(), variables::Certainty::of(context));
+                    found
+                        .arrows
+                        .insert(f.span(), variables::Certainty::of(context));
                 }
                 Expression::Assignment(a) => {
                     if let Some(source) = variables::ReferenceSource::of(a, context) {
@@ -545,12 +730,17 @@ impl ExpressionHook for Definedness {
                 }
             } else {
                 match local {
-                    Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
+                    Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => {
+                        Tri::Maybe
+                    }
                     Some(_) => Tri::Yes,
                     None => Tri::No,
                 }
             };
-            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            let mut found = self
+                .found
+                .lock()
+                .expect("no hook panics while holding the lock");
             if let Some(t) = local.filter(|_| variable) {
                 found.read.insert(span, (**t).clone());
             }
@@ -558,20 +748,40 @@ impl ExpressionHook for Definedness {
             let found = &mut *found;
             let inserted = !found.defined.contains_key(&span);
             let entry = found.defined.entry(span).or_insert(now);
-            merge(entry, now, span, impossible, &mut found.possible_defined, inserted);
+            merge(
+                entry,
+                now,
+                span,
+                impossible,
+                &mut found.possible_defined,
+                inserted,
+            );
         }
         Ok(ExpressionHookResult::Continue)
     }
 
-    fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+    fn after_expression(
+        &self,
+        expr: &Expression<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
         // AssignHandler::redundant() reads the target in the scope after the assigned value; a loop's last pass wins
         if let Some((target, name)) = self.assignments.get(&expr.span()) {
-            let mut found = self.found.lock().expect("no hook panics while holding the lock");
-            if context.block_context().variable_certainty(mago_word::word(name)).is_defined()
+            let mut found = self
+                .found
+                .lock()
+                .expect("no hook panics while holding the lock");
+            if context
+                .block_context()
+                .variable_certainty(mago_word::word(name))
+                .is_defined()
                 && let Some(ty) = context.get_variable_type(name)
             {
                 let native = context.get_native_variable_type(name).cloned();
-                found.variables.assigned_roots.insert(*target, ((**ty).clone(), native));
+                found
+                    .variables
+                    .assigned_roots
+                    .insert(*target, ((**ty).clone(), native));
             } else {
                 found.variables.assigned_roots.remove(target);
             }
@@ -594,15 +804,24 @@ impl ExpressionHook for Definedness {
             // read in a branch Mago marked impossible (an `isset()` of a variable absent on the first
             // pass) only counts until a possible branch answers.
             let impossible = context.block_context().variable_state.impossible;
-            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            let mut found = self
+                .found
+                .lock()
+                .expect("no hook panics while holding the lock");
             let found = &mut *found;
             let span = expr.span();
             let answered = found.possible_read_types.contains(&span);
             match found.read.entry(span) {
                 std::collections::hash_map::Entry::Occupied(_) if impossible && answered => {}
-                std::collections::hash_map::Entry::Occupied(mut previous) if impossible || answered => {
+                std::collections::hash_map::Entry::Occupied(mut previous)
+                    if impossible || answered =>
+                {
                     let combined = mago_codex::ttype::combine_union_types(
-                        previous.get(), ty, context.codebase(), Default::default());
+                        previous.get(),
+                        ty,
+                        context.codebase(),
+                        Default::default(),
+                    );
                     previous.insert(combined);
                 }
                 std::collections::hash_map::Entry::Occupied(mut previous) => {
@@ -619,21 +838,42 @@ impl ExpressionHook for Definedness {
         if self.wanted.contains(&expr.span())
             && let Some(ty) = context.get_keep_void_expression_type(expr)
         {
-            self.found.lock().expect("no hook panics while holding the lock").keep_void_types.insert(expr.span(), ty.clone());
+            self.found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .keep_void_types
+                .insert(expr.span(), ty.clone());
         }
         if self.wanted.contains(&expr.span()) {
-            self.found.lock().expect("no hook panics while holding the lock").native_read.insert(
-                expr.span(), context.get_native_expression_type(expr).cloned(),
-            );
+            self.found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .native_read
+                .insert(
+                    expr.span(),
+                    context.get_native_expression_type(expr).cloned(),
+                );
         }
         {
-            if let Some(source) = self.found.lock().expect("no hook panics while holding the lock").reference_sources.remove(&expr.span()) {
+            if let Some(source) = self
+                .found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .reference_sources
+                .remove(&expr.span())
+            {
                 source.restore(context);
             }
             if let Expression::Variable(Variable::Indirect(i)) = expr {
-                let mut found = self.found.lock().expect("no hook panics while holding the lock");
+                let mut found = self
+                    .found
+                    .lock()
+                    .expect("no hook panics while holding the lock");
                 if !found.allowed.contains(&expr.span()) {
-                    found.variables.scopes.insert(expr.span(), variables::Certainty::for_name(i.expression, context));
+                    found.variables.scopes.insert(
+                        expr.span(),
+                        variables::Certainty::for_name(i.expression, context),
+                    );
                 }
             }
         }
@@ -666,7 +906,13 @@ fn observe_variable(v: &Variable<'_>, context: &HookContext<'_, '_>, found: &mut
         Variable::Nested(v) => {
             // DefinedVariableRule reads the outer target in its incoming scope, before name side effects.
             if !found.allowed.contains(&v.span()) {
-                found.variables.scopes.insert(v.span(), variables::Certainty::for_name(&Expression::Variable(v.variable.clone()), context));
+                found.variables.scopes.insert(
+                    v.span(),
+                    variables::Certainty::for_name(
+                        &Expression::Variable(v.variable.clone()),
+                        context,
+                    ),
+                );
             }
             if let Variable::Direct(name) = v.variable
                 && let Some(ty) = context.get_variable_type(name.name)
@@ -689,14 +935,32 @@ fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: 
     }
     // Mago places every implicit arrow capture in possibly_in_scope, even one absent in its parent. Read the
     // parent's real block observation for those names, not a syntactically reconstructed parent scope.
-    let certainty = context.scope().get_function_like()
+    let certainty = context
+        .scope()
+        .get_function_like()
         .filter(|_| v.name != b"$this" && context.get_variable_type(v.name).is_none())
         .and_then(|f| found.arrows.get(&f.span))
-        .map_or_else(|| variables::defined(context, &name), |parent| parent.captured(&name[1..]));
+        .map_or_else(
+            || variables::defined(context, &name),
+            |parent| parent.captured(&name[1..]),
+        );
     let inserted = !found.variables.reads.contains_key(&v.span());
-    let entry = found.variables.reads.entry(v.span()).or_insert_with(|| (name[1..].to_string(), certainty, variables::is_main(context)));
+    let entry = found.variables.reads.entry(v.span()).or_insert_with(|| {
+        (
+            name[1..].to_string(),
+            certainty,
+            variables::is_main(context),
+        )
+    });
     let impossible = context.block_context().variable_state.impossible;
-    merge(&mut entry.1, certainty, v.span(), impossible, &mut found.possible_reads, inserted);
+    merge(
+        &mut entry.1,
+        certainty,
+        v.span(),
+        impossible,
+        &mut found.possible_reads,
+        inserted,
+    );
 }
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every
@@ -765,13 +1029,17 @@ impl<'arena> Prune<'_, 'arena> {
     ) -> Sequence<'arena, ClassLikeMember<'arena>> {
         let kept = members
             .iter()
-            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.retain_methods || self.holds(m.span()))
+            .filter(|m| {
+                !matches!(m, ClassLikeMember::Method(_))
+                    || self.retain_methods
+                    || self.holds(m.span())
+            })
             .cloned();
         Sequence::from_slice(self.arena.alloc_slice_fill_iter(kept))
     }
 }
 
-impl<'a, 'arena> Checker<'a, 'arena> {
+impl Checker<'_, '_> {
     /// `$scope->getType($expr)`, as Mago infers it, for the expressions [`typed_expressions()`] lists.
     pub(super) fn type_of(&self, expr: &Expression) -> Option<&TUnion> {
         self.types.get(&expr.span())
@@ -780,7 +1048,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// Scope::getKeepVoidType reads the effective value first; only explicit null can hide projected void.
     pub(super) fn keep_void_type_at(&self, span: Span) -> Option<&TUnion> {
         let value = self.types.get(&span)?;
-        if value.types.iter().any(mago_codex::ttype::atomic::TAtomic::is_null) {
+        if value
+            .types
+            .iter()
+            .any(mago_codex::ttype::atomic::TAtomic::is_null)
+        {
             self.keep_void_types.get(&span).or(Some(value))
         } else {
             Some(value)
@@ -789,6 +1061,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     pub(super) fn call_terminates(&self, expr: &Expression) -> bool {
         let span = expr.span();
-        self.call_terminations.get(&(span.start.offset, span.end.offset)).copied().unwrap_or(false)
+        self.call_terminations
+            .get(&(span.start.offset, span.end.offset))
+            .copied()
+            .unwrap_or(false)
     }
 }

@@ -7,7 +7,7 @@ use std::path::Path;
 
 struct DirConstantFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(DirConstantFixer)
 }
 

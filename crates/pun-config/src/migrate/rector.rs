@@ -274,7 +274,11 @@ pub struct Reconciled {
 pub fn compose(root: &Path, parts: &mut Parts, rector: &Rector) -> Result<Reconciled> {
     let quoted = |v: &[String]| toml::Value::try_from(v).unwrap().to_string();
     if !rector.sets.is_empty() {
-        let sets: Vec<String> = rector.sets.iter().map(|s| s.to_string()).collect();
+        let sets: Vec<String> = rector
+            .sets
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect();
         writeln!(parts.lint, "sets = {}", quoted(&sets)).unwrap();
     }
     if !rector.exclude.is_empty() {

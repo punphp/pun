@@ -42,8 +42,8 @@ fn failed_reads_keep_argument_diagnostics_evaluation_and_reference_outputs() {
         .filter(|error| error["identifier"] == "argument.type")
         .map(|error| error["line"].as_i64().unwrap())
         .collect();
-    got.sort();
-    want.sort();
+    got.sort_unstable();
+    want.sort_unstable();
     assert_eq!(got, want, "raw argument issues: {:?}", raw.issues);
     let got: Vec<_> = raw
         .issues

@@ -2,31 +2,31 @@
 
 /// A sequence of `len` flags, one bit each.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct BitSet {
+pub(crate) struct BitSet {
     words: Vec<u64>,
     len: usize,
 }
 
 impl BitSet {
     /// `len` flags, all clear.
-    pub fn new(len: usize) -> BitSet {
+    pub(crate) fn new(len: usize) -> BitSet {
         BitSet {
             words: vec![0; len.div_ceil(64)],
             len,
         }
     }
 
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.len
     }
 
     /// Flag `i`; a flag past the end is clear.
-    pub fn get(&self, i: usize) -> bool {
+    pub(crate) fn get(&self, i: usize) -> bool {
         i < self.len && self.words[i / 64] & (1 << (i % 64)) != 0
     }
 
     /// Sets flag `i` to `value`, growing the sequence to hold it.
-    pub fn set(&mut self, i: usize, value: bool) {
+    pub(crate) fn set(&mut self, i: usize, value: bool) {
         if i >= self.len {
             self.len = i + 1;
             self.words.resize(self.len.div_ceil(64), 0);
@@ -38,22 +38,22 @@ impl BitSet {
         }
     }
 
-    pub fn push(&mut self, value: bool) {
+    pub(crate) fn push(&mut self, value: bool) {
         self.set(self.len, value);
     }
 
-    pub fn pop(&mut self) -> Option<bool> {
+    pub(crate) fn pop(&mut self) -> Option<bool> {
         let last = self.last()?;
         self.truncate(self.len - 1);
         Some(last)
     }
 
-    pub fn last(&self) -> Option<bool> {
+    pub(crate) fn last(&self) -> Option<bool> {
         self.len.checked_sub(1).map(|i| self.get(i))
     }
 
     /// Keeps the first `len` flags.
-    pub fn truncate(&mut self, len: usize) {
+    pub(crate) fn truncate(&mut self, len: usize) {
         for i in len..self.len.min(self.words.len() * 64) {
             self.words[i / 64] &= !(1 << (i % 64));
         }
@@ -61,7 +61,7 @@ impl BitSet {
         self.words.truncate(self.len.div_ceil(64));
     }
 
-    pub fn iter(&self) -> impl DoubleEndedIterator<Item = bool> + ExactSizeIterator + '_ {
+    pub(crate) fn iter(&self) -> impl DoubleEndedIterator<Item = bool> + ExactSizeIterator + '_ {
         (0..self.len).map(|i| self.get(i))
     }
 }
@@ -76,7 +76,7 @@ impl IntoIterator for BitSet {
 }
 
 /// The flags of a [`BitSet`], in order.
-pub struct IntoIter {
+pub(crate) struct IntoIter {
     set: BitSet,
     next: usize,
 }

@@ -29,7 +29,15 @@ fn check(file: &str) {
         .into_iter()
         .map(|error| (error.line, error.identifier, error.message, error.tip))
         .collect();
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(
+            i64,
+            std::string::String,
+            std::string::String,
+            std::option::Option<std::string::String>
+        ); 0]
+    );
     assert_eq!(got, want, "{file}");
 }
 

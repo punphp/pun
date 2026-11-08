@@ -59,7 +59,7 @@ fn always_returns_or_exits<'s>(
                     && (place
                         .facts
                         .full_type(crate::syntax::node_span(e.expression)))
-                    .is_some_and(|t| t.is_never()))
+                    .is_some_and(mago_codex::ttype::union::TUnion::is_never))
         }
         Statement::Return(r) => r.value.is_some(),
         Statement::Switch(switch) => switch_always_returns(place, documented, switch),

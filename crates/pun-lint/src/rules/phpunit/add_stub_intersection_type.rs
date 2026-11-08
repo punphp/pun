@@ -46,7 +46,7 @@ impl Rule for AddStubIntersectionType {
         let calls = created_properties(ctx, members.iter(), "createStub").unwrap_or_default();
         let mut edits = Vec::new();
         let mut first = None;
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Property(property) = member else {
                 continue;
             };

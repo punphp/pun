@@ -24,7 +24,7 @@ fn pun_rules_run_at_priority_zero() {
         .map(rule)
         .collect();
     let pipeline = Pipeline::new(&rules, &pun_fixers::all).unwrap();
-    pun.sort();
+    pun.sort_unstable();
     let want: Vec<&str> = ["array_syntax"]
         .into_iter()
         .chain(pun)
@@ -44,7 +44,7 @@ fn pun_risky_rules() {
         .filter(|f| f.name().starts_with("Pun/") && f.is_risky())
         .map(|f| f.name())
         .collect();
-    risky.sort();
+    risky.sort_unstable();
     assert_eq!(
         risky,
         [

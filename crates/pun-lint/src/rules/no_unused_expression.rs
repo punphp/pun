@@ -218,11 +218,11 @@ fn keep_living<'a>(
                     | UnaryPrefixOperator::Negation(_)
             ) =>
         {
-            keep_living(scope, u.operand, out)
+            keep_living(scope, u.operand, out);
         }
         Expression::Construct(Construct::Empty(e)) => keep_living(scope, e.value, out),
         Expression::Construct(Construct::Isset(i)) => {
-            for value in i.values.iter() {
+            for value in &i.values {
                 keep_living(scope, value, out);
             }
         }

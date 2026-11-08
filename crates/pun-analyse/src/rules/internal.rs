@@ -7,8 +7,8 @@
 use std::collections::HashSet;
 
 use mago_codex::metadata::CodebaseMetadata;
-use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -22,15 +22,26 @@ use super::members::Method;
 /// The lowercase names of the methods and properties the restricted-usage extensions can report: `@internal` (with
 /// `internal`) or deprecated (with `deprecated`) ones and those of such class-likes. A member access whose name is not
 /// among them needs no type.
-pub struct Names {
+pub(super) struct Names {
     methods: HashSet<Vec<u8>>,
     properties: HashSet<Vec<u8>>,
 }
 
 impl Names {
-    pub fn of(codebase: &CodebaseMetadata, php_version: u32, internal: bool, deprecated: bool) -> Names {
-        let restricted = |flags: MetadataFlags| (internal && flags.is_internal()) || (deprecated && flags.is_deprecated());
-        let class = |name: &[u8]| codebase.get_class_like(name).is_some_and(|k| restricted(k.flags));
+    pub(super) fn of(
+        codebase: &CodebaseMetadata,
+        php_version: u32,
+        internal: bool,
+        deprecated: bool,
+    ) -> Names {
+        let restricted = |flags: MetadataFlags| {
+            (internal && flags.is_internal()) || (deprecated && flags.is_deprecated())
+        };
+        let class = |name: &[u8]| {
+            codebase
+                .get_class_like(name)
+                .is_some_and(|k| restricted(k.flags))
+        };
         let mut methods: HashSet<Vec<u8>> = codebase
             .function_likes
             .iter()
@@ -61,7 +72,10 @@ impl Names {
                     .map(|(name, _)| name.as_bytes()[1..].to_ascii_lowercase())
             })
             .collect();
-        Names { methods, properties }
+        Names {
+            methods,
+            properties,
+        }
     }
 
     fn contains(&self, name: &[u8]) -> bool {
@@ -80,7 +94,7 @@ struct Typed<'n> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed<'_> {
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         if let ClassLikeMemberSelector::Identifier(id) = &call.method
             && self.names.contains(id.value)
         {
@@ -90,7 +104,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed<'_> {
     fn walk_in_null_safe_method_call(
         &mut self,
         call: &'ast NullSafeMethodCall<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         if let ClassLikeMemberSelector::Identifier(id) = &call.method
             && self.names.contains(id.value)
@@ -98,43 +112,59 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed<'_> {
             self.spans.push(call.object.span());
         }
     }
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.static_class(call.class, &call.method);
     }
-    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, (): &mut ()) {
         if let ClassLikeMemberSelector::Identifier(id) = &p.property
             && self.names.property(id.value)
         {
             self.spans.push(p.object.span());
         }
     }
-    fn walk_in_static_property_access(&mut self, p: &'ast StaticPropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_static_property_access(
+        &mut self,
+        p: &'ast StaticPropertyAccess<'arena>,
+        (): &mut (),
+    ) {
         if let Variable::Direct(v) = &p.property
             && self.names.property(&v.name[1..])
             && !matches!(
                 p.class,
-                Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+                Expression::Identifier(_)
+                    | Expression::Self_(_)
+                    | Expression::Static(_)
+                    | Expression::Parent(_)
             )
         {
             self.spans.push(p.class.span());
         }
     }
-    fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
+    fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, (): &mut ()) {
         if !matches!(
             a.class,
-            Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+            Expression::Identifier(_)
+                | Expression::Self_(_)
+                | Expression::Static(_)
+                | Expression::Parent(_)
         ) {
             self.spans.push(a.class.span());
         }
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
-        if matches!(u.operator, UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..))
-            && self.names.contains(b"__tostring")
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
+        if matches!(
+            u.operator,
+            UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..)
+        ) && self.names.contains(b"__tostring")
         {
             self.spans.push(u.operand.span());
         }
     }
-    fn walk_in_method_partial_application(&mut self, m: &'ast MethodPartialApplication<'arena>, _: &mut ()) {
+    fn walk_in_method_partial_application(
+        &mut self,
+        m: &'ast MethodPartialApplication<'arena>,
+        (): &mut (),
+    ) {
         if let ClassLikeMemberSelector::Identifier(id) = &m.method
             && self.names.contains(id.value)
         {
@@ -144,7 +174,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed<'_> {
     fn walk_in_static_method_partial_application(
         &mut self,
         m: &'ast StaticMethodPartialApplication<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.static_class(m.class, &m.method);
     }
@@ -156,7 +186,10 @@ impl Typed<'_> {
             && self.names.contains(id.value)
             && !matches!(
                 class,
-                Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+                Expression::Identifier(_)
+                    | Expression::Self_(_)
+                    | Expression::Static(_)
+                    | Expression::Parent(_)
             )
         {
             self.spans.push(class.span());
@@ -165,7 +198,7 @@ impl Typed<'_> {
 }
 
 /// The expressions whose types the rules read.
-pub fn typed_expressions(names: Option<&Names>, program: &Program) -> Vec<Span> {
+pub(super) fn typed_expressions(names: Option<&Names>, program: &Program) -> Vec<Span> {
     let Some(names) = names else {
         return Vec::new();
     };
@@ -178,7 +211,10 @@ pub fn typed_expressions(names: Option<&Names>, program: &Program) -> Vec<Span> 
 }
 
 /// The classes of an expression's object types (`getObjectClassNames()`), as Mago infers them.
-pub(super) fn object_classes<'a>(c: &Checker<'a, '_>, e: &Expression) -> Vec<&'a ClassLikeMetadata> {
+pub(super) fn object_classes<'a>(
+    c: &Checker<'a, '_>,
+    e: &Expression,
+) -> Vec<&'a ClassLikeMetadata> {
     c.type_of(e)
         .into_iter()
         .flat_map(|t| t.types.iter())
@@ -191,7 +227,7 @@ pub(super) fn object_classes<'a>(c: &Checker<'a, '_>, e: &Expression) -> Vec<&'a
 }
 
 /// `$obj->name()` and `$obj?->name()` (`call` spans the whole call: the error is on its first line).
-pub fn method_call(
+pub(super) fn method_call(
     c: &mut Checker,
     call: Span,
     object: &Expression,
@@ -205,7 +241,10 @@ pub fn method_call(
     }
     for k in object_classes(c, object) {
         if let Some(m) = super::members::method(c, k, id.value) {
-            let usages: Vec<_> = METHOD_EXTENSIONS.iter().filter_map(|ext| ext(c, &m, None)).collect();
+            let usages: Vec<_> = METHOD_EXTENSIONS
+                .iter()
+                .filter_map(|ext| ext(c, &m, None))
+                .collect();
             for (message, identifier) in usages {
                 c.report(call, &identifier, message, None);
             }
@@ -213,25 +252,26 @@ pub fn method_call(
     }
 }
 
-type MethodExtension = fn(&Checker, &Method, Option<&ClassLikeMetadata>) -> Option<(String, String)>;
+type MethodExtension =
+    fn(&Checker, &Method, Option<&ClassLikeMetadata>) -> Option<(String, String)>;
 
 /// The RestrictedMethodUsageExtension services, in registration order.
 const METHOD_EXTENSIONS: [MethodExtension; 2] = [restricted, super::deprecations::method];
 
 /// `Name::name()`, `self::`/`static::`/`parent::name()` and `$expr::name()`.
-pub fn static_method_call(c: &mut Checker, call: &StaticMethodCall) {
+pub(super) fn static_method_call(c: &mut Checker, call: &StaticMethodCall) {
     static_method(c, call.span(), call.class, &call.method);
 }
 
 /// `$obj->name(...)` (RestrictedMethodCallableUsageRule).
-pub fn method_callable(c: &mut Checker, m: &MethodPartialApplication) {
+pub(super) fn method_callable(c: &mut Checker, m: &MethodPartialApplication) {
     if is_callable(&m.argument_list) {
         method_call(c, m.span(), m.object, &m.method);
     }
 }
 
 /// `Name::name(...)` (RestrictedStaticMethodCallableUsageRule).
-pub fn static_method_callable(c: &mut Checker, m: &StaticMethodPartialApplication) {
+pub(super) fn static_method_callable(c: &mut Checker, m: &StaticMethodPartialApplication) {
     if is_callable(&m.argument_list) {
         static_method(c, m.span(), m.class, &m.method);
     }
@@ -239,10 +279,18 @@ pub fn static_method_callable(c: &mut Checker, m: &StaticMethodPartialApplicatio
 
 /// A first-class callable's `(...)`.
 pub(super) fn is_callable(args: &PartialArgumentList) -> bool {
-    matches!(args.arguments.iter().collect::<Vec<_>>().as_slice(), [PartialArgument::VariadicPlaceholder(_)])
+    matches!(
+        args.arguments.iter().collect::<Vec<_>>().as_slice(),
+        [PartialArgument::VariadicPlaceholder(_)]
+    )
 }
 
-fn static_method(c: &mut Checker, span: Span, class: &Expression, method: &ClassLikeMemberSelector) {
+fn static_method(
+    c: &mut Checker,
+    span: Span,
+    class: &Expression,
+    method: &ClassLikeMemberSelector,
+) {
     let ClassLikeMemberSelector::Identifier(id) = method else {
         return;
     };
@@ -293,7 +341,10 @@ fn restricted(
     m: &Method,
     declaring: Option<&ClassLikeMetadata>,
 ) -> Option<(String, String)> {
-    let Method::User { declaring: own, f, .. } = m else {
+    let Method::User {
+        declaring: own, f, ..
+    } = m
+    else {
         return None;
     };
     if !c.on(crate::rules::Switches::INTERNAL_MEMBERS) {
@@ -373,19 +424,30 @@ fn internal_property(
     property_internal: bool,
 ) -> Option<(String, String)> {
     let declaring = owner.unwrap_or(declaring);
-    if !c.on(crate::rules::Switches::INTERNAL_MEMBERS) || (!property_internal && !declaring.flags.is_internal()) {
+    if !c.on(crate::rules::Switches::INTERNAL_MEMBERS)
+        || (!property_internal && !declaring.flags.is_internal())
+    {
         return None;
     }
     let declaring_name = String::from_utf8_lossy(declaring.original_name.as_bytes()).into_owned();
     if !should_be_reported(c, &declaring_name) {
         return None;
     }
-    let (kind, prefix) = if is_static { ("staticProperty", "static ") } else { ("property", "") };
+    let (kind, prefix) = if is_static {
+        ("staticProperty", "static ")
+    } else {
+        ("property", "")
+    };
     let description = super::deprecations::type_description(declaring);
     let display = c.display(declaring);
-    let outside = root_namespace(&declaring_name).map_or_else(String::new, |ns| format!(" from outside its root namespace {ns}"));
+    let outside = root_namespace(&declaring_name).map_or_else(String::new, |ns| {
+        format!(" from outside its root namespace {ns}")
+    });
     Some(if property_internal {
-        (format!("Access to internal {prefix}property {display}::${name}{outside}."), format!("{kind}.internal"))
+        (
+            format!("Access to internal {prefix}property {display}::${name}{outside}."),
+            format!("{kind}.internal"),
+        )
     } else {
         (
             format!(
@@ -406,18 +468,31 @@ struct PropertyFacts<'a> {
 
 /// `getInstanceProperty()` / `getStaticProperty()` of `k`: a native property (static as `is_static` asks), else for an
 /// instance property an `@property` tag (neither internal nor deprecated itself).
-fn property_facts<'a>(c: &Checker<'a, '_>, k: &'a ClassLikeMetadata, name: &[u8], is_static: bool) -> Option<PropertyFacts<'a>> {
+fn property_facts<'a>(
+    c: &Checker<'a, '_>,
+    k: &'a ClassLikeMetadata,
+    name: &[u8],
+    is_static: bool,
+) -> Option<PropertyFacts<'a>> {
     let dollar = [b"$", name].concat();
     if let Some((declaring, _, p)) = c.declared_property(k, &dollar) {
         if p.flags.is_static() != is_static {
             return None;
         }
         // a trait's property is declared by the class using the trait
-        let declaring = if declaring.kind == SymbolKind::Trait { using_class(c, k, declaring) } else { declaring };
+        let declaring = if declaring.kind == SymbolKind::Trait {
+            using_class(c, k, declaring)
+        } else {
+            declaring
+        };
         return Some(PropertyFacts {
             declaring,
             internal: p.flags.is_internal(),
-            deprecation: if c.on(crate::rules::Switches::DEPRECATIONS) { c.property_deprecation(declaring, &dollar) } else { None },
+            deprecation: if c.on(crate::rules::Switches::DEPRECATIONS) {
+                c.property_deprecation(declaring, &dollar)
+            } else {
+                None
+            },
         });
     }
     if is_static || !c.allows_dynamic_properties(k) {
@@ -432,22 +507,31 @@ fn property_facts<'a>(c: &Checker<'a, '_>, k: &'a ClassLikeMetadata, name: &[u8]
 }
 
 /// The nearest of `k` and its ancestors that uses trait `t`, else `k`.
-fn using_class<'a>(c: &Checker<'a, '_>, k: &'a ClassLikeMetadata, t: &ClassLikeMetadata) -> &'a ClassLikeMetadata {
+fn using_class<'a>(
+    c: &Checker<'a, '_>,
+    k: &'a ClassLikeMetadata,
+    t: &ClassLikeMetadata,
+) -> &'a ClassLikeMetadata {
     let mut current = Some(k);
     for _ in 0..super::overriding::ANCESTRY {
         let Some(a) = current else {
             break;
         };
-        if a.used_traits.iter().any(|u| u.as_bytes().eq_ignore_ascii_case(t.name.as_bytes())) {
+        if a.used_traits
+            .iter()
+            .any(|u| u.as_bytes().eq_ignore_ascii_case(t.name.as_bytes()))
+        {
             return a;
         }
-        current = a.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+        current = a
+            .direct_parent_class
+            .and_then(|p| c.codebase.get_class_like(p.as_bytes()));
     }
     k
 }
 
 /// RestrictedPropertyUsageRule: `$expr->name` (not a nullsafe fetch).
-pub fn property_fetch(c: &mut Checker, p: &PropertyAccess) {
+pub(super) fn property_fetch(c: &mut Checker, p: &PropertyAccess) {
     let ClassLikeMemberSelector::Identifier(id) = &p.property else {
         return;
     };
@@ -461,7 +545,14 @@ pub fn property_fetch(c: &mut Checker, p: &PropertyAccess) {
         };
         let usages = [
             internal_property(c, facts.declaring, None, &name, false, facts.internal),
-            super::deprecations::property(c, facts.declaring, None, &name, false, facts.deprecation.clone()),
+            super::deprecations::property(
+                c,
+                facts.declaring,
+                None,
+                &name,
+                false,
+                facts.deprecation.clone(),
+            ),
         ];
         for (message, identifier) in usages.into_iter().flatten() {
             c.report(p, &identifier, message, None);
@@ -470,7 +561,7 @@ pub fn property_fetch(c: &mut Checker, p: &PropertyAccess) {
 }
 
 /// RestrictedStaticPropertyUsageRule: `Name::$name`, `self::`/`static::`/`parent::$name` and `$expr::$name`.
-pub fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess) {
+pub(super) fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess) {
     let Variable::Direct(v) = &p.property else {
         return;
     };
@@ -479,7 +570,11 @@ pub fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess) {
         return;
     }
     let classes: Vec<&ClassLikeMetadata> = match p.class {
-        Expression::Identifier(id) => c.codebase.get_class_like(c.resolved(id).as_bytes()).into_iter().collect(),
+        Expression::Identifier(id) => c
+            .codebase
+            .get_class_like(c.resolved(id).as_bytes())
+            .into_iter()
+            .collect(),
         Expression::Self_(_) | Expression::Static(_) => c.class_scope().into_iter().collect(),
         Expression::Parent(_) => c
             .class_scope()
@@ -499,10 +594,21 @@ pub fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess) {
         let Some(facts) = property_facts(c, k, name, true) else {
             continue;
         };
-        let rewritten = !k.name.as_bytes().eq_ignore_ascii_case(facts.declaring.name.as_bytes());
-        let internal = |owner| internal_property(c, facts.declaring, owner, &property, true, facts.internal);
+        let rewritten = !k
+            .name
+            .as_bytes()
+            .eq_ignore_ascii_case(facts.declaring.name.as_bytes());
+        let internal =
+            |owner| internal_property(c, facts.declaring, owner, &property, true, facts.internal);
         let deprecated = |owner| {
-            super::deprecations::property(c, facts.declaring, owner, &property, true, facts.deprecation.clone())
+            super::deprecations::property(
+                c,
+                facts.declaring,
+                owner,
+                &property,
+                true,
+                facts.deprecation.clone(),
+            )
         };
         let mut usages = Vec::new();
         if let Some(u) = internal(None)
@@ -522,9 +628,11 @@ pub fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess) {
 }
 
 /// RestrictedUsageOfDeprecatedStringCastRule: `(string) $expr` of an object whose `__toString()` is restricted.
-pub fn string_cast(c: &mut Checker, u: &UnaryPrefix) {
-    if !matches!(u.operator, UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..))
-        || !c.internal.is_some_and(|n| n.contains(b"__tostring"))
+pub(super) fn string_cast(c: &mut Checker, u: &UnaryPrefix) {
+    if !matches!(
+        u.operator,
+        UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..)
+    ) || !c.internal.is_some_and(|n| n.contains(b"__tostring"))
     {
         return;
     }
@@ -533,7 +641,10 @@ pub fn string_cast(c: &mut Checker, u: &UnaryPrefix) {
         let Some(m) = super::members::method(c, k, b"__toString") else {
             continue;
         };
-        let usages: Vec<_> = METHOD_EXTENSIONS.iter().filter_map(|ext| ext(c, &m, None)).collect();
+        let usages: Vec<_> = METHOD_EXTENSIONS
+            .iter()
+            .filter_map(|ext| ext(c, &m, None))
+            .collect();
         for (message, identifier) in usages {
             c.report(u, &identifier, message, None);
         }
@@ -541,7 +652,11 @@ pub fn string_cast(c: &mut Checker, u: &UnaryPrefix) {
 }
 
 /// The static property a STATIC_PROPERTY_ACCESS location names (`hasStaticProperty()`), for the class-name extensions.
-pub fn static_property_member(c: &Checker, k: &ClassLikeMetadata, name: &[u8]) -> Option<super::class_names::Member> {
+pub(super) fn static_property_member(
+    c: &Checker,
+    k: &ClassLikeMetadata,
+    name: &[u8],
+) -> Option<super::class_names::Member> {
     let facts = property_facts(c, k, name, true)?;
     Some(super::class_names::Member {
         name: String::from_utf8_lossy(name).into_owned(),
@@ -552,7 +667,7 @@ pub fn static_property_member(c: &Checker, k: &ClassLikeMetadata, name: &[u8]) -
 }
 
 /// The method a STATIC_METHOD_CALL location names (`hasMethod()` and `getMethod()`), for the class-name extensions.
-pub fn method_member(c: &Checker, m: &Method) -> super::class_names::Member {
+pub(super) fn method_member(c: &Checker, m: &Method) -> super::class_names::Member {
     let (internal, declaring_deprecated) = match m {
         Method::User { declaring, f, .. } => (
             f.flags.is_internal() || declaring.flags.is_internal(),
@@ -563,6 +678,7 @@ pub fn method_member(c: &Checker, m: &Method) -> super::class_names::Member {
     super::class_names::Member {
         name: m.name(),
         internal,
-        deprecated: declaring_deprecated || (c.on(crate::rules::Switches::DEPRECATIONS) && c.method_deprecation(m).is_some()),
+        deprecated: declaring_deprecated
+            || (c.on(crate::rules::Switches::DEPRECATIONS) && c.method_deprecation(m).is_some()),
     }
 }

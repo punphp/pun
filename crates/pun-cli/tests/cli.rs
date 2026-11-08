@@ -34,9 +34,9 @@ fn reset(dir: &Path, files: &[(&str, &str)]) {
         if e.file_name() != ".git" {
             let p = e.path();
             if p.is_dir() && !p.is_symlink() {
-                std::fs::remove_dir_all(p).unwrap()
+                std::fs::remove_dir_all(p).unwrap();
             } else {
-                std::fs::remove_file(p).unwrap()
+                std::fs::remove_file(p).unwrap();
             }
         }
     }

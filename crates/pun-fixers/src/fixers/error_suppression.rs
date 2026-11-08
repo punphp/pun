@@ -14,7 +14,7 @@ struct ErrorSuppressionFixer {
     noise_remaining_usages_exclude: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(ErrorSuppressionFixer {
         mute_deprecation_error: true,
         noise_remaining_usages: false,

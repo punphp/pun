@@ -147,13 +147,13 @@ fn string_pairs(names: &ResolvedNames, e: &Expression) -> Vec<(String, String)> 
 struct FirstReturn<'ast, 'arena>(Option<&'ast Return<'arena>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FirstReturn<'ast, 'arena> {
-    fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
+    fn walk_in_return(&mut self, r: &'ast Return<'arena>, (): &mut ()) {
         self.0.get_or_insert(r);
     }
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
-    fn walk_in_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, class: &'ast Class<'arena>, (): &mut ()) {
         let name = String::from_utf8_lossy(self.names.get(&class.name.span())).into_owned();
         if !self
             .codebase
@@ -162,10 +162,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
             return;
         }
         let mut model = ModelSource::default();
-        for member in class.members.iter() {
+        for member in &class.members {
             match member {
                 ClassLikeMember::Property(Property::Plain(p)) => {
-                    for item in p.items.iter() {
+                    for item in &p.items {
                         let PropertyItem::Concrete(item) = item else {
                             continue;
                         };
@@ -203,7 +203,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
             .insert(name.to_ascii_lowercase(), (name, model));
     }
 
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         if resolved(self.names, call.class)
             .is_some_and(|c| c.eq_ignore_ascii_case("Illuminate\\Support\\Facades\\Date"))
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value.eq_ignore_ascii_case(b"use"))
@@ -719,7 +719,7 @@ impl ModelAttributes {
             if found.len() == t.types.len() { found } else { Vec::new() }
         };
         let mut keys: Vec<Vec<u8>> = Vec::new();
-        for argument in call.argument_list.arguments.iter() {
+        for argument in &call.argument_list.arguments {
             let value = match argument {
                 Argument::Positional(a) => a.value,
                 Argument::Named(a) => a.value,

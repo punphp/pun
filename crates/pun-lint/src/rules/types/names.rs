@@ -12,7 +12,10 @@ pub(crate) fn scope<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<&'a [u8]>, &'a [S
                 NamespaceBody::Implicit(body) => body.statements.as_slice(),
                 NamespaceBody::BraceDelimited(block) => block.statements.as_slice(),
             };
-            return (ns.name.as_ref().map(|n| n.value()), statements);
+            return (
+                ns.name.as_ref().map(mago_syntax::cst::Identifier::value),
+                statements,
+            );
         }
     }
     match ancestors.first() {

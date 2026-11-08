@@ -175,8 +175,8 @@ fn key_of(element: &ArrayElement<'_>) -> Key {
 /// `getDataProviderMethodNames`: the string arguments of the method's `#[DataProvider]` attributes.
 fn provider_names(ancestors: &[Node<'_, '_>], method: &Method<'_>) -> Vec<String> {
     let mut names = Vec::new();
-    for list in method.attribute_lists.iter() {
-        for attribute in list.attributes.iter() {
+    for list in &method.attribute_lists {
+        for attribute in &list.attributes {
             if !resolve(ancestors, &attribute.name).eq_ignore_ascii_case(DATA_PROVIDER) {
                 continue;
             }
@@ -217,7 +217,7 @@ fn data_sets<'a>(method: &'a Method<'a>) -> Vec<Vec<&'a ArrayElement<'a>>> {
         return Vec::new();
     };
     let mut variables: HashMap<&[u8], &Expression<'_>> = HashMap::new();
-    for statement in block.statements.iter() {
+    for statement in &block.statements {
         if let Statement::Expression(e) = statement
             && let Some(a) = assign(e.expression)
             && let Expression::Variable(Variable::Direct(v)) = a.lhs
@@ -227,7 +227,7 @@ fn data_sets<'a>(method: &'a Method<'a>) -> Vec<Vec<&'a ArrayElement<'a>>> {
         }
     }
     let mut out = Vec::new();
-    for statement in block.statements.iter() {
+    for statement in &block.statements {
         match statement {
             Statement::Expression(e) => {
                 if let Expression::Yield(y) = e.expression {

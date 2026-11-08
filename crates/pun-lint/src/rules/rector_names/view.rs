@@ -49,7 +49,7 @@ pub(crate) struct PhpName {
 impl PhpName {
     /// `Name::toString()` of the original name: the written name without its leading `\`, or without the
     /// `namespace\` of a `Name\Relative` (whose parts leave it out).
-    pub fn original(&self) -> &str {
+    pub(crate) fn original(&self) -> &str {
         let written = self.written.trim_start_matches('\\');
         match written.get(..10) {
             Some(prefix) if written.len() > 10 && prefix.eq_ignore_ascii_case("namespace\\") => {
@@ -76,7 +76,7 @@ pub(crate) struct UseItemView {
 
 impl UseItemView {
     /// `UseItem::getAlias()`: the alias, or the last part of the name.
-    pub fn alias_or_last(&self) -> &str {
+    pub(crate) fn alias_or_last(&self) -> &str {
         match &self.alias {
             Some(alias) => alias,
             None => self.name.rsplit('\\').next().unwrap_or_default(),
@@ -84,7 +84,7 @@ impl UseItemView {
     }
 
     /// `$useUse->name->getLast()`.
-    pub fn last(&self) -> &str {
+    pub(crate) fn last(&self) -> &str {
         self.name.rsplit('\\').next().unwrap_or_default()
     }
 }
@@ -102,7 +102,7 @@ pub(crate) struct UseView {
 
 impl UseView {
     /// `UseImportsResolver::resolvePrefix()`.
-    pub fn prefix(&self) -> String {
+    pub(crate) fn prefix(&self) -> String {
         match &self.prefix {
             Some(prefix) => format!("{prefix}\\"),
             None => String::new(),
@@ -110,7 +110,7 @@ impl UseView {
     }
 
     /// The fully qualified name of item `i` (`$prefix . $useUse->name`).
-    pub fn full_name(&self, i: usize) -> String {
+    pub(crate) fn full_name(&self, i: usize) -> String {
         format!("{}{}", self.prefix(), self.items[i].name)
     }
 }
@@ -228,7 +228,7 @@ pub(crate) struct FileView {
 impl FileView {
     /// The root whose imports Rector reads (`FileNode::getUsesAndGroupUses()`): the namespace when the file has exactly
     /// one, else the file.
-    pub fn uses_root(&self) -> &Root {
+    pub(crate) fn uses_root(&self) -> &Root {
         match self.namespaces {
             1 => self.roots.iter().find(|r| r.is_namespace).unwrap(),
             _ => &self.roots[0],
@@ -236,12 +236,12 @@ impl FileView {
     }
 
     /// The root new imports go to (`FileNode::resolvePlacementNamespace()`): the first namespace, else the file.
-    pub fn placement_root(&self) -> usize {
+    pub(crate) fn placement_root(&self) -> usize {
         self.roots.iter().position(|r| r.is_namespace).unwrap_or(0)
     }
 
     /// Read `program` (of `source`).
-    pub fn of(source: &str, program: &Program<'_>) -> FileView {
+    pub(crate) fn of(source: &str, program: &Program<'_>) -> FileView {
         let mut walk = Walk {
             view: FileView::default(),
             namespace: None,
@@ -270,7 +270,7 @@ impl FileView {
         view.roots[0].stmts =
             stmt_list(source, &all, program.statements.iter(), view.roots[0].inner);
         let mut root = 0;
-        for statement in program.statements.iter() {
+        for statement in &program.statements {
             let Statement::Namespace(namespace) = statement else {
                 continue;
             };
@@ -564,7 +564,7 @@ impl Walk {
     /// only, which Rector does not check: Pun keeps the code valid).
     fn implements(&mut self, implements: &Implements<'_>, of_class: bool) {
         let mut list = Vec::new();
-        for id in implements.types.iter() {
+        for id in &implements.types {
             list.push((node_span(id), text(id)));
             self.name(id, Kind::Class).implements = true;
         }
@@ -633,7 +633,7 @@ impl Walk {
                 self.classes.push(name);
                 pushed_class = true;
                 if let Some(extends) = &class.extends {
-                    for id in extends.types.iter() {
+                    for id in &extends.types {
                         self.name(id, Kind::Class).extends = true;
                     }
                 }
@@ -645,12 +645,12 @@ impl Walk {
                 self.classes.push(String::new());
                 pushed_class = true;
                 if let Some(extends) = &class.extends {
-                    for id in extends.types.iter() {
+                    for id in &extends.types {
                         self.name(id, Kind::Class).extends = true;
                     }
                 }
                 if let Some(implements) = &class.implements {
-                    for id in implements.types.iter() {
+                    for id in &implements.types {
                         self.name(id, Kind::Class).implements = true;
                     }
                 }
@@ -660,7 +660,7 @@ impl Walk {
                 self.classes.push(name);
                 pushed_class = true;
                 if let Some(extends) = &interface.extends {
-                    for id in extends.types.iter() {
+                    for id in &extends.types {
                         self.name(id, Kind::Class);
                     }
                 }
@@ -686,7 +686,7 @@ impl Walk {
                 self.name(id, Kind::Class);
             }
             Node::TraitUse(r#use) => {
-                for id in r#use.trait_names.iter() {
+                for id in &r#use.trait_names {
                     self.name(id, Kind::Class);
                 }
             }
@@ -697,7 +697,7 @@ impl Walk {
             Node::TraitUseAdaptation(mago_syntax::cst::TraitUseAdaptation::Precedence(
                 adaptation,
             )) => {
-                for id in adaptation.trait_names.iter() {
+                for id in &adaptation.trait_names {
                     self.name(id, Kind::Class);
                 }
             }

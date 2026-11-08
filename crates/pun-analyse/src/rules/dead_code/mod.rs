@@ -5,27 +5,28 @@ mod finally;
 mod function_discard;
 mod haystack;
 mod impure_points;
-mod null_coalesce;
 mod no_discard;
 mod noop;
+mod null_coalesce;
 mod unreachable;
 mod unused_private;
 mod unused_variable;
 pub(super) use unused_variable::check as unused_variables;
 
-pub(super) use conditions::{
-    Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, function_check,
-    if_statement, match_expression, match_subject_types, method_check, static_method_check, ternary, while_loop,
-};
 pub(super) use conditions::switch_statement;
+pub(super) use conditions::{
+    Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts,
+    function_check, if_statement, match_expression, match_subject_types, method_check,
+    static_method_check, ternary, while_loop,
+};
 pub(super) mod sort;
-pub(super) use sort::call as sort_call;
-pub(super) use haystack::call as haystack_call;
 pub(crate) use conditions::conditions_in_traits;
+pub(super) use haystack::call as haystack_call;
 pub(crate) use impure_points::resolve as impure_points;
 pub(super) use impure_points::{function as impure_function, method as impure_method};
-pub(super) use unreachable::{Statements as UnreachableStatements, find as unreachable_statements};
 pub(super) use noop::{FLIP, Function, PURE_UNLESS_CALLABLE_IS_IMPURE, function_of};
+pub(super) use sort::call as sort_call;
+pub(super) use unreachable::{Statements as UnreachableStatements, find as unreachable_statements};
 
 use std::collections::HashSet;
 
@@ -46,17 +47,20 @@ pub(super) fn try_statement(c: &mut Checker, t: &Try) {
 pub(in super::super) fn bodies(program: &Program, level: u8, every: bool) -> Vec<Span> {
     struct Bodies(Vec<Span>, bool);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Bodies {
-        fn walk_in_function(&mut self, f: &'ast mago_syntax::cst::Function<'arena>, _: &mut ()) {
+        fn walk_in_function(&mut self, f: &'ast mago_syntax::cst::Function<'arena>, (): &mut ()) {
             if self.1 {
                 self.0.push(f.span());
             }
         }
-        fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
-            if self.1 || (m.name.value.eq_ignore_ascii_case(b"__construct") && !m.parameter_list.parameters.is_empty()) {
+        fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
+            if self.1
+                || (m.name.value.eq_ignore_ascii_case(b"__construct")
+                    && !m.parameter_list.parameters.is_empty())
+            {
                 self.0.push(m.span());
             }
         }
-        fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
             if self.1 {
                 self.0.push(f.span());
             }
@@ -82,8 +86,8 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
     spans
 }
 
-pub(super) use unused_private::class as unused_private;
 pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types, empty, isset};
+pub(super) use unused_private::class as unused_private;
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
@@ -103,11 +107,18 @@ pub(super) fn typed_statement(
     ]
     .into_iter()
     .flatten()
-    .chain(if level >= 4 { noop::typed(s) } else { Vec::new() })
+    .chain(if level >= 4 {
+        noop::typed(s)
+    } else {
+        Vec::new()
+    })
 }
 
 /// PHP-Parser replaces imported function aliases, but preserves names with namespace fallback.
-pub(in super::super) fn node_name<'arena>(names: &ResolvedNames<'arena>, id: &Identifier<'arena>) -> &'arena [u8] {
+pub(in super::super) fn node_name<'arena>(
+    names: &ResolvedNames<'arena>,
+    id: &Identifier<'arena>,
+) -> &'arena [u8] {
     if names.is_imported(&id.span()) {
         names.get(&id.span())
     } else {
@@ -193,9 +204,12 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     if writes.opaque {
         return;
     }
-    let flow = c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_FLOW);
+    let flow = c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::UNUSED_FLOW);
     let mut errors = Vec::new();
-    for capture in uses.variables.iter() {
+    for capture in &uses.variables {
         let span = capture.variable.span();
         let (message, identifier) = if writes.writes.contains_key(&span) {
             // a by-value use imports a value: it is unused unless that value is read on some path
@@ -206,18 +220,35 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
                 if !flow || writes.covered.contains(&span) {
                     continue;
                 }
-                ("Anonymous function has a use {} that only flows into values that are never used.", "closure.unusedUseFlow")
+                (
+                    "Anonymous function has a use {} that only flows into values that are never used.",
+                    "closure.unusedUseFlow",
+                )
             } else {
-                ("Anonymous function has an unused use {}.", "closure.unusedUse")
+                (
+                    "Anonymous function has an unused use {}.",
+                    "closure.unusedUse",
+                )
             }
         } else if writes.is_variable_referenced(mago_word::word(capture.variable.name)) {
             // a by-ref use aliases the outer variable: any mention counts
             continue;
         } else {
-            ("Anonymous function has an unused use {}.", "closure.unusedUse")
+            (
+                "Anonymous function has an unused use {}.",
+                "closure.unusedUse",
+            )
         };
-        let at = if c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE) { span } else { closure.span() };
-        errors.push((at, identifier, message.replace("{}", &String::from_utf8_lossy(capture.variable.name))));
+        let at = if c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE) {
+            span
+        } else {
+            closure.span()
+        };
+        errors.push((
+            at,
+            identifier,
+            message.replace("{}", &String::from_utf8_lossy(capture.variable.name)),
+        ));
     }
     for (at, identifier, message) in errors {
         c.report(at, identifier, message, None);
@@ -225,7 +256,6 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
 }
 
 /// UnusedParametersCheck::getUnusedParameterErrors(): `{}` in the messages is the parameter.
-#[allow(clippy::too_many_arguments)]
 fn unused_parameters(
     c: &mut Checker,
     span: Span,
@@ -242,7 +272,7 @@ fn unused_parameters(
         return;
     }
     let mut errors = Vec::new();
-    for parameter in parameters.parameters.iter() {
+    for parameter in &parameters.parameters {
         // a promoted parameter is a property: its value is always used
         if !parameter.modifiers.is_empty() || contract.contains(parameter.variable.name) {
             continue;
@@ -296,7 +326,15 @@ fn contract_parameters(signature: &super::declared::Signature) -> HashSet<Vec<u8
         signature
             .asserts
             .iter()
-            .map(|a| format!("${}", a.split(|c: char| !(c.is_alphanumeric() || c == '_')).next().unwrap_or_default()).into_bytes())
+            .map(|a| {
+                format!(
+                    "${}",
+                    a.split(|c: char| !(c.is_alphanumeric() || c == '_'))
+                        .next()
+                        .unwrap_or_default()
+                )
+                .into_bytes()
+            })
             .collect(),
     );
     conditionals(&signature.ret, &found);
@@ -318,14 +356,22 @@ fn no_op(body: &[Statement]) -> bool {
 /// UnusedFunctionParametersRule: level 4 with `featureToggles.unusedParameters`.
 pub(super) fn function_parameters(c: &mut Checker, f: &mago_syntax::cst::Function) {
     unused_variables(c, f.span(), Node::Function(f));
-    if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS) || no_op(f.body.statements.as_slice()) || f.parameter_list.parameters.is_empty() {
+    if !c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS)
+        || no_op(f.body.statements.as_slice())
+        || f.parameter_list.parameters.is_empty()
+    {
         return;
     }
     let name = c.resolved_span(f.name.span);
     let signature = super::declared::with_classes(c, || super::declared::function(c, f));
     let contract = contract_parameters(&signature);
     let unused = format!("Function {name}() has an unused parameter {{}}.");
-    let flow = format!("Function {name}() has a parameter {{}} that only flows into values that are never used.");
+    let flow = format!(
+        "Function {name}() has a parameter {{}} that only flows into values that are never used."
+    );
     unused_parameters(
         c,
         f.span(),
@@ -351,7 +397,10 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
         if c.level < 1 {
             return;
         }
-    } else if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS)
+    } else if !c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::UNUSED_PARAMETERS)
         || !m.modifiers.contains_private()
         || no_op(body.statements.as_slice())
         || m.name.value.starts_with(b"__")
@@ -396,7 +445,8 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
         }
     }
     let declaring = super::missing_types::declaring(c, m.span()).unwrap_or(class);
-    let signature = super::declared::with_classes(c, || super::declared::method(c, m, declaring, class));
+    let signature =
+        super::declared::with_classes(c, || super::declared::method(c, m, declaring, class));
     let contract = contract_parameters(&signature);
     if constructor {
         let subject = if c.in_anonymous_class() {
@@ -405,14 +455,34 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
             format!("Constructor of class {}", c.display(class))
         };
         let unused = format!("{subject} has an unused parameter {{}}.");
-        let flow = format!("{subject} has a parameter {{}} that only flows into values that are never used.");
+        let flow = format!(
+            "{subject} has a parameter {{}} that only flows into values that are never used."
+        );
         let exact = c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE);
-        let flow = c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_FLOW).then_some((flow.as_str(), "constructor.unusedParameterFlow"));
-        unused_parameters(c, m.span(), &m.parameter_list, &contract, (&unused, "constructor.unusedParameter"), exact, flow);
+        let flow = c
+            .toggled
+            .on
+            .contains(crate::rules::driver::Toggles::UNUSED_FLOW)
+            .then_some((flow.as_str(), "constructor.unusedParameterFlow"));
+        unused_parameters(
+            c,
+            m.span(),
+            &m.parameter_list,
+            &contract,
+            (&unused, "constructor.unusedParameter"),
+            exact,
+            flow,
+        );
     } else {
-        let method = format!("{}::{}()", c.display(class), String::from_utf8_lossy(m.name.value));
+        let method = format!(
+            "{}::{}()",
+            c.display(class),
+            String::from_utf8_lossy(m.name.value)
+        );
         let unused = format!("Method {method} has an unused parameter {{}}.");
-        let flow = format!("Method {method} has a parameter {{}} that only flows into values that are never used.");
+        let flow = format!(
+            "Method {method} has a parameter {{}} that only flows into values that are never used."
+        );
         unused_parameters(
             c,
             m.span(),

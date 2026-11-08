@@ -53,7 +53,7 @@ impl Rule for NoRedundantUses {
         // refactorStatements: the file's statements and those of its namespaces.
         let mut edits = Vec::new();
         let mut lists = vec![(node, vec![node])];
-        for statement in program.statements.iter() {
+        for statement in &program.statements {
             if let Statement::Namespace(ns) = statement {
                 let holder = match &ns.body {
                     NamespaceBody::Implicit(body) => Node::NamespaceImplicitBody(body),
@@ -310,7 +310,7 @@ fn match_global_use(
     scope: &[Node<'_, '_>],
     outer: &MethodCall<'_>,
 ) -> Option<(Vec<Vec<u8>>, Vec<String>)> {
-    if identifier(&outer.method)?.to_ascii_lowercase() != b"in" {
+    if !identifier(&outer.method)?.eq_ignore_ascii_case(b"in") {
         return None;
     }
     let paths = static_paths(&outer.argument_list);
@@ -360,7 +360,7 @@ fn static_class_names(scope: &[Node<'_, '_>], list: &ArgumentList<'_>) -> Vec<Ve
 /// `resolveStaticPaths`: the paths of a list of plain string arguments, relative, without `..` or a glob.
 fn static_paths(list: &ArgumentList<'_>) -> Vec<String> {
     let mut paths = Vec::new();
-    for argument in list.arguments.iter() {
+    for argument in &list.arguments {
         let Some(value) = string_value(argument) else {
             return Vec::new();
         };

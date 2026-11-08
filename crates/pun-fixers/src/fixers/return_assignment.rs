@@ -11,7 +11,7 @@ struct ReturnAssignmentFixer {
     skip_named_var_tags: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(ReturnAssignmentFixer {
         skip_named_var_tags: false,
     })

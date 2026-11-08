@@ -762,7 +762,7 @@ fn process_file(
         .filter(|(_, o)| o.level == pun_problem::Level::Warning)
         .filter_map(|(id, _)| lint_plan::token_rules().get(id.as_str()).copied())
         .collect();
-    r.warned = warned.clone();
+    r.warned.clone_from(&warned);
 
     // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
     let diff = |old: &[u8], new: &[u8]| {
@@ -975,7 +975,7 @@ fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
         let default = std::panic::take_hook();
         std::panic::set_hook(Box::new(move |info| {
             if !ISOLATED.get() {
-                default(info)
+                default(info);
             }
         }));
     });
@@ -984,7 +984,7 @@ fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
     ISOLATED.set(false);
     r.map_err(|p| {
         p.downcast_ref::<&str>()
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .or_else(|| p.downcast_ref::<String>().cloned())
             .unwrap_or_default()
     })

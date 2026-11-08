@@ -37,7 +37,7 @@ pub(crate) fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>
     let columns = larastan
         .database_properties
         .get(&class.to_ascii_lowercase());
-    for element in elements.iter() {
+    for element in elements {
         let value = match element {
             ArrayElement::KeyValue(kv) => kv.value,
             ArrayElement::Value(v) => v.value,

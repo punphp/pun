@@ -12,7 +12,7 @@ const SECTIONS: [&str; 4] = [
 ];
 
 /// The mapping entry of an identifier: its own row in one of the sections, else the first `%s` row that matches it.
-pub fn entry(identifier: &str) -> Option<&'static toml::Value> {
+pub(crate) fn entry(identifier: &str) -> Option<&'static toml::Value> {
     let sections = SECTIONS.map(|s| mapping::section(&["upstream", s]).table());
     if let Some(e) = sections.iter().find_map(|t| t.get(identifier)) {
         return Some(e);

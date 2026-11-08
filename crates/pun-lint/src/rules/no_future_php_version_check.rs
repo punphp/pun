@@ -138,7 +138,7 @@ fn compare(call: &FunctionCall<'_>, version: i64) -> Option<Compared> {
     let second = argument_version(args.get(1)?, version)?;
     let Some(sign) = args.get(2) else {
         return Some(Compared::Int(
-            (first > second) as i64 - (first < second) as i64,
+            i64::from(first > second) - i64::from(first < second),
         ));
     };
     let Some(Value::Str(sign)) = value(sign) else {

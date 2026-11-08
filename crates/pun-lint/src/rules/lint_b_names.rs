@@ -94,7 +94,7 @@ fn scope(ancestors: &[Node<'_, '_>], offset: u32) -> Scope {
             UseItems::MixedList(l) => {
                 let prefix = l.namespace.value();
                 let prefix = prefix.strip_prefix(b"\\").unwrap_or(prefix);
-                for i in l.items.iter() {
+                for i in &l.items {
                     let kind = i.r#type.as_ref().map_or(Kind::Class, kind_of);
                     add(kind, prefix, &i.item);
                 }
@@ -153,7 +153,7 @@ impl Scope {
 
 /// The fully qualified class-like name `identifier` stands for, without a leading `\` (mago-names' resolution of
 /// a class-like name).
-pub fn resolve_class(ancestors: &[Node<'_, '_>], identifier: &Identifier<'_>) -> Vec<u8> {
+pub(super) fn resolve_class(ancestors: &[Node<'_, '_>], identifier: &Identifier<'_>) -> Vec<u8> {
     scope(ancestors, identifier.span().start.offset)
         .resolve(Kind::Class, identifier.value())
         .0
@@ -162,7 +162,7 @@ pub fn resolve_class(ancestors: &[Node<'_, '_>], identifier: &Identifier<'_>) ->
 /// `function_call_matches_any`: the first of `names` (compared ignoring ASCII case) that the called function may
 /// be. A name resolved by an explicit rule is compared by its resolved name; any other by itself as written (PHP's
 /// global fallback) and, inside a namespace, by its namespaced name.
-pub fn function_call_matches_any<'n>(
+pub(super) fn function_call_matches_any<'n>(
     ancestors: &[Node<'_, '_>],
     call: &FunctionCall<'_>,
     names: &[&'n str],
@@ -186,7 +186,7 @@ pub fn function_call_matches_any<'n>(
 
 /// mago-names' `is_imported` for a function name (`constant` false) or a constant name (`constant` true): an
 /// explicit rule (a leading `\`, `namespace\` or a `use function` / `use const` import) resolved it.
-pub fn is_imported(
+pub(super) fn is_imported(
     ancestors: &[Node<'_, '_>],
     identifier: &Identifier<'_>,
     constant: bool,
@@ -202,7 +202,7 @@ pub fn is_imported(
 }
 
 /// `function_call_matches` for one name.
-pub fn function_call_matches(
+pub(super) fn function_call_matches(
     ancestors: &[Node<'_, '_>],
     call: &FunctionCall<'_>,
     name: &str,
@@ -212,14 +212,14 @@ pub fn function_call_matches(
 
 /// The fully qualified class-like name (without a leading `\`) of `name` written at `offset` (a docblock type), with
 /// the ancestors of the node there.
-pub fn resolve_class_at(ancestors: &[Node<'_, '_>], offset: u32, name: &[u8]) -> Vec<u8> {
+pub(super) fn resolve_class_at(ancestors: &[Node<'_, '_>], offset: u32, name: &[u8]) -> Vec<u8> {
     scope(ancestors, offset).resolve(Kind::Class, name).0
 }
 
 /// The function name `identifier` stands for (without a leading `\`), and whether an explicit rule resolved it (a
 /// leading `\`, `namespace\` or a `use function` import); otherwise the name is the namespaced one, which PHP falls
 /// back from to the global function.
-pub fn resolve_function(
+pub(super) fn resolve_function(
     ancestors: &[Node<'_, '_>],
     identifier: &Identifier<'_>,
 ) -> (Vec<u8>, bool) {

@@ -161,8 +161,12 @@ impl Run<'_> {
             self.replace_continue_with_break_token(continue_index); // long continue 0/1 notation
             return after_index;
         }
-        let destination = depth as i128 - jump + 1;
-        if self.switch_levels.iter().any(|&l| l as i128 == destination) {
+        let destination = i128::from(depth) - jump + 1;
+        if self
+            .switch_levels
+            .iter()
+            .any(|&l| i128::from(l) == destination)
+        {
             self.replace_continue_with_break_token(continue_index);
         }
         after_index
@@ -177,5 +181,5 @@ impl Run<'_> {
 fn base_dec(s: &[u8], base: u32) -> i128 {
     s.iter()
         .filter_map(|&c| (c as char).to_digit(base))
-        .fold(0, |acc, d| acc * base as i128 + d as i128)
+        .fold(0, |acc, d| acc * i128::from(base) + i128::from(d))
 }

@@ -8,7 +8,7 @@ use pun_phpstan::types::{Template, Type};
 
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, FunctionScopeKind, declared, generics};
 
-pub const IDENTIFIERS: &[&str] = &["varTag.unresolvableType", "varTag.trait"];
+pub(super) const IDENTIFIERS: &[&str] = &["varTag.unresolvableType", "varTag.trait"];
 
 /// The `NameScope` FileTypeMapper resolves a statement's doc in: the class's, with the templates of the function
 /// or method the statement is in.
@@ -48,13 +48,13 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
 }
 
 /// The statement at `at`.
-pub fn node(c: &mut Checker, at: Span) {
+pub(super) fn node(c: &mut Checker, at: Span) {
     check(c, at, at);
 }
 
 /// The statement at `at`, its doc's names those at `names` (a `Nop` after a namespace's last statement is still in
 /// that namespace).
-pub fn check(c: &mut Checker, at: Span, names: Span) {
+pub(super) fn check(c: &mut Checker, at: Span, names: Span) {
     if c.level < 2 {
         return;
     }

@@ -14,13 +14,13 @@ use super::class_names::{self, Pair};
 use super::reflection::{Known, known};
 use super::{Checker, members, params};
 
-pub const TARGET_CLASS: i64 = 1;
-pub const TARGET_FUNCTION: i64 = 2;
-pub const TARGET_METHOD: i64 = 4;
-pub const TARGET_PROPERTY: i64 = 8;
-pub const TARGET_CLASS_CONSTANT: i64 = 16;
-pub const TARGET_PARAMETER: i64 = 32;
-pub const TARGET_CONSTANT: i64 = 64;
+pub(super) const TARGET_CLASS: i64 = 1;
+pub(super) const TARGET_FUNCTION: i64 = 2;
+pub(super) const TARGET_METHOD: i64 = 4;
+pub(super) const TARGET_PROPERTY: i64 = 8;
+pub(super) const TARGET_CLASS_CONSTANT: i64 = 16;
+pub(super) const TARGET_PARAMETER: i64 = 32;
+pub(super) const TARGET_CONSTANT: i64 = 64;
 const TARGET_ALL: i64 = 127;
 const IS_REPEATABLE: i64 = 128;
 
@@ -51,7 +51,7 @@ fn has_native(c: &Checker, lists: &[AttributeList], name: &str) -> bool {
 }
 
 /// AttributesCheck::check().
-pub fn check<'arena>(
+pub(super) fn check<'arena>(
     c: &mut Checker<'_, 'arena>,
     lists: &[AttributeList<'arena>],
     required: i64,
@@ -224,7 +224,7 @@ fn attribute_flags(c: &Checker, class: &ClassLikeMetadata) -> Option<i64> {
 
 /// The InClassNode rules for a class, interface or enum: NonClassAttributeClassRule, then ClassAttributesRule.
 /// `at` is the declaration.
-pub fn class_like<'arena>(
+pub(super) fn class_like<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     lists: &[AttributeList<'arena>],
@@ -314,7 +314,7 @@ fn non_class_attribute_class<'arena>(
 }
 
 /// TraitAttributeClassRule (on the trait's declaration, outside any class's context).
-pub fn trait_declaration<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
+pub(super) fn trait_declaration<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
     if names(c, t.attribute_lists.as_slice())
         .iter()
         .any(|n| n.eq_ignore_ascii_case("attribute"))
@@ -329,7 +329,7 @@ pub fn trait_declaration<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>)
 }
 
 /// TraitAttributesRule (InTraitNode: the trait analysed in a using class's context).
-pub fn trait_in_context<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
+pub(super) fn trait_in_context<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
     let lists = t.attribute_lists.as_slice();
     if !c.surely_at_least(80500) && has_native(c, lists, "Deprecated") {
         c.report_non_ignorable(
@@ -354,7 +354,7 @@ pub fn trait_in_context<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) 
 
 /// PropertyAttributesRule for one ClassPropertyNode at `at` (a declared property's variable, or a promoted
 /// parameter).
-pub fn property<'arena>(
+pub(super) fn property<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     lists: &[AttributeList<'arena>],
@@ -376,7 +376,7 @@ pub fn property<'arena>(
 }
 
 /// ParamAttributesRule.
-pub fn parameter<'arena>(c: &mut Checker<'_, 'arena>, p: &FunctionLikeParameter<'arena>) {
+pub(super) fn parameter<'arena>(c: &mut Checker<'_, 'arena>, p: &FunctionLikeParameter<'arena>) {
     let (required, target) = if p.modifiers.is_empty() {
         (TARGET_PARAMETER, "parameter")
     } else {
@@ -386,7 +386,7 @@ pub fn parameter<'arena>(c: &mut Checker<'_, 'arena>, p: &FunctionLikeParameter<
 }
 
 /// PropertyHookAttributesRule.
-pub fn property_hook<'arena>(c: &mut Checker<'_, 'arena>, h: &PropertyHook<'arena>) {
+pub(super) fn property_hook<'arena>(c: &mut Checker<'_, 'arena>, h: &PropertyHook<'arena>) {
     let lists = h.attribute_lists.as_slice();
     check(c, lists, TARGET_METHOD, "method");
     for list in lists {
@@ -404,7 +404,7 @@ pub fn property_hook<'arena>(c: &mut Checker<'_, 'arena>, h: &PropertyHook<'aren
 
 /// ConstantAttributesRule (Pun runs as PHPStan does on a PHP 8.5 runtime, so constant.attributesRuleCannotRun
 /// never applies).
-pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, k: &Constant<'arena>) {
+pub(super) fn constant<'arena>(c: &mut Checker<'_, 'arena>, k: &Constant<'arena>) {
     let Some(first) = k.attribute_lists.first() else {
         return;
     };

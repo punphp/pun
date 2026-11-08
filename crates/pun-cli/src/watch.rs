@@ -63,7 +63,7 @@ pub(crate) fn run(mut a: FormatArgs) -> Result<u8> {
             let events = e
                 .into_iter()
                 .filter(|e| !matches!(e.kind, EventKind::Access(_)));
-            changed.extend(events.flat_map(|e| e.paths))
+            changed.extend(events.flat_map(|e| e.paths));
         };
         add(first);
         while let Ok(e) = rx.recv_timeout(DEBOUNCE) {

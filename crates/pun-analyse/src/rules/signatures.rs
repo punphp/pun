@@ -20,7 +20,7 @@ use super::names::FunctionKind;
 use super::reflection::{Known, known};
 
 /// The names PHPDoc types resolve against: the namespace and its `use` imports (php-parser's NameScope).
-pub struct State {
+pub(super) struct State {
     scope: NamespaceScope,
 }
 
@@ -32,22 +32,22 @@ impl Default for State {
     }
 }
 
-pub fn enter_namespace(c: &mut Checker, name: Option<&str>) {
+pub(super) fn enter_namespace(c: &mut Checker, name: Option<&str>) {
     c.signatures.scope = NamespaceScope::new(name.map(|n| n.as_bytes().to_vec()));
 }
 
-pub fn leave_namespace(c: &mut Checker) {
+pub(super) fn leave_namespace(c: &mut Checker) {
     c.signatures.scope = NamespaceScope::global();
 }
 
-pub fn use_statement(c: &mut Checker, u: &Use) {
+pub(super) fn use_statement(c: &mut Checker, u: &Use) {
     c.signatures.scope.populate_from_use(u);
 }
 
 impl FunctionKind<'_> {
     /// What PHPStan's messages call the function-like after "of": `function f()`, `method C::m()`,
     /// `anonymous function`, `set hook for property C::$p`.
-    pub fn named(&self) -> String {
+    pub(super) fn named(&self) -> String {
         match self {
             FunctionKind::Function(f) => format!("function {f}()"),
             FunctionKind::Method(k, m) => format!("method {k}::{m}()"),
@@ -57,7 +57,7 @@ impl FunctionKind<'_> {
     }
 
     /// The same, starting a sentence (`ucfirst()`).
-    pub fn subject(&self) -> String {
+    pub(super) fn subject(&self) -> String {
         let named = self.named();
         let mut chars = named.chars();
         let first = chars.next().map(|f| f.to_ascii_uppercase());
@@ -193,7 +193,7 @@ fn native(c: &Checker, hint: &Hint) -> Native {
 }
 
 /// UnresolvableTypeHelper on a native type: an implicit `never` (it references no classes either).
-pub fn unresolvable(c: &Checker, hint: &Hint) -> bool {
+pub(super) fn unresolvable(c: &Checker, hint: &Hint) -> bool {
     matches!(native(c, hint), Native::Never)
 }
 
@@ -438,13 +438,17 @@ fn reference(node: &Node, doc: &Doc, seen: &mut HashSet<String>) {
         } => [target, then, otherwise].into_iter().for_each(|n| go(n)),
         Node::Generic { args, .. } => args.iter().for_each(go),
         Node::Callable { params, ret, .. } => {
-            params.iter().for_each(|p| go(&p.ty));
+            for p in params {
+                go(&p.ty);
+            }
             go(ret);
         }
         Node::ArrayShape {
             items, unsealed, ..
         } => {
-            items.iter().for_each(|i| go(&i.value));
+            for i in items {
+                go(&i.value);
+            }
             // PHPStan 2.3 traverses the unsealed key type too
             if let Some((key, value)) = unsealed {
                 if let Some(key) = key {
@@ -591,11 +595,10 @@ fn hint_node(c: &Checker, hint: &Hint) -> Node {
             intersection_members(hint, &mut members);
             Node::Inter(members.into_iter().map(|m| hint_node(c, m)).collect())
         }
-        Hint::Self_(_) | Hint::Static(_) => Node::Ident(
-            c.class_scope()
-                .map(|k| String::from_utf8_lossy(k.name.as_bytes()).into_owned())
-                .unwrap_or_else(|| "object".to_string()),
-        ),
+        Hint::Self_(_) | Hint::Static(_) => Node::Ident(c.class_scope().map_or_else(
+            || "object".to_string(),
+            |k| String::from_utf8_lossy(k.name.as_bytes()).into_owned(),
+        )),
         h => Node::Ident(c.written(h.span()).to_ascii_lowercase()),
     }
 }
@@ -655,9 +658,9 @@ fn phpdoc_applies(
             let natives = members(&native_type);
             members(&phpdoc_type).iter().all(|m| match m {
                 Type::Object(class, _, _) => known(c, class).is_some_and(|k| {
-                    natives
-                        .iter()
-                        .any(|n| matches!(n, Type::Object(parent, _, _) if instance_of(c, &k, parent)))
+                    natives.iter().any(
+                        |n| matches!(n, Type::Object(parent, _, _) if instance_of(c, &k, parent)),
+                    )
                 }),
                 m => is_super_type_of(&native_type, m).yes(),
             })
@@ -705,7 +708,7 @@ fn accepts_null(t: &Type) -> bool {
 
 /// FunctionDefinitionCheck for one function-like, after the class-existence checks: `at` is the function-like node,
 /// the line of its template and self-out errors.
-pub fn check<'arena>(
+pub(super) fn check<'arena>(
     c: &mut Checker<'_, 'arena>,
     kind: FunctionKind,
     at: Span,
@@ -904,7 +907,7 @@ fn templates(
 
 /// FunctionDefinitionCheck's classes of the PHPDoc parameter and return types once `checkThisOnly` is off (level 2;
 /// the native ones are names.rs's).
-pub fn phpdoc_classes(
+pub(super) fn phpdoc_classes(
     c: &mut Checker,
     kind: FunctionKind,
     at: Span,
@@ -915,9 +918,20 @@ pub fn phpdoc_classes(
     let params = parameters
         .parameters
         .iter()
-        .map(|p| (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.span()))
+        .map(|p| {
+            (
+                String::from_utf8_lossy(&p.variable.name[1..]).into_owned(),
+                p.span(),
+            )
+        })
         .collect();
-    phpdoc_classes_at(c, kind, params, return_type.map_or(at, |r| r.hint.span()), types);
+    phpdoc_classes_at(
+        c,
+        kind,
+        params,
+        return_type.map_or(at, |r| r.hint.span()),
+        types,
+    );
 }
 
 /// [`phpdoc_classes()`] of parameters (name without `$`, node) and a return type at `ret_at`.
@@ -937,8 +951,11 @@ fn phpdoc_classes_at(
                   message: &dyn Fn(&str) -> String,
                   location: Option<super::class_names::Location>| {
         // (no class name has a `-`: a keyword type the resolver leaves, such as an unresolved `value-of`)
-        let classes: Vec<String> =
-            types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')).collect();
+        let classes: Vec<String> = types
+            .iter()
+            .flat_map(super::generics::referenced_classes)
+            .filter(|n| !n.contains('-'))
+            .collect();
         for class in &classes {
             let identifier = match known(c, class) {
                 None => "class.notFound",
@@ -947,51 +964,88 @@ fn phpdoc_classes_at(
             };
             c.report(at, identifier, message(class), None);
         }
-        let pairs: Vec<Pair> = classes.into_iter().map(|class| Pair::node(class, at)).collect();
+        let pairs: Vec<Pair> = classes
+            .into_iter()
+            .map(|class| Pair::node(class, at))
+            .collect();
         let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
         class_names::check_at(c, &pairs, location.as_ref(), case);
     };
     for (name, at) in params {
         let types = types.params.get(&name).map_or(&[][..], Vec::as_slice);
-        let location = super::names::location_function(c, kind).map(|function| super::class_names::Location::ParameterType {
-            parameter: name.clone(),
-            function,
+        let location = super::names::location_function(c, kind).map(|function| {
+            super::class_names::Location::ParameterType {
+                parameter: name.clone(),
+                function,
+            }
         });
-        report(c, at, types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."), location);
+        report(
+            c,
+            at,
+            types,
+            "parameter.trait",
+            &|class| format!("Parameter ${name} of {of} has invalid type {class}."),
+            location,
+        );
     }
-    let location = super::names::location_function(c, kind).map(super::class_names::Location::ReturnType);
-    report(c, ret_at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."), location);
+    let location =
+        super::names::location_function(c, kind).map(super::class_names::Location::ReturnType);
+    report(
+        c,
+        ret_at,
+        types.ret.as_slice(),
+        "return.trait",
+        &|class| format!("{subject} has invalid return type {class}."),
+        location,
+    );
 }
 
 /// [`phpdoc_classes()`] of property `name`'s hooks (ExistingClassesInPropertyHookTypehintsRule): a get hook returns
 /// the property's PHPDoc type, a set hook's parameter has its own `@param` type, else the property's. `decl` is
 /// where the property's PHPDoc is read from.
-pub fn hook_phpdoc_classes(c: &mut Checker, name: &[u8], list: &PropertyHookList, decl: Span) {
+pub(super) fn hook_phpdoc_classes(
+    c: &mut Checker,
+    name: &[u8],
+    list: &PropertyHookList,
+    decl: Span,
+) {
     if c.level < 2 {
         return;
     }
     let (context, display) = c.member_scope();
     let property = String::from_utf8_lossy(&name[1..]).into_owned();
-    let var = super::declared::with_classes(c, || super::declared::property(c, None, decl, &name[1..], context));
-    for hook in list.hooks.iter() {
+    let var = super::declared::with_classes(c, || {
+        super::declared::property(c, None, decl, &name[1..], context)
+    });
+    for hook in &list.hooks {
         let hook_name = String::from_utf8_lossy(hook.name.value).to_ascii_lowercase();
         let kind = FunctionKind::Hook(&display, &property, &hook_name);
-        let mut types = super::declared::PhpDocTypes { params: HashMap::new(), ret: None };
+        let mut types = super::declared::PhpDocTypes {
+            params: HashMap::new(),
+            ret: None,
+        };
         let params = if hook_name == "set" {
             let (param, at) = hook
                 .parameter_list
                 .as_ref()
                 .and_then(|l| l.parameters.first())
                 .map_or(("value".to_string(), hook.span()), |p| {
-                    (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.span())
+                    (
+                        String::from_utf8_lossy(&p.variable.name[1..]).into_owned(),
+                        p.span(),
+                    )
                 });
-            let own = c.php_doc(c.file.id, hook.span().start.offset).and_then(|(_, entry)| {
-                let scope = super::declared::scope_at(c, hook.span(), Some(context));
-                super::declared::with_classes(c, || {
-                    entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
-                })
-            });
-            types.params.insert(param.clone(), vec![own.unwrap_or_else(|| var.clone())]);
+            let own = c
+                .php_doc(c.file.id, hook.span().start.offset)
+                .and_then(|(_, entry)| {
+                    let scope = super::declared::scope_at(c, hook.span(), Some(context));
+                    super::declared::with_classes(c, || {
+                        entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
+                    })
+                });
+            types
+                .params
+                .insert(param.clone(), vec![own.unwrap_or_else(|| var.clone())]);
             vec![(param, at)]
         } else {
             types.ret = Some(var.clone());
@@ -1138,7 +1192,7 @@ fn required_after_optional(c: &mut Checker, params: &[&FunctionLikeParameter]) {
 }
 
 /// ExistingClassesInArrowFunctionTypehintsRule: a `never` return type before PHP 8.2.
-pub fn arrow_never(c: &mut Checker, f: &ArrowFunction) {
+pub(super) fn arrow_never(c: &mut Checker, f: &ArrowFunction) {
     if !c.surely_at_least(80200)
         && matches!(
             f.return_type_hint.as_ref().map(|r| &r.hint),
@@ -1156,7 +1210,7 @@ pub fn arrow_never(c: &mut Checker, f: &ArrowFunction) {
 }
 
 /// ExistingClassesInPropertiesRule's unresolvable native type, for one property declaration or promoted parameter.
-pub fn property<'arena>(
+pub(super) fn property<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     hint: Option<&Hint<'arena>>,
@@ -1182,14 +1236,18 @@ pub fn property<'arena>(
 }
 
 /// ExistingClassesInPropertyHookTypehintsRule: FunctionDefinitionCheck on each hook of property `name`.
-pub fn hooks<'arena>(c: &mut Checker<'_, 'arena>, name: &[u8], list: &PropertyHookList<'arena>) {
+pub(super) fn hooks<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    name: &[u8],
+    list: &PropertyHookList<'arena>,
+) {
     // properties are walked inside their class-like (trait bodies only in a class's context)
     let class = c
         .class_scope()
         .expect("a property hook is walked inside its class-like");
     let display = c.display(class);
     let property = String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
-    for hook in list.hooks.iter() {
+    for hook in &list.hooks {
         let Some(params) = &hook.parameter_list else {
             continue;
         };

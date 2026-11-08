@@ -107,7 +107,7 @@ pub(crate) fn doc_comment(tokens: &Tokens, doc_comment_index: usize) -> (DocBloc
     let namespace = NamespacesAnalyzer.get_namespace_at(tokens, doc_comment_index);
     let uses = NamespaceUsesAnalyzer.get_declarations_in_namespace(tokens, &namespace, false);
     (
-        DocBlock::new(&tokens[doc_comment_index].get_content()),
+        DocBlock::new(tokens[doc_comment_index].get_content()),
         Scope { namespace, uses },
     )
 }

@@ -76,7 +76,7 @@ fn block_pollution_preserves_paired_native_types_and_single_walk() {
                 let ty = context.get_native_expression_type(expression).map(|ty| {
                     let id = ty.get_id().to_string();
                     let mut types: Vec<_> = id.split('|').collect();
-                    types.sort();
+                    types.sort_unstable();
                     types.join("|")
                 });
                 assert!(self.found.lock().unwrap().insert(*line, ty).is_none(), "body read visited twice");

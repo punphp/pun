@@ -17,7 +17,7 @@ use mago_syntax::walker::MutWalker;
 use super::Checker;
 use super::types::flow::unparen;
 
-pub const IDENTIFIERS: &[&str] = &["assign.byRefForeachExpr"];
+pub(super) const IDENTIFIERS: &[&str] = &["assign.byRefForeachExpr"];
 
 type Set = BTreeSet<Vec<u8>>;
 
@@ -46,26 +46,34 @@ pub(super) fn variable_assign(c: &mut Checker, v: &DirectVariable) {
     if !set.contains(v.name) {
         return;
     }
-    let message = format!("Assign to {} overwrites the last element from array.", String::from_utf8_lossy(v.name));
-    c.report(v, "assign.byRefForeachExpr", message, Some("Unset it right after foreach to avoid this problem."));
+    let message = format!(
+        "Assign to {} overwrites the last element from array.",
+        String::from_utf8_lossy(v.name)
+    );
+    c.report(
+        v,
+        "assign.byRefForeachExpr",
+        message,
+        Some("Unset it right after foreach to avoid this problem."),
+    );
 }
 
 /// Every function-like body starts without the virtual expression.
 struct Bodies<'f>(&'f mut Flow);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Bodies<'_> {
-    fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+    fn walk_in_function(&mut self, f: &'ast Function<'arena>, (): &mut ()) {
         self.0.statements(f.body.statements.as_slice(), Set::new());
     }
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
         if let MethodBody::Concrete(b) = &m.body {
             self.0.statements(b.statements.as_slice(), Set::new());
         }
     }
-    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.0.statements(f.body.statements.as_slice(), Set::new());
     }
-    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, (): &mut ()) {
         if let PropertyHookBody::Concrete(PropertyHookConcreteBody::Block(b)) = &h.body {
             self.0.statements(b.statements.as_slice(), Set::new());
         }
@@ -108,7 +116,10 @@ impl Flow {
     }
 
     /// A loop body: its end with its continue and break exit points.
-    fn loop_body(&mut self, run: impl FnOnce(&mut Flow) -> Option<Set>) -> (Option<Set>, Option<Set>) {
+    fn loop_body(
+        &mut self,
+        run: impl FnOnce(&mut Flow) -> Option<Set>,
+    ) -> (Option<Set>, Option<Set>) {
         self.exits.push(Set::new());
         let end = run(self);
         let exits = self.exits.pop().filter(|e| !e.is_empty());
@@ -140,7 +151,8 @@ impl Flow {
             Statement::Expression(e)
                 if matches!(
                     unparen(e.expression),
-                    Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
+                    Expression::Throw(_)
+                        | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
                 ) =>
             {
                 None
@@ -158,7 +170,7 @@ impl Flow {
                 let (mut out, has_else) = match &i.body {
                     IfBody::Statement(b) => {
                         let mut out = self.body(b.statement, flags.clone());
-                        for e in b.else_if_clauses.iter() {
+                        for e in &b.else_if_clauses {
                             out = union(out, self.body(e.statement, flags.clone()));
                         }
                         if let Some(e) = &b.else_clause {
@@ -168,11 +180,13 @@ impl Flow {
                     }
                     IfBody::ColonDelimited(b) => {
                         let mut out = self.statements(b.statements.as_slice(), flags.clone());
-                        for e in b.else_if_clauses.iter() {
-                            out = union(out, self.statements(e.statements.as_slice(), flags.clone()));
+                        for e in &b.else_if_clauses {
+                            out =
+                                union(out, self.statements(e.statements.as_slice(), flags.clone()));
                         }
                         if let Some(e) = &b.else_clause {
-                            out = union(out, self.statements(e.statements.as_slice(), flags.clone()));
+                            out =
+                                union(out, self.statements(e.statements.as_slice(), flags.clone()));
                         }
                         (out, b.else_clause.is_some())
                     }
@@ -185,7 +199,9 @@ impl Flow {
             Statement::Foreach(f) => {
                 let (end, exits) = self.loop_body(|w| match &f.body {
                     ForeachBody::Statement(s) => w.body(s, flags.clone()),
-                    ForeachBody::ColonDelimited(b) => w.statements(b.statements.as_slice(), flags.clone()),
+                    ForeachBody::ColonDelimited(b) => {
+                        w.statements(b.statements.as_slice(), flags.clone())
+                    }
                 });
                 let mut out = union(union(Some(flags), end), exits).unwrap_or_default();
                 let value = match &f.target {
@@ -203,14 +219,18 @@ impl Flow {
             Statement::While(w) => {
                 let (end, exits) = self.loop_body(|f| match &w.body {
                     WhileBody::Statement(s) => f.body(s, flags.clone()),
-                    WhileBody::ColonDelimited(b) => f.statements(b.statements.as_slice(), flags.clone()),
+                    WhileBody::ColonDelimited(b) => {
+                        f.statements(b.statements.as_slice(), flags.clone())
+                    }
                 });
                 union(union(Some(flags), end), exits)
             }
             Statement::For(l) => {
                 let (end, exits) = self.loop_body(|f| match &l.body {
                     ForBody::Statement(s) => f.body(s, flags.clone()),
-                    ForBody::ColonDelimited(b) => f.statements(b.statements.as_slice(), flags.clone()),
+                    ForBody::ColonDelimited(b) => {
+                        f.statements(b.statements.as_slice(), flags.clone())
+                    }
                 });
                 union(union(Some(flags), end), exits)
             }
@@ -237,14 +257,21 @@ impl Flow {
                     fall
                 });
                 let out = union(end, exits);
-                if has_default { out } else { union(out, Some(flags)) }
+                if has_default {
+                    out
+                } else {
+                    union(out, Some(flags))
+                }
             }
             Statement::Try(t) => {
                 let tried = self.statements(t.block.statements.as_slice(), flags.clone());
                 let catch_entry = union(Some(flags.clone()), tried.clone()).unwrap_or_default();
                 let mut out = tried;
-                for c in t.catch_clauses.iter() {
-                    out = union(out, self.statements(c.block.statements.as_slice(), catch_entry.clone()));
+                for c in &t.catch_clauses {
+                    out = union(
+                        out,
+                        self.statements(c.block.statements.as_slice(), catch_entry.clone()),
+                    );
                 }
                 match &t.finally_clause {
                     Some(f) => {
@@ -257,7 +284,7 @@ impl Flow {
             }
             Statement::Unset(u) => {
                 let mut flags = flags;
-                for value in u.values.iter() {
+                for value in &u.values {
                     if let Expression::Variable(Variable::Direct(v)) = unparen(value) {
                         flags.remove(v.name);
                     }

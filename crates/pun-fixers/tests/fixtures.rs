@@ -150,8 +150,8 @@ fn whitespaces_from_body(body: &str) -> Option<WhitespacesFixerConfig> {
 
 fn is_empty_config(c: &Value) -> bool {
     c.is_null()
-        || c.as_array().is_some_and(|a| a.is_empty())
-        || c.as_object().is_some_and(|o| o.is_empty())
+        || c.as_array().is_some_and(std::vec::Vec::is_empty)
+        || c.as_object().is_some_and(serde_json::Map::is_empty)
 }
 
 #[test]
@@ -247,7 +247,7 @@ fn upstream_fixtures() {
                         .unwrap_or(Value::Null);
                 }
                 if is_empty_config(&config) {
-                    config = Value::Null
+                    config = Value::Null;
                 }
                 runs.push((config, expected, input));
                 for (config, expected, input) in runs {
@@ -276,7 +276,7 @@ fn upstream_fixtures() {
                             eprintln!(
                                 "--- {name} {method} case {}: configure({config}) failed: {e}",
                                 case["key"]
-                            )
+                            );
                         }
                         continue;
                     }
@@ -284,7 +284,7 @@ fn upstream_fixtures() {
                     let (problems, got_text) =
                         common::do_test(&*fixer, &file, &expected, input.as_deref());
                     if problems.is_empty() {
-                        p += 1
+                        p += 1;
                     } else {
                         f += 1;
                         if verbose {

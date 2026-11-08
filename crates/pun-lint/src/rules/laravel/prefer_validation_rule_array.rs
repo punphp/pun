@@ -99,7 +99,7 @@ impl Rule for PreferValidationRuleArray {
                     return;
                 }
                 let mut edits = Vec::new();
-                for member in class.members.iter() {
+                for member in &class.members {
                     let ClassLikeMember::Method(method) = member else {
                         continue;
                     };
@@ -158,7 +158,7 @@ fn rule_edits(ctx: &Context<'_>, rules: &Expression<'_>) -> Vec<Edit> {
         _ => return Vec::new(),
     };
     let mut edits = Vec::new();
-    for element in elements.iter() {
+    for element in elements {
         let ArrayElement::KeyValue(item) = element else {
             continue;
         };

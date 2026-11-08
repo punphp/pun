@@ -31,6 +31,10 @@ pub fn with_larastan_strings<R>(answer: &dyn Fn(StringQuery<'_>) -> Tri, f: impl
         }
     }
     let ptr: *const (dyn Fn(StringQuery<'_>) -> Tri + '_) = answer;
+    #[expect(
+        clippy::transmute_ptr_to_ptr,
+        reason = "erases the trait object's lifetime, which `as` cannot"
+    )]
     // SAFETY: as in `symbols::with_classes()`: only the lifetime is erased, and `Restore` puts the previous answer
     // back before this function returns, also on unwinding.
     let ptr: *const Answer = unsafe { std::mem::transmute(ptr) };

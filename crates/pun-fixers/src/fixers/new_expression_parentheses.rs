@@ -12,7 +12,7 @@ struct NewExpressionParenthesesFixer {
     use_parentheses: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NewExpressionParenthesesFixer {
         use_parentheses: false,
     })

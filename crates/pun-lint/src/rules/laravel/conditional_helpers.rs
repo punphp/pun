@@ -56,7 +56,7 @@ pub(super) fn visit(node: Node<'_, '_>, ctx: &Context<'_>, helper: &str, out: &m
     args_text.extend(args.into_iter().map(str::to_string));
     let span = node_span(if_);
     let tokens = tokens(ctx);
-    let comments = comments_between(&tokens, view.stmts.inner.start, node_span(statement).start);
+    let comments = comments_between(tokens, view.stmts.inner.start, node_span(statement).start);
     let nl = format!("\n{}", line_indent(ctx.source, span.start));
     let comments = print_comments(ctx.source, &comments, &nl);
     let code = format!("{helper}_{suffix}({});", args_text.join(", "));

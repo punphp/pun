@@ -159,16 +159,16 @@ pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall
     };
     match method {
         b"make" if is_object_of(c, &ty, b"illuminate\\contracts\\view\\factory") => {
-            c.collect_view(value)
+            c.collect_view(value);
         }
         b"markdown" | b"view"
             if is_object_of(c, &ty, b"illuminate\\mail\\mailable")
                 || is_object_of(c, &ty, b"illuminate\\notifications\\messages\\mailmessage") =>
         {
-            c.collect_view(value)
+            c.collect_view(value);
         }
         b"get" | b"choice" if is_object_of(c, &ty, b"illuminate\\translation\\translator") => {
-            c.collect_translation(call, value)
+            c.collect_translation(call, value);
         }
         _ => {}
     }
@@ -191,6 +191,10 @@ pub(crate) fn finish(larastan: Option<&Larastan>, errors: Vec<Error>) -> Vec<Err
         .contains(crate::LarastanSwitches::CHECK_UNUSED_VIEWS)
     {
         let directories = if larastan.view_directories.is_empty() {
+            #[expect(
+                clippy::redundant_clone,
+                reason = "false positive: `finder` is borrowed again below"
+            )]
             finder.paths.clone()
         } else {
             larastan.view_directories.clone()

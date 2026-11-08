@@ -185,7 +185,11 @@ pub(crate) fn is_constant_array(t: &TAtomic) -> bool {
     match t {
         TAtomic::Array(TArray::Keyed(k)) => k.parameters.is_none(),
         TAtomic::Array(TArray::List(l)) => {
-            l.known_elements.is_some() && l.element_type.types.iter().all(|t| t.is_never())
+            l.known_elements.is_some()
+                && l.element_type
+                    .types
+                    .iter()
+                    .all(mago_codex::ttype::atomic::TAtomic::is_never)
         }
         _ => false,
     }

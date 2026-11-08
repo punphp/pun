@@ -49,11 +49,11 @@ fn reflected_policies_preserve_groups_and_are_not_invented_for_unmapped_paramete
             .collect();
         let result = single.check(&constants[..1]);
         assert!(result.disallowed.is_empty());
-        assert!(result.violated_groups.is_empty());
+        assert_eq!(result.violated_groups, [] as [std::vec::Vec<&str>; 0]);
         assert!(!result.bitmask_not_allowed);
         let result = single.check(&constants);
         assert!(result.disallowed.is_empty());
-        assert!(result.violated_groups.is_empty());
+        assert_eq!(result.violated_groups, [] as [std::vec::Vec<&str>; 0]);
         assert!(result.bitmask_not_allowed);
         let mut reordered = html.clone();
         reordered.constants.swap(0, 1);

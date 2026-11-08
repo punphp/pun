@@ -80,7 +80,7 @@ final class FacadeFixRounds
     .unwrap();
     let expected = expected.replace("app(", "\\Illuminate\\Support\\Facades\\App::make(");
     assert_eq!(combined.source, expected);
-    assert!(combined.remaining.is_empty());
+    assert_eq!(combined.remaining, [] as [pun_problem::Problem; 0]);
 }
 
 #[test]

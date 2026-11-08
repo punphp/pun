@@ -49,13 +49,13 @@ impl Rule for AddOverrideAttribute {
         let mut parents = Vec::new();
         let mut next = codebase
             .get_class_like(qualified(ancestors, class.name.value).as_bytes())
-            .and_then(|own| own.direct_parent_class.clone());
+            .and_then(|own| own.direct_parent_class);
         while let Some(name) = next {
             let Some(parent) = codebase.get_class_like(name.as_bytes()) else {
                 break;
             };
             parents.push(parent);
-            next = parent.direct_parent_class.clone();
+            next = parent.direct_parent_class;
         }
         // `isPropertyOverridden()`: the first parent with a native property of that name decides.
         let overridden = |name: &[u8]| {
@@ -73,7 +73,7 @@ impl Rule for AddOverrideAttribute {
             }) == Some(true)
         };
         let mut edits = Vec::new();
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Property(property) = member else {
                 continue;
             };

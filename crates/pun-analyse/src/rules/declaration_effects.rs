@@ -159,7 +159,7 @@ impl Producer<'_, '_, '_> {
             }
             Statement::Unset(s) => {
                 let mut effects = Effects::default();
-                for value in s.values.iter() {
+                for value in &s.values {
                     effects.merge(self.unset(value)?);
                 }
                 // UnsetHandler forwards operand points but its statement is never always-terminating.
@@ -185,28 +185,27 @@ impl Producer<'_, '_, '_> {
             Statement::Try(t) => {
                 let mut effects = self.block(&t.block)?;
                 self.arrays.clear();
-                if effects.throws {
-                    for catch in t.catch_clauses.iter() {
-                        // A narrower catch needs typed residual points (including PHPStan's fallback point).
-                        // Never substitute a reduced throw-type union for that producer.
-                        let Hint::Identifier(id) = &catch.hint else {
-                            return None;
-                        };
-                        if !self
-                            .c
-                            .names
-                            .get(&id.span())
-                            .eq_ignore_ascii_case(b"Throwable")
-                        {
-                            return None;
-                        }
-                        effects.throws = false;
-                        let caught = self.block(&catch.block)?;
-                        effects.terminates &= caught.terminates;
-                        effects.impure |= caught.impure;
-                        effects.throws |= caught.throws;
-                        break;
+                if effects.throws
+                    && let Some(catch) = t.catch_clauses.first()
+                {
+                    // A narrower catch needs typed residual points (including PHPStan's fallback point).
+                    // Never substitute a reduced throw-type union for that producer.
+                    let Hint::Identifier(id) = &catch.hint else {
+                        return None;
+                    };
+                    if !self
+                        .c
+                        .names
+                        .get(&id.span())
+                        .eq_ignore_ascii_case(b"Throwable")
+                    {
+                        return None;
                     }
+                    effects.throws = false;
+                    let caught = self.block(&catch.block)?;
+                    effects.terminates &= caught.terminates;
+                    effects.impure |= caught.impure;
+                    effects.throws |= caught.throws;
                 }
                 if let Some(finally) = &t.finally_clause {
                     effects.merge(self.block(&finally.block)?);
@@ -362,10 +361,10 @@ impl Producer<'_, '_, '_> {
                         };
                         if self.referenced
                             || (!self.array(offset.array)
-                                && !self
+                                && self
                                     .c
                                     .phpstan_type(offset.array)
-                                    .is_some_and(|t| t.is_array() == Tri::Yes))
+                                    .is_none_or(|t| t.is_array() != Tri::Yes))
                         {
                             return None;
                         }
@@ -546,7 +545,7 @@ impl Producer<'_, '_, '_> {
             if unless_callable
                 || unless_passed
                 || f.parameters.iter().any(|p| p.flags.is_by_reference())
-                || declarations::doc_tags(&raw)
+                || declarations::doc_tags(raw)
                     .iter()
                     .any(|tag| tag == "@param-immediately-invoked-callable")
             {
@@ -557,7 +556,7 @@ impl Producer<'_, '_, '_> {
             if pure != Some(true) {
                 self.arrays.clear();
             }
-            let tags = doc::tags(&raw);
+            let tags = doc::tags(raw);
             let kind = if tags.iter().any(|(name, _)| name == "@phpstan-throws") {
                 "@phpstan-throws"
             } else {
@@ -694,7 +693,7 @@ impl Producer<'_, '_, '_> {
             return None;
         };
         let mut effects = Effects::default();
-        for arg in call.argument_list.arguments.iter() {
+        for arg in &call.argument_list.arguments {
             if matches!(arg, Argument::Positional(p) if p.ellipsis.is_some()) {
                 return None;
             }
@@ -728,16 +727,16 @@ impl Producer<'_, '_, '_> {
             .unwrap_or_default();
         // Parameterized calls additionally need reference writes and immediately-invoked callable policies,
         // including a callable passed through a local variable rather than a closure literal.
-        if conditional(&raw) || !f.parameters.is_empty() {
+        if conditional(raw) || !f.parameters.is_empty() {
             return None;
         }
         let ret = &f.return_type_metadata.as_ref()?.type_union;
         if ret.is_never() {
             return None;
         }
-        effects.impure |= ret.is_void() || purity(&raw) != Some(true);
+        effects.impure |= ret.is_void() || purity(raw) != Some(true);
         // PhpDocNodeResolver::resolveThrowsTags(): phpstan-throws takes precedence, all tags of that name merge.
-        let tags = doc::tags(&raw);
+        let tags = doc::tags(raw);
         let kind = if tags.iter().any(|(name, _)| name == "@phpstan-throws") {
             "@phpstan-throws"
         } else {

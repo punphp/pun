@@ -108,12 +108,12 @@ pub(crate) struct List<'ast, 'arena> {
 
 impl List<'_, '_> {
     /// php-parser's `stmts === []`.
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.stmts.is_empty() && !self.nop
     }
 
     /// The number of php-parser statements, the `Nop` included.
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.stmts.len() + usize::from(self.nop)
     }
 }

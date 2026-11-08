@@ -349,11 +349,11 @@ impl Parser<'_> {
         .concat();
         let mut expected = Vec::new();
         // The state read a lookahead, so its yypact entry is not the default.
-        let yyn = YYPACT[state as usize] as i32;
+        let yyn = i32::from(YYPACT[state as usize]);
         for x in yyn.max(0) - yyn..(YYLAST - yyn + 1).min(YYNTOKENS) {
-            if YYCHECK[(x + yyn) as usize] as i32 == x
+            if i32::from(YYCHECK[(x + yyn) as usize]) == x
                 && x != 1
-                && YYTABLE[(x + yyn) as usize] as i32 != YYTABLE_NINF
+                && i32::from(YYTABLE[(x + yyn) as usize]) != YYTABLE_NINF
             {
                 expected.push(x);
             }
@@ -403,10 +403,10 @@ impl Parser<'_> {
             if state == YYFINAL {
                 return Ok(());
             }
-            let mut yyn = YYPACT[state as usize] as i32;
+            let mut yyn = i32::from(YYPACT[state as usize]);
             let rule = 'decide: {
                 if yyn == YYPACT_NINF {
-                    break 'decide YYDEFACT[state as usize] as i32;
+                    break 'decide i32::from(YYDEFACT[state as usize]);
                 }
                 if la.is_none() {
                     la = Some(match self.lx.next_token().map_err(lex_error)? {
@@ -416,10 +416,10 @@ impl Parser<'_> {
                 }
                 let symbol = la.unwrap().0;
                 yyn += symbol;
-                if !(0..=YYLAST).contains(&yyn) || YYCHECK[yyn as usize] as i32 != symbol {
-                    break 'decide YYDEFACT[state as usize] as i32;
+                if !(0..=YYLAST).contains(&yyn) || i32::from(YYCHECK[yyn as usize]) != symbol {
+                    break 'decide i32::from(YYDEFACT[state as usize]);
                 }
-                let action = YYTABLE[yyn as usize] as i32;
+                let action = i32::from(YYTABLE[yyn as usize]);
                 if action <= 0 {
                     if action == YYTABLE_NINF {
                         break 'decide 0;
@@ -454,12 +454,12 @@ impl Parser<'_> {
             states.truncate(states.len() - len);
             values.truncate(values.len() - len);
             let top = *states.last().unwrap();
-            let lhs = YYR1[rule] as i32 - YYNTOKENS;
-            let i = YYPGOTO[lhs as usize] as i32 + top;
-            let next = if (0..=YYLAST).contains(&i) && YYCHECK[i as usize] as i32 == top {
-                YYTABLE[i as usize] as i32
+            let lhs = i32::from(YYR1[rule]) - YYNTOKENS;
+            let i = i32::from(YYPGOTO[lhs as usize]) + top;
+            let next = if (0..=YYLAST).contains(&i) && i32::from(YYCHECK[i as usize]) == top {
+                i32::from(YYTABLE[i as usize])
             } else {
-                YYDEFGOTO[lhs as usize] as i32
+                i32::from(YYDEFGOTO[lhs as usize])
             };
             states.push(next);
             values.push(range);

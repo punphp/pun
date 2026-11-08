@@ -153,7 +153,7 @@ fn clone_results_and_single_operand_walk_match_public_phpstan_controls() {
             want = format!("{prefix} (function {}", scope.to_ascii_lowercase());
         }
         let mut parts: Vec<_> = want.split('|').collect();
-        parts.sort();
+        parts.sort_unstable();
         want = parts.join("|");
         let got = describe(ty);
         assert_eq!(got, want, "{expected}; {ty:?}");

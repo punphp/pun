@@ -48,7 +48,7 @@ impl Rule for PreferAssert {
         if !behat && !is_in_test_class(ctx, &scope, None) {
             return;
         }
-        for member in members.iter() {
+        for member in members {
             let mago_syntax::cst::ClassLikeMember::Method(method) = member else {
                 continue;
             };

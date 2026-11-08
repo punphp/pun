@@ -73,7 +73,7 @@ pub(crate) fn snapshot(dir: &Path, skip: impl Fn(&str) -> bool) -> BTreeMap<Stri
                 continue;
             }
             if e.path().is_dir() {
-                walk(dir, &r, skip, out)
+                walk(dir, &r, skip, out);
             } else {
                 let content = std::fs::read(e.path()).unwrap_or_else(|_| b"<unreadable>".to_vec());
                 out.insert(r, content);

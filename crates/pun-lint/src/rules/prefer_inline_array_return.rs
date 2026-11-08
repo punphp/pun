@@ -68,7 +68,7 @@ impl Rule for PreferInlineArrayReturn {
         let tokens = tokens(ctx);
         let mut chain = ancestors.to_vec();
         chain.push(node);
-        let (list, index) = enclosing(source, &tokens, &chain);
+        let (list, index) = enclosing(source, tokens, &chain);
         let count = list.stmts.len();
         if count < 3 || index + 1 != count || list.nop {
             return;
@@ -97,12 +97,12 @@ impl Rule for PreferInlineArrayReturn {
             return;
         }
         let first = node_span(list.stmts[0]);
-        let before = previous_token_end(source, &tokens, first.start).max(list.inner.start);
-        let start = comments_between(&tokens, before, first.start)
+        let before = previous_token_end(source, tokens, first.start).max(list.inner.start);
+        let start = comments_between(tokens, before, first.start)
             .first()
             .map_or(first.start, |c| c.start);
         let level = indentation(source, first.start);
-        let array = print(source, &tokens, level, &items);
+        let array = print(source, tokens, level, &items);
         let span = Span::new(start, node_span(list.stmts[count - 1]).end);
         out.push(Report {
             span: node_span(list.stmts[0]),

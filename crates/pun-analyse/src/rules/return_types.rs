@@ -7,9 +7,9 @@ use mago_analyzer::plugin::HookResult;
 use mago_analyzer::plugin::PluginRegistry;
 use mago_analyzer::plugin::context::{HookContext, InvocationInfo, ProviderContext};
 use mago_analyzer::plugin::hook::{ExpressionHookResult, FunctionCallHook};
+use mago_analyzer::plugin::libraries::stdlib::array::ArrayMapProvider;
 use mago_analyzer::plugin::provider::Provider;
 use mago_analyzer::plugin::provider::ProviderMeta;
-use mago_analyzer::plugin::libraries::stdlib::array::ArrayMapProvider;
 use mago_analyzer::plugin::provider::function::{
     CallbackInvocation, FunctionReturnTypeProvider, FunctionTarget,
 };
@@ -50,25 +50,48 @@ pub(super) fn registry(
 ) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     if let Some(larastan) = larastan {
-        registry.register_method_provider(super::larastan::Macros(Arc::clone(&larastan.app), Arc::clone(&larastan.macros)));
-        if larastan.switches.contains(crate::LarastanSwitches::CHECK_CONFIG_TYPES) {
-            registry.register_function_provider(super::larastan::ConfigTypes(Arc::clone(&larastan.configs)));
-            registry.register_method_provider(super::larastan::ConfigTypes(Arc::clone(&larastan.configs)));
+        registry.register_method_provider(super::larastan::Macros(
+            Arc::clone(&larastan.app),
+            Arc::clone(&larastan.macros),
+        ));
+        if larastan
+            .switches
+            .contains(crate::LarastanSwitches::CHECK_CONFIG_TYPES)
+        {
+            registry.register_function_provider(super::larastan::ConfigTypes(Arc::clone(
+                &larastan.configs,
+            )));
+            registry.register_method_provider(super::larastan::ConfigTypes(Arc::clone(
+                &larastan.configs,
+            )));
         }
-        registry.register_method_provider(super::larastan::HelperMethods(Arc::clone(&larastan.app)));
+        registry
+            .register_method_provider(super::larastan::HelperMethods(Arc::clone(&larastan.app)));
         registry.register_method_provider(super::larastan::ModelForwards(contents.to_vec()));
-        registry.register_method_provider(super::larastan::ConsoleTypes(Arc::clone(&larastan.commands)));
-        registry.register_method_provider(super::larastan::AppMethods(Arc::clone(&larastan.app), contents.to_vec()));
-        registry.register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
+        registry.register_method_provider(super::larastan::ConsoleTypes(Arc::clone(
+            &larastan.commands,
+        )));
+        registry.register_method_provider(super::larastan::AppMethods(
+            Arc::clone(&larastan.app),
+            contents.to_vec(),
+        ));
+        registry
+            .register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
         registry.register_function_provider(super::larastan::Tap);
         registry.register_function_assertion_provider(super::larastan::AbortIf);
         registry.register_function_provider(super::larastan::HelperFunctions {
             app: Arc::clone(&larastan.app),
-            generalize_env: larastan.switches.contains(crate::LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE),
+            generalize_env: larastan
+                .switches
+                .contains(crate::LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE),
         });
-        registry.register_expression_hook(super::larastan::ContainerOffsets(Arc::clone(&larastan.app)));
+        registry
+            .register_expression_hook(super::larastan::ContainerOffsets(Arc::clone(&larastan.app)));
         registry.register_expression_hook(super::larastan::ScopeStaticCalls(
-            names.iter().map(|(start, _, name, _)| (start, name.to_vec())).collect(),
+            names
+                .iter()
+                .map(|(start, _, name, _)| (start, name.to_vec()))
+                .collect(),
         ));
         crate::laravel::register_models(&mut registry, Arc::clone(&larastan.models));
     }
@@ -98,7 +121,10 @@ pub(super) fn registry(
 struct ConstantArrayMap;
 
 impl ConstantArrayMap {
-    fn applies(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> bool {
+    fn applies(
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> bool {
         let Some(callback) = invocation
             .get_argument(0, &[b"callback"])
             .and_then(|callback| context.get_expression_type(callback))
@@ -112,8 +138,12 @@ impl ConstantArrayMap {
                     .and_then(|array| context.get_expression_type(array))
                     .and_then(TUnion::get_single_array)
                     .is_some_and(|array| match array {
-                        TArray::Keyed(keyed) => keyed.known_items.is_some() && keyed.parameters.is_none(),
-                        TArray::List(list) => list.known_elements.is_some() && list.element_type.is_never(),
+                        TArray::Keyed(keyed) => {
+                            keyed.known_items.is_some() && keyed.parameters.is_none()
+                        }
+                        TArray::List(list) => {
+                            list.known_elements.is_some() && list.element_type.is_never()
+                        }
                     }))
     }
 }
@@ -207,7 +237,8 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         {
             let array = context.get_expression_type(invocation.get_argument(0, &[b"value"])?)?;
             // CountFunctionReturnTypeExtension delegates normal counts to the value's size.
-            let arrays = array.types
+            let arrays = array
+                .types
                 .iter()
                 .map(|atomic| {
                     if let TAtomic::Array(array) = atomic {
@@ -236,7 +267,10 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             }
             return Some(TArray::get_union_size(&arrays, context.codebase()));
         }
-        if invocation.function_name().eq_ignore_ascii_case("str_repeat") {
+        if invocation
+            .function_name()
+            .eq_ignore_ascii_case("str_repeat")
+        {
             // Stored callable signatures do not run PHPStan's dynamic extension. Do not retain the
             // prelude's conditional non-empty refinement on that separate reflection-only path either.
             if !self.0.lock().unwrap().contains(&invocation.span()) {
@@ -280,7 +314,10 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         {
             return RandomInt::get_return_type(context, invocation);
         }
-        if invocation.function_name().eq_ignore_ascii_case("array_replace") {
+        if invocation
+            .function_name()
+            .eq_ignore_ascii_case("array_replace")
+        {
             return Self::array_replace(context, invocation);
         }
         let array = context.get_expression_type(invocation.get_argument(0, &[b"array"])?)?;
@@ -551,10 +588,10 @@ impl FilterFunctions {
                     } as i64);
                 }
                 TAtomic::Scalar(TScalar::Bool(boolean)) if boolean.is_general() => {
-                    values.extend([0, 1])
+                    values.extend([0, 1]);
                 }
                 TAtomic::Scalar(TScalar::Bool(boolean)) => {
-                    values.push(i64::from(boolean.is_true()))
+                    values.push(i64::from(boolean.is_true()));
                 }
                 TAtomic::Scalar(TScalar::String(string)) => {
                     // Extract PHP's ASCII leading numeric prefix before parsing, preserving large integer
@@ -689,13 +726,12 @@ impl FilterFunctions {
             );
         }
         // Validation filters never sanitize strings. IP's non-falsy-string already carries both accessories.
-        if exact.is_none()
+        if (exact.is_none()
             || has_options.maybe()
-            || (input != ty && Self::contains(&input, &ty, codebase))
+            || (input != ty && Self::contains(&input, &ty, codebase)))
+            && !Self::contains(&default, &ty, codebase)
         {
-            if !Self::contains(&default, &ty, codebase) {
-                ty = Self::union(&ty, &default, codebase);
-            }
+            ty = Self::union(&ty, &default, codebase);
         }
         if require.yes() || force.yes() {
             ty = get_keyed_array(keys, ty);
@@ -807,8 +843,10 @@ impl FilterFunctions {
         if min.zip(max).is_some_and(|(min, max)| min > max) {
             return default.clone();
         }
-        let range = if min.is_some() && min == max {
-            get_literal_int(min.unwrap())
+        let range = if let Some(value) = min
+            && min == max
+        {
+            get_literal_int(value)
         } else {
             get_int_range(min, max)
         };
@@ -850,31 +888,49 @@ impl StrRepeat {
         if let (Some(multiplier), Some(strings)) = (multiplier, &strings) {
             // PHP promotes overflowing integer arithmetic to float. A wider sum gives the same budget
             // decision without overflow or allocating an oversized repetition (including huge counts).
-            let length: u128 = strings.iter()
-                .map(|string| string.as_bytes().len() as u128 * multiplier as u128).sum();
+            let length: u128 = strings
+                .iter()
+                .map(|string| string.as_bytes().len() as u128 * multiplier as u128)
+                .sum();
             if length < 100 {
-                let mut values: Vec<_> = strings.iter().map(|string| {
-                    TString::known_literal(mago_word::word(&string.as_bytes().repeat(multiplier as usize)))
-                }).collect();
+                let mut values: Vec<_> = strings
+                    .iter()
+                    .map(|string| {
+                        TString::known_literal(mago_word::word(
+                            string.as_bytes().repeat(multiplier as usize),
+                        ))
+                    })
+                    .collect();
                 values.sort_unstable();
                 values.dedup();
-                return TUnion::from_vec(values.into_iter()
-                    .map(|string| TAtomic::Scalar(TScalar::String(string))).collect());
+                return TUnion::from_vec(
+                    values
+                        .into_iter()
+                        .map(|string| TAtomic::Scalar(TScalar::String(string)))
+                        .collect(),
+                );
             }
         }
         let positive = BuiltinFunctions::count_in_range(count, 1, None);
         let nonempty = positive && Self::property(input, 0, TString::is_non_empty);
         let truthy = nonempty && Self::property(input, 0, TString::is_truthy);
         let literal = Self::property(input, 0, TString::is_literal_origin);
-        let numeric = literal && positive && Self::property(input, 0, |string| string.is_numeric)
-            && strings.as_ref().is_none_or(|strings| strings.iter().all(|string| {
-                // Upstream uses preg_match('#^[0-9]+$#'), not is_numeric(): signs, whitespace,
-                // decimal points and exponent markers must not acquire numeric-string. As upstream,
-                // `$` also permits one final newline; do not silently replace it with `\z`.
-                static DIGITS: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
-                DIGITS.get_or_init(|| pcre2::bytes::Regex::new("^[0-9]+$").unwrap())
-                    .is_match(string.as_bytes()).unwrap()
-            }));
+        let numeric = literal
+            && positive
+            && Self::property(input, 0, |string| string.is_numeric)
+            && strings.as_ref().is_none_or(|strings| {
+                strings.iter().all(|string| {
+                    // Upstream uses preg_match('#^[0-9]+$#'), not is_numeric(): signs, whitespace,
+                    // decimal points and exponent markers must not acquire numeric-string. As upstream,
+                    // `$` also permits one final newline; do not silently replace it with `\z`.
+                    static DIGITS: std::sync::OnceLock<pcre2::bytes::Regex> =
+                        std::sync::OnceLock::new();
+                    DIGITS
+                        .get_or_init(|| pcre2::bytes::Regex::new("^[0-9]+$").unwrap())
+                        .is_match(string.as_bytes())
+                        .unwrap()
+                })
+            });
         let lower = Self::property(input, 0, TString::is_lowercase);
         let upper = Self::property(input, 0, TString::is_uppercase);
         let casing = match (lower, upper) {
@@ -919,12 +975,24 @@ impl StrRepeat {
     fn property(input: &TUnion, depth: usize, query: fn(&TString) -> bool) -> bool {
         let depth = if input.types.len() > 1 { 0 } else { depth };
         input.types.iter().all(|atomic| match atomic {
-            TAtomic::GenericParameter(template) => Self::property(&template.constraint, depth + 1, query),
-            TAtomic::Scalar(TScalar::String(string)) => {
-                if depth > 1 && string.is_known_literal() { false } else { query(string) }
+            TAtomic::GenericParameter(template) => {
+                Self::property(&template.constraint, depth + 1, query)
             }
-            TAtomic::Scalar(TScalar::ClassLikeString(string)) if depth == 0 || (depth == 1 && string.is_literal()) => {
-                query(&string.literal_value().map_or_else(TString::truthy, TString::known_literal))
+            TAtomic::Scalar(TScalar::String(string)) => {
+                if depth > 1 && string.is_known_literal() {
+                    false
+                } else {
+                    query(string)
+                }
+            }
+            TAtomic::Scalar(TScalar::ClassLikeString(string))
+                if depth == 0 || (depth == 1 && string.is_literal()) =>
+            {
+                query(
+                    &string
+                        .literal_value()
+                        .map_or_else(TString::truthy, TString::known_literal),
+                )
             }
             _ => false,
         })
@@ -1039,7 +1107,10 @@ impl BuiltinFunctions {
     /// ArrayReplaceFunctionReturnTypeExtension once an argument is not a constant array: the arguments' keys and
     /// values, with each constant array's known keys, whose values a later general argument may replace.
     /// ponytail: all-constant and unpacked arguments keep the prelude's generic return type
-    fn array_replace(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+    fn array_replace(
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
         let codebase = context.codebase();
         let combine = |a: Option<TUnion>, b: &TUnion| match a {
             Some(a) => combine_union_types(&a, b, codebase, CombinerOptions::default()),
@@ -1064,7 +1135,9 @@ impl BuiltinFunctions {
             let (key, value) = if ty.types.iter().any(TAtomic::is_mixed) {
                 (mago_codex::ttype::get_arraykey(), get_mixed())
             } else {
-                let [atomic @ TAtomic::Array(array)] = ty.types.as_ref() else { return None };
+                let [atomic @ TAtomic::Array(array)] = ty.types.as_ref() else {
+                    return None;
+                };
                 non_empty |= array.is_non_empty();
                 get_iterable_parameters(atomic, codebase)?
             };
@@ -1435,7 +1508,12 @@ impl ParseUrl {
             ("fragment", string),
         ]
         .into_iter()
-        .map(|(key, value)| (ArrayKey::String(mago_word::word(key.as_bytes())), (true, value)))
+        .map(|(key, value)| {
+            (
+                ArrayKey::String(mago_word::word(key.as_bytes())),
+                (true, value),
+            )
+        })
         .collect();
         TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(items)))
     }
@@ -1485,27 +1563,34 @@ impl FunctionReturnTypeProvider for ParseUrl {
         let component = match invocation.get_argument(1, &[b"component"]) {
             None => -1,
             // `$componentType->isConstantValue()` and `toInteger()` a ConstantIntegerType
-            Some(arg) => match context
-                .get_expression_type(arg)
-                .and_then(|t| match t.types.as_ref() {
-                    [TAtomic::Scalar(TScalar::Integer(i))] => i.get_literal_value(),
-                    [TAtomic::Scalar(TScalar::Bool(b))] if b.is_true() => Some(1),
-                    [TAtomic::Scalar(TScalar::Bool(b))] if b.is_false() => Some(0),
-                    [TAtomic::Null] => Some(0),
-                    _ => None,
-                }) {
-                Some(component) => component,
-                // createAllComponentsReturnType()
-                None => {
-                    return Some(TUnion::from_vec(
-                        [&get_false(), &get_null(), &Self::port(), &Self::string(lowercase)]
+            Some(arg) => {
+                match context
+                    .get_expression_type(arg)
+                    .and_then(|t| match t.types.as_ref() {
+                        [TAtomic::Scalar(TScalar::Integer(i))] => i.get_literal_value(),
+                        [TAtomic::Scalar(TScalar::Bool(b))] if b.is_true() => Some(1),
+                        [TAtomic::Scalar(TScalar::Bool(b))] if b.is_false() => Some(0),
+                        [TAtomic::Null] => Some(0),
+                        _ => None,
+                    }) {
+                    Some(component) => component,
+                    // createAllComponentsReturnType()
+                    None => {
+                        return Some(TUnion::from_vec(
+                            [
+                                &get_false(),
+                                &get_null(),
+                                &Self::port(),
+                                &Self::string(lowercase),
+                            ]
                             .into_iter()
                             .flat_map(|t| t.types.iter().cloned())
                             .chain([Self::components_array(lowercase)])
                             .collect(),
-                    ));
+                        ));
+                    }
                 }
-            },
+            }
         };
         let or_false_or_null = |t: TUnion| {
             TUnion::from_vec(
@@ -1556,23 +1641,33 @@ impl FunctionReturnTypeProvider for GetClass {
         let argument = context.get_expression_type(invocation.get_argument(0, &[b"object"])?)?;
         let in_trait = matches!(context.scope().get_reference_origin(), ReferenceOrigin::Symbol((class, _))
             if context.codebase().get_class_like(class.as_bytes()).is_some_and(|k| k.kind.is_trait()));
-        if in_trait && argument.types.iter().any(|a| matches!(a, TAtomic::Object(TObject::Named(n)) if n.is_this)) {
+        if in_trait
+            && argument
+                .types
+                .iter()
+                .any(|a| matches!(a, TAtomic::Object(TObject::Named(n)) if n.is_this))
+        {
             return None;
         }
         // an object-bounded template's getClassStringType(): `class-string<T>`
         if let [TAtomic::GenericParameter(t)] = argument.types.as_ref()
             && let [bound @ TAtomic::Object(_)] = t.constraint.types.as_ref()
         {
-            use mago_codex::ttype::atomic::scalar::class_like_string::{TClassLikeString, TClassLikeStringKind};
+            use mago_codex::ttype::atomic::scalar::class_like_string::{
+                TClassLikeString, TClassLikeStringKind,
+            };
             let generic = TClassLikeString::generic(
                 TClassLikeStringKind::Class,
                 t.parameter_name,
-                t.defining_entity.clone(),
+                t.defining_entity,
                 bound.clone(),
             );
-            return Some(TUnion::from_atomic(TAtomic::Scalar(mago_codex::ttype::atomic::scalar::TScalar::ClassLikeString(generic))));
+            return Some(TUnion::from_atomic(TAtomic::Scalar(
+                mago_codex::ttype::atomic::scalar::TScalar::ClassLikeString(generic),
+            )));
         }
-        mago_analyzer::plugin::libraries::stdlib::object::GetClassProvider.get_return_type(context, invocation)
+        mago_analyzer::plugin::libraries::stdlib::object::GetClassProvider
+            .get_return_type(context, invocation)
     }
 }
 
@@ -1597,11 +1692,14 @@ impl FunctionReturnTypeProvider for ClassRelations {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
-        use mago_codex::ttype::atomic::scalar::class_like_string::{TClassLikeString, TClassLikeStringKind};
-        let first = context.get_expression_type(invocation.get_argument(0, &[b"object_or_class"])?)?;
-        let class_string = TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::any(
-            TClassLikeStringKind::Class,
-        ))));
+        use mago_codex::ttype::atomic::scalar::class_like_string::{
+            TClassLikeString, TClassLikeStringKind,
+        };
+        let first =
+            context.get_expression_type(invocation.get_argument(0, &[b"object_or_class"])?)?;
+        let class_string = TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(
+            TClassLikeString::any(TClassLikeStringKind::Class),
+        )));
         let array = TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
             Arc::new(mago_codex::ttype::get_string()),
             Arc::new(class_string),
@@ -1613,8 +1711,17 @@ impl FunctionReturnTypeProvider for ClassRelations {
         let autoload = invocation
             .get_argument(1, &[b"autoload"])
             .is_none_or(|a| context.get_expression_type(a).is_some_and(TUnion::is_true));
-        if first.types.iter().all(|a| matches!(a, TAtomic::Object(_) | TAtomic::Scalar(TScalar::ClassLikeString(_)))) {
-            return Some(if autoload { benevolent(variant) } else { variant });
+        if first.types.iter().all(|a| {
+            matches!(
+                a,
+                TAtomic::Object(_) | TAtomic::Scalar(TScalar::ClassLikeString(_))
+            )
+        }) {
+            return Some(if autoload {
+                benevolent(variant)
+            } else {
+                variant
+            });
         }
         Some(variant)
     }
@@ -1695,14 +1802,25 @@ impl FunctionReturnTypeProvider for ReplaceOfMixed {
             // string subject (`TypeCombinator::intersect(new StringType(), $subject)`; `false` adds no array)
             let string = |t: &TAtomic| matches!(t, TAtomic::Scalar(s) if s.is_any_string());
             let no_array = name != "substr_replace"
-                && subject.types.iter().all(|t| matches!(t, TAtomic::Scalar(_) | TAtomic::Null))
+                && subject
+                    .types
+                    .iter()
+                    .all(|t| matches!(t, TAtomic::Scalar(_) | TAtomic::Null))
                 && subject.types.iter().any(string);
-            return (no_array && !subject.types.iter().all(string)).then(mago_codex::ttype::get_string);
+            return (no_array && !subject.types.iter().all(string))
+                .then(mago_codex::ttype::get_string);
         }
-        let [variant] = super::reflection::builtins(80400).functions.get(&name)?.variants.as_slice() else {
+        let [variant] = super::reflection::builtins(80400)
+            .functions
+            .get(&name)?
+            .variants
+            .as_slice()
+        else {
             return None;
         };
-        Some(benevolent(crate::larastan::config::type_from_text(variant.ret.as_bytes())?))
+        Some(benevolent(crate::larastan::config::type_from_text(
+            variant.ret.as_bytes(),
+        )?))
     }
 }
 

@@ -13,7 +13,7 @@ use pun_phpstan::symbols;
 use super::Checker;
 use super::params::Variants;
 
-pub enum Method<'a> {
+pub(super) enum Method<'a> {
     User {
         declaring: &'a ClassLikeMetadata,
         f: &'a FunctionLikeMetadata,
@@ -29,7 +29,7 @@ pub enum Method<'a> {
 }
 
 impl Method<'_> {
-    pub fn declaring_display(&self, c: &Checker) -> String {
+    pub(super) fn declaring_display(&self, c: &Checker) -> String {
         match self {
             Method::User { declaring, .. } => c.display(declaring),
             Method::Builtin { declaring, .. } => declaring.name.clone(),
@@ -37,7 +37,7 @@ impl Method<'_> {
     }
 
     /// The declaring class's name (an anonymous class's codex name), for visibility checks.
-    pub fn declaring_name(&self) -> String {
+    pub(super) fn declaring_name(&self) -> String {
         match self {
             Method::User { declaring, .. } => {
                 String::from_utf8_lossy(declaring.original_name.as_bytes()).into_owned()
@@ -46,7 +46,7 @@ impl Method<'_> {
         }
     }
 
-    pub fn name(&self) -> String {
+    pub(super) fn name(&self) -> String {
         match self {
             Method::User { original_name, .. } => {
                 String::from_utf8_lossy(original_name.as_bytes()).into_owned()
@@ -55,14 +55,14 @@ impl Method<'_> {
         }
     }
 
-    pub fn is_static(&self) -> bool {
+    pub(super) fn is_static(&self) -> bool {
         match self {
             Method::User { f, .. } => f.method_metadata.as_ref().is_some_and(|m| m.is_static),
             Method::Builtin { f, .. } => f.is_static,
         }
     }
 
-    pub fn is_abstract(&self) -> bool {
+    pub(super) fn is_abstract(&self) -> bool {
         match self {
             Method::User { declaring, f, .. } => {
                 f.method_metadata.as_ref().is_some_and(|m| m.is_abstract)
@@ -72,32 +72,32 @@ impl Method<'_> {
         }
     }
 
-    pub fn is_final(&self) -> bool {
+    pub(super) fn is_final(&self) -> bool {
         match self {
             Method::User { f, .. } => f.method_metadata.as_ref().is_some_and(|m| m.is_final),
             Method::Builtin { .. } => false,
         }
     }
 
-    pub fn visibility(&self) -> Visibility {
+    pub(super) fn visibility(&self) -> Visibility {
         match self {
             Method::User { visibility, .. } => *visibility,
             Method::Builtin { .. } => Visibility::Public,
         }
     }
 
-    pub fn declared_in_interface(&self) -> bool {
+    pub(super) fn declared_in_interface(&self) -> bool {
         match self {
             Method::User { declaring, .. } => declaring.kind.is_interface(),
             Method::Builtin { declaring, .. } => declaring.is_interface,
         }
     }
 
-    pub fn variants(&self) -> Variants {
+    pub(super) fn variants(&self) -> Variants {
         match self {
             Method::User { f, declaring, name, .. } => {
                 let mut v = Variants::of(f);
-                for a in v.all.iter_mut() {
+                for a in &mut v.all {
                     let storage = declaring.declaring_method_ids.get(name);
                     a.class = Some(declaring.name.to_string());
                     a.callee = Some(super::params::UserCallee {
@@ -120,7 +120,7 @@ impl Method<'_> {
 }
 
 /// `$class->getMethod($name)`, `None` when `hasMethod()` is false (magic methods aside).
-pub fn method<'a>(
+pub(super) fn method<'a>(
     c: &Checker<'a, '_>,
     class: &'a ClassLikeMetadata,
     name: &[u8],
@@ -148,7 +148,7 @@ pub fn method<'a>(
 
 /// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits, its parents or its
 /// interfaces, which `getMethod()` falls back to when the class has no such native method.
-pub fn annotation_method<'a>(
+pub(super) fn annotation_method<'a>(
     c: &Checker<'a, '_>,
     class: &'a ClassLikeMetadata,
     name: &[u8],

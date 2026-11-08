@@ -737,7 +737,7 @@ pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
     };
     let mut out = String::with_capacity(text.len());
     let mut at = span.start;
-    for &t in super::php_parser::tokens(ctx).iter() {
+    for &t in super::php_parser::tokens(ctx) {
         if t.end <= span.start || t.start >= span.end {
             continue;
         }
@@ -1359,7 +1359,7 @@ pub(crate) fn rewrite_list(
             let span = node_span(closure);
             let indent = indent_at(ctx, span.start);
             let mut out = String::new();
-            for attributes in closure.attribute_lists.iter() {
+            for attributes in &closure.attribute_lists {
                 out.push_str(&kept_text(ctx, node_span(attributes), indent));
                 out.push(' ');
             }
@@ -1477,7 +1477,7 @@ fn print_params(
     list: &mago_syntax::cst::FunctionLikeParameterList<'_>,
     indent: usize,
 ) -> String {
-    let params: Vec<Span> = list.parameters.iter().map(|p| node_span(p)).collect();
+    let params: Vec<Span> = list.parameters.iter().map(node_span).collect();
     if !params.iter().any(|p| has_comments(ctx, p.start)) {
         return params
             .iter()
@@ -1531,7 +1531,7 @@ pub(crate) fn statement_list<'ast, 'arena>(
         return None;
     }
     let tokens = super::php_parser::tokens(ctx);
-    let mut list = super::php_parser::holder_list(ctx.source, &tokens, node);
+    let mut list = super::php_parser::holder_list(ctx.source, tokens, node);
     list.stmts.retain(|s| match s {
         Statement::Inline(inline) => {
             !(matches!(inline.value, b"\n" | b"\r\n")
@@ -1566,7 +1566,7 @@ fn print_function(
 ) -> String {
     let nl = format!("\n{}", " ".repeat(indent));
     let mut out = String::new();
-    for list in attributes.iter() {
+    for list in attributes {
         out.push_str(&kept_text(ctx, node_span(list), indent));
         out.push_str(&nl);
     }

@@ -2,7 +2,7 @@
 //! `RegexNonCapturingGroup`, `RegexAstWalkResult`, `RegexGroupWalkResult`) and `RegexExpressionHelper`'s pattern
 //! helpers.
 
-use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::rc::Rc;
 use std::sync::LazyLock;
 
@@ -447,7 +447,6 @@ struct Walker<'a> {
 
 impl Walker<'_> {
     /// `walkRegexAst()`.
-    #[allow(clippy::too_many_arguments)]
     fn walk_regex_ast(
         &self,
         ast: &Node,
@@ -890,9 +889,9 @@ impl Walker<'_> {
                 } else if literals.is_empty() {
                     literals.push(value.clone());
                 } else {
-                    literals
-                        .iter_mut()
-                        .for_each(|literal| literal.push_str(&value));
+                    for literal in literals.iter_mut() {
+                        literal.push_str(&value);
+                    }
                 }
             }
             return Some(value);
@@ -949,9 +948,9 @@ fn is_digits(literal: &str) -> bool {
 /// `repeatLiterals()`.
 fn repeat_literals(literals: &[String], min: i64, max: i64) -> Option<Vec<String>> {
     let mut collected: Vec<String> = Vec::new();
-    let mut seen: BTreeMap<String, ()> = BTreeMap::new();
+    let mut seen: BTreeSet<String> = BTreeSet::new();
     let mut collect = |value: String, collected: &mut Vec<String>| {
-        if seen.insert(value.clone(), ()).is_none() {
+        if seen.insert(value.clone()) {
             collected.push(value);
         }
     };

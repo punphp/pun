@@ -354,7 +354,7 @@ fn add_override_attribute_to_overridden_properties() {
     let found = Linter::new(vec![Box::new(AddOverrideAttribute)], 80400)
         .check(std::path::Path::new("f.php"), code)
         .unwrap();
-    assert!(found.is_empty());
+    assert_eq!(found, [] as [pun_problem::Problem; 0]);
 }
 
 /// config/configured_rule.php.

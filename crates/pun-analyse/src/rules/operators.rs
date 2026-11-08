@@ -8,11 +8,13 @@
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{Accessory, Cast, Level, StrictMixed, Type, cast_is_error, intersect, is_super_type_of, union};
+use pun_phpstan::types::{
+    Accessory, Cast, Level, StrictMixed, Type, cast_is_error, intersect, is_super_type_of, union,
+};
 
 use super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "booleanAnd.leftNotBoolean",
     "booleanAnd.rightNotBoolean",
     "logicalAnd.leftNotBoolean",
@@ -69,43 +71,48 @@ struct Typed {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed {
-    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
-        if (self.booleans && logical(&b.operator).is_some()) || (self.numbers && arithmetic(&b.operator).is_some()) {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
+        if (self.booleans && logical(&b.operator).is_some())
+            || (self.numbers && arithmetic(&b.operator).is_some())
+        {
             self.spans.extend([b.lhs.span(), b.rhs.span()]);
         }
     }
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if self.numbers && assign_arithmetic(&a.operator).is_some() {
             self.spans.extend([a.lhs.span(), a.rhs.span()]);
         }
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
-        if (self.booleans && matches!(u.operator, UnaryPrefixOperator::Not(_))) || (self.numbers && prefix(&u.operator).is_some()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
+        if (self.booleans && matches!(u.operator, UnaryPrefixOperator::Not(_)))
+            || (self.numbers && prefix(&u.operator).is_some())
+        {
             self.spans.push(u.operand.span());
         }
     }
-    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
+    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, (): &mut ()) {
         if self.numbers {
             self.spans.push(u.operand.span());
         }
     }
-    fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+    fn walk_in_if(&mut self, i: &'ast If<'arena>, (): &mut ()) {
         if self.booleans {
             self.spans.push(i.condition.span());
-            self.spans.extend(else_if_conditions(i).map(|(_, e)| e.span()));
+            self.spans
+                .extend(else_if_conditions(i).map(|(_, e)| e.span()));
         }
     }
-    fn walk_in_conditional(&mut self, t: &'ast Conditional<'arena>, _: &mut ()) {
+    fn walk_in_conditional(&mut self, t: &'ast Conditional<'arena>, (): &mut ()) {
         if self.booleans && t.then.is_some() {
             self.spans.push(t.condition.span());
         }
     }
-    fn walk_in_while(&mut self, w: &'ast While<'arena>, _: &mut ()) {
+    fn walk_in_while(&mut self, w: &'ast While<'arena>, (): &mut ()) {
         if self.loops {
             self.spans.push(w.condition.span());
         }
     }
-    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
+    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, (): &mut ()) {
         if self.loops {
             self.spans.push(d.condition.span());
         }
@@ -117,19 +124,37 @@ pub(super) fn else_if_conditions<'a, 'arena>(
     i: &'a If<'arena>,
 ) -> impl Iterator<Item = (Span, &'a Expression<'arena>)> {
     let (statement, colon) = match &i.body {
-        IfBody::Statement(b) => (Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition))), None),
-        IfBody::ColonDelimited(b) => (None, Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition)))),
+        IfBody::Statement(b) => (
+            Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition))),
+            None,
+        ),
+        IfBody::ColonDelimited(b) => (
+            None,
+            Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition))),
+        ),
     };
-    statement.into_iter().flatten().chain(colon.into_iter().flatten())
+    statement
+        .into_iter()
+        .flatten()
+        .chain(colon.into_iter().flatten())
 }
 
 /// The Boolean*ConditionRule of a statement or ternary whose condition is `cond`: `place` is its message's.
-pub(super) fn condition(c: &mut Checker, at: Span, cond: &Expression, place: &str, identifier: &'static str) {
+pub(super) fn condition(
+    c: &mut Checker,
+    at: Span,
+    cond: &Expression,
+    place: &str,
+    identifier: &'static str,
+) {
     let Some(t) = c.phpstan_type(cond) else {
         return;
     };
     if !passes_as_boolean(c, cond, &t) {
-        let message = format!("Only booleans are allowed in {place}, {} given.", describe(c, &t));
+        let message = format!(
+            "Only booleans are allowed in {place}, {} given.",
+            describe(c, &t)
+        );
         c.report(at, identifier, message, None);
     }
 }
@@ -179,8 +204,12 @@ enum Unary {
 /// The prefix operators the rules check: the identifier, the operation in messages and its helper.
 fn prefix(op: &UnaryPrefixOperator) -> Option<(&'static str, &'static str, Unary)> {
     Some(match op {
-        UnaryPrefixOperator::PreIncrement(_) => ("preInc.nonNumeric", "pre-increment", Unary::Increment),
-        UnaryPrefixOperator::PreDecrement(_) => ("preDec.nonNumeric", "pre-decrement", Unary::Decrement),
+        UnaryPrefixOperator::PreIncrement(_) => {
+            ("preInc.nonNumeric", "pre-increment", Unary::Increment)
+        }
+        UnaryPrefixOperator::PreDecrement(_) => {
+            ("preDec.nonNumeric", "pre-decrement", Unary::Decrement)
+        }
         UnaryPrefixOperator::Negation(_) => ("unaryMinus.nonNumeric", "unary -", Unary::Number),
         UnaryPrefixOperator::Plus(_) => ("unaryPlus.nonNumeric", "unary +", Unary::Number),
         _ => return None,
@@ -222,7 +251,10 @@ fn passes_as_boolean(c: &Checker, e: &Expression, t: &Type) -> bool {
 /// `$expr + 1` (or `++$expr`) of an object is not an ErrorType: GmpOperatorTypeSpecifyingExtension and
 /// BcMathNumberOperatorTypeSpecifyingExtension.
 fn object_operand(t: &Type) -> bool {
-    let objects = Type::Union(vec![Type::Object("GMP".into(), vec![], false), Type::Object("BcMath\\Number".into(), vec![], false)]);
+    let objects = Type::Union(vec![
+        Type::Object("GMP".into(), vec![], false),
+        Type::Object("BcMath\\Number".into(), vec![], false),
+    ]);
     is_super_type_of(&objects, t).yes()
 }
 
@@ -231,13 +263,20 @@ fn is_subtype_of_number(c: &Checker, e: &Expression) -> bool {
     let accepted = union(vec![
         Type::Int,
         Type::Float,
-        intersect(vec![Type::String, Type::Accessory(Accessory::NumericString)]),
+        intersect(vec![
+            Type::String,
+            Type::Accessory(Accessory::NumericString),
+        ]),
     ]);
     let Some(t) = type_to_check(c, e, &|t| is_super_type_of(&accepted, t).yes()) else {
         return true;
     };
     let is = is_super_type_of(&accepted, &t);
-    if matches!(t, Type::Benevolent(_)) { !is.no() } else { is.yes() }
+    if matches!(t, Type::Benevolent(_)) {
+        !is.no()
+    } else {
+        is.yes()
+    }
 }
 
 /// OperatorRuleHelper::isValidForArithmeticOperation(), isValidForIncrement() and isValidForDecrement().
@@ -267,7 +306,15 @@ fn has_arrays(t: &Type) -> bool {
     }
 }
 
-fn operands(c: &mut Checker, at: Span, name: &str, sigil: &str, left: &Expression, right: &Expression, plus: bool) {
+fn operands(
+    c: &mut Checker,
+    at: Span,
+    name: &str,
+    sigil: &str,
+    left: &Expression,
+    right: &Expression,
+    plus: bool,
+) {
     let (Some(l), Some(r)) = (c.phpstan_type(left), c.phpstan_type(right)) else {
         return;
     };
@@ -276,21 +323,31 @@ fn operands(c: &mut Checker, at: Span, name: &str, sigil: &str, left: &Expressio
     }
     for (side, e, t) in [("left", left, l), ("right", right, r)] {
         if !valid(c, e, &t, Unary::Number) {
-            let message = format!("Only numeric types are allowed in {sigil}, {} given on the {side} side.", describe(c, &t));
+            let message = format!(
+                "Only numeric types are allowed in {sigil}, {} given on the {side} side.",
+                describe(c, &t)
+            );
             let identifier = format!("{name}.{side}NonNumeric");
-            let identifier = IDENTIFIERS.iter().find(|i| **i == identifier).expect("an identifier per operator");
+            let identifier = IDENTIFIERS
+                .iter()
+                .find(|i| **i == identifier)
+                .expect("an identifier per operator");
             c.report(at, identifier, message, None);
         }
     }
 }
 
 pub(super) fn binary(c: &mut Checker, b: &Binary) {
-    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
+    if c.strict
+        .contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
         && let Some((name, sigil)) = arithmetic(&b.operator)
     {
         operands(c, b.span(), name, sigil, b.lhs, b.rhs, name == "plus");
     }
-    let Some((name, sigil)) = logical(&b.operator).filter(|_| c.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)) else {
+    let Some((name, sigil)) = logical(&b.operator).filter(|_| {
+        c.strict
+            .contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
+    }) else {
         return;
     };
     for (side, e) in [("left", b.lhs), ("right", b.rhs)] {
@@ -298,39 +355,60 @@ pub(super) fn binary(c: &mut Checker, b: &Binary) {
             continue;
         };
         if !passes_as_boolean(c, e, &t) {
-            let message = format!("Only booleans are allowed in {sigil}, {} given on the {side} side.", describe(c, &t));
+            let message = format!(
+                "Only booleans are allowed in {sigil}, {} given on the {side} side.",
+                describe(c, &t)
+            );
             let identifier = format!("{name}.{side}NotBoolean");
-            let identifier = IDENTIFIERS.iter().find(|i| **i == identifier).expect("an identifier per operator");
+            let identifier = IDENTIFIERS
+                .iter()
+                .find(|i| **i == identifier)
+                .expect("an identifier per operator");
             c.report(b, identifier, message, None);
         }
     }
 }
 
 pub(super) fn assignment(c: &mut Checker, a: &Assignment) {
-    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
+    if c.strict
+        .contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
         && let Some((name, sigil)) = assign_arithmetic(&a.operator)
     {
         operands(c, a.span(), name, sigil, a.lhs, a.rhs, name == "plus");
     }
 }
 
-fn unary(c: &mut Checker, at: Span, operand: &Expression, identifier: &'static str, operation: &str, op: Unary) {
+fn unary(
+    c: &mut Checker,
+    at: Span,
+    operand: &Expression,
+    identifier: &'static str,
+    operation: &str,
+    op: Unary,
+) {
     let Some(t) = c.phpstan_type(operand) else {
         return;
     };
     if !valid(c, operand, &t, op) {
-        let message = format!("Only numeric types are allowed in {operation}, {} given.", describe(c, &t));
+        let message = format!(
+            "Only numeric types are allowed in {operation}, {} given.",
+            describe(c, &t)
+        );
         c.report(at, identifier, message, None);
     }
 }
 
 pub(super) fn unary_prefix(c: &mut Checker, u: &UnaryPrefix) {
     if let UnaryPrefixOperator::Not(_) = u.operator {
-        if c.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
+        if c.strict
+            .contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
             && let Some(t) = c.phpstan_type(u.operand)
             && !passes_as_boolean(c, u.operand, &t)
         {
-            let message = format!("Only booleans are allowed in a negated boolean, {} given.", describe(c, &t));
+            let message = format!(
+                "Only booleans are allowed in a negated boolean, {} given.",
+                describe(c, &t)
+            );
             c.report(u, "booleanNot.exprNotBoolean", message, None);
         }
         return;
@@ -338,18 +416,28 @@ pub(super) fn unary_prefix(c: &mut Checker, u: &UnaryPrefix) {
     let Some((identifier, operation, op)) = prefix(&u.operator) else {
         return;
     };
-    if c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS) && (op != Unary::Number || c.on(crate::rules::Switches::BLEEDING_EDGE)) {
+    if c.strict
+        .contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
+        && (op != Unary::Number || c.on(crate::rules::Switches::BLEEDING_EDGE))
+    {
         unary(c, u.span(), u.operand, identifier, operation, op);
     }
 }
 
 pub(super) fn unary_postfix(c: &mut Checker, u: &UnaryPostfix) {
-    if !c.strict.contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS) {
+    if !c
+        .strict
+        .contains(crate::StrictRules::NUMERIC_OPERANDS_IN_ARITHMETIC_OPERATORS)
+    {
         return;
     }
     let (identifier, operation, op) = match u.operator {
-        UnaryPostfixOperator::PostIncrement(_) => ("postInc.nonNumeric", "post-increment", Unary::Increment),
-        UnaryPostfixOperator::PostDecrement(_) => ("postDec.nonNumeric", "post-decrement", Unary::Decrement),
+        UnaryPostfixOperator::PostIncrement(_) => {
+            ("postInc.nonNumeric", "post-increment", Unary::Increment)
+        }
+        UnaryPostfixOperator::PostDecrement(_) => {
+            ("postDec.nonNumeric", "post-decrement", Unary::Decrement)
+        }
     };
     unary(c, u.span(), u.operand, identifier, operation, op);
 }

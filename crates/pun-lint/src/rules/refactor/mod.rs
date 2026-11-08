@@ -51,7 +51,7 @@ use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Rule};
 
 /// Every rule of the group, in a fixed order, unconfigured.
-pub fn all() -> Vec<Box<dyn Rule>> {
+pub(super) fn all() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(AddOverrideAttribute),
         Box::new(AnnotationToAttribute::default()),
@@ -319,7 +319,12 @@ fn parents(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Option<Vec<String>>
     let first = scope.parent_class?;
     let mut chain = vec![first.clone()];
     if let Some(class) = facts(ctx).codebase.get_class_like(first.as_bytes()) {
-        chain.extend(class.all_parent_classes.iter().map(|p| p.to_string()));
+        chain.extend(
+            class
+                .all_parent_classes
+                .iter()
+                .map(std::string::ToString::to_string),
+        );
     }
     Some(chain)
 }

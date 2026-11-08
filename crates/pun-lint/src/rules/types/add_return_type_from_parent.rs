@@ -183,17 +183,17 @@ fn parent_method<'c>(
     method: &[u8],
 ) -> Option<&'c FunctionLikeMetadata> {
     let meta = codebase.get_class_like(class.as_bytes())?;
-    for parent in meta.all_parent_classes.iter() {
+    for parent in &meta.all_parent_classes {
         if let Some(m) = codebase.get_declaring_method(parent.as_bytes(), method) {
             return Some(m);
         }
     }
-    for interface in meta.all_parent_interfaces.iter() {
+    for interface in &meta.all_parent_interfaces {
         if let Some(m) = codebase.get_declaring_method(interface.as_bytes(), method) {
             return Some(m);
         }
     }
-    for r#trait in meta.used_traits.iter() {
+    for r#trait in &meta.used_traits {
         if let Some(m) = codebase.get_declaring_method(r#trait.as_bytes(), method) {
             return m
                 .method_metadata

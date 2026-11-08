@@ -367,17 +367,20 @@ pub fn base_dec(digits: &str, base: u32) -> Value {
     let mut f: f64 = 0.0;
     let mut overflow = false;
     for c in digits.chars() {
-        let d = c.to_digit(base).expect("digit") as i64;
+        let d = i64::from(c.to_digit(base).expect("digit"));
         if !overflow {
-            match i.checked_mul(base as i64).and_then(|x| x.checked_add(d)) {
+            match i
+                .checked_mul(i64::from(base))
+                .and_then(|x| x.checked_add(d))
+            {
                 Some(x) => i = x,
                 None => {
                     overflow = true;
-                    f = i as f64 * base as f64 + d as f64;
+                    f = i as f64 * f64::from(base) + d as f64;
                 }
             }
         } else {
-            f = f * base as f64 + d as f64;
+            f = f * f64::from(base) + d as f64;
         }
     }
     if overflow {
@@ -415,7 +418,7 @@ pub fn datetime_format(raw: &str, format: &str) -> String {
         "" | "Z" => 0,
         z => {
             let sign = if z.starts_with('-') { -1 } else { 1 };
-            let digits: String = z[1..].chars().filter(|c| c.is_ascii_digit()).collect();
+            let digits: String = z[1..].chars().filter(char::is_ascii_digit).collect();
             let (hh, mm) = if digits.len() > 2 {
                 digits.split_at(digits.len() - 2)
             } else {

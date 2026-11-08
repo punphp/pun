@@ -159,7 +159,7 @@ impl Fixer for PsrAutoloadingFixer {
         let new_namespace = substr_from(&file_dir.replace('/', "\\"), dir.len() + 1).to_string();
         let original_namespace = substr_tail(&namespace, new_namespace.len());
         if original_namespace != new_namespace
-            && original_namespace.to_ascii_lowercase() == new_namespace.to_ascii_lowercase()
+            && original_namespace.eq_ignore_ascii_case(&new_namespace)
         {
             tokens.clear_range(start, end);
             let namespace = format!(

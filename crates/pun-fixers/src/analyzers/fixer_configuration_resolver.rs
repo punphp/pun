@@ -45,7 +45,7 @@ pub(crate) fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) ->
                 .join(", ")
         };
         let mut def = defined.to_vec();
-        def.sort();
+        def.sort_unstable();
         bail!(
             "[{fixer}] Invalid configuration: The option{} {} do{} not exist. Defined options are: {}.",
             if unknown.len() > 1 { "s" } else { "" },

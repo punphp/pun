@@ -10,7 +10,7 @@ use pun_phpstan::phpdoc::TagValue;
 
 use super::Checker;
 
-pub const IDENTIFIERS: &[&str] = &["phpDoc.parseError", "phpDoc.phpstanTag"];
+pub(super) const IDENTIFIERS: &[&str] = &["phpDoc.parseError", "phpDoc.phpstanTag"];
 
 /// InvalidPHPStanDocTagRule::POSSIBLE_PHPSTAN_TAGS
 const POSSIBLE_PHPSTAN_TAGS: &[&str] = &[
@@ -60,7 +60,7 @@ const POSSIBLE_PHPSTAN_TAGS: &[&str] = &[
 
 /// A statement: every one but an expression statement that is no assignment (php-parser has no node for `<?php`,
 /// `?>` or inline HTML's doc comment).
-pub fn statement(c: &mut Checker, s: &Statement) {
+pub(super) fn statement(c: &mut Checker, s: &Statement) {
     // InvalidPhpDocVarTagTypeRule skips what NodeScopeResolver reads the `@var` of itself
     if !matches!(
         s,
@@ -86,7 +86,7 @@ pub fn statement(c: &mut Checker, s: &Statement) {
 
 /// php-parser's `Nop` for the doc comment that ends a statement list (`maybeCreateZeroLengthNop()`), before `end`
 /// (a closing brace or the end of the file): a statement at the doc's last line.
-pub fn nop(c: &mut Checker, end: Span) {
+pub(super) fn nop(c: &mut Checker, end: Span) {
     let contents = &c.file.contents;
     let Some((doc, _)) = c.doc_before(c.file.id, end.start.offset) else {
         return;
@@ -108,7 +108,7 @@ pub fn nop(c: &mut Checker, end: Span) {
 
 /// A php-parser statement that is no Mago statement (a catch, else or elseif clause, a trait use, an enum case):
 /// both rules and InvalidPhpDocVarTagTypeRule.
-pub fn clause(c: &mut Checker, at: Span) {
+pub(super) fn clause(c: &mut Checker, at: Span) {
     node(c, at);
     super::invalid_throws::node(c, at);
     super::var_tags::node(c, at);
@@ -116,7 +116,7 @@ pub fn clause(c: &mut Checker, at: Span) {
 }
 
 /// The node at `at` (a statement, a class member, a property hook, a catch, else or elseif clause).
-pub fn node(c: &mut Checker, at: Span) {
+pub(super) fn node(c: &mut Checker, at: Span) {
     if c.level < 2 {
         return;
     }
@@ -126,7 +126,7 @@ pub fn node(c: &mut Checker, at: Span) {
     };
     let start = doc.as_ptr() as usize - file.contents.as_ptr() as usize;
     // (no tags where PHPStan's parser throws)
-    for tag in entry.phpdoc.iter() {
+    for tag in &entry.phpdoc {
         let offset = start
             + doc
                 .split_inclusive(|b| *b == b'\n')

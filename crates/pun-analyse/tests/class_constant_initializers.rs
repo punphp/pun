@@ -341,8 +341,10 @@ fn serialized_prelude_metadata_preserves_raw_unions_and_declarations() {
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
-    let mut prelude = Prelude::default();
-    prelude.metadata = scan_program(&arena, &file, program, &names, PHPVersion::new(8, 4, 0));
+    let mut prelude = Prelude {
+        metadata: scan_program(&arena, &file, program, &names, PHPVersion::new(8, 4, 0)),
+        ..Default::default()
+    };
     populate_codebase(
         &mut prelude.metadata,
         &mut SymbolReferences::new(),

@@ -165,7 +165,7 @@ fn destructuring_key_and_target_observations_are_once_only_and_native_independen
         &names,
         Settings::default().version,
     ));
-    let mut references = prelude.symbol_references.clone();
+    let mut references = prelude.symbol_references;
     populate_codebase(
         &mut codebase,
         &mut references,

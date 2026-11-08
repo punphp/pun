@@ -14,7 +14,7 @@ use super::reflection::Lookup;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, declared, infer, members, params};
 
 /// NewStaticRule, then InstantiationRule (level 0: no argument types).
-pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'arena>) {
+pub(super) fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'arena>) {
     if matches!(new.class, Expression::Static(_)) {
         new_static(c, new);
     }
@@ -24,7 +24,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             named(c, new, &name, true, Pair::name(name.clone(), id.span()));
         }
         Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) => {
-            let name = c.written(new.class.span()).to_string();
+            let name = c.written(new.class.span());
             named(
                 c,
                 new,
@@ -196,7 +196,7 @@ fn object_source(c: &Checker, at: Span) -> Option<Type> {
                 ty: Option<Type>,
             }
             impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'_, '_, 'arena> {
-                fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+                fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
                     if e.span() == self.at {
                         self.ty = self.c.phpstan_type(e);
                     }
@@ -299,7 +299,7 @@ fn named<'arena>(
 }
 
 /// InstantiationRule on `new class(...) { ... }`: the class is the anonymous class itself.
-pub fn anonymous(c: &mut Checker, a: &AnonymousClass, name: &str) {
+pub(super) fn anonymous(c: &mut Checker, a: &AnonymousClass, name: &str) {
     if let Some(class) = c.codebase.get_class_like(name.as_bytes()) {
         let args = a.argument_list.as_ref().map(params::count_partial);
         check_class(c, a.span(), args, class, false, true);

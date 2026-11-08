@@ -52,7 +52,7 @@ impl Rule for PreferScopeAttribute {
         let mut scope = ancestors.to_vec();
         scope.push(node);
         let mut edits = Vec::new();
-        for member in class.members.iter() {
+        for member in class.members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

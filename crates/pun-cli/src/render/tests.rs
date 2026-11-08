@@ -506,7 +506,7 @@ fn run_error_sample() {
         line: None,
         hint: None,
         message: "cannot read the file".into(),
-        ..e.clone()
+        ..e
     };
     assert_eq!(
         plain().run_error(&no_line),
@@ -850,7 +850,7 @@ fn format_summary_samples() {
     let test = FormatSummary {
         test: true,
         elapsed: Duration::from_millis(180),
-        ..fixed.clone()
+        ..fixed
     };
     assert_eq!(
         plain().format_summary(&test),
@@ -860,7 +860,7 @@ fn format_summary_samples() {
         formatted: 0,
         errors: 1,
         files: 1,
-        ..test.clone()
+        ..test
     };
     assert_eq!(
         painted().format_summary(&failing),

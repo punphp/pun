@@ -214,7 +214,10 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
     for ((class, name), method) in &mut metadata.function_likes {
         let name = String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase();
         let effects = if class.is_empty() {
-            builtins.functions.get(&name).map(|function| &function.side_effects)
+            builtins
+                .functions
+                .get(&name)
+                .map(|function| &function.side_effects)
         } else {
             builtins
                 .classes
@@ -237,12 +240,19 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         let Some([variant]) = builtins
             .classes
             .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
-            .and_then(|class| class.methods.get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase()))
+            .and_then(|class| {
+                class
+                    .methods
+                    .get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+            })
             .map(|method| method.variants.as_slice())
         else {
             continue;
         };
-        let Some(ret) = method.return_type_metadata.as_ref().or(method.return_type_declaration_metadata.as_ref())
+        let Some(ret) = method
+            .return_type_metadata
+            .as_ref()
+            .or(method.return_type_declaration_metadata.as_ref())
         else {
             continue;
         };
@@ -263,8 +273,14 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             .split(" | ")
             .map(|part| match part {
                 "null" => Some(TAtomic::Null),
-                p if !p.is_empty() && p.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\') => {
-                    get_named_object(mago_word::word(p), None).types.first().cloned()
+                p if !p.is_empty()
+                    && p.bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\') =>
+                {
+                    get_named_object(mago_word::word(p), None)
+                        .types
+                        .first()
+                        .cloned()
                 }
                 _ => None,
             })
@@ -273,14 +289,18 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         let lower = |types: &[TAtomic]| {
             let mut names: Vec<String> = types
                 .iter()
-                .map(|a| String::from_utf8_lossy(mago_codex::ttype::TType::get_id(a).as_bytes()).to_ascii_lowercase())
+                .map(|a| {
+                    String::from_utf8_lossy(mago_codex::ttype::TType::get_id(a).as_bytes())
+                        .to_ascii_lowercase()
+                })
                 .collect();
             names.sort();
             names
         };
         if lower(&reflected) != lower(&ret.type_union.types) {
             let span = ret.span;
-            method.return_type_metadata = Some(TypeMetadata::new(TUnion::from_vec(reflected), span));
+            method.return_type_metadata =
+                Some(TypeMetadata::new(TUnion::from_vec(reflected), span));
         }
     }
     // PHPStan's stubs return a bare class template where the prelude adds null (`Iterator::current()`'s `null|V`), and
@@ -289,18 +309,27 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         let Some([variant]) = builtins
             .classes
             .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
-            .and_then(|class| class.methods.get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase()))
+            .and_then(|class| {
+                class
+                    .methods
+                    .get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+            })
             .map(|method| method.variants.as_slice())
         else {
             continue;
         };
         if method.return_type_metadata.is_none() && variant.ret.starts_with("__benevolent<") {
-            method.return_type_metadata = method.return_type_declaration_metadata.clone();
+            method
+                .return_type_metadata
+                .clone_from(&method.return_type_declaration_metadata);
         }
-        let Some(ret) = method.return_type_metadata.as_mut() else { continue };
+        let Some(ret) = method.return_type_metadata.as_mut() else {
+            continue;
+        };
         if variant.ret.starts_with("__template<") && !variant.ret.contains(" | ") {
             if let [TAtomic::Null, template @ TAtomic::GenericParameter(_)]
-            | [template @ TAtomic::GenericParameter(_), TAtomic::Null] = ret.type_union.types.as_ref()
+            | [template @ TAtomic::GenericParameter(_), TAtomic::Null] =
+                ret.type_union.types.as_ref()
             {
                 ret.type_union = TUnion::from_vec(vec![template.clone()]);
             }
@@ -315,18 +344,24 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         if !scope.is_empty() || !function.flags.is_built_in() {
             continue;
         }
-        let Some(declared) =
-            function.return_type_metadata.as_ref().or(function.return_type_declaration_metadata.as_ref())
+        let Some(declared) = function
+            .return_type_metadata
+            .as_ref()
+            .or(function.return_type_declaration_metadata.as_ref())
         else {
             continue;
         };
-        let [TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(array))] = declared.type_union.types.as_ref()
+        let [TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(array))] =
+            declared.type_union.types.as_ref()
         else {
             continue;
         };
         if array.known_items.is_some()
             || array.non_empty
-            || !array.parameters.as_ref().is_some_and(|(k, v)| k.is_array_key() && v.is_mixed())
+            || !array
+                .parameters
+                .as_ref()
+                .is_some_and(|(k, v)| k.is_array_key() && v.is_mixed())
         {
             continue;
         }
@@ -411,7 +446,13 @@ fn scan_api(version: PHPVersion) -> (CodebaseMetadata, Scanned) {
         Cow::Borrowed(PHPSTAN_API),
     );
     let (metadata, facts) = scan(&mut LocalArena::new(), &stub, version, None, false);
-    (metadata, Scanned { file: Arc::new(stub), facts })
+    (
+        metadata,
+        Scanned {
+            file: Arc::new(stub),
+            facts,
+        },
+    )
 }
 
 /// Files scanned by one task: small enough that the threads finish together.
@@ -436,7 +477,9 @@ pub(crate) struct Sources {
 impl Sources {
     /// A file the scan read, PHPStan's API stub included.
     pub(crate) fn scanned(&self, id: FileId) -> Option<&Scanned> {
-        self.scanned.get(&id).or_else(|| self.api.as_ref().filter(|api| api.file.id == id))
+        self.scanned
+            .get(&id)
+            .or_else(|| self.api.as_ref().filter(|api| api.file.id == id))
     }
 }
 
@@ -547,7 +590,14 @@ pub(crate) fn build(
                                 let _ = names_phpstan_tx.send(());
                             }
                             let by_path = file_type == FileType::Host || has_constants;
-                            sources.push((path.clone(), Scanned { file: Arc::new(file), facts }, by_path));
+                            sources.push((
+                                path.clone(),
+                                Scanned {
+                                    file: Arc::new(file),
+                                    facts,
+                                },
+                                by_path,
+                            ));
                         }
                         Ok((metadata, sources, wanted, declarations))
                     })
@@ -610,7 +660,7 @@ pub(crate) fn build(
     metadata.apply_patches_pass();
     // Mago materialises a patch's method over an existing one only; a stub's `@method` adds one, as PHPStan's does
     let pseudo: Vec<_> = (metadata.patch_function_likes.iter())
-        .filter(|(key, _)| !metadata.function_likes.contains_key(*key))
+        .filter(|(key, _)| !metadata.function_likes.contains_key(key))
         .filter(|((class, name), _)| {
             (metadata.class_likes.get(class)).is_some_and(|k| {
                 k.pseudo_methods.contains(name) || k.static_pseudo_methods.contains(name)
@@ -643,9 +693,18 @@ fn ancestor_stub_docs(metadata: &mut CodebaseMetadata) {
     use mago_codex::ttype::template::{TemplateResult, inferred_type_replacer};
     // ClassReflection::getAncestors() after the class: interfaces, traits, then the parent, depth first
     fn visit(metadata: &CodebaseMetadata, name: mago_word::Word, order: &mut Vec<mago_word::Word>) {
-        let Some(k) = metadata.class_likes.get(&name) else { return };
-        for n in k.direct_parent_interfaces.iter().chain(k.used_traits.iter()).chain(k.direct_parent_class.iter()) {
-            let Some(a) = metadata.get_class_like(n.as_bytes()) else { continue };
+        let Some(k) = metadata.class_likes.get(&name) else {
+            return;
+        };
+        for n in k
+            .direct_parent_interfaces
+            .iter()
+            .chain(k.used_traits.iter())
+            .chain(k.direct_parent_class.iter())
+        {
+            let Some(a) = metadata.get_class_like(n.as_bytes()) else {
+                continue;
+            };
             if order.len() < 256 && !order.contains(&a.name) {
                 order.push(a.name);
                 visit(metadata, a.name, order);
@@ -654,25 +713,39 @@ fn ancestor_stub_docs(metadata: &mut CodebaseMetadata) {
     }
     let mut updates = Vec::new();
     for class_key in metadata.patch_class_likes.keys() {
-        let Some(class) = metadata.class_likes.get(class_key) else { continue };
+        let Some(class) = metadata.class_likes.get(class_key) else {
+            continue;
+        };
         if class.flags.is_user_defined() {
             continue;
         }
         let mut order = vec![class.name];
         visit(metadata, class.name, &mut order);
-        for method in class.methods.iter() {
-            if metadata.patch_function_likes.get(&(class.name, *method)).is_some_and(|p| p.has_docblock) {
+        for method in &class.methods {
+            if metadata
+                .patch_function_likes
+                .get(&(class.name, *method))
+                .is_some_and(|p| p.has_docblock)
+            {
                 continue;
             }
             let Some(ancestor) = order.iter().skip(1).find(|a| {
-                metadata.patch_function_likes.get(&(**a, *method)).is_some_and(|p| p.has_docblock)
+                metadata
+                    .patch_function_likes
+                    .get(&(**a, *method))
+                    .is_some_and(|p| p.has_docblock)
                     && metadata.function_likes.contains_key(&(**a, *method))
             }) else {
                 continue;
             };
             let parent = &metadata.function_likes[&(*ancestor, *method)];
             let mut templates = TemplateResult::default();
-            for (name, ty) in class.template_extended_parameters.get(ancestor).into_iter().flatten() {
+            for (name, ty) in class
+                .template_extended_parameters
+                .get(ancestor)
+                .into_iter()
+                .flatten()
+            {
                 templates.add_lower_bound(*name, GenericParent::ClassLike(*ancestor), ty.clone());
             }
             let substitute = |t: &mago_codex::metadata::ttype::TypeMetadata| {
@@ -680,17 +753,33 @@ fn ancestor_stub_docs(metadata: &mut CodebaseMetadata) {
                 t.type_union = inferred_type_replacer::replace(&t.type_union, &templates, metadata);
                 t
             };
-            let returned = parent.return_type_metadata.as_ref().filter(|t| t.from_docblock).map(substitute);
+            let returned = parent
+                .return_type_metadata
+                .as_ref()
+                .filter(|t| t.from_docblock)
+                .map(substitute);
             let params: Vec<_> = parent
                 .parameters
                 .iter()
-                .map(|p| p.type_metadata.as_ref().filter(|t| t.from_docblock).map(substitute))
+                .map(|p| {
+                    p.type_metadata
+                        .as_ref()
+                        .filter(|t| t.from_docblock)
+                        .map(substitute)
+                })
                 .collect();
-            updates.push(((class.name, *method), returned, params, parent.template_types.clone()));
+            updates.push((
+                (class.name, *method),
+                returned,
+                params,
+                parent.template_types.clone(),
+            ));
         }
     }
     for (key, returned, params, templates) in updates {
-        let Some(f) = metadata.function_likes.get_mut(&key) else { continue };
+        let Some(f) = metadata.function_likes.get_mut(&key) else {
+            continue;
+        };
         if returned.is_some() {
             f.return_type_metadata = returned;
         }
@@ -862,7 +951,9 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
         requested: HashSet::new(),
         copies,
         classes,
-        path_constants: project.options.contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
+        path_constants: project
+            .options
+            .contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
     };
     for name in roots {
         resolver.resolve(name);
@@ -979,7 +1070,7 @@ fn copy_owner(
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
-    fn walk_in_constant_access(&mut self, access: &'ast ConstantAccess<'arena>, _: &mut ()) {
+    fn walk_in_constant_access(&mut self, access: &'ast ConstantAccess<'arena>, (): &mut ()) {
         // The same selection as ConstantAccess::analyze: existence stops fallback, and imported or
         // qualified names can never accidentally select an unrelated global constant.
         let selected = selected_global(self.metadata, self.names, access);
@@ -991,7 +1082,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
     fn walk_in_class_constant_access(
         &mut self,
         access: &'ast cst::ClassConstantAccess<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         let cst::ClassLikeConstantSelector::Identifier(name) = &access.constant else {
             return;
@@ -1191,7 +1282,7 @@ impl Initializers<'_> {
             fn walk_out_class_constant_access(
                 &mut self,
                 access: &'ast cst::ClassConstantAccess<'arena>,
-                _: &mut (),
+                (): &mut (),
             ) {
                 if !matches!(
                     access.class.unparenthesized(),
@@ -1227,7 +1318,7 @@ impl Initializers<'_> {
         }
         for (expression, name) in holders.0 {
             let holder = self.inference(class).initializer_type(
-                &arena,
+                arena,
                 file,
                 program,
                 &names,
@@ -1244,14 +1335,9 @@ impl Initializers<'_> {
                 }
             }
         }
-        let mut value = self.inference(class).initializer_type(
-            &arena,
-            file,
-            program,
-            &names,
-            expression,
-            namespace,
-        );
+        let mut value = self
+            .inference(class)
+            .initializer_type(arena, file, program, &names, expression, namespace);
         if inherited_benevolence && value == get_int_or_float() {
             // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
             value.set_ignore_nullable_issues(true);
@@ -1275,7 +1361,11 @@ impl Initializers<'_> {
 }
 
 /// A source parsed for [`Initializers`]: its program, names and [`InitializerIndex`].
-type ParsedSource<'a> = (&'a Program<'a>, Rc<ResolvedNames<'a>>, Rc<InitializerIndex<'a, 'a>>);
+type ParsedSource<'a> = (
+    &'a Program<'a>,
+    Rc<ResolvedNames<'a>>,
+    Rc<InitializerIndex<'a, 'a>>,
+);
 
 /// What [`FindInitializer`] could select in one file, walked once: each candidate by its span in walk order (a later
 /// one wins), and the namespaces in walk order.
@@ -1299,7 +1389,10 @@ impl<'ast, 'arena> InitializerIndex<'ast, 'arena> {
         &self,
         at: Span,
         argument: bool,
-    ) -> (Option<&'ast Expression<'arena>>, Option<cst::Namespace<'arena>>) {
+    ) -> (
+        Option<&'ast Expression<'arena>>,
+        Option<cst::Namespace<'arena>>,
+    ) {
         let mut expression = None;
         for candidate in self.at.get(&at).into_iter().flatten() {
             match *candidate {
@@ -1309,7 +1402,9 @@ impl<'ast, 'arena> InitializerIndex<'ast, 'arena> {
             }
         }
         let namespace = (self.namespaces.iter().rev())
-            .find(|n| n.span().start.offset <= at.start.offset && at.end.offset <= n.span().end.offset)
+            .find(|n| {
+                n.span().start.offset <= at.start.offset && at.end.offset <= n.span().end.offset
+            })
             .map(|n| (*n).clone());
         (expression, namespace)
     }
@@ -1320,23 +1415,23 @@ impl<'ast, 'arena> InitializerIndex<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for InitializerIndex<'ast, 'arena> {
-    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         self.push(expression.span(), Candidate::Value(expression));
     }
-    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, (): &mut ()) {
         self.namespaces.push(namespace);
     }
-    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
+    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, (): &mut ()) {
         self.push(item.span(), Candidate::Value(item.value));
     }
     fn walk_in_class_like_constant_item(
         &mut self,
         item: &'ast cst::ClassLikeConstantItem<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.push(item.span(), Candidate::Value(item.value));
     }
-    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, (): &mut ()) {
         let value = call.argument_list.arguments.get(1).map(|arg| arg.value());
         self.push(call.span(), Candidate::Call(value));
     }
@@ -1350,19 +1445,19 @@ struct FindInitializer<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FindInitializer<'ast, 'arena> {
-    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         if expression.span() == self.at {
             self.expression = Some(expression);
         }
     }
-    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, (): &mut ()) {
         if namespace.span().start.offset <= self.at.start.offset
             && self.at.end.offset <= namespace.span().end.offset
         {
             self.namespace = Some(namespace.clone());
         }
     }
-    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
+    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, (): &mut ()) {
         if item.span() == self.at {
             self.expression = Some(item.value);
         }
@@ -1370,13 +1465,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FindInitializer<'ast, 'arena>
     fn walk_in_class_like_constant_item(
         &mut self,
         item: &'ast cst::ClassLikeConstantItem<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         if item.span() == self.at {
             self.expression = Some(item.value);
         }
     }
-    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, (): &mut ()) {
         if !self.argument && call.span() == self.at {
             self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
         }
@@ -1448,23 +1543,23 @@ pub(crate) fn trait_initializer_types(
         fn walk_in_class_like_constant_item(
             &mut self,
             item: &'ast cst::ClassLikeConstantItem<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             if self.owns(item.span()) {
                 self.spans.push(item.value.span());
             }
         }
-        fn walk_in_attribute(&mut self, attribute: &'ast cst::Attribute<'arena>, _: &mut ()) {
-            if self.owns(attribute.span()) {
-                if let Some(arguments) = &attribute.argument_list {
-                    self.spans.extend(
-                        arguments
-                            .arguments
-                            .iter()
-                            .filter_map(|arg| arg.value())
-                            .map(HasSpan::span),
-                    );
-                }
+        fn walk_in_attribute(&mut self, attribute: &'ast cst::Attribute<'arena>, (): &mut ()) {
+            if self.owns(attribute.span())
+                && let Some(arguments) = &attribute.argument_list
+            {
+                self.spans.extend(
+                    arguments
+                        .arguments
+                        .iter()
+                        .filter_map(|arg| arg.value())
+                        .map(HasSpan::span),
+                );
             }
         }
     }
@@ -1549,7 +1644,7 @@ impl InitializerInference<'_> {
             expressions: Vec<(&'ast Expression<'arena>, bool, Option<Span>)>,
         }
         impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Islands<'ast, 'arena> {
-            fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+            fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
                 self.stack.push((
                     expression.span(),
                     matches!(
@@ -1566,7 +1661,7 @@ impl InitializerInference<'_> {
                     ),
                 ));
             }
-            fn walk_out_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+            fn walk_out_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
                 let (_, scanner_owned) = self.stack.pop().expect("entered expression");
                 let parent = self.stack.last_mut().map(|parent| {
                     parent.1 |= scanner_owned;
@@ -1747,8 +1842,7 @@ impl InitializerInference<'_> {
             expression,
             terminator: cst::Terminator::Semicolon(expression.span()),
         });
-        let statements =
-            cst::Sequence::from_slice(arena.alloc_slice_fill_iter([statement].into_iter()));
+        let statements = cst::Sequence::from_slice(arena.alloc_slice_fill_iter([statement]));
         let statement = if let Some(mut namespace) = namespace {
             match &mut namespace.body {
                 cst::NamespaceBody::Implicit(body) => body.statements = statements,
@@ -1759,9 +1853,7 @@ impl InitializerInference<'_> {
             statements[0].clone()
         };
         let isolated = arena.alloc(Program {
-            statements: cst::Sequence::from_slice(
-                arena.alloc_slice_fill_iter([statement].into_iter()),
-            ),
+            statements: cst::Sequence::from_slice(arena.alloc_slice_fill_iter([statement])),
             ..program.clone()
         });
         let mut registry = PluginRegistry::with_library_providers();

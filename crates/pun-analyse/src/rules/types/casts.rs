@@ -8,7 +8,7 @@ use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error, is_super
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "echo.nonString",
     "print.nonString",
     "encapsedStringPart.nonString",

@@ -31,37 +31,46 @@ enum Kind {
 struct Kinds(HashMap<Span, Kind>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Kinds {
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         match u.operator {
             UnaryPrefixOperator::PreIncrement(_) => self.0.insert(u.operand.span(), Kind::PreInc),
             UnaryPrefixOperator::PreDecrement(_) => self.0.insert(u.operand.span(), Kind::PreDec),
             _ => None,
         };
     }
-    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
+    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, (): &mut ()) {
         let kind = match u.operator {
             UnaryPostfixOperator::PostIncrement(_) => Kind::PostInc,
             UnaryPostfixOperator::PostDecrement(_) => Kind::PostDec,
         };
         self.0.insert(u.operand.span(), kind);
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         if let Some(key) = f.target.key() {
             self.0.insert(key.span(), Kind::ForeachKey);
-            self.0.insert(f.target.value().span(), Kind::ForeachValueWithKey);
+            self.0
+                .insert(f.target.value().span(), Kind::ForeachValueWithKey);
         } else {
             self.0.insert(f.target.value().span(), Kind::ForeachValue);
         }
     }
-    fn walk_in_try_catch_clause(&mut self, c: &'ast TryCatchClause<'arena>, _: &mut ()) {
+    fn walk_in_try_catch_clause(&mut self, c: &'ast TryCatchClause<'arena>, (): &mut ()) {
         if let Some(v) = &c.variable {
             self.0.insert(v.span(), Kind::Catch);
         }
     }
-    fn walk_in_function_like_parameter(&mut self, p: &'ast FunctionLikeParameter<'arena>, _: &mut ()) {
+    fn walk_in_function_like_parameter(
+        &mut self,
+        p: &'ast FunctionLikeParameter<'arena>,
+        (): &mut (),
+    ) {
         self.0.insert(p.variable.span(), Kind::Input);
     }
-    fn walk_in_closure_use_clause_variable(&mut self, v: &'ast ClosureUseClauseVariable<'arena>, _: &mut ()) {
+    fn walk_in_closure_use_clause_variable(
+        &mut self,
+        v: &'ast ClosureUseClauseVariable<'arena>,
+        (): &mut (),
+    ) {
         self.0.insert(v.variable.span(), Kind::Input);
     }
 }
@@ -69,15 +78,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Kinds {
 /// The write targets that are expressions (a `$a[...]` offset write prints its target), and the plain assignments
 /// by target.
 #[derive(Default)]
-struct Targets<'ast, 'arena>(HashMap<Span, &'ast Expression<'arena>>, HashMap<Span, &'ast Assignment<'arena>>);
+struct Targets<'ast, 'arena>(
+    HashMap<Span, &'ast Expression<'arena>>,
+    HashMap<Span, &'ast Assignment<'arena>>,
+);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Targets<'ast, 'arena> {
-    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
         if matches!(e, Expression::ArrayAccess(_) | Expression::ArrayAppend(_)) {
             self.0.insert(e.span(), e);
         }
     }
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if a.operator.is_assign() {
             self.1.insert(a.lhs.span(), a);
         }
@@ -89,7 +101,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
     #[derive(Default)]
     struct Wanted(Vec<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
             if !a.operator.is_assign() {
                 return;
             }
@@ -122,9 +134,20 @@ fn redundant(c: &Checker, assignment: &Assignment, constant: bool) -> Option<Typ
     }
     // A literal's native type is its type; Mago's native lane types an array literal less precisely
     let native_of = |e: &Expression| {
-        let literal = matches!(super::super::types::flow::unparen(e), Expression::Literal(_) | Expression::Array(_) | Expression::LegacyArray(_));
-        (if literal && super::haystack::constant_expression(e) { None } else { c.phpstan_type_in(e, &c.native_types) })
-            .or_else(|| super::haystack::constant_expression(e).then(|| c.phpstan_type(e)).flatten())
+        let literal = matches!(
+            super::super::types::flow::unparen(e),
+            Expression::Literal(_) | Expression::Array(_) | Expression::LegacyArray(_)
+        );
+        (if literal && super::haystack::constant_expression(e) {
+            None
+        } else {
+            c.phpstan_type_in(e, &c.native_types)
+        })
+        .or_else(|| {
+            super::haystack::constant_expression(e)
+                .then(|| c.phpstan_type(e))
+                .flatten()
+        })
     };
     let mut ty = c.to_phpstan(full);
     let mut native_ty = c.to_phpstan(native);
@@ -139,7 +162,11 @@ fn redundant(c: &Checker, assignment: &Assignment, constant: bool) -> Option<Typ
     let single = |t: &Type| match super::conditions::finite(c, t).as_slice() {
         [one] => Some(one.clone()),
         _ => match t {
-            Type::ConstArray(a) if a.optional.is_empty() && a.unsealed.is_none() && a.values.iter().all(|v| single_value(c, v)) => {
+            Type::ConstArray(a)
+                if a.optional.is_empty()
+                    && a.unsealed.is_none()
+                    && a.values.iter().all(|v| single_value(c, v)) =>
+            {
                 Some(t.clone())
             }
             _ => None,
@@ -150,7 +177,11 @@ fn redundant(c: &Checker, assignment: &Assignment, constant: bool) -> Option<Typ
 
 fn single_value(c: &Checker, t: &Type) -> bool {
     match t {
-        Type::ConstArray(a) => a.optional.is_empty() && a.unsealed.is_none() && a.values.iter().all(|v| single_value(c, v)),
+        Type::ConstArray(a) => {
+            a.optional.is_empty()
+                && a.unsealed.is_none()
+                && a.values.iter().all(|v| single_value(c, v))
+        }
         t => super::conditions::finite(c, t).len() == 1,
     }
 }
@@ -179,8 +210,12 @@ fn offset_value(t: &Type, key: &Type) -> Option<Type> {
     (!a.optional.contains(&i)).then(|| a.values[i].clone())
 }
 
-pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: Node<'ast, 'arena>) {
-    if !c.toggled.on.contains(crate::rules::driver::Toggles::UNUSED_VARIABLE) {
+pub(in super::super) fn check(c: &mut Checker, span: Span, node: Node<'_, '_>) {
+    if !c
+        .toggled
+        .on
+        .contains(crate::rules::driver::Toggles::UNUSED_VARIABLE)
+    {
         return;
     }
     let Some(writes) = c.variable_writes.get(&span) else {
@@ -215,7 +250,12 @@ pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: N
     let mut not_constant = HashSet::new();
     for write in writes.writes.values() {
         // the offsets an array literal writes belong to its assignment
-        if write.parent.is_none() && !targets.1.get(&write.node).is_some_and(|a| super::haystack::constant_expression(a.rhs)) {
+        if write.parent.is_none()
+            && !targets
+                .1
+                .get(&write.node)
+                .is_some_and(|a| super::haystack::constant_expression(a.rhs))
+        {
             not_constant.insert(write.name);
         }
     }
@@ -232,10 +272,15 @@ pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: N
         }
         if write.parent.is_none()
             && (write.offset_write || writes.used.contains(&id))
-            && let Some(value) = targets.1.get(&id).and_then(|a| redundant(c, a, !not_constant.contains(&write.name)))
+            && let Some(value) = targets
+                .1
+                .get(&id)
+                .and_then(|a| redundant(c, a, !not_constant.contains(&write.name)))
         {
             let description = if write.offset_write {
-                let Some(target) = targets.0.get(&id) else { continue };
+                let Some(target) = targets.0.get(&id) else {
+                    continue;
+                };
                 format!("Offset {}", noop::print(c, target))
             } else {
                 format!("Variable ${}", String::from_utf8_lossy(name))
@@ -257,10 +302,15 @@ pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: N
             continue;
         }
         let name = String::from_utf8_lossy(name);
-        let unused_variable = !with_read_write.contains(&write.name) && !writes.read_names.contains(&write.name);
+        let unused_variable =
+            !with_read_write.contains(&write.name) && !writes.read_names.contains(&write.name);
         let (message, identifier) = if let Some(parent) = write.parent {
-            let Some(parent) = writes.writes.get(&parent) else { continue };
-            let Some(offset) = &write.offset else { continue };
+            let Some(parent) = writes.writes.get(&parent) else {
+                continue;
+            };
+            let Some(offset) = &write.offset else {
+                continue;
+            };
             if !writes.used.contains(&parent.node) {
                 continue;
             }
@@ -270,17 +320,31 @@ pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: N
             }
             .describe(Level::Value);
             let (outcome, identifier) = if read {
-                ("only flows into values that are never used", "array.unusedOffsetFlow")
+                (
+                    "only flows into values that are never used",
+                    "array.unusedOffsetFlow",
+                )
             } else if overwritten {
-                ("is never read before being overwritten", "array.offsetOverwritten")
+                (
+                    "is never read before being overwritten",
+                    "array.offsetOverwritten",
+                )
             } else {
                 ("is never read", "array.unusedOffset")
             };
-            (format!("Offset {offset} of array assigned to variable ${name} {outcome}."), identifier.to_string())
+            (
+                format!("Offset {offset} of array assigned to variable ${name} {outcome}."),
+                identifier.to_string(),
+            )
         } else if write.offset_write {
-            let Some(target) = targets.0.get(&id) else { continue };
+            let Some(target) = targets.0.get(&id) else {
+                continue;
+            };
             let target = noop::print(c, target);
-            (message(kind, &target, false, read, overwritten), identifier(kind, false, read, overwritten))
+            (
+                message(kind, &target, false, read, overwritten),
+                identifier(kind, false, read, overwritten),
+            )
         } else {
             let target = format!("variable ${name}");
             (
@@ -297,7 +361,13 @@ pub(in super::super) fn check<'ast, 'arena>(c: &mut Checker, span: Span, node: N
 }
 
 /// getMessage()
-fn message(kind: Kind, target: &str, unused_variable: bool, read: bool, overwritten: bool) -> String {
+fn message(
+    kind: Kind,
+    target: &str,
+    unused_variable: bool,
+    read: bool,
+    overwritten: bool,
+) -> String {
     let outcome = if read {
         "only flows into values that are never used"
     } else if overwritten {
@@ -314,7 +384,9 @@ fn message(kind: Kind, target: &str, unused_variable: bool, read: bool, overwrit
         Kind::Assign | Kind::Input => format!("Value assigned to {target} {outcome}."),
         Kind::PreInc | Kind::PostInc => format!("Value of {target} after ++ {outcome}."),
         Kind::PreDec | Kind::PostDec => format!("Value of {target} after -- {outcome}."),
-        Kind::ForeachValue | Kind::ForeachValueWithKey => format!("Foreach value {target} {outcome}."),
+        Kind::ForeachValue | Kind::ForeachValueWithKey => {
+            format!("Foreach value {target} {outcome}.")
+        }
         Kind::ForeachKey => format!("Foreach key {target} {outcome}."),
         Kind::Catch => format!("Catch {target} {outcome}."),
     }
@@ -331,13 +403,33 @@ fn identifier(kind: Kind, unused_variable: bool, read: bool, overwritten: bool) 
         Kind::PostDec => "postDec",
         Kind::ForeachValueWithKey => return "foreach.unusedValueFlow".into(),
         Kind::ForeachValue => {
-            return (if read { "foreach.unusedValueFlow" } else if overwritten { "foreach.valueOverwritten" } else { "foreach.unusedValue" }).into();
+            return (if read {
+                "foreach.unusedValueFlow"
+            } else if overwritten {
+                "foreach.valueOverwritten"
+            } else {
+                "foreach.unusedValue"
+            })
+            .into();
         }
         Kind::ForeachKey => {
-            return (if read { "foreach.unusedKeyFlow" } else if overwritten { "foreach.keyOverwritten" } else { "foreach.unusedKey" }).into();
+            return (if read {
+                "foreach.unusedKeyFlow"
+            } else if overwritten {
+                "foreach.keyOverwritten"
+            } else {
+                "foreach.unusedKey"
+            })
+            .into();
         }
         Kind::Catch => return "catch.unusedVariableFlow".into(),
     };
-    let suffix = if read { "unusedFlow" } else if overwritten { "overwritten" } else { "unused" };
+    let suffix = if read {
+        "unusedFlow"
+    } else if overwritten {
+        "overwritten"
+    } else {
+        "unused"
+    };
     format!("{prefix}.{suffix}")
 }

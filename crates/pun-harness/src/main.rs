@@ -1,5 +1,10 @@
 //! Differential harness: run the pinned Pint oracle on a copy of each corpus project, and `pun migrate` then
 //! `pun check --fix` on another, and byte-diff the results. See context/reference/oracle.md.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "a command-line tool reports on stdout and stderr"
+)]
 
 use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
@@ -65,8 +70,10 @@ impl Drop for Scratch {
 fn main() -> Result<ExitCode> {
     // PUN_HARNESS_ROOT: run against another checkout layout (corpus/, .oracle/, scripts/, docs/).
     let root = std::env::var_os("PUN_HARNESS_ROOT")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
+        .map_or_else(
+            || PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."),
+            PathBuf::from,
+        )
         .canonicalize()?;
     let Cmd::Format {
         corpus,
@@ -81,9 +88,8 @@ fn main() -> Result<ExitCode> {
         bail!("{} missing: run scripts/oracle.sh", pint.display());
     }
     // PUN_BIN: a private copy of the pun binary, so concurrent agents rebuilding target/debug/pun don't race.
-    let pun = std::env::var_os("PUN_BIN")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| root.join("target/debug/pun"));
+    let pun =
+        std::env::var_os("PUN_BIN").map_or_else(|| root.join("target/debug/pun"), PathBuf::from);
     if !pun.exists() {
         eprintln!("note: {} missing, treating pun as identity", pun.display());
     }
@@ -292,8 +298,8 @@ fn compare(name: &str, src: &Path, oracle: &Path, pun: &Path) -> Result<Outcome>
             fs::read(pun.join(rel)).ok(),
             fs::read(src.join(rel)).ok(),
         );
-        o.oracle_changed += (x != s) as usize;
-        o.pun_changed += (y != s) as usize;
+        o.oracle_changed += usize::from(x != s);
+        o.pun_changed += usize::from(y != s);
         if x == y {
             o.identical += 1;
         } else {

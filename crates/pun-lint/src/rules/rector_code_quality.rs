@@ -19,7 +19,7 @@ use crate::syntax::{node_span, same_code, unparenthesize};
 /// `NodeNameResolver::isName($funcCall, $name)` for a call of a global function: the bare name, unqualified or with a
 /// leading backslash, in any ASCII case. An unqualified name in a namespace falls back to the global function, as PHP
 /// does.
-pub fn call_to<'a>(expr: &'a Expression<'a>, name: &str) -> Option<&'a FunctionCall<'a>> {
+pub(super) fn call_to<'a>(expr: &'a Expression<'a>, name: &str) -> Option<&'a FunctionCall<'a>> {
     match unparenthesize(expr) {
         Expression::Call(Call::Function(call)) if named(call, name) => Some(call),
         _ => None,
@@ -27,7 +27,7 @@ pub fn call_to<'a>(expr: &'a Expression<'a>, name: &str) -> Option<&'a FunctionC
 }
 
 /// Whether `call` calls the global function `name`; see [`call_to`].
-pub fn named(call: &FunctionCall<'_>, name: &str) -> bool {
+pub(super) fn named(call: &FunctionCall<'_>, name: &str) -> bool {
     let called = match call.function {
         Expression::Identifier(Identifier::Local(id)) => id.value,
         Expression::Identifier(Identifier::FullyQualified(id)) => &id.value[1..],
@@ -38,13 +38,13 @@ pub fn named(call: &FunctionCall<'_>, name: &str) -> bool {
 
 /// `FuncCall::getArgs()`: the arguments in order, named ones included. Mago parses `f(...)` as a partial
 /// application, so a [`FunctionCall`] is never a first-class callable.
-pub fn args<'a>(call: &'a FunctionCall<'a>) -> Vec<&'a Argument<'a>> {
+pub(super) fn args<'a>(call: &'a FunctionCall<'a>) -> Vec<&'a Argument<'a>> {
     call.argument_list.arguments.iter().collect()
 }
 
 /// `NodeComparator::areNodesEqual`: the same code, ignoring whitespace, comments and the parentheses around either
 /// expression (php-parser has no node for them).
-pub fn equal(ctx: &Context<'_>, a: &Expression<'_>, b: &Expression<'_>) -> bool {
+pub(super) fn equal(ctx: &Context<'_>, a: &Expression<'_>, b: &Expression<'_>) -> bool {
     same_code(
         ctx.source,
         node_span(unparenthesize(a)),
@@ -54,7 +54,7 @@ pub fn equal(ctx: &Context<'_>, a: &Expression<'_>, b: &Expression<'_>) -> bool 
 
 /// `ConstFetchAnalyzer::isConstantWithLowercasedName`: `true`, `false` or `null` in any case, with or without a
 /// leading backslash.
-pub fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
+pub(super) fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
     let constant: &[u8] = match unparenthesize(expr) {
         Expression::Literal(Literal::True(_)) => b"true",
         Expression::Literal(Literal::False(_)) => b"false",
@@ -68,7 +68,7 @@ pub fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
 
 /// `AssignAndBinaryMap::BINARY_OP_TO_INVERSE_CLASSES`: the operator that negates a comparison. php-parser reads `<>`
 /// as `!=`.
-pub fn inverse(op: &BinaryOperator<'_>) -> Option<&'static str> {
+pub(super) fn inverse(op: &BinaryOperator<'_>) -> Option<&'static str> {
     Some(match op {
         BinaryOperator::Identical(_) => "!==",
         BinaryOperator::NotIdentical(_) => "===",
@@ -87,14 +87,14 @@ pub fn inverse(op: &BinaryOperator<'_>) -> Option<&'static str> {
 /// before its operand (`pPrefixOp`: `!`, casts, assignments, `yield`, `print`, `include`, `fn`, `throw`), `None` for
 /// an expression that never needs parentheses. A lower number binds tighter.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Prec {
+pub(super) enum Prec {
     Infix(i32, i32, i32),
     Prefix(i32),
     None,
 }
 
 /// The precedence of `expr` as php-parser prints it.
-pub fn prec(expr: &Expression<'_>) -> Prec {
+pub(super) fn prec(expr: &Expression<'_>) -> Prec {
     match unparenthesize(expr) {
         Expression::Binary(b) => {
             let (p, l, r) = binary(&b.operator);
@@ -131,7 +131,7 @@ fn unary(op: &UnaryPrefixOperator<'_>) -> Option<i32> {
 }
 
 /// The `precedenceMap` entry of a binary operator: precedence, then the limits for the left and the right operand.
-pub fn binary(op: &BinaryOperator<'_>) -> (i32, i32, i32) {
+pub(super) fn binary(op: &BinaryOperator<'_>) -> (i32, i32, i32) {
     match op {
         BinaryOperator::Exponentiation(_) => (0, 0, 1),
         BinaryOperator::Instanceof(_) => (20, 20, 20),
@@ -167,7 +167,7 @@ pub fn binary(op: &BinaryOperator<'_>) -> (i32, i32, i32) {
 /// Whether code of precedence `child` needs parentheses where php-parser prints it with precedence `limit`:
 /// `pInfixOp` wraps an operator at or above the limit. `pPrefixOp` wraps a prefix operator at or above `lhs`, the
 /// limit of the left operand of the binary operator the code ends up on the left of (none on a right side).
-pub fn needs_parens(child: Prec, limit: i32, lhs: Option<i32>) -> bool {
+pub(super) fn needs_parens(child: Prec, limit: i32, lhs: Option<i32>) -> bool {
     match child {
         Prec::Infix(p, ..) => p >= limit,
         Prec::Prefix(p) => lhs.is_some_and(|l| p >= l),
@@ -176,7 +176,7 @@ pub fn needs_parens(child: Prec, limit: i32, lhs: Option<i32>) -> bool {
 }
 
 /// `code`, of precedence `p`, in parentheses when [`needs_parens`] says so.
-pub fn wrap(code: &str, p: Prec, limit: i32, lhs: Option<i32>) -> String {
+pub(super) fn wrap(code: &str, p: Prec, limit: i32, lhs: Option<i32>) -> String {
     if needs_parens(p, limit, lhs) {
         format!("({code})")
     } else {
@@ -185,13 +185,18 @@ pub fn wrap(code: &str, p: Prec, limit: i32, lhs: Option<i32>) -> String {
 }
 
 /// The source of `expr` without its parentheses, in new ones where [`needs_parens`] says so.
-pub fn operand(ctx: &Context<'_>, expr: &Expression<'_>, limit: i32, lhs: Option<i32>) -> String {
+pub(super) fn operand(
+    ctx: &Context<'_>,
+    expr: &Expression<'_>,
+    limit: i32,
+    lhs: Option<i32>,
+) -> String {
     let inner = unparenthesize(expr);
     wrap(text(ctx, inner), prec(inner), limit, lhs)
 }
 
 /// `left op right` printed by `pInfixOp` with the operator's operand limits `(l, r)`.
-pub fn infix(
+pub(super) fn infix(
     ctx: &Context<'_>,
     left: &Expression<'_>,
     op: &str,
@@ -207,7 +212,11 @@ pub fn infix(
 
 /// `BinaryOpManipulator::inverseNode`: a comparison with the inverse operator, the operand of a `!`, or the
 /// expression under a new `!`. Returns the code and its precedence; `lhs` is as in [`needs_parens`].
-pub fn inverse_node(ctx: &Context<'_>, expr: &Expression<'_>, lhs: Option<i32>) -> (String, Prec) {
+pub(super) fn inverse_node(
+    ctx: &Context<'_>,
+    expr: &Expression<'_>,
+    lhs: Option<i32>,
+) -> (String, Prec) {
     match unparenthesize(expr) {
         Expression::Binary(b) if inverse(&b.operator).is_some() => {
             let (p, l, r) = binary(&b.operator);
@@ -227,7 +236,7 @@ pub fn inverse_node(ctx: &Context<'_>, expr: &Expression<'_>, lhs: Option<i32>) 
 
 /// `inverseBooleanAnd` and `inverseBooleanOr`: `!(a && b)` as `!a || !b` and `!(a || b)` as `!a && !b`, where `op`
 /// is the new operator and `(l, r)` its operand limits.
-pub fn de_morgan(
+pub(super) fn de_morgan(
     ctx: &Context<'_>,
     left: &Expression<'_>,
     right: &Expression<'_>,
@@ -244,7 +253,7 @@ pub fn de_morgan(
 }
 
 /// The source of a node.
-pub fn text<'s>(ctx: &Context<'s>, node: &impl HasSpan) -> &'s str {
+pub(crate) fn text<'s>(ctx: &Context<'s>, node: &impl HasSpan) -> &'s str {
     let s = node_span(node);
     &ctx.source[s.start..s.end]
 }
@@ -261,7 +270,7 @@ fn parent<'n, 'ast, 'arena>(
 /// `code`, the new code for the node at `span` with precedence `new`, in parentheses when its parent needs them
 /// there. php-parser's format-preserving printer adds them through the parent's fixup (`FIXUP_PREC_LEFT`,
 /// `FIXUP_PREC_RIGHT`, `FIXUP_PREC_UNARY`, `FIXUP_DEREF_LHS` and the like).
-pub fn in_parent(span: Span, ancestors: &[Node<'_, '_>], code: String, new: Prec) -> String {
+pub(super) fn in_parent(span: Span, ancestors: &[Node<'_, '_>], code: String, new: Prec) -> String {
     let parent = parent(span, ancestors);
     let at_start = parent.is_some_and(|p| node_span(p).start == span.start);
     let wrap = match parent {
@@ -302,7 +311,7 @@ pub fn in_parent(span: Span, ancestors: &[Node<'_, '_>], code: String, new: Prec
 /// `refactor()` returning several statements). In a list of statements they follow each other on lines of their own.
 /// A single-statement body (`if ($a) stmt;`) cannot hold them, so php-parser prints the whole `if` again with braces;
 /// Pun puts the braces around the new statements. A statement that ends in `?>` instead of `;` is left alone there.
-pub fn statements_edit(
+pub(super) fn statements_edit(
     ctx: &Context<'_>,
     ancestors: &[Node<'_, '_>],
     statement: &ExpressionStatement<'_>,
@@ -327,7 +336,7 @@ pub fn statements_edit(
 /// `in_parent` for an expression of the file that takes the place of the node at `span`. php-parser prints a kept
 /// node as it was, without the parentheses its new place may need; Pun adds them, except where they change nothing:
 /// on the right of the same associative operator (`'x' . sprintf($a . $b)` is `'x' . $a . $b`).
-pub fn moved(
+pub(super) fn moved(
     ctx: &Context<'_>,
     span: Span,
     ancestors: &[Node<'_, '_>],

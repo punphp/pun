@@ -55,7 +55,11 @@ impl Rule for AddParamPhpdocFromLocalCalls {
             }
             // only private methods have a closed set of local callers; public/protected can be called from outside
             // with a wider type we cannot see here
-            if !method.modifiers.iter().any(|m| m.is_private()) {
+            if !method
+                .modifiers
+                .iter()
+                .any(mago_syntax::cst::Modifier::is_private)
+            {
                 continue;
             }
             let target = DocTarget::of(ctx, node_span(method).start);

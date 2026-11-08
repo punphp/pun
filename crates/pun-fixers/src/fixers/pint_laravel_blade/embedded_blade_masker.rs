@@ -165,7 +165,7 @@ impl EmbeddedBladeMasker {
     /// `escapedAtToken`: the shared placeholder for the position, counting the occurrences it stands in for.
     fn escaped_at_token(&mut self, quoted: bool, count: usize) -> Vec<u8> {
         let original = &self.original;
-        let token = self.escaped_tokens[quoted as usize]
+        let token = self.escaped_tokens[usize::from(quoted)]
             .get_or_insert_with(|| {
                 // `buildEscapedAtToken`: widen until the source no longer contains it.
                 let mut token = if quoted { b"0z".to_vec() } else { b"zz".to_vec() };

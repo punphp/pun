@@ -83,12 +83,14 @@ fn decided(cond: &Expression<'_>, version: i64) -> Option<bool> {
     match (&b.operator, on_left) {
         // `PHP_VERSION_ID < 80000`, `80000 >= PHP_VERSION_ID`, `80000 > PHP_VERSION_ID`: never from that version on.
         (BinaryOperator::LessThan(_), true)
-        | (BinaryOperator::GreaterThanOrEqual(_), false)
-        | (BinaryOperator::GreaterThan(_), false) => (version >= value).then_some(false),
+        | (BinaryOperator::GreaterThanOrEqual(_) | BinaryOperator::GreaterThan(_), false) => {
+            (version >= value).then_some(false)
+        }
         // `80000 < PHP_VERSION_ID`, `PHP_VERSION_ID >= 80000`, `PHP_VERSION_ID > 80000`: always.
         (BinaryOperator::LessThan(_), false)
-        | (BinaryOperator::GreaterThanOrEqual(_), true)
-        | (BinaryOperator::GreaterThan(_), true) => (version >= value).then_some(true),
+        | (BinaryOperator::GreaterThanOrEqual(_) | BinaryOperator::GreaterThan(_), true) => {
+            (version >= value).then_some(true)
+        }
         _ => None,
     }
 }

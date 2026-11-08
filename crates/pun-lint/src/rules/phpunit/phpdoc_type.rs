@@ -98,7 +98,7 @@ fn parse<'s>(index: usize, name: &'s str, rest: &'s str) -> Option<TypedTag<'s>>
                 .find(|c: char| !(c.is_ascii_alphanumeric() || c == '_' || !c.is_ascii()))
                 .unwrap_or(v.len());
             (
-                &tail[..len + 1],
+                &tail[..=len],
                 tail[len + 1..].trim_start_matches([' ', '\t']),
             )
         }

@@ -6,7 +6,7 @@ use pun_phpstan::types::Level;
 
 use super::Checker;
 
-pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
+pub(super) fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
     let ClassLikeConstantSelector::Expression(selector) = &a.constant else {
         return;
     };

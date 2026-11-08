@@ -94,7 +94,7 @@ fn analyze(source: &'static str, native: bool) -> (AnalysisArtifacts, Events, St
 
 fn normalize(value: &str) -> String {
     let mut parts: Vec<_> = value.split('|').collect();
-    parts.sort();
+    parts.sort_unstable();
     parts.join("|")
 }
 

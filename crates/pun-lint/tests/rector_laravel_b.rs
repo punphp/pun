@@ -8,7 +8,10 @@
 //! change it. Each one must pass as `format(pun lint --fix) == format(expected)` with format being the laravel preset,
 //! and the text edits must give the expected bytes before format too.
 
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
 mod lint_c;
 
 use std::path::Path;
@@ -173,7 +176,7 @@ fn eloquent_order_by_to_latest_or_oldest_options() {
     assert_eq!(rule.allowed_patterns, ["*_at", "*_date", "*_on"]);
     // Rector's `configure` without the key leaves no pattern, which allows every column
     rule.configure(&serde_json::json!({})).unwrap();
-    assert!(rule.allowed_patterns.is_empty());
+    assert_eq!(rule.allowed_patterns, [] as [std::string::String; 0]);
 }
 
 #[test]
@@ -241,7 +244,7 @@ fn add_has_factory_to_models() {
 fn add_has_factory_to_models_options() {
     let mut rule = AddHasFactoryTrait::default();
     rule.configure(&serde_json::json!(null)).unwrap();
-    assert!(rule.items.is_empty());
+    assert_eq!(rule.items, [] as [std::string::String; 0]);
     assert!(rule.configure(&serde_json::json!([])).is_err());
     assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
     assert!(
@@ -322,7 +325,13 @@ fn replace_service_container_call_arg() {
 fn replace_service_container_call_arg_options() {
     let mut rule = PreferClassContainerKey::default();
     rule.configure(&serde_json::json!(null)).unwrap();
-    assert!(rule.items.is_empty());
+    assert_eq!(
+        rule.items,
+        [] as [(
+            pun_lint::rules::ContainerService,
+            pun_lint::rules::ContainerService
+        ); 0]
+    );
     for bad in [
         serde_json::json!(true),
         serde_json::json!({"other": []}),

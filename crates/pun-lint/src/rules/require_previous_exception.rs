@@ -225,12 +225,11 @@ fn print_new(source: &str, throw_start: usize, new: &Instantiation<'_>, args: &[
         let comments = match arg.written {
             Some(_) => {
                 let start = previous_token_end(source, &tokens, arg.start);
-                let found = tokens
+                tokens
                     .iter()
                     .filter(|t| t.start >= start && t.end <= arg.start && t.kind.is_comment())
                     .map(|t| Span::new(t.start, t.end))
-                    .collect();
-                found
+                    .collect()
             }
             None => Vec::new(),
         };
@@ -324,9 +323,7 @@ fn class_name(atomic: &TAtomic) -> Option<String> {
 /// `(new ObjectType('Throwable'))->isSuperTypeOf(new ObjectType($class))`: `Some(true)` for a yes, `Some(false)` for a
 /// no, `None` for a maybe.
 fn throwable_of(codebase: &CodebaseMetadata, class: &str) -> Option<bool> {
-    let Some(metadata) = codebase.get_class_like(class.as_bytes()) else {
-        return None;
-    };
+    let metadata = codebase.get_class_like(class.as_bytes())?;
     if codebase.is_instance_of(class.as_bytes(), b"Throwable") {
         return Some(true);
     }

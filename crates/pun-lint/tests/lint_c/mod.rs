@@ -78,20 +78,26 @@ fn laravel() -> Pipeline {
 
 /// Run every fixture of tests/rector/<class>/{Fixture,Oracle,Pun} (the directories that exist; Fixture must) through
 /// `rules` at PHP 8.4, Rector's default version in the fixtures' configs, with the classes of <class>/Source known.
-#[allow(dead_code)]
-pub fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
     run_class_at(rules, class, 80400);
 }
 
 /// As [`run_class`], at the PHP version `php_version`.
-pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
+pub(crate) fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
     run_class_full(rules, class, php_version, &[], &[], true);
 }
 
 /// As [`run_class_at`]; the fixtures named in `preset_too` (`Fixture/in_for.php.inc`) make a change the laravel
 /// preset's format makes as well, so only the rule's own fix shows that the rule did it.
-#[allow(dead_code)]
-pub fn run_class_with(
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_class_with(
     rules: Vec<Box<dyn Rule>>,
     class: &str,
     php_version: u32,
@@ -101,14 +107,30 @@ pub fn run_class_with(
 }
 
 /// As [`run_class_at`], with the classes of the directories `stubs` (under tests/) known too.
-#[allow(dead_code)]
-pub fn run_class_stubs(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&str]) {
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_class_stubs(
+    rules: Vec<Box<dyn Rule>>,
+    class: &str,
+    php_version: u32,
+    stubs: &[&str],
+) {
     run_class_full(rules, class, php_version, stubs, &[], true);
 }
 
 /// As [`run_class_at`], with the classes under `stubs` (a package's stub directories) known beside <class>/Source.
-#[allow(dead_code)]
-pub fn run_class_paths(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&Path]) {
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_class_paths(
+    rules: Vec<Box<dyn Rule>>,
+    class: &str,
+    php_version: u32,
+    stubs: &[&Path],
+) {
     check_dirs(class, true);
     run_dirs(
         rules,
@@ -120,8 +142,11 @@ pub fn run_class_paths(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32,
 }
 
 /// As [`run_class_at`] for a Rector class without upstream fixtures: tests/rector/<class>/{Oracle,Pun} only.
-#[allow(dead_code)]
-pub fn run_oracle_class(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_oracle_class(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
     run_class_full(rules, class, php_version, &[], &[], false);
 }
 
@@ -166,8 +191,11 @@ fn check_dirs(class: &str, fixture: bool) {
 
 /// The cases of the directories `subs` of tests/rector/<class> that exist (a configurable rule runs each
 /// configuration on its own directories), with the classes under `stubs` known beside <class>/Source.
-#[allow(dead_code)]
-pub fn run_dirs(
+#[allow(
+    dead_code,
+    reason = "each test target uses a different part of this shared module"
+)]
+pub(crate) fn run_dirs(
     rules: Vec<Box<dyn Rule>>,
     class: &str,
     subs: &[&str],

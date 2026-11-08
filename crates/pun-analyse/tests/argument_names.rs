@@ -33,7 +33,16 @@ fn check(file: &str) {
         .collect();
     got.sort();
     want.sort();
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(
+            i64,
+            std::string::String,
+            std::string::String,
+            std::option::Option<std::string::String>,
+            bool
+        ); 0]
+    );
     assert_eq!(got, want, "{file}");
 }
 

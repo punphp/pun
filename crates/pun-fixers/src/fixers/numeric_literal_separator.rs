@@ -14,7 +14,7 @@ struct NumericLiteralSeparatorFixer {
     use_separator: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NumericLiteralSeparatorFixer {
         override_existing: false,
         use_separator: true,

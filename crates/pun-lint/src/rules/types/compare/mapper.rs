@@ -520,7 +520,7 @@ fn file_uses(ancestors: &[Node<'_, '_>]) -> Vec<Use> {
                 prefix,
                 name: text(item.name.value()),
                 alias: (item.alias.as_ref()).map(|a| text(a.identifier.value)),
-            })
+            });
         };
         match &r#use.items {
             UseItems::Sequence(s) => s.items.iter().for_each(|i| push(String::new(), i)),

@@ -55,7 +55,7 @@ impl Rule for NoUnusedForeachKey {
         }
         let source = ctx.source;
         let tokens = tokens(ctx);
-        let (list, index) = enclosing(source, &tokens, ancestors);
+        let (list, index) = enclosing(source, tokens, ancestors);
         if used_in_next(&list, index + 1, try_of(ancestors), name) {
             return;
         }
@@ -65,7 +65,7 @@ impl Rule for NoUnusedForeachKey {
             "",
         )];
         let statement = node_span(list.stmts[index]);
-        if let Some(edit) = var_tag_edit(source, &tokens, statement.start, name) {
+        if let Some(edit) = var_tag_edit(source, tokens, statement.start, name) {
             edits.push(edit);
         }
         out.push(Report {

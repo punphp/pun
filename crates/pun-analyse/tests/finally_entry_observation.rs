@@ -54,8 +54,10 @@ fn actual_finally_entries_and_continuations_match_complete_phpstan_records() {
         let program = parse_file(&arena, &file);
         assert!(!program.has_errors());
         let names = NameResolver::new(&arena).resolve(program);
-        let mut settings = Settings::default();
-        settings.track_native_types = native;
+        let settings = Settings {
+            track_native_types: native,
+            ..Default::default()
+        };
         let prelude = mago_prelude::Prelude::build();
         let mut codebase = prelude.metadata;
         codebase.extend(scan_program(

@@ -19,7 +19,7 @@ struct HeredocClosingMarkerFixer {
     explicit_heredoc_style: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(HeredocClosingMarkerFixer {
         closing_marker: b"EOD".to_vec(),
         reserved_closing_markers: vec![],

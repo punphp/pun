@@ -75,7 +75,7 @@ fn arg<'x, 'arena>(list: &'x ArgumentList<'arena>, i: usize) -> Option<&'x Expre
 }
 
 /// The value of a `String_` node.
-fn string<'arena>(e: Option<&Expression<'arena>>) -> Option<String> {
+fn string(e: Option<&Expression<'_>>) -> Option<String> {
     match e? {
         Expression::Literal(Literal::String(s)) => {
             s.value.map(|v| String::from_utf8_lossy(v).into_owned())
@@ -111,10 +111,10 @@ fn string_items(e: &Expression) -> Option<Vec<String>> {
 struct Classes<'ast, 'arena>(Vec<&'ast Sequence<'arena, ClassLikeMember<'arena>>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Classes<'ast, 'arena> {
-    fn walk_in_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, class: &'ast Class<'arena>, (): &mut ()) {
         self.0.push(&class.members);
     }
-    fn walk_in_anonymous_class(&mut self, class: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_in_anonymous_class(&mut self, class: &'ast AnonymousClass<'arena>, (): &mut ()) {
         self.0.push(&class.members);
     }
 }
@@ -124,7 +124,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Classes<'ast, 'arena> {
 struct ExpressionStatements<'ast, 'arena>(Vec<&'ast ExpressionStatement<'arena>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ExpressionStatements<'ast, 'arena> {
-    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, (): &mut ()) {
         self.0.push(s);
     }
 }
@@ -166,7 +166,7 @@ impl<'a> SchemaAggregator<'a> {
     }
 
     fn add_class_statements(&mut self, members: &Sequence<ClassLikeMember>, names: &ResolvedNames) {
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Method(m) = member else {
                 continue;
             };
@@ -324,7 +324,7 @@ impl<'a> SchemaAggregator<'a> {
                         let table = self.table(&table_name);
                         match method.to_ascii_lowercase().as_str() {
                             "remembertoken" => {
-                                table.set_column("remember_token", "string", nullable, None)
+                                table.set_column("remember_token", "string", nullable, None);
                             }
                             "timestamps" | "timestampstz" | "nullabletimestamps" => {
                                 table.set_column("created_at", "string", true, None);
@@ -449,10 +449,10 @@ impl<'a> SchemaAggregator<'a> {
             "boolean" => table.set_column(column, "bool", a.nullable, None),
             "geometry" | "geometrycollection" | "multipoint" | "multipolygon" | "multipolygonz"
             | "point" | "polygon" | "computed" => {
-                table.set_column(column, "mixed", a.nullable, None)
+                table.set_column(column, "mixed", a.nullable, None);
             }
             "double" | "float" | "unsigneddecimal" | "decimal" => {
-                table.set_column(column, "float", a.nullable, None)
+                table.set_column(column, "float", a.nullable, None);
             }
             "after" => {
                 if let Some(Expression::Closure(closure)) = a.second_arg
@@ -551,7 +551,7 @@ fn update_statements<'ast, 'arena>(
     body: &'ast Block<'arena>,
 ) -> Vec<&'ast ExpressionStatement<'arena>> {
     let mut out = Vec::new();
-    for s in body.statements.iter() {
+    for s in &body.statements {
         match s {
             Statement::If(i) => {
                 let mut found = ExpressionStatements::default();

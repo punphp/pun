@@ -174,7 +174,7 @@ fn evaluate(expr: &Expression<'_>) -> Option<Val> {
 fn evaluate_array<'a>(array: &'a Array<'a>) -> Option<Vec<(Key, Val)>> {
     let mut items: Vec<(Key, Val)> = Vec::new();
     let mut next: i64 = 0;
-    for element in array.elements.iter() {
+    for element in &array.elements {
         let (key, v) = match element {
             ArrayElement::KeyValue(item) => {
                 let key = match value(item.key)? {

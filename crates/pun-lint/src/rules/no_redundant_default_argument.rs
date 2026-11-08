@@ -47,9 +47,9 @@ impl Rule for NoRedundantDefaultArgument {
                 .iter()
                 .chain(own.used_traits.iter())
                 .chain(own.all_parent_classes.iter())
-                .map(|w| w.as_bytes())
+                .map(mago_word::Word::as_bytes)
                 .collect();
-            for member in class.members.iter() {
+            for member in class.members {
                 let ClassLikeMember::Method(method) = member else {
                     continue;
                 };
@@ -59,7 +59,7 @@ impl Rule for NoRedundantDefaultArgument {
                 if is_private(method) {
                     continue;
                 }
-                for statement in body.statements.iter() {
+                for statement in &body.statements {
                     let Statement::Expression(statement) = statement else {
                         continue;
                     };

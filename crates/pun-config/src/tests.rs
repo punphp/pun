@@ -485,7 +485,7 @@ fn lint_overrides() {
         ]
     );
     // Overrides change levels per path at run time; they turn nothing on for the whole project.
-    assert!(c.lint.rules.is_empty());
+    assert_eq!(c.lint.rules, [] as [schema::LintRule; 0]);
 }
 
 /// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 150, essential 106, recommended 75, strict
@@ -601,8 +601,10 @@ fn composer_gate() {
     let d = dir(&[("composer.json", r#"{"require":{"php":"^8.2"}}"#)]);
     assert!(err(&d, preset("laravel")).contains("PHP < 8.4"));
     // The harness's escape hatch for pre-8.4 corpora. ponytail: process-wide env; no other test reads it.
+    // SAFETY: no other test in this binary reads or writes this variable.
     unsafe { std::env::set_var("PUN_IGNORE_PHP_CONSTRAINT", "1") };
     let ok = load(&d, &preset("laravel")).is_ok();
+    // SAFETY: as above.
     unsafe { std::env::remove_var("PUN_IGNORE_PHP_CONSTRAINT") };
     assert!(ok);
     assert!(load(&dir(&[("composer.json", "{}")]), &preset("laravel")).is_ok());
@@ -1205,7 +1207,7 @@ mod migrate {
         let m = pint(
             r#"{"exclude":["a"],"notPath":"y","rules":{"concat_space":{"spacing":"one"},"array_syntax":false,"single_quote":true,"final_class":true,"Pint/laravel_blade":true}}"#,
         );
-        assert!(m.unsupported.is_empty());
+        assert_eq!(m.unsupported, [] as [std::string::String; 0]);
         assert_eq!(
             m.toml,
             r#"[files]
@@ -1372,7 +1374,7 @@ not-path = ["y"]
     #[test]
     fn expands_per_and_symfony() {
         let m = pint(r#"{"preset":"per"}"#);
-        assert!(m.unsupported.is_empty());
+        assert_eq!(m.unsupported, [] as [std::string::String; 0]);
         let c = from_toml(&dir(&[]), &m.toml).unwrap();
         assert_eq!(c.preset, "empty");
         let rules = names(&c.rules);
@@ -1521,7 +1523,7 @@ not-path = ["y"]
         );
     }
 
-    /// `extend` merges like array_replace_recursive: lists by index, so ["x"] over ["a","b"] is ["x","b"].
+    /// `extend` merges like array_replace_recursive: lists by index, so `["x"]` over `["a","b"]` is `["x","b"]`.
     #[test]
     fn extend() {
         let d = dir(&[

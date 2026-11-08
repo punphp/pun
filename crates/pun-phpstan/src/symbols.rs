@@ -473,6 +473,10 @@ pub fn with_classes<R>(provider: &dyn Fn(&str) -> Option<Arc<Class>>, f: impl Fn
         }
     }
     let ptr: *const (dyn Fn(&str) -> Option<Arc<Class>> + '_) = provider;
+    #[expect(
+        clippy::transmute_ptr_to_ptr,
+        reason = "erases the trait object's lifetime, which `as` cannot"
+    )]
     // SAFETY: only the lifetime is erased. `lookup()` dereferences the pointer while `f` runs, within the borrow of
     // `provider`; `Restore` puts the previous provider back before this function returns, also on unwinding.
     let ptr: *const Provider = unsafe { std::mem::transmute(ptr) };
@@ -506,6 +510,10 @@ pub fn with_functions<R>(provider: &dyn Fn(&str) -> bool, f: impl FnOnce() -> R)
         }
     }
     let ptr: *const (dyn Fn(&str) -> bool + '_) = provider;
+    #[expect(
+        clippy::transmute_ptr_to_ptr,
+        reason = "erases the trait object's lifetime, which `as` cannot"
+    )]
     // SAFETY: as in `with_classes()`.
     let ptr: *const FunctionProvider = unsafe { std::mem::transmute(ptr) };
     let _restore = Restore(FUNCTIONS.with(|p| p.replace(Some(ptr))));

@@ -4,9 +4,9 @@
 
 use crate::syntax::is_this;
 use mago_syntax::cst::{
-    Access, Assignment, AssignmentOperator, Block, ClassLikeMember, ClassLikeMemberSelector, Expression,
-    FunctionLikeParameterList, FunctionLikeReturnTypeHint, Hint, Method, MethodBody, Node, Property, PropertyItem,
-    Return, Sequence, Statement, Variable,
+    Access, Assignment, AssignmentOperator, Block, ClassLikeMember, ClassLikeMemberSelector,
+    Expression, FunctionLikeParameterList, FunctionLikeReturnTypeHint, Hint, Method, MethodBody,
+    Node, Property, PropertyItem, Return, Sequence, Statement, Variable,
 };
 use pun_phpstan::types::Type;
 use pun_problem::{Edit, Safety, Span};
@@ -32,7 +32,7 @@ pub(crate) struct FunctionLike<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> FunctionLike<'ast, 'arena> {
-    pub fn of(node: Node<'ast, 'arena>) -> Option<FunctionLike<'ast, 'arena>> {
+    pub(crate) fn of(node: Node<'ast, 'arena>) -> Option<FunctionLike<'ast, 'arena>> {
         match node {
             Node::Function(f) => Some(FunctionLike {
                 name: node_span(&f.name),
@@ -61,18 +61,22 @@ impl<'ast, 'arena> FunctionLike<'ast, 'arena> {
 
     /// `$node->returnType instanceof Node && ! $this->isName($node->returnType, 'array')`: a return type other than
     /// `array`.
-    pub fn has_non_array_return_type(&self) -> bool {
+    pub(crate) fn has_non_array_return_type(&self) -> bool {
         self.return_type.is_some_and(|r| !is_array_hint(&r.hint))
     }
 
     /// Whether it is a private method.
-    pub fn is_private(&self) -> bool {
-        self.method.is_some_and(|m| m.modifiers.iter().any(|m| m.is_private()))
+    pub(crate) fn is_private(&self) -> bool {
+        self.method.is_some_and(|m| {
+            m.modifiers
+                .iter()
+                .any(mago_syntax::cst::Modifier::is_private)
+        })
     }
 
     /// `ReturnNodeFinder::findOnlyReturnWithExpr()`: the one `return` of the body, when it has a value and the end of
     /// the body cannot be reached.
-    pub fn only_return_with_expr(
+    pub(crate) fn only_return_with_expr(
         &self,
         place: &Place<'_, '_, '_>,
     ) -> Option<&'ast Return<'arena>> {
@@ -85,7 +89,7 @@ impl<'ast, 'arena> FunctionLike<'ast, 'arena> {
     }
 
     /// The doc comment target of the node.
-    pub fn target(&self, ctx: &crate::Context<'_>) -> DocTarget {
+    pub(crate) fn target(&self, ctx: &crate::Context<'_>) -> DocTarget {
         DocTarget::of(ctx, self.start)
     }
 }
@@ -109,7 +113,12 @@ pub(crate) fn doc_report(
     target: &DocTarget,
     info: &PhpDocInfo,
 ) -> Option<Report> {
-    report(span, message, source, vec![target.edit(source, &info.print())])
+    report(
+        span,
+        message,
+        source,
+        vec![target.edit(source, &info.print())],
+    )
 }
 
 /// The report of a rule that changed the doc comments `changes` (a target and its changed doc each); `None` when
@@ -151,7 +160,12 @@ pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
             out.extend(referenced_classes(item));
             out
         }
-        Type::ConstArray(a) => a.keys.iter().chain(a.values.iter()).flat_map(referenced_classes).collect(),
+        Type::ConstArray(a) => a
+            .keys
+            .iter()
+            .chain(a.values.iter())
+            .flat_map(referenced_classes)
+            .collect(),
         _ => vec![],
     }
 }
@@ -228,7 +242,7 @@ pub(crate) fn properties<'ast, 'arena>(
                 hint,
                 names: items.iter().map(|i| name(i)).collect(),
                 default: items.first().and_then(|i| default(i)),
-                is_private: modifiers.iter().any(|m| m.is_private()),
+                is_private: modifiers.iter().any(mago_syntax::cst::Modifier::is_private),
             }
         })
         .collect()
@@ -254,7 +268,9 @@ pub(crate) fn this_property<'a>(expr: &Expression<'a>) -> Option<&'a str> {
 }
 
 /// The statements of a method's body (`null` for an abstract method).
-pub(crate) fn method_statements<'ast, 'arena>(m: &'ast Method<'arena>) -> Option<Vec<&'ast Statement<'arena>>> {
+pub(crate) fn method_statements<'ast, 'arena>(
+    m: &'ast Method<'arena>,
+) -> Option<Vec<&'ast Statement<'arena>>> {
     match &m.body {
         MethodBody::Concrete(b) => Some(b.statements.iter().collect()),
         MethodBody::Abstract(_) => None,
@@ -271,7 +287,10 @@ pub(crate) fn returned_this_property<'arena>(m: &Method<'arena>) -> Option<&'are
 
 /// `BetterNodeFinder::findInstancesOfScoped()` over `node`'s children: each node `found` takes, not looking into
 /// classes, functions and closures (methods and arrow functions are looked into).
-pub(crate) fn find_scoped<'ast, 'arena>(node: Node<'ast, 'arena>, found: &mut dyn FnMut(Node<'ast, 'arena>)) {
+pub(crate) fn find_scoped<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    found: &mut dyn FnMut(Node<'ast, 'arena>),
+) {
     node.visit_children(|child| {
         found(child);
         match child {

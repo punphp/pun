@@ -8,12 +8,15 @@
 
 use std::cell::Cell;
 
-use pun_phpstan::types::{Accessory, ConstArray, Level, ShapeBuilder, Type, intersect, mixed, sort_types, to_phpdoc, union};
+use pun_phpstan::types::{
+    Accessory, ConstArray, Level, ShapeBuilder, Type, intersect, mixed, sort_types, to_phpdoc,
+    union,
+};
 
 use super::type_node::TypeNode;
 
 /// `MixedType` (with `ErrorType`, which extends it).
-pub fn is_mixed(t: &Type) -> bool {
+pub(crate) fn is_mixed(t: &Type) -> bool {
     matches!(
         t,
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error
@@ -21,25 +24,29 @@ pub fn is_mixed(t: &Type) -> bool {
 }
 
 /// `IntegerType` (with `ConstantIntegerType` and `IntegerRangeType`, which extend it).
-pub fn is_integer_type(t: &Type) -> bool {
+pub(crate) fn is_integer_type(t: &Type) -> bool {
     matches!(t, Type::Int | Type::ConstInt(_) | Type::IntRange(..))
 }
 
-
 /// `ConstantArrayType::getKeyType()`.
-pub fn const_array_key_type(a: &ConstArray) -> Type {
+pub(crate) fn const_array_key_type(a: &ConstArray) -> Type {
     Type::ConstArray(Box::new(a.clone())).iterable_key_type()
 }
 
 /// `ConstantArrayType::getItemType()`.
-pub fn const_array_item_type(a: &ConstArray) -> Type {
+pub(crate) fn const_array_item_type(a: &ConstArray) -> Type {
     Type::ConstArray(Box::new(a.clone())).iterable_value_type()
 }
 
 /// `StaticTypeMapper::mapPHPStanTypeToPHPStanPhpDocTypeNode()`: the type with its integers plain (explicit values and
 /// ranges are too detailed for a docblock), PHPStan's `toPhpDocNode()`, then Rector's docblock style.
-pub fn map_to_phpdoc(t: &Type) -> TypeNode {
-    style(Mapper { short_objects: false }.node(&plain_integers(t)))
+pub(crate) fn map_to_phpdoc(t: &Type) -> TypeNode {
+    style(
+        Mapper {
+            short_objects: false,
+        }
+        .node(&plain_integers(t)),
+    )
 }
 
 /// `TypeTraverser::map()` of the integers to `IntegerType`, entering only unions and general arrays.
@@ -54,7 +61,10 @@ fn plain_integers_changed(t: &Type) -> (Type, bool) {
     let members = |types: &[Type]| {
         let mapped: Vec<(Type, bool)> = types.iter().map(plain_integers_changed).collect();
         let changed = mapped.iter().any(|(_, c)| *c);
-        (changed, mapped.into_iter().map(|(t, _)| t).collect::<Vec<_>>())
+        (
+            changed,
+            mapped.into_iter().map(|(t, _)| t).collect::<Vec<_>>(),
+        )
     };
     match t {
         Type::Int | Type::ConstInt(_) | Type::IntRange(..) => (Type::Int, true),
@@ -72,7 +82,11 @@ fn plain_integers_changed(t: &Type) -> (Type, bool) {
         Type::Array(key, item) => {
             let (key, k) = plain_integers_changed(key);
             let (item, i) = plain_integers_changed(item);
-            if k || i { (Type::array(key, item), true) } else { (t.clone(), false) }
+            if k || i {
+                (Type::array(key, item), true)
+            } else {
+                (t.clone(), false)
+            }
         }
         _ => (t.clone(), false),
     }
@@ -93,7 +107,9 @@ impl Mapper {
                 types: sort_types(types).iter().map(|t| self.node(t)).collect(),
                 wrapped: false,
             },
-            Type::Array(key, item) if implicit_mixed(key) && implicit_mixed(item) => TypeNode::ident("array"),
+            Type::Array(key, item) if implicit_mixed(key) && implicit_mixed(item) => {
+                TypeNode::ident("array")
+            }
             Type::Array(key, item) if implicit_mixed(key) => TypeNode::Generic {
                 base: "array".to_string(),
                 args: vec![self.node(item)],
@@ -113,7 +129,8 @@ impl Mapper {
             },
             // `list<T>`, `non-empty-list<T>`, `non-empty-array<K, T>`
             Type::Intersection(types)
-                if let Some(Type::Array(key, item)) = types.iter().find(|t| matches!(t, Type::Array(..))) =>
+                if let Some(Type::Array(key, item)) =
+                    types.iter().find(|t| matches!(t, Type::Array(..))) =>
             {
                 let has = |a: Accessory| types.contains(&Type::Accessory(a));
                 let list = has(Accessory::List);
@@ -135,7 +152,10 @@ impl Mapper {
                 } else {
                     vec![self.node(key), self.node(item)]
                 };
-                TypeNode::Generic { base: base.to_string(), args }
+                TypeNode::Generic {
+                    base: base.to_string(),
+                    args,
+                }
             }
             Type::Intersection(types) if types.iter().all(|t| matches!(t, Type::Object(..))) => {
                 TypeNode::Intersection(sort_types(types).iter().map(|t| self.node(t)).collect())
@@ -154,7 +174,11 @@ impl Mapper {
 
     /// Any other type: PHPStan's printed node, its class names fully qualified.
     fn fallback(&self, t: &Type) -> TypeNode {
-        let printed = to_phpdoc(&if self.short_objects { t.clone() } else { fully_qualified(t) });
+        let printed = to_phpdoc(&if self.short_objects {
+            t.clone()
+        } else {
+            fully_qualified(t)
+        });
         pun_phpstan::phpdoc::parse(&printed)
             .ok()
             .and_then(|parsed| TypeNode::from_parsed(&parsed))
@@ -181,9 +205,14 @@ fn style(node: TypeNode) -> TypeNode {
                     }
                 }
             }
-            TypeNode::Union { types: styled, wrapped }
+            TypeNode::Union {
+                types: styled,
+                wrapped,
+            }
         }
-        TypeNode::Intersection(types) => TypeNode::Intersection(types.into_iter().map(style).collect()),
+        TypeNode::Intersection(types) => {
+            TypeNode::Intersection(types.into_iter().map(style).collect())
+        }
         TypeNode::Identifier(name) if name == "array" => TypeNode::Array {
             inner: Box::new(TypeNode::ident("mixed")),
             generic_parent: false,
@@ -222,16 +251,19 @@ fn is_array_of_items_only(args: &[TypeNode]) -> bool {
     };
     items.iter().all(|single| {
         !(matches!(single, TypeNode::Generic { .. }) && items.len() > 1)
-            && !(args.len() == 2 && matches!(single, TypeNode::Array { .. } | TypeNode::Generic { .. }))
+            && !(args.len() == 2
+                && matches!(single, TypeNode::Array { .. } | TypeNode::Generic { .. }))
     })
 }
 
 /// Class names fully qualified, for PHPStan's printer (`FullyQualifiedNameNode`).
 fn fully_qualified(t: &Type) -> Type {
     match t {
-        Type::Object(name, args, generic) => {
-            Type::Object(format!("\\{name}"), args.iter().map(fully_qualified).collect(), *generic)
-        }
+        Type::Object(name, args, generic) => Type::Object(
+            format!("\\{name}"),
+            args.iter().map(fully_qualified).collect(),
+            *generic,
+        ),
         // `EnumCaseObjectType::toPhpDocNode()`: a `ConstFetchNode` of the fully qualified class (PHPStan 2.3)
         Type::EnumCase(name, case) => Type::EnumCase(format!("\\{name}"), case.clone()),
         t => t.traverse(&fully_qualified),
@@ -239,7 +271,7 @@ fn fully_qualified(t: &Type) -> Type {
 }
 
 /// `TypeNormalizer::generalizeConstantTypes()`.
-pub fn generalize_constant_types(t: &Type) -> Type {
+pub(crate) fn generalize_constant_types(t: &Type) -> Type {
     let deep = Cell::new(0);
     generalize_step(t, &deep)
 }
@@ -292,7 +324,7 @@ fn generalize_union(types: &[Type]) -> Type {
         let g = generalize_constant_types(unioned);
         if let Type::Array(key, item) = &g {
             let key_hash = type_hash(key);
-            for existing in generalized.iter_mut() {
+            for existing in &mut generalized {
                 let Type::Array(existing_key, existing_item) = &*existing else {
                     continue;
                 };
@@ -312,8 +344,16 @@ fn generalize_union(types: &[Type]) -> Type {
     let mut unique = uniquate_types(&generalized);
     if unique.len() > 1 {
         let union = Type::Union(unique.clone());
-        let short = style(Mapper { short_objects: true }.node(&plain_integers(&union))).to_string();
-        if short.len() > MAX_PRINTED_UNION_DOC_LENGTH && !avoid_printed_docblock_trimming(&union, &unique) {
+        let short = style(
+            Mapper {
+                short_objects: true,
+            }
+            .node(&plain_integers(&union)),
+        )
+        .to_string();
+        if short.len() > MAX_PRINTED_UNION_DOC_LENGTH
+            && !avoid_printed_docblock_trimming(&union, &unique)
+        {
             if let Some(array) = narrow_to_always_known_array_type(&unique) {
                 return array;
             }
@@ -387,7 +427,7 @@ fn avoid_printed_docblock_trimming(union: &Type, types: &[Type]) -> bool {
 /// `TypeFactory::createMixedPassedOrUnionType()` (`createMixedPassedOrUnionTypeAndKeepConstant()` with
 /// `keep_constant`): the types unwrapped and unique, as a `UnionType` of them as they are (not
 /// `TypeCombinator::union()`); `mixed` when there is none or any is `mixed`.
-pub fn create_mixed_passed_or_union_type(types: &[Type], keep_constant: bool) -> Type {
+pub(crate) fn create_mixed_passed_or_union_type(types: &[Type], keep_constant: bool) -> Type {
     let mut unwrapped = Vec::new();
     for t in types.iter().flat_map(flatten_types) {
         match t {
@@ -408,7 +448,9 @@ pub fn create_mixed_passed_or_union_type(types: &[Type], keep_constant: bool) ->
 /// `TypeUtils::flattenTypes()`: a union's members, a constant array as each of its arrays.
 fn flatten_types(t: &Type) -> Vec<Type> {
     match t {
-        Type::Union(types) | Type::Benevolent(types) => types.iter().flat_map(flatten_types).collect(),
+        Type::Union(types) | Type::Benevolent(types) => {
+            types.iter().flat_map(flatten_types).collect()
+        }
         // too many variants: the array itself
         Type::ConstArray(a) if a.optional.len() > 14 => vec![t.clone()],
         Type::ConstArray(a) => all_arrays(a),
@@ -423,12 +465,24 @@ fn all_arrays(a: &ConstArray) -> Vec<Type> {
     let combinations: Vec<Vec<usize>> = if n <= 10 {
         // `powerSet()`
         (0..1usize << n)
-            .map(|i| (0..n).filter(|j| (i >> (n - 1 - j)) & 1 == 1).map(|j| optional[j]).collect())
+            .map(|i| {
+                (0..n)
+                    .filter(|j| (i >> (n - 1 - j)) & 1 == 1)
+                    .map(|j| optional[j])
+                    .collect()
+            })
             .collect()
     } else {
-        vec![vec![], vec![optional[0]], vec![optional[n - 1]], optional.clone()]
+        vec![
+            vec![],
+            vec![optional[0]],
+            vec![optional[n - 1]],
+            optional.clone(),
+        ]
     };
-    let required: Vec<usize> = (0..a.keys.len()).filter(|i| !optional.contains(i)).collect();
+    let required: Vec<usize> = (0..a.keys.len())
+        .filter(|i| !optional.contains(i))
+        .collect();
     let mut arrays = Vec::new();
     for combination in combinations {
         let mut keys: Vec<usize> = required.iter().chain(&combination).copied().collect();
@@ -447,7 +501,10 @@ fn all_arrays(a: &ConstArray) -> Vec<Type> {
 fn unwrap_constant_array_types(a: &ConstArray) -> Vec<Type> {
     let keys = flatten_types(&const_array_key_type(a));
     let mut unwrapped = Vec::new();
-    for (position, item) in flatten_types(&const_array_item_type(a)).into_iter().enumerate() {
+    for (position, item) in flatten_types(&const_array_item_type(a))
+        .into_iter()
+        .enumerate()
+    {
         let key = keys.get(position).cloned().unwrap_or_else(mixed);
         match item {
             Type::ConstArray(inner) => {
@@ -464,7 +521,7 @@ fn unwrap_constant_array_types(a: &ConstArray) -> Vec<Type> {
 
 /// `TypeFactory::uniquateTypes()` (constants not kept): the types with their values removed, the later of two with
 /// the same hash in the place of the first.
-pub fn uniquate_types(types: &[Type]) -> Vec<Type> {
+pub(crate) fn uniquate_types(types: &[Type]) -> Vec<Type> {
     uniquate(types, false)
 }
 
@@ -517,7 +574,7 @@ fn uniquate(types: &[Type], keep_constant: bool) -> Vec<Type> {
 }
 
 /// `TypeHasher::createTypeHash()`.
-pub fn type_hash(t: &Type) -> String {
+pub(crate) fn type_hash(t: &Type) -> String {
     match t {
         Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => {
             format!(
@@ -549,7 +606,7 @@ pub fn type_hash(t: &Type) -> String {
 
 /// `ConstantArrayTypeGeneralizer`: a constant array as `array<key, item>` (an empty one as `array{}`), three
 /// levels deep at most.
-pub fn generalize_constant_array(a: &ConstArray) -> TypeNode {
+pub(crate) fn generalize_constant_array(a: &ConstArray) -> TypeNode {
     let nesting = Cell::new(0);
     generalize_nested(a, true, &nesting)
 }
@@ -578,7 +635,11 @@ fn generalize_nested(a: &ConstArray, fresh: bool, nesting: &Cell<u32>) -> TypeNo
         item => {
             let g = generalize_constant_types(item);
             // correction
-            map_to_phpdoc(if matches!(g, Type::Never(_)) { &Type::Mixed { explicit: false } } else { &g })
+            map_to_phpdoc(if matches!(g, Type::Never(_)) {
+                &Type::Mixed { explicit: false }
+            } else {
+                &g
+            })
         }
     };
     TypeNode::Generic {
@@ -588,7 +649,7 @@ fn generalize_nested(a: &ConstArray, fresh: bool, nesting: &Cell<u32>) -> TypeNo
 }
 
 /// `NodeDocblockTypeDecorator::createTypeNode()`: the generalized type's node, `mixed[]` for `mixed`.
-pub fn create_type_node(t: &Type) -> TypeNode {
+pub(crate) fn create_type_node(t: &Type) -> TypeNode {
     // empty array default "[]" resolves to "never[]"; widen to "mixed[]" to keep the docblock useful
     let node = map_to_phpdoc(&never_to_mixed(&generalize_constant_types(t)));
     if node == TypeNode::ident("mixed") {
@@ -616,28 +677,31 @@ fn never_to_mixed(t: &Type) -> Type {
 
 /// `NodeDocblockTypeDecorator::isBareMixedType()`: `mixed`, or an array of nothing or of `mixed` by int or `mixed`
 /// keys.
-pub fn is_bare_mixed_type(t: &Type) -> bool {
+pub(crate) fn is_bare_mixed_type(t: &Type) -> bool {
     if is_mixed(t) {
         return true;
     }
     match generalize_constant_types(t) {
         Type::Array(key, item) => {
-            matches!(*item, Type::Never(_)) || (is_mixed(&item) && (is_integer_type(&key) || is_mixed(&key)))
+            matches!(*item, Type::Never(_))
+                || (is_mixed(&item) && (is_integer_type(&key) || is_mixed(&key)))
         }
         _ => false,
     }
 }
 
 /// `UsefulArrayTagNodeAnalyzer::isUsefulArrayTag()` of a tag's type (`None`: no tag).
-pub fn is_useful_array_tag(t: Option<&TypeNode>) -> bool {
+pub(crate) fn is_useful_array_tag(t: Option<&TypeNode>) -> bool {
     match t {
         None => false,
-        Some(TypeNode::Identifier(name)) => !matches!(name.as_str(), "array" | "mixed" | "iterable"),
+        Some(TypeNode::Identifier(name)) => {
+            !matches!(name.as_str(), "array" | "mixed" | "iterable")
+        }
         Some(t) => !is_mixed_array(t),
     }
 }
 
 /// `UsefulArrayTagNodeAnalyzer::isMixedArray()`: `mixed[]`.
-pub fn is_mixed_array(t: &TypeNode) -> bool {
+pub(crate) fn is_mixed_array(t: &TypeNode) -> bool {
     matches!(t, TypeNode::Array { inner, .. } if **inner == TypeNode::ident("mixed"))
 }

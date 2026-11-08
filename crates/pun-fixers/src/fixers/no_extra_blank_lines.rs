@@ -63,7 +63,7 @@ impl Run<'_> {
             Callback::FixAfterCaseToken => self.fix_after_case_token(index),
             Callback::FixAfterThrowToken => self.fix_after_throw_token(index),
             Callback::FixStructureOpenCloseIfMultiLine => {
-                self.fix_structure_open_close_if_multi_line(index)
+                self.fix_structure_open_close_if_multi_line(index);
             }
             Callback::RemoveBetweenUse => self.remove_between_use(index),
             Callback::RemoveMultipleBlankLines => self.remove_multiple_blank_lines(index),

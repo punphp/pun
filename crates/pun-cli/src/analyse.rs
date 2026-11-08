@@ -336,9 +336,9 @@ pub(crate) fn ignore_problem(rel: &str, m: &pun_problem::ignore::Malformed) -> P
 
 /// A finding as a problem: at the first non-blank column of its line (PHPStan reports lines only), the tip as help.
 pub(crate) fn problem(f: &Finding, source: &str, index: &LineIndex) -> Problem {
-    let at = (index.line_range(f.line.max(1) as usize))
-        .map(|r| r.start + source[r.clone()].len() - source[r].trim_start().len())
-        .unwrap_or(0);
+    let at = (index.line_range(f.line.max(1) as usize)).map_or(0, |r| {
+        r.start + source[r.clone()].len() - source[r].trim_start().len()
+    });
     Problem {
         rule: f.rule.clone(),
         path: f.rel.clone().into(),
@@ -377,11 +377,11 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
         Some(format) => {
             let cx = analyse_report::Context {
                 verbose: a.verbose > 0 || agent::enabled(),
-                root: &root,
+                root,
                 paths: &analysed.paths,
                 general: &analysed.general,
                 fixable_ignored: analysed.fixable_ignored,
-                config: cfg.pun_toml().map(|s| relative(&root, s)),
+                config: cfg.pun_toml().map(|s| relative(root, s)),
             };
             print!(
                 "{}",
@@ -389,16 +389,16 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
                     .map_err(|e| unsupported_format(&e))?
             );
         }
-        None if agent::enabled() => print!("{}", agent_report(&analysed)),
+        None if agent::enabled() => print!("{}", agent_report(analysed)),
         None if a.quiet => {}
         None => {
             let look = Look::stdout(a.color.unwrap_or(render::ColorChoice::Auto));
             print!(
                 "{}",
-                human(&analysed, &root, look, a.concise, started.elapsed())
+                human(analysed, root, look, a.concise, started.elapsed())
             );
             if a.github_actions {
-                print!("{}", annotations(&analysed));
+                print!("{}", annotations(analysed));
             }
         }
     }

@@ -66,7 +66,7 @@ impl Eq for Content {}
 
 impl Hash for Content {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        (**self).hash(state)
+        (**self).hash(state);
     }
 }
 

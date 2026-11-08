@@ -28,7 +28,7 @@ fn visibility(modifiers: &[Modifier]) -> Visibility {
 }
 
 /// The rules registered for `Node\Stmt\ClassConst`.
-pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant<'arena>) {
+pub(super) fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant<'arena>) {
     class_as_class_constant(c, k);
     // ConstantsInTraitsRule (`$scope->isInTrait()`), PhpVersion::supportsConstantsInTraits()
     if !c.surely_at_least(80200) && c.walk.contains(super::Walk::IN_TARGET) {
@@ -69,7 +69,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
 
 /// ClassAsClassConstantRule.
 fn class_as_class_constant(c: &mut Checker, k: &ClassLikeConstant) {
-    for item in k.items.iter() {
+    for item in &k.items {
         if !item.name.value.eq_ignore_ascii_case(b"class") {
             continue;
         }
@@ -84,7 +84,7 @@ fn class_as_class_constant(c: &mut Checker, k: &ClassLikeConstant) {
 }
 
 /// ReadOnlyClassRule (`InClassNode`): a `readonly` class declared at `at`.
-pub fn read_only_class(c: &mut Checker, at: Span, modifiers: &[Modifier], anonymous: bool) {
+pub(super) fn read_only_class(c: &mut Checker, at: Span, modifiers: &[Modifier], anonymous: bool) {
     // Below PHP 8.1 php-parser lexes `readonly` as a name: PHPStan reports a parse error and never reaches the rule.
     if c.php_version < 80100 || !modifiers.iter().any(Modifier::is_readonly) {
         return;
@@ -143,7 +143,7 @@ fn conflicting_trait_constants<'arena>(
         .iter()
         .filter_map(|t| c.class_named(t))
         .collect();
-    for item in k.items.iter() {
+    for item in &k.items {
         for t in &recursive {
             if let Some(constant) = t.constants.get(&mago_word::word(item.name.value)) {
                 single_trait_constant(c, &display, &class_name, t, constant, k, item);
@@ -154,7 +154,7 @@ fn conflicting_trait_constants<'arena>(
         .direct_trait_names()
         .filter_map(|t| c.class_named(&t))
         .collect();
-    for item in k.items.iter() {
+    for item in &k.items {
         let name = mago_word::word(item.name.value);
         for t in &immediate {
             let Some(theirs) = t.constants.get(&name) else {
@@ -345,7 +345,7 @@ fn overriding_constant<'arena>(
     k: &ClassLikeConstant<'arena>,
 ) {
     let display = c.display(class);
-    for item in k.items.iter() {
+    for item in &k.items {
         let Some((prototype, ancestor)) = find_prototype(c, class, item.name.value) else {
             continue;
         };

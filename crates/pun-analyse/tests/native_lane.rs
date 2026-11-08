@@ -96,8 +96,10 @@ fn analyze_with_registry(
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
-    let mut settings = Settings::default();
-    settings.track_native_types = native;
+    let settings = Settings {
+        track_native_types: native,
+        ..Default::default()
+    };
     let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
     let mut references = SymbolReferences::new();
     populate_codebase(

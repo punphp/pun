@@ -82,7 +82,7 @@ impl Collector<'_, '_, '_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
-    fn walk_in_assignment(&mut self, assignment: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, assignment: &'ast Assignment<'arena>, (): &mut ()) {
         if let Expression::Call(Call::Function(call)) = assignment.rhs {
             if let Some(name) = function_call_matches_any(self.ancestors, call, MERGE_FUNCTIONS) {
                 let span = mago_span::HasSpan::span(call);
@@ -108,7 +108,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
             }
         }
         if let Expression::Array(array) = assignment.rhs
-            && array.elements.iter().any(|e| e.is_variadic())
+            && array
+                .elements
+                .iter()
+                .any(mago_syntax::cst::ArrayElement::is_variadic)
         {
             let span = mago_span::HasSpan::span(assignment);
             self.report(
@@ -120,12 +123,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, '_, 'arena> {
         }
     }
 
-    fn walk_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {}
-    fn walk_foreach(&mut self, _: &'ast Foreach<'arena>, _: &mut ()) {}
-    fn walk_while(&mut self, _: &'ast While<'arena>, _: &mut ()) {}
-    fn walk_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {}
+    fn walk_for(&mut self, _: &'ast For<'arena>, (): &mut ()) {}
+    fn walk_foreach(&mut self, _: &'ast Foreach<'arena>, (): &mut ()) {}
+    fn walk_while(&mut self, _: &'ast While<'arena>, (): &mut ()) {}
+    fn walk_do_while(&mut self, _: &'ast DoWhile<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {}
 }

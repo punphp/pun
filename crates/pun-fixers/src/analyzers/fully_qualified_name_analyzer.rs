@@ -64,7 +64,7 @@ impl<'a> FullyQualifiedNameAnalyzer<'a> {
             }
             let key = u.short_name.to_ascii_lowercase();
             match declarations.iter_mut().find(|(k, _)| *k == key) {
-                Some(slot) => slot.1 = u.full_name.clone(),
+                Some(slot) => slot.1.clone_from(&u.full_name),
                 None => declarations.push((key, u.full_name.clone())),
             }
         }

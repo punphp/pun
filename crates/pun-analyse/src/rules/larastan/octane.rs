@@ -49,9 +49,9 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'aren
     let found = match closure.parameter_list.parameters.first() {
         None => {
             let mut finder = ThisApp(Vec::new());
-            statements
-                .iter()
-                .for_each(|s| finder.walk_statement(s, &mut ()));
+            for s in statements {
+                finder.walk_statement(s, &mut ());
+            }
             finder.0
         }
         // using `$app` with `bind` is fine
@@ -64,9 +64,9 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'aren
                 container: p.variable.name,
                 found: Vec::new(),
             };
-            statements
-                .iter()
-                .for_each(|s| finder.walk_statement(s, &mut ()));
+            for s in statements {
+                finder.walk_statement(s, &mut ());
+            }
             finder.found
         }
     };
@@ -84,7 +84,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'aren
 struct ThisApp(Vec<mago_span::Span>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ThisApp {
-    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, (): &mut ()) {
         if matches!(a.object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
             && matches!(&a.property, ClassLikeMemberSelector::Identifier(p) if p.value == b"app")
         {
@@ -100,7 +100,7 @@ struct ContainerPassed<'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ContainerPassed<'arena> {
-    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, (): &mut ()) {
         let Some(first) = new.argument_list.as_ref().and_then(|l| l.arguments.first()) else {
             return;
         };

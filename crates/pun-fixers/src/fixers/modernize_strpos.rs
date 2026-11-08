@@ -13,7 +13,7 @@ struct ModernizeStrposFixer {
     modernize_stripos: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(ModernizeStrposFixer {
         modernize_stripos: false,
     })

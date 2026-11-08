@@ -149,7 +149,7 @@ impl PhpUnitTestAnnotationFixer {
             {
                 // We remove @test from the doc block
                 line = str_replace(b" @test", b"", &line);
-                lines[i] = line.clone();
+                lines[i].clone_from(&line);
             }
             // ignore the line if it isn't @depends
             if !contains(&line, b"@depends") {

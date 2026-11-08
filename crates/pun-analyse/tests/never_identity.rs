@@ -380,7 +380,7 @@ fn expansion_keeps_selected_metadata_and_template_values() {
         }
     }
     for mut value in [
-        cycle.clone(),
+        cycle,
         TUnion::from_atomic(TAtomic::Alias(TAlias::new(word("Missing"), word("Bottom")))),
     ] {
         let original = value.clone();

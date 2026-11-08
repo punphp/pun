@@ -22,3 +22,6 @@ pun-config.workspace = true
 
 [dev-dependencies]
 pcre2.workspace = true
+
+[lints]
+workspace = true

@@ -157,6 +157,10 @@ fn spawn(mut command: Command) -> Result<Worker> {
     ] {
         let tx = tx.clone();
         std::thread::spawn(move || {
+            #[expect(
+                clippy::large_stack_arrays,
+                reason = "a pipe-read buffer on its own thread's 2 MiB stack"
+            )]
             let mut buf = [0u8; 65536];
             loop {
                 match pipe.read(&mut buf) {
@@ -211,7 +215,7 @@ fn format_with(
     let worker = guard.as_mut().unwrap();
     // json_encode(..., JSON_INVALID_UTF8_SUBSTITUTE)
     let request = serde_json::json!({ "path": path, "content": String::from_utf8_lossy(content) });
-    let _ = writeln!(worker.stdin, "{request}").and_then(|_| worker.stdin.flush());
+    let _ = writeln!(worker.stdin, "{request}").and_then(|()| worker.stdin.flush());
 
     let mut formatted: Vec<u8> = Vec::new();
     let failure = loop {

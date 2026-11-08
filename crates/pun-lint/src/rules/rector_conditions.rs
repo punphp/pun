@@ -15,7 +15,7 @@ use crate::syntax::unparenthesize;
 
 /// Whether `expr` is one of php-parser's `BinaryOp` classes: Mago's binary operators but `instanceof` (php-parser's
 /// `Instanceof_` is an expression of its own), and the pipe.
-pub fn is_binary_op(expr: &Expression<'_>) -> bool {
+pub(super) fn is_binary_op(expr: &Expression<'_>) -> bool {
     match unparenthesize(expr) {
         Expression::Binary(b) => !matches!(b.operator, BinaryOperator::Instanceof(_)),
         Expression::Pipe(_) => true,
@@ -25,7 +25,7 @@ pub fn is_binary_op(expr: &Expression<'_>) -> bool {
 
 /// `BinaryOpManipulator::matchFirstAndSecondConditionNode`: the two operands as (first, second) when the left one
 /// meets `first` and the right one `second`, or else the right one `first` and the left one `second`.
-pub fn match_first_and_second<'a>(
+pub(super) fn match_first_and_second<'a>(
     left: &'a Expression<'a>,
     right: &'a Expression<'a>,
     first: impl Fn(&'a Expression<'a>) -> bool,
@@ -42,19 +42,22 @@ pub fn match_first_and_second<'a>(
 }
 
 /// php-parser's `Assign`: `=`, not a compound assignment or `= &`.
-pub fn is_assign(expr: &Expression<'_>) -> bool {
+pub(super) fn is_assign(expr: &Expression<'_>) -> bool {
     matches!(unparenthesize(expr), Expression::Assignment(a) if is_plain_assign(a))
 }
 
 /// An `if` as php-parser's `If_` has it: its statements, and whether it has `elseif`s and an `else`.
-pub struct IfParts<'ast, 'arena> {
+pub(super) struct IfParts<'ast, 'arena> {
     pub stmts: List<'ast, 'arena>,
     pub has_elseifs: bool,
     pub has_else: bool,
 }
 
 /// The parts of `node` as php-parser keeps them, in either syntax.
-pub fn if_parts<'ast, 'arena>(tokens: &[Token], node: &'ast If<'arena>) -> IfParts<'ast, 'arena> {
+pub(super) fn if_parts<'ast, 'arena>(
+    tokens: &[Token],
+    node: &'ast If<'arena>,
+) -> IfParts<'ast, 'arena> {
     match &node.body {
         IfBody::Statement(body) => IfParts {
             stmts: body_list(tokens, body.statement),
@@ -83,7 +86,7 @@ pub fn if_parts<'ast, 'arena>(tokens: &[Token], node: &'ast If<'arena>) -> IfPar
 
 /// `IfManipulator::matchIfNotNullReturnValue`: for `if ($a !== null) { return $a; }` (`null` on either side, one
 /// statement), the returned value.
-pub fn if_not_null_return_value<'a>(
+pub(super) fn if_not_null_return_value<'a>(
     ctx: &Context<'_>,
     node: &'a If<'a>,
     stmts: &List<'_, '_>,
@@ -113,14 +116,14 @@ pub fn if_not_null_return_value<'a>(
 
 /// Whether Rector visits the statement list held by `holder` (`NodeGroup::STMTS_AWARE`): every list but the body of a
 /// property hook, which php-parser's `PropertyHook` holds and no Rector rule on statement lists reads.
-pub fn is_stmts_aware(holder: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
+pub(super) fn is_stmts_aware(holder: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
     !(matches!(holder, Node::Block(_))
         && matches!(ancestors.last(), Some(Node::PropertyHookConcreteBody(_))))
 }
 
 /// php-parser's indentation of the line that holds `pos` (`TokenStream::getIndentationBefore`): its leading blanks,
 /// a tab counting as four.
-pub fn indentation(source: &str, pos: usize) -> usize {
+pub(super) fn indentation(source: &str, pos: usize) -> usize {
     line_indent(source, pos)
         .bytes()
         .map(|b| if b == b'\t' { 4 } else { 1 })
@@ -130,7 +133,7 @@ pub fn indentation(source: &str, pos: usize) -> usize {
 /// `TokenStream::getTokenCode` for the tokens in `span`: the code moved by `adjust` columns. A newline followed by
 /// `-adjust` spaces loses them, or every newline gets `adjust` spaces after it, in every token but a quoted string or
 /// a string part.
-pub fn reprint(source: &str, tokens: &[Token], span: Span, adjust: isize) -> String {
+pub(super) fn reprint(source: &str, tokens: &[Token], span: Span, adjust: isize) -> String {
     let mut out = String::with_capacity(span.end - span.start);
     let mut pos = span.start;
     for token in tokens
@@ -154,7 +157,7 @@ pub fn reprint(source: &str, tokens: &[Token], span: Span, adjust: isize) -> Str
 }
 
 /// The comment tokens in `[from, to)`: php-parser's comments of the node that starts at `to`.
-pub fn comments_between(tokens: &[Token], from: usize, to: usize) -> Vec<Span> {
+pub(super) fn comments_between(tokens: &[Token], from: usize, to: usize) -> Vec<Span> {
     tokens
         .iter()
         .filter(|t| t.start >= from && t.end <= to && t.kind.is_comment())
@@ -163,7 +166,7 @@ pub fn comments_between(tokens: &[Token], from: usize, to: usize) -> Vec<Span> {
 }
 
 /// `pComments`: each comment's `getReformattedText()` with its newlines followed by `nl`'s indent, one per line.
-pub fn print_comments(source: &str, comments: &[Span], nl: &str) -> String {
+pub(super) fn print_comments(source: &str, comments: &[Span], nl: &str) -> String {
     comments
         .iter()
         .map(|c| reformatted(&source[c.start..c.end]).replace('\n', nl))

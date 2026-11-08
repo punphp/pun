@@ -7,8 +7,6 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
-use mago_codex::ttype::TType;
-
 use super::side_effect::any_node;
 use super::syntax_types::is_array_property;
 use super::types::facts::{Facts, facts};
@@ -107,7 +105,7 @@ pub(crate) fn is_non_typed_from_param(facts: &Facts, variable: &Expression<'_>) 
         native.is_mixed()
             || native.possibly_undefined()
             || native.possibly_undefined_from_try()
-            || (full.is_some_and(|t| t.is_array()) && !native.is_array())
+            || (full.is_some_and(mago_codex::ttype::union::TUnion::is_array) && !native.is_array())
             || (native.types.len() > 1 && full != Some(native))
     })
 }
@@ -128,8 +126,8 @@ fn merged_in_loop(facts: &Facts, ancestors: &[Node<'_, '_>], name: &[u8]) -> boo
             ) && any_node(*n, &|m| {
                 matches!(m, Node::Assignment(a) if root_is(a.lhs, name) && {
                     let span = node_span(a.rhs);
-                    facts.native_type(span).map(|t| t.get_id())
-                        != facts.full_type(span).map(|t| t.get_id())
+                    facts.native_type(span).map(mago_codex::ttype::TType::get_id)
+                        != facts.full_type(span).map(mago_codex::ttype::TType::get_id)
                 })
             })
         })

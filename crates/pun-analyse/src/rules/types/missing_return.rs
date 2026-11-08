@@ -71,7 +71,7 @@ pub(in super::super) fn get_hooks(
     at: Span,
     hooks: &PropertyHookList,
 ) {
-    for h in hooks.hooks.iter() {
+    for h in &hooks.hooks {
         if !h.name.value.eq_ignore_ascii_case(b"get") {
             continue;
         }

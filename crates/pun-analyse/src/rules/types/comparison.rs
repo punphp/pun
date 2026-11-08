@@ -6,7 +6,7 @@ use pun_phpstan::types::{Accessory, Level, Type, is_super_type_of};
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "equal.invalid",
     "notEqual.invalid",
     "greater.invalid",

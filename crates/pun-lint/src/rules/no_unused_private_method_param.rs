@@ -122,7 +122,7 @@ fn caller_edits(
     removed: &[bool],
 ) -> Option<Vec<Edit>> {
     let mut references = Vec::new();
-    for member in members.iter() {
+    for member in members {
         find_references(
             class,
             Node::ClassLikeMember(member),

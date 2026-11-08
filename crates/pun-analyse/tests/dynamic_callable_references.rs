@@ -156,7 +156,7 @@ fn dynamic_callable_source_reads_are_once_only_and_native_independent() {
         &names,
         Settings::default().version,
     ));
-    let mut references = prelude.symbol_references.clone();
+    let mut references = prelude.symbol_references;
     populate_codebase(
         &mut codebase,
         &mut references,

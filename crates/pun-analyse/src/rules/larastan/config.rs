@@ -140,7 +140,7 @@ impl Types {
             .map(|a| a.get_literal_string_value().map(|v| String::from_utf8_lossy(v).into_owned()))
             .collect::<Option<Vec<_>>>()
             .unwrap_or_default();
-        let mut types = self.0.value_types(&keys).map_or(Some(Vec::new()), |t| t)?;
+        let mut types = self.0.value_types(&keys).unwrap_or(Some(Vec::new()))?;
         if invocation.argument_count() > 1 {
             let default = context.get_expression_type(argument(1)?)?;
             let default = helpers::generalize(codebase, &helpers::call_callables(codebase, default));

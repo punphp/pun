@@ -137,7 +137,7 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
     o.config = Some(config.display().to_string());
     let phar = std::fs::canonicalize(&o.phar)
         .map_or_else(|_| o.phar.clone(), |p| p.to_string_lossy().into_owned());
-    o.phar = phar.clone();
+    o.phar.clone_from(&phar);
     let files = WithoutBaselines {
         files: ProjectFiles::new(&phar),
         seen: Default::default(),
@@ -183,7 +183,7 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
                             rel,
                             "Pun checks as PHPStan does without bleeding edge".into(),
                         )
-                    }))
+                    }));
             }
             Some(pkg) if BUILT_IN.iter().any(|b| b.0 == pkg) => {
                 out.extensions.insert(pkg);
@@ -343,7 +343,11 @@ fn own_parameters(root: &Path, config: &Path, includes: &[String]) -> BTreeSet<S
     );
     own.flat_map(|file| {
         (neon(&file).get_str("parameters").and_then(Value::as_array))
-            .map(|p| p.keys().map(|k| k.as_string()).collect::<Vec<_>>())
+            .map(|p| {
+                p.keys()
+                    .map(pun_phpstan::Key::as_string)
+                    .collect::<Vec<_>>()
+            })
             .unwrap_or_default()
     })
     .collect()
@@ -382,7 +386,11 @@ fn differences(name: &str, a: Option<&Value>, b: Option<&Value>, out: &mut Vec<(
     };
     match (table(a), table(b)) {
         (Some(x), Some(y)) => {
-            let keys: BTreeSet<String> = x.keys().chain(y.keys()).map(|k| k.as_string()).collect();
+            let keys: BTreeSet<String> = x
+                .keys()
+                .chain(y.keys())
+                .map(pun_phpstan::Key::as_string)
+                .collect();
             for k in keys {
                 differences(&format!("{name}.{k}"), x.get_str(&k), y.get_str(&k), out);
             }

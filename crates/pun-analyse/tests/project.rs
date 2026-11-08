@@ -224,7 +224,7 @@ fn stub_files() {
 fn reported_identifiers_and_general_errors() {
     use pun_phpstan::{Array, Key, Value};
     let file = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/project/reported/a.php");
-    let mut project = Project::new(vec![file.clone()], Vec::new());
+    let mut project = Project::new(vec![file], Vec::new());
     project.reported = Some(std::sync::Arc::new(|id: &str| id != "function.notFound"));
     let mut entry = Array::new();
     entry.set(Key::from("message"), Value::str("#^Nothing$#"));

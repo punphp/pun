@@ -27,7 +27,9 @@ fn bytes(hex: &Value) -> Vec<u8> {
     hex.as_str()
         .unwrap()
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
         .collect()
 }
@@ -288,8 +290,7 @@ fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
     {
         let input = row
             .get("source_hex")
-            .map(bytes)
-            .unwrap_or_else(|| row["input"].as_str().unwrap().as_bytes().to_vec());
+            .map_or_else(|| row["input"].as_str().unwrap().as_bytes().to_vec(), bytes);
         let node = pun_phpstan::phpdoc::parse(&input).unwrap();
         let ty = resolve_in(&node, &scope);
         let Type::LateArrayShape(shape) = &ty else {

@@ -423,7 +423,7 @@ fn composes_the_level_extensions_and_parameters() {
         |level: u8, ext: &[&str], strict: &[(&str, bool)], files: &[(&str, &str)], format: &str| {
             let d = project(&format!("parameters:\n    level: {level}\n"), files);
             let mut p: Phpstan = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
-            p.extensions = ext.iter().map(|e| e.to_string()).collect();
+            p.extensions = ext.iter().map(std::string::ToString::to_string).collect();
             let mut rules = pun_phpstan::Array::new();
             for (k, v) in strict {
                 rules.set(pun_phpstan::Key::from(*k), pun_phpstan::Value::Bool(*v));
@@ -581,7 +581,7 @@ fn no_level_runs_no_rules() {
     assert!(done.off > 10 && done.on == 0, "{done:?}");
     std::fs::write(d.join("pun.toml"), parts.render()).unwrap();
     let cfg = load(&d, &Options::default()).unwrap();
-    assert!(cfg.analyse.rules.is_empty());
+    assert_eq!(cfg.analyse.rules, [] as [schema::AnalyseRule; 0]);
     let d = project("parameters:\n    level: 0\n", &[]);
     assert!(!from_phpstan(&d, &d.join("phpstan.neon")).unwrap().no_rules);
 }

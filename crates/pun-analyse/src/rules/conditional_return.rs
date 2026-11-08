@@ -10,14 +10,14 @@ use pun_phpstan::types::{Conditional, Signature, Subject, Type, is_super_type_of
 
 use super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "conditionalType.subjectNotFound",
     "parameter.notFound",
     "conditionalType.alwaysTrue",
     "conditionalType.alwaysFalse",
 ];
 
-pub fn function(c: &mut Checker, f: &Function) {
+pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
@@ -27,7 +27,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     }
 }
 
-pub fn method(c: &mut Checker, m: &Method) {
+pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }

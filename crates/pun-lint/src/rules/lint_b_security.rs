@@ -8,7 +8,7 @@ use mago_syntax::cst::{
 };
 
 /// `get_password`: the span of the part of `expr` whose name looks like a password, token, secret or API key.
-pub fn get_password(expr: &Expression<'_>) -> Option<Span> {
+pub(super) fn get_password(expr: &Expression<'_>) -> Option<Span> {
     match expr {
         Expression::Parenthesized(p) => get_password(p.expression),
         Expression::Literal(Literal::String(s)) if is_password_literal(s) => Some(s.span()),
@@ -47,13 +47,13 @@ fn get_password_from_variable(variable: &Variable<'_>) -> Option<Span> {
 }
 
 /// `is_password_literal`: the literal's text between its quotes is a sensitive name.
-pub fn is_password_literal(literal: &LiteralString<'_>) -> bool {
+pub(super) fn is_password_literal(literal: &LiteralString<'_>) -> bool {
     is_password(&literal.raw[1..literal.raw.len() - 1])
 }
 
 /// `is_password`: a name ending (ignoring ASCII case, after a `$`, `get` and `_`) in `password`, `token`, `secret`,
 /// `apikey` or `api_key`; a name starting with `--` is not one.
-pub fn is_password(mut name: &[u8]) -> bool {
+pub(super) fn is_password(mut name: &[u8]) -> bool {
     if name.starts_with(b"--") {
         return false;
     }
@@ -72,7 +72,7 @@ pub fn is_password(mut name: &[u8]) -> bool {
 /// `is_user_input`: the value comes straight from a request superglobal (`$_GET`, `$_POST`, `$_REQUEST`, `$_COOKIE`,
 /// `$_FILES`, `$_SERVER`, `$_SESSION`), through parentheses, an assignment, a ternary, an array access, a `match` arm,
 /// a concatenation or `??`.
-pub fn is_user_input(expression: &Expression<'_>) -> bool {
+pub(super) fn is_user_input(expression: &Expression<'_>) -> bool {
     match expression {
         Expression::Parenthesized(p) => is_user_input(p.expression),
         Expression::Assignment(a) => is_user_input(a.rhs),

@@ -31,7 +31,10 @@ fn check_expected(file: &str, expected: &str) {
         })
         .collect();
     want.sort_by(|a, b| (a.0, &a.2).cmp(&(b.0, &b.2)));
-    assert!(!want.is_empty());
+    assert_ne!(
+        want,
+        [] as [(i64, std::string::String, std::string::String); 0]
+    );
     assert_eq!(got, want, "{file}");
 }
 

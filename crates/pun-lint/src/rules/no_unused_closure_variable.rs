@@ -56,14 +56,14 @@ impl Rule for NoUnusedClosureVariable {
             // statement per line.
             let tokens = tokens(ctx);
             let indent = line_indent(ctx.source, node_span(closure).start);
-            let body = block_list(&tokens, &closure.body);
+            let body = block_list(tokens, &closure.body);
             let text = if body.is_empty() {
                 format!("{{\n{indent}}}")
             } else {
                 let inner = format!("{indent}    ");
                 format!(
                     "{{\n{inner}{}\n{indent}}}",
-                    statement_lines(ctx.source, &tokens, &body, &inner)
+                    statement_lines(ctx.source, tokens, &body, &inner)
                 )
             };
             vec![

@@ -62,7 +62,7 @@ impl ExpressionHook for Observer {
             assert_eq!(metadata.span, expr.span());
             assert!(std::ptr::eq(
                 metadata,
-                &**context
+                &raw const **context
                     .codebase()
                     .function_likes
                     .get(&(empty_word(), metadata.name))
@@ -108,14 +108,14 @@ impl ExpressionHook for Observer {
         expr: &Expression<'_>,
         context: &mut HookContext<'_, '_>,
     ) -> HookResult<()> {
-        if matches!(expr, Expression::Variable(Variable::Direct(_))) {
-            if let Some(ty) = context.get_expression_type(expr) {
-                self.0
-                    .lock()
-                    .unwrap()
-                    .variables
-                    .push((expr.span().start.offset, ty.get_id().to_string()));
-            }
+        if matches!(expr, Expression::Variable(Variable::Direct(_)))
+            && let Some(ty) = context.get_expression_type(expr)
+        {
+            self.0
+                .lock()
+                .unwrap()
+                .variables
+                .push((expr.span().start.offset, ty.get_id().to_string()));
         }
         Ok(())
     }
@@ -182,13 +182,13 @@ fn analyze_with_base(
     };
     Analyzer::new(&arena, &file, &names, &current, &registry, settings)
         .analyze_with_artifacts(program, &mut result)
-        .expect(Observer::meta().description);
+        .unwrap_or_else(|_| panic!("{}", Observer::meta().description));
     let issues = result
         .issues
         .iter()
         .filter_map(|issue| {
             let primary = issue.annotations.iter().find(|a| a.kind.is_primary())?;
-            Some((issue.code.as_ref()?.to_string(), primary.span.start.offset))
+            Some((issue.code.as_ref()?.clone(), primary.span.start.offset))
         })
         .collect();
     let found = std::mem::take(&mut *found.lock().unwrap());
@@ -413,11 +413,17 @@ fn replacement_masks_deleted_keys_shares_project_backing_and_detaches_only_on_mu
     assert_eq!(snapshot.function_likes.keys().count(), 3);
     assert_eq!(snapshot.function_likes.values().count(), 3);
     assert!(!snapshot.function_likes.is_empty());
-    assert!(std::ptr::eq(&*snapshot.class_likes, &*base.class_likes));
-    assert!(std::ptr::eq(&*snapshot.symbols, &*base.symbols));
     assert!(std::ptr::eq(
-        &*snapshot.file_signatures,
-        &*base.file_signatures
+        &raw const *snapshot.class_likes,
+        &raw const *base.class_likes
+    ));
+    assert!(std::ptr::eq(
+        &raw const *snapshot.symbols,
+        &raw const *base.symbols
+    ));
+    assert!(std::ptr::eq(
+        &raw const *snapshot.file_signatures,
+        &raw const *base.file_signatures
     ));
     assert!(std::ptr::eq(
         snapshot.get_function(b"kept").unwrap(),
@@ -445,8 +451,8 @@ fn replacement_masks_deleted_keys_shares_project_backing_and_detaches_only_on_mu
         .find(|m| m.span.file_id == other.id)
         .unwrap();
     assert!(std::ptr::eq(
-        &**other_metadata,
-        &**snapshot
+        &raw const **other_metadata,
+        &raw const **snapshot
             .function_likes
             .get(&(empty_word(), other_metadata.name))
             .unwrap()
@@ -744,8 +750,14 @@ fn anonymous_scopes_keep_project_inheritance_aliases_and_fresh_keys() {
             .get_all_descendants(b"Library\\Ancestor")
             .contains(&word("library\\parentscope"))
     );
-    assert!(std::ptr::eq(&*snapshot.class_likes, &*base.class_likes));
-    assert!(std::ptr::eq(&*snapshot.symbols, &*base.symbols));
+    assert!(std::ptr::eq(
+        &raw const *snapshot.class_likes,
+        &raw const *base.class_likes
+    ));
+    assert!(std::ptr::eq(
+        &raw const *snapshot.symbols,
+        &raw const *base.symbols
+    ));
     assert!(std::ptr::eq(
         snapshot.get_class_like(b"Library\\ParentScope").unwrap(),
         base.get_class_like(b"Library\\ParentScope").unwrap()
@@ -788,7 +800,7 @@ fn anonymous_scopes_keep_project_inheritance_aliases_and_fresh_keys() {
             .get(&(new_class, word("run")))
             .is_none()
     );
-    let mut detached = snapshot.clone();
+    let mut detached = snapshot;
     detached
         .function_likes
         .get_mut(&(new_class, word("run")))

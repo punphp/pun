@@ -33,6 +33,10 @@ fn split_lines(mut s: &[u8]) -> Vec<&[u8]> {
     lines
 }
 
+#[expect(
+    clippy::needless_collect,
+    reason = "`from` is drained tail first, then head, before the LCS reads what is left"
+)]
 fn diff_to_array<'a>(mut from: Vec<&'a [u8]>, mut to: Vec<&'a [u8]>) -> Vec<(&'a [u8], u8)> {
     let start = from.iter().zip(&to).take_while(|(a, b)| a == b).count();
     let end = from[start..]

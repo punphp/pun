@@ -314,7 +314,7 @@ fn expression_class_value(
 fn type_value(ctx: &Context<'_>, expr: &Expression<'_>) -> Got {
     facts(ctx)
         .full_type(node_span(expr))
-        .map_or(Got::Unknown, |t| literal(&t))
+        .map_or(Got::Unknown, literal)
 }
 
 fn literal(t: &mago_codex::ttype::union::TUnion) -> Got {

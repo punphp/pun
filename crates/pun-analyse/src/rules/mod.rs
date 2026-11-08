@@ -4,29 +4,33 @@
 mod anonymous;
 mod array_fill;
 mod arrays;
+mod assert_tags;
 mod assign;
 mod attributes;
+mod bind_scope;
+mod by_ref_foreach;
+mod callable_tags;
 mod calls;
 mod class_names;
+mod class_tags;
 mod classes;
-mod by_ref_foreach;
+mod conditional_return;
 mod constants;
 mod date_format;
 mod date_interval;
 mod date_time;
 mod dead_code;
+mod debug;
 mod declaration_effects;
 mod declaration_purity;
-mod purity_points;
-mod debug;
 mod declarations;
 mod declared;
 mod deprecations;
-mod dynamic_fetch;
 mod doc;
 mod driver;
-mod facts;
+mod dynamic_fetch;
 mod enums;
+mod facts;
 mod function_callable;
 mod function_checks;
 mod functions;
@@ -45,17 +49,24 @@ mod missing_types;
 mod named_argument;
 mod names;
 mod new_static_abstract;
+mod operators;
 mod overriding;
 mod overriding_property;
 mod params;
+mod phpdoc_tags;
+mod phpdoc_types;
 mod printf_helper;
 mod properties;
-mod readonly_init;
 mod property_access;
 mod property_hooks;
-mod require_ancestors;
+mod purity_points;
+mod readonly_init;
 mod reflection;
+mod regex_shapes;
+mod require_ancestors;
+mod require_tags;
 mod restricted_functions;
+mod return_types;
 mod scope;
 mod selector;
 mod set_hook;
@@ -66,24 +77,13 @@ mod syntax;
 mod through_static;
 mod type_aliases;
 mod types;
-mod unused_trait;
-mod write_only;
-mod variables;
 mod unset;
-mod phpdoc_tags;
-mod require_tags;
-mod var_tags;
-mod callable_tags;
-mod class_tags;
-mod operators;
-mod conditional_return;
-mod assert_tags;
-mod phpdoc_types;
+mod unused_trait;
 mod var_names;
+mod var_tags;
+mod variables;
 mod variance;
-mod bind_scope;
-mod return_types;
-mod regex_shapes;
+mod write_only;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -104,26 +104,28 @@ use crate::codebase::Sources;
 use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
-pub(crate) use driver::Switches;
-pub(crate) use facts::Comments;
-pub(crate) use facts::Facts;
-pub(crate) use driver::{Checks, check_file};
-pub use larastan::{Larastan, LarastanSwitches};
 pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use dead_code::impure_points;
-pub(crate) use named_argument::resolve as renamed_named_arguments;
+pub(crate) use driver::Switches;
+pub(crate) use driver::{Checks, check_file};
+pub(crate) use facts::Comments;
+pub(crate) use facts::Facts;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use larastan::late_builder;
+pub use larastan::{Larastan, LarastanSwitches};
+pub(crate) use named_argument::resolve as renamed_named_arguments;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
 
-pub fn reports(identifier: &str) -> bool {
+pub(crate) fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
         || declaration_purity::IDENTIFIERS.contains(&identifier)
         || missing_types::IDENTIFIERS.contains(&identifier)
         || generics::IDENTIFIERS.contains(&identifier)
         || larastan::IDENTIFIERS.contains(&identifier)
-        || types::IDENTIFIERS.iter().any(|ids| ids.contains(&identifier))
+        || types::IDENTIFIERS
+            .iter()
+            .any(|ids| ids.contains(&identifier))
         || phpdoc_tags::IDENTIFIERS.contains(&identifier)
         || require_tags::IDENTIFIERS.contains(&identifier)
         || var_tags::IDENTIFIERS.contains(&identifier)
@@ -141,7 +143,7 @@ pub fn reports(identifier: &str) -> bool {
         || by_ref_foreach::IDENTIFIERS.contains(&identifier)
 }
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(crate) const IDENTIFIERS: &[&str] = &[
     // the throw point rules switched on by `exceptions.check.*` (MissingCheckedExceptionIn*ThrowsRule,
     // MethodThrowTypeCovarianceRule)
     "missingType.checkedException",
@@ -798,7 +800,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "sortArray.noop",
 ];
 
-pub const DISCOVERING_SYMBOLS_TIP: &str =
+pub(crate) const DISCOVERING_SYMBOLS_TIP: &str =
     "Learn more at https://phpstan.org/user-guide/discovering-symbols";
 
 /// The class-like a node is in (`$scope->getClassReflection()`).
@@ -837,7 +839,7 @@ struct TraitContext {
 }
 
 /// `$scope->getFunction()`: the function or method a node is in (closures don't change it).
-pub struct FunctionScope {
+pub(crate) struct FunctionScope {
     pub name: String,
     pub kind: FunctionScopeKind,
     /// `isDeprecated()`, when the deprecation rules run.
@@ -845,7 +847,7 @@ pub struct FunctionScope {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum FunctionScopeKind {
+pub(crate) enum FunctionScopeKind {
     Function,
     Method { is_static: bool },
 }
@@ -863,7 +865,7 @@ bitflags::bitflags! {
     }
 }
 
-pub struct Checker<'a, 'arena> {
+pub(crate) struct Checker<'a, 'arena> {
     file: &'a File,
     walk: Walk,
     /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
@@ -883,7 +885,8 @@ pub struct Checker<'a, 'arena> {
     /// PHPStan VariableWritesNode results for completed closure bodies.
     variable_writes: HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
     /// Requested PropertyInitializationExpr certainties immediately before real IssetCheck operands.
-    property_initializations: HashMap<Span, mago_analyzer::property_initialization::PropertyInitializationCertainty>,
+    property_initializations:
+        HashMap<Span, mago_analyzer::property_initialization::PropertyInitializationCertainty>,
     /// Resolved calls' own termination, independent of their provider-selected result type.
     call_terminations: HashMap<(u32, u32), bool>,
     /// Operand-position answers for each method name, including its expression conversion dependencies.
@@ -997,7 +1000,6 @@ pub struct Checker<'a, 'arena> {
     errors: Vec<Error>,
 }
 
-
 impl<'a, 'arena> Checker<'a, 'arena> {
     /// A file's contents: this one, or one the scan read.
     fn file_contents(&self, id: FileId) -> Option<&'a [u8]> {
@@ -1017,21 +1019,38 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// php-parser's doc comment of the node at `offset` in file `id` ([`facts::Comments::php_doc_comment()`]).
     fn php_doc_comment(&self, id: FileId, offset: u32) -> Option<&'a [u8]> {
-        self.file_facts(id)?.comments.php_doc_comment(self.file_contents(id)?, offset as usize)
+        self.file_facts(id)?
+            .comments
+            .php_doc_comment(self.file_contents(id)?, offset as usize)
     }
 
     /// [`Self::php_doc_comment()`] with its parsed form: the scan's, else parsed now (a comment [`Self::doc_before()`]
     /// would not find: one with a stray `*/` in it).
-    fn php_doc(&self, id: FileId, offset: u32) -> Option<(&'a [u8], std::borrow::Cow<'a, facts::DocEntry>)> {
+    fn php_doc(
+        &self,
+        id: FileId,
+        offset: u32,
+    ) -> Option<(&'a [u8], std::borrow::Cow<'a, facts::DocEntry>)> {
         let raw = self.php_doc_comment(id, offset)?;
         let start = raw.as_ptr() as usize - self.file_contents(id)?.as_ptr() as usize;
-        let entry = self.file_facts(id)?.comments.entry(start as u32, (start + raw.len()) as u32);
-        Some((raw, entry.map_or_else(|| std::borrow::Cow::Owned(facts::DocEntry::parse(raw, true)), std::borrow::Cow::Borrowed)))
+        let entry = self
+            .file_facts(id)?
+            .comments
+            .entry(start as u32, (start + raw.len()) as u32);
+        Some((
+            raw,
+            entry.map_or_else(
+                || std::borrow::Cow::Owned(facts::DocEntry::parse(raw, true)),
+                std::borrow::Cow::Borrowed,
+            ),
+        ))
     }
 
     /// The doc comment right before `offset` in file `id` ([`facts::Comments::doc_before()`]).
     fn doc_before(&self, id: FileId, offset: u32) -> Option<(&'a [u8], &'a facts::DocEntry)> {
-        self.file_facts(id)?.comments.doc_before(self.file_contents(id)?, offset as usize)
+        self.file_facts(id)?
+            .comments
+            .doc_before(self.file_contents(id)?, offset as usize)
     }
 
     /// `class.noParent`: `{action} but C does not extend any class.`, for a parent:: or `new parent` in class `scope`.
@@ -1134,7 +1153,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn rebind(&mut self, e: &Expression, class: Option<String>, defines_this: bool) {
         let e = types::flow::unparen(e);
         if matches!(e, Expression::Closure(_) | Expression::ArrowFunction(_)) {
-            self.rebound.insert(e.span(), bind_scope::Binding { class, defines_this });
+            self.rebound.insert(
+                e.span(),
+                bind_scope::Binding {
+                    class,
+                    defines_this,
+                },
+            );
         }
     }
 
@@ -1147,7 +1172,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 TraitUseSpecification::Concrete(s) => s.adaptations.as_slice(),
                 TraitUseSpecification::Abstract(_) => &[],
             };
-            for id in u.trait_names.iter() {
+            for id in &u.trait_names {
                 let trait_name = self.resolved(id);
                 let mut renames = HashMap::new();
                 for a in adaptations {
@@ -1179,7 +1204,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     class: class.to_string(),
                     trait_name,
                     renames,
-                    php_versions: self.guards.iter().filter(|g| matches!(g, Guard::PhpVersion(..))).cloned().collect(),
+                    php_versions: self
+                        .guards
+                        .iter()
+                        .filter(|g| matches!(g, Guard::PhpVersion(..)))
+                        .cloned()
+                        .collect(),
                 });
             }
         }
@@ -1193,14 +1223,18 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && trait_span.start.offset <= f.span.start.offset
                 && f.span.end.offset <= trait_span.end.offset
         };
-        self.codebase.get_class_like(class.as_bytes()).is_some_and(|k| {
-            // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
-            let lower = name.to_ascii_lowercase();
-            (k.kind == SymbolKind::Enum
-                && (lower == "cases" || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom"))))
-                || members::method(self, k, name.as_bytes())
-                    .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
-        })
+        self.codebase
+            .get_class_like(class.as_bytes())
+            .is_some_and(|k| {
+                // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
+                let lower = name.to_ascii_lowercase();
+                (k.kind == SymbolKind::Enum
+                    && (lower == "cases"
+                        || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom"))))
+                    || members::method(self, k, name.as_bytes()).is_some_and(
+                        |m| !matches!(m, members::Method::User { f, .. } if this_trait(f)),
+                    )
+            })
     }
 
     fn written(&self, span: Span) -> String {
@@ -1308,7 +1342,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::exit_expression(self, e);
     }
 
-    fn walk_in_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, class: &'ast Class<'arena>, (): &mut ()) {
         let current = format!("Class {}", self.resolved_span(class.name.span));
         names::class_hierarchy(
             self,
@@ -1353,7 +1387,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::allowed_subtypes(self, class.span(), k);
             require_tags::class_like(self, class.span(), k);
             class_tags::class_like(self, class.span(), k);
-            dead_code::unused_private(self, k, class.attribute_lists.as_slice(), class.members.as_slice());
+            dead_code::unused_private(
+                self,
+                k,
+                class.attribute_lists.as_slice(),
+                class.members.as_slice(),
+            );
             readonly_init::class(self, k, class.members.as_slice());
             types::too_wide_properties(self, k, class.members.as_slice());
         }
@@ -1364,13 +1403,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
     }
-    fn walk_out_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_out_class(&mut self, class: &'ast Class<'arena>, (): &mut ()) {
         phpdoc_tags::nop(self, class.right_brace);
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
     }
-    fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, (): &mut ()) {
         let current = format!("Interface {}", self.resolved_span(i.name.span));
         names::class_hierarchy(
             self,
@@ -1412,13 +1451,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         missing_types::interface(self, i);
         generics::interface(self, i);
     }
-    fn walk_out_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_out_interface(&mut self, i: &'ast Interface<'arena>, (): &mut ()) {
         phpdoc_tags::nop(self, i.right_brace);
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
     }
-    fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, (): &mut ()) {
         let current = format!("Enum {}", self.resolved_span(e.name.span));
         names::class_hierarchy(
             self,
@@ -1462,7 +1501,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         missing_types::enum_(self, e);
         generics::enum_(self, e);
     }
-    fn walk_out_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_out_enum(&mut self, e: &'ast Enum<'arena>, (): &mut ()) {
         phpdoc_tags::nop(self, e.right_brace);
         self.classes.pop();
         self.decls.pop();
@@ -1505,7 +1544,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.decls.push(decl);
         self.walk.insert(Walk::IN_TARGET);
         self.types.extend(crate::codebase::trait_initializer_types(
-            self.codebase, self.file, t.span(), mago_word::word(&class), self.php_version,
+            self.codebase,
+            self.file,
+            t.span(),
+            mago_word::word(&class),
+            self.php_version,
         ));
         let display = self
             .codebase
@@ -1516,7 +1559,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         type_aliases::trait_use(self, t.span(), &name, &class);
         class_tags::trait_use(self, t.span(), &name, &class);
         invalid_throws::node(self, t.span());
-        for member in t.members.iter() {
+        for member in &t.members {
             if let ClassLikeMember::Method(m) = member {
                 let original = String::from_utf8_lossy(m.name.value).into_owned();
                 let name = self
@@ -1559,7 +1602,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.walk_out_anonymous_class(a, c);
     }
-    fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, (): &mut ()) {
         names::class_hierarchy(
             self,
             a.span(),
@@ -1613,7 +1656,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
     }
 
-    fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+    fn walk_in_function(&mut self, f: &'ast Function<'arena>, (): &mut ()) {
         dead_code::impure_function(self, f);
         dead_code::function_parameters(self, f);
         declaration_purity::function(self, f);
@@ -1637,7 +1680,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
-        self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&f.parameter_list), &f.body));
+        self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(
+            self,
+            var_names::params(&f.parameter_list),
+            &f.body,
+        ));
         var_names::misplaced(self, f.span(), "a function");
         let name = self.resolved_span(f.name.span);
         names::typehints(
@@ -1656,7 +1703,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if self.level >= 2 {
             let types = declared::with_classes(self, || declared::function_phpdoc(self, f));
             let kind = names::FunctionKind::Function(&name);
-            signatures::phpdoc_classes(self, kind, f.span(), &f.parameter_list, f.return_type_hint.as_ref(), &types);
+            signatures::phpdoc_classes(
+                self,
+                kind,
+                f.span(),
+                &f.parameter_list,
+                f.return_type_hint.as_ref(),
+                &types,
+            );
         }
         let docblock = self
             .codebase
@@ -1696,7 +1750,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             deprecated,
         });
     }
-    fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
+    fn walk_out_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {
         self.var_tag_functions.pop();
         self.leave_this();
         self.larastan_leave_function();
@@ -1705,7 +1759,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.leave_function();
         self.functions.pop();
     }
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
         dead_code::impure_method(self, m);
         declaration_purity::method(self, m);
         phpdoc_tags::node(self, m.span());
@@ -1722,7 +1776,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.larastan_enter_function(&m.parameter_list);
         self.push_frame(FrameKind::Named);
         if let MethodBody::Concrete(body) = &m.body {
-            self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&m.parameter_list), body));
+            self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(
+                self,
+                var_names::params(&m.parameter_list),
+                body,
+            ));
         }
         var_names::misplaced(self, m.span(), "a method");
         for p in m
@@ -1816,8 +1874,17 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             && let Some(context) = self.class_scope()
             && let Some(declaring) = missing_types::declaring(self, m.span())
         {
-            let types = declared::with_classes(self, || declared::method_phpdoc(self, m, declaring, context));
-            signatures::phpdoc_classes(self, kind, m.span(), &m.parameter_list, m.return_type_hint.as_ref(), &types);
+            let types = declared::with_classes(self, || {
+                declared::method_phpdoc(self, m, declaring, context)
+            });
+            signatures::phpdoc_classes(
+                self,
+                kind,
+                m.span(),
+                &m.parameter_list,
+                m.return_type_hint.as_ref(),
+                &types,
+            );
         }
         // PhpMethodFromParserNodeReflection's void methods
         let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
@@ -1882,7 +1949,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             },
         });
     }
-    fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_out_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {
         self.var_tag_functions.pop();
         self.leave_this();
         self.larastan_leave_function();
@@ -1892,20 +1959,35 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.functions.pop();
     }
 
-    fn walk_in_block(&mut self, _: &'ast Block<'arena>, _: &mut ()) {
+    fn walk_in_block(&mut self, _: &'ast Block<'arena>, (): &mut ()) {
         self.marks.push(self.guards.len());
     }
-    fn walk_out_block(&mut self, b: &'ast Block<'arena>, _: &mut ()) {
+    fn walk_out_block(&mut self, b: &'ast Block<'arena>, (): &mut ()) {
         phpdoc_tags::nop(self, b.right_brace);
         self.end_guard_block();
     }
 
     fn walk_if(&mut self, r#if: &'ast If<'arena>, c: &mut ()) {
         dead_code::if_statement(self, r#if);
-        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS) {
-            operators::condition(self, r#if.span(), r#if.condition, "an if condition", "if.condNotBoolean");
+        if self
+            .strict
+            .contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
+        {
+            operators::condition(
+                self,
+                r#if.span(),
+                r#if.condition,
+                "an if condition",
+                "if.condNotBoolean",
+            );
             for (at, cond) in operators::else_if_conditions(r#if) {
-                operators::condition(self, at, cond, "an elseif condition", "elseif.condNotBoolean");
+                operators::condition(
+                    self,
+                    at,
+                    cond,
+                    "an elseif condition",
+                    "elseif.condNotBoolean",
+                );
             }
         }
         self.walk_expression(r#if.condition, c);
@@ -1962,7 +2044,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                     let mut assignments = self.assign.expressions.clone();
                     self.with_guards(previous_false.clone(), |s| {
                         s.walk_expression(cond, &mut ());
-                        assignments = s.assign.expressions.clone();
+                        assignments.clone_from(&s.assign.expressions);
                     });
                     self.assign.expressions = assignments;
                 }
@@ -1971,7 +2053,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                     Expression::Literal(Literal::True(_)) => Some(true),
                     Expression::Literal(Literal::False(_) | Literal::Null(_)) => Some(false),
                     _ => self.type_of(cond).and_then(|t| {
-                        if t.is_always_truthy() { Some(true) } else { t.is_always_falsy().then_some(false) }
+                        if t.is_always_truthy() {
+                            Some(true)
+                        } else {
+                            t.is_always_falsy().then_some(false)
+                        }
                     }),
                 };
                 entry.extend(self.truthy(cond));
@@ -1989,7 +2075,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         if !has_else {
             let mut outgoing = self.expression_guards();
-            outgoing.extend(previous_false.iter().filter(|g| scope::definite_expression(g)).cloned());
+            outgoing.extend(
+                previous_false
+                    .iter()
+                    .filter(|g| scope::definite_expression(g))
+                    .cloned(),
+            );
             expressions.push(outgoing);
             survivors.push(previous_false);
             if remaining_assignment_path {
@@ -2017,16 +2108,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
         dead_code::ternary(self, cond);
         // an elvis `?:` is not checked
-        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS) && cond.then.is_some() {
+        if self
+            .strict
+            .contains(crate::StrictRules::BOOLEANS_IN_CONDITIONS)
+            && cond.then.is_some()
+        {
             let place = "a ternary operator condition";
-            operators::condition(self, cond.span(), cond.condition, place, "ternary.condNotBoolean");
+            operators::condition(
+                self,
+                cond.span(),
+                cond.condition,
+                place,
+                "ternary.condNotBoolean",
+            );
         }
         self.walk_expression(cond.condition, c);
         let t = self.truthy(cond.condition);
         let yes = if let Some(then) = cond.then {
             self.guarded_expression(t, then)
         } else {
-            self.expression_guards().into_iter().chain(t.into_iter().filter(scope::definite_expression)).collect()
+            self.expression_guards()
+                .into_iter()
+                .chain(t.into_iter().filter(scope::definite_expression))
+                .collect()
         };
         let f = self.falsy(cond.condition);
         let no = self.guarded_expression(f, cond.r#else);
@@ -2065,11 +2169,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.walk_expression(m.expression, c);
         let on_true = matches!(m.expression, Expression::Literal(Literal::True(_)));
         let assignments = self.assign.expressions.clone();
-        for arm in m.arms.iter() {
-            self.assign.expressions = assignments.clone();
+        for arm in &m.arms {
+            self.assign.expressions.clone_from(&assignments);
             match arm {
                 MatchArm::Expression(arm) => {
-                    for cond in arm.conditions.iter() {
+                    for cond in &arm.conditions {
                         self.walk_expression(cond, c);
                     }
                     let extra = match (
@@ -2108,7 +2212,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.walk_out_assignment(a, context);
     }
 
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
             dead_code::null_coalesce(self, a.lhs, a.rhs, "??=");
         }
@@ -2122,13 +2226,20 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         operators::assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
-            if matches!(types::flow::unparen(a.lhs), Expression::Array(_) | Expression::List(_)) {
+            if matches!(
+                types::flow::unparen(a.lhs),
+                Expression::Array(_) | Expression::List(_)
+            ) {
                 let value = self.phpstan_type(a.rhs);
                 types::destructuring(self, a.span(), a.lhs, value, Some(a.rhs.span()));
             }
         }
         if let Expression::Variable(Variable::Direct(v)) = a.lhs {
-            let guards = self.truthy(a.rhs).into_iter().filter(scope::remembered_guard).collect::<Vec<_>>();
+            let guards = self
+                .truthy(a.rhs)
+                .into_iter()
+                .filter(scope::remembered_guard)
+                .collect::<Vec<_>>();
             if guards.is_empty() {
                 self.vars.remove(v.name);
             } else {
@@ -2136,12 +2247,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             }
         }
     }
-    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         self.assigned_expression(a);
         property_access::assigned(self, a);
         include_file::assigned(self, a.lhs);
     }
-    fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
+    fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, (): &mut ()) {
         include_file::construct(self, construct);
         match construct {
             Construct::Isset(i) => dead_code::isset(self, i),
@@ -2149,12 +2260,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             _ => {}
         }
     }
-    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, (): &mut ()) {
         property_access::read(self, p);
         write_only::read(self, p.span(), p.object, &p.property);
         internal::property_fetch(self, p);
     }
-    fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_null_safe_property_access(
+        &mut self,
+        p: &'ast NullSafePropertyAccess<'arena>,
+        (): &mut (),
+    ) {
         property_access::null_safe_read(self, p);
         write_only::null_safe(self, p);
         types::nullsafe_property(self, p);
@@ -2162,29 +2277,33 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_static_property_access(
         &mut self,
         p: &'ast StaticPropertyAccess<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.variables.property_selectors.insert(p.property.span());
         property_access::static_read(self, p);
         through_static::property(self, p);
         internal::static_property_fetch(self, p);
     }
-    fn walk_out_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_out_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, (): &mut ()) {
         phpdoc_tags::nop(self, a.right_brace);
         self.classes.pop();
         self.pop_frame();
         self.decls.pop();
     }
 
-    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, _: &mut ()) {
+    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, (): &mut ()) {
         variables::variable(self, variable);
     }
 
-    fn walk_in_closure_use_clause_variable(&mut self, capture: &'ast ClosureUseClauseVariable<'arena>, _: &mut ()) {
+    fn walk_in_closure_use_clause_variable(
+        &mut self,
+        capture: &'ast ClosureUseClauseVariable<'arena>,
+        (): &mut (),
+    ) {
         variables::capture(self, capture);
     }
 
-    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         variables::compact(self, call);
         self.bind_function_arguments(call);
         dead_code::function_check(self, call);
@@ -2207,13 +2326,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));
         self.guards.extend(self.define_guard(call));
     }
-    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
         self.in_exists_call -= usize::from(calls::is_class_exists_family(self, call));
         let references = assign::by_ref_arguments(self, call);
         self.invalidate_call_references(&call.argument_list, references);
     }
 
-    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, (): &mut ()) {
         new_static_abstract::instantiation(self, new);
         if statements::instantiation_callable(self, new) {
             return;
@@ -2227,7 +2346,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_null_safe_method_call(
         &mut self,
         call: &'ast NullSafeMethodCall<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         if self.method_rules.call_methods {
@@ -2236,14 +2355,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         if self.method_rules.call_methods {
-            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
+            types::method_call(
+                self,
+                call.span(),
+                call.object,
+                &call.method,
+                &call.argument_list,
+                true,
+            );
             if let Some(name) = types::dynamic_names::member(&call.method) {
-                types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
+                types::dynamic_names::check(
+                    self,
+                    name,
+                    false,
+                    "Method",
+                    call.object,
+                    true,
+                    "method.nameNotString",
+                );
             }
         }
         types::nullsafe_method(self, call);
     }
-    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         if self.method_rules.call_methods {
             named_argument::call(self, call.span(), call.object, &call.argument_list, false);
@@ -2271,19 +2405,35 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             calls::method_call(self, call);
         }
         if self.method_rules.call_methods {
-            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
+            types::method_call(
+                self,
+                call.span(),
+                call.object,
+                &call.method,
+                &call.argument_list,
+                false,
+            );
             if let Some(name) = types::dynamic_names::member(&call.method) {
-                types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
+                types::dynamic_names::check(
+                    self,
+                    name,
+                    false,
+                    "Method",
+                    call.object,
+                    false,
+                    "method.nameNotString",
+                );
             }
         }
         assign::arguments(self, assign::Callee::Method(call));
     }
-    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, (): &mut ()) {
         self.invalidate_called_receiver(call.object, &call.method);
-        let references = assign::by_ref_call_arguments(self, assign::Callee::Method(call), &call.argument_list);
+        let references =
+            assign::by_ref_call_arguments(self, assign::Callee::Method(call), &call.argument_list);
         self.invalidate_call_references(&call.argument_list, references);
     }
-    fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
+    fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, (): &mut ()) {
         self.piped.insert(p.callable.span());
         types::pipe_by_ref(self, p);
         calls::pipe(self, p);
@@ -2295,7 +2445,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_partial_application(
         &mut self,
         f: &'ast FunctionPartialApplication<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         let whole = f.function.span().join(f.argument_list.span());
         if !statements::first_class_callable(self, whole, &f.argument_list) {
@@ -2306,7 +2456,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_method_partial_application(
         &mut self,
         m: &'ast MethodPartialApplication<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         if !statements::first_class_callable(self, m.span(), &m.argument_list) {
             method_callable::method(self, m);
@@ -2319,14 +2469,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_static_method_partial_application(
         &mut self,
         m: &'ast StaticMethodPartialApplication<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         if !statements::first_class_callable(self, m.span(), &m.argument_list) {
             method_callable::static_method(self, m);
         }
         internal::static_method_callable(self, m);
     }
-    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.bind_method_arguments(call.class, &call.method, &call.argument_list, true);
         dead_code::static_method_check(self, call);
         through_static::method(self, call);
@@ -2342,20 +2492,32 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::static_method_call(self, call);
         types::static_call(self, call);
         if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.class, false, "staticMethod.nameNotString");
+            types::dynamic_names::check(
+                self,
+                name,
+                false,
+                "Method",
+                call.class,
+                false,
+                "staticMethod.nameNotString",
+            );
         }
         assign::arguments(self, assign::Callee::StaticMethod(call));
     }
-    fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.invalidate_static_call(call);
-        let references = assign::by_ref_call_arguments(self, assign::Callee::StaticMethod(call), &call.argument_list);
+        let references = assign::by_ref_call_arguments(
+            self,
+            assign::Callee::StaticMethod(call),
+            &call.argument_list,
+        );
         self.invalidate_call_references(&call.argument_list, references);
         if self.is_closure_bind(call) {
             self.closure_bind -= 1;
         }
     }
     // a rebound closure is checked in its bound `$this`'s class (none when Pun cannot tell it)
-    fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.assign.leave_scope();
         self.leave_this();
         self.larastan_leave_function();
@@ -2366,7 +2528,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.classes.pop();
         }
     }
-    fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+    fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, (): &mut ()) {
         self.assign.leave_scope();
         self.leave_this();
         self.pop_frame();
@@ -2375,51 +2537,55 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
 
-    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, (): &mut ()) {
         self.mark_top_level(s.expression);
         statements::standalone_throw(self, s);
         dead_code::statement(self, s);
     }
-    fn walk_in_clone(&mut self, k: &'ast Clone<'arena>, _: &mut ()) {
+    fn walk_in_clone(&mut self, k: &'ast Clone<'arena>, (): &mut ()) {
         types::clone(self, k);
     }
-    fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+    fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, (): &mut ()) {
         types::array_access(self, a);
         types::dim_fetch(self, a.span(), a.array, Some(a.index));
     }
-    fn walk_in_key_value_array_element(&mut self, kv: &'ast KeyValueArrayElement<'arena>, _: &mut ()) {
+    fn walk_in_key_value_array_element(
+        &mut self,
+        kv: &'ast KeyValueArrayElement<'arena>,
+        (): &mut (),
+    ) {
         types::array_item(self, kv);
     }
-    fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
+    fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, (): &mut ()) {
         statements::throw_expression(self, t);
         types::throw(self, t);
     }
-    fn walk_in_array(&mut self, a: &'ast Array<'arena>, _: &mut ()) {
+    fn walk_in_array(&mut self, a: &'ast Array<'arena>, (): &mut ()) {
         arrays::literal_array(self, a.span(), &a.elements);
         types::array(self, a.elements.as_slice());
     }
-    fn walk_in_legacy_array(&mut self, a: &'ast LegacyArray<'arena>, _: &mut ()) {
+    fn walk_in_legacy_array(&mut self, a: &'ast LegacyArray<'arena>, (): &mut ()) {
         arrays::literal_array(self, a.span(), &a.elements);
         types::array(self, a.elements.as_slice());
     }
-    fn walk_in_for(&mut self, f: &'ast For<'arena>, _: &mut ()) {
+    fn walk_in_for(&mut self, f: &'ast For<'arena>, (): &mut ()) {
         self.syntax.parents.push(syntax::Parent::Loop);
         for e in f.initializations.iter().chain(f.increments.iter()) {
             self.mark_top_level(e);
         }
     }
-    fn walk_in_trait_use(&mut self, u: &'ast mago_syntax::cst::TraitUse<'arena>, _: &mut ()) {
+    fn walk_in_trait_use(&mut self, u: &'ast mago_syntax::cst::TraitUse<'arena>, (): &mut ()) {
         phpdoc_tags::clause(self, u.span());
         hierarchy::trait_use(self, u);
         generics::trait_use(self, u);
     }
-    fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
+    fn walk_in_use(&mut self, u: &'ast Use<'arena>, (): &mut ()) {
         names::use_functions(self, u);
         names::use_classes(self, u);
         signatures::use_statement(self, u);
         class_names::use_statement(self, u);
     }
-    fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
+    fn walk_in_property(&mut self, p: &'ast Property<'arena>, (): &mut ()) {
         phpdoc_tags::node(self, p.span());
         invalid_throws::node(self, p.span());
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
@@ -2430,12 +2596,30 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             declaration_purity::hooks(self, h.item.variable().name, &h.hook_list);
             signatures::hook_phpdoc_classes(self, h.item.variable().name, &h.hook_list, p.span());
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
-            set_hook::missing_types(self, h.item.variable().name, p.hint(), &h.hook_list, p.span());
-            types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
-            types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
+            set_hook::missing_types(
+                self,
+                h.item.variable().name,
+                p.hint(),
+                &h.hook_list,
+                p.span(),
+            );
+            types::get_hooks(
+                self,
+                h.item.variable().name,
+                p.hint(),
+                p.span(),
+                &h.hook_list,
+            );
+            types::hook_returns(
+                self,
+                h.item.variable().name,
+                p.hint(),
+                p.span(),
+                &h.hook_list,
+            );
             types::throws_void_hooks(self, h.item.variable().name, &h.hook_list);
             types::throws_hooks(self, h.item.variable().name, &h.hook_list);
-            for hook in h.hook_list.hooks.iter() {
+            for hook in &h.hook_list.hooks {
                 phpdoc_types::hook(self, hook, h.item.variable().name, p.hint());
             }
         }
@@ -2461,7 +2645,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             attributes::property(self, v.span(), lists, false);
         }
     }
-    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, (): &mut ()) {
         phpdoc_tags::node(self, k.span());
         invalid_throws::node(self, k.span());
         declarations::constant(self, k);
@@ -2476,7 +2660,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             "class constant",
         );
     }
-    fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, _: &mut ()) {
+    fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, (): &mut ()) {
         phpdoc_tags::clause(self, case.span());
         enums::case_outside(self, case);
         attributes::check(
@@ -2486,11 +2670,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             "class constant",
         );
     }
-    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
+    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, (): &mut ()) {
         attributes::constant(self, k);
         types::global_constant(self, k);
     }
-    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.assign.enter_scope();
         strict::closure(self, f);
         if self.rebound.get(&f.span()).is_some_and(|b| b.defines_this) {
@@ -2510,13 +2694,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.syntax.parents.push(syntax::Parent::Closure);
         self.syntax.by_ref.push(f.ampersand.is_some());
         self.push_frame(FrameKind::Anonymous);
-        self.frames.last_mut().expect("pushed").defined =
-            Some(var_names::defined(
-                self,
-                var_names::params(&f.parameter_list)
-                    .chain(f.use_clause.iter().flat_map(|u| u.variables.iter()).map(|u| u.variable.name)),
-                &f.body,
-            ));
+        self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(
+            self,
+            var_names::params(&f.parameter_list).chain(
+                f.use_clause
+                    .iter()
+                    .flat_map(|u| u.variables.iter())
+                    .map(|u| u.variable.name),
+            ),
+            &f.body,
+        ));
         if let Some(binding) = self.rebound.get(&f.span()) {
             self.classes.push(ClassScope {
                 name: binding.class.clone(),
@@ -2558,27 +2745,35 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
         );
     }
-    fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
+    fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, (): &mut ()) {
         through_static::constant(self, a);
         names::class_constant(self, a);
         if let Some(name) = types::dynamic_names::constant(&a.constant) {
-            types::dynamic_names::check(self, name, false, "Class constant", a.class, false, "classConstant.nameNotString");
+            types::dynamic_names::check(
+                self,
+                name,
+                false,
+                "Class constant",
+                a.class,
+                false,
+                "classConstant.nameNotString",
+            );
         }
         dynamic_fetch::class_constant(self, a);
         internal_usage::class_constant(self, a);
     }
-    fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
+    fn walk_in_try(&mut self, t: &'ast Try<'arena>, (): &mut ()) {
         dead_code::try_statement(self, t);
         types::dead_catches(self, t);
         types::unthrown_catches(self, t);
     }
-    fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
+    fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, (): &mut ()) {
         phpdoc_tags::clause(self, clause.span());
         statements::noncapturing_catch(self, clause);
         names::catch(self, clause);
         assign::catch(self, clause);
     }
-    fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+    fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, (): &mut ()) {
         self.assign.enter_scope();
         types::anonymous_defaults(self, &f.parameter_list);
         types::arrow_function_returns(self, f);
@@ -2636,33 +2831,40 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.mark_top_level(f.expression);
     }
 
-    fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
-        self.walk.set(Walk::COMPILER_HALT, names::file_has_compiler_halt_statement_calls(program));
+    fn walk_in_program(&mut self, program: &'ast Program<'arena>, (): &mut ()) {
+        self.walk.set(
+            Walk::COMPILER_HALT,
+            names::file_has_compiler_halt_statement_calls(program),
+        );
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.conditions = dead_code::condition_facts(self, program);
-        if self.toggled.on.contains(crate::rules::driver::Toggles::BY_REF_FOREACH) {
+        if self
+            .toggled
+            .on
+            .contains(crate::rules::driver::Toggles::BY_REF_FOREACH)
+        {
             self.by_ref_foreach = by_ref_foreach::entries(program);
         }
         self.push_frame(FrameKind::Top);
         types::yields_outside(self, program);
     }
-    fn walk_out_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
+    fn walk_out_program(&mut self, program: &'ast Program<'arena>, (): &mut ()) {
         let end = mago_span::Position::new(program.source_text.len() as u32);
         phpdoc_tags::nop(self, Span::new(program.file_id, end, end));
         self.pop_frame();
     }
-    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, (): &mut ()) {
         let name = n.name.as_ref().map(|id| self.resolved(id));
         signatures::enter_namespace(self, name.as_deref());
         class_names::enter_namespace(self);
         self.namespaces.push(name);
     }
-    fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, (): &mut ()) {
         signatures::leave_namespace(self);
         self.namespaces.pop();
     }
-    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, (): &mut ()) {
         phpdoc_tags::node(self, h.span());
         invalid_throws::node(self, h.span());
         self.enter_this(true);
@@ -2680,10 +2882,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 None if h.name.value == b"set" => vec![b"$value"],
                 None => Vec::new(),
             };
-            self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, names, body));
+            self.frames.last_mut().expect("pushed").defined =
+                Some(var_names::defined(self, names, body));
         }
     }
-    fn walk_out_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_out_property_hook(&mut self, _: &'ast PropertyHook<'arena>, (): &mut ()) {
         self.leave_this();
         self.syntax.by_ref.pop();
         self.pop_frame();
@@ -2691,7 +2894,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_like_parameter(
         &mut self,
         p: &'ast FunctionLikeParameter<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         functions::parameter(self, p);
         statements::parameter_default(self, p);
@@ -2704,13 +2907,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_out_function_like_parameter(
         &mut self,
         _: &'ast FunctionLikeParameter<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.pop_frame();
     }
     fn walk_statement(&mut self, s: &'ast Statement<'arena>, context: &mut ()) {
         if self.unreachable.reported.contains(&s.span()) {
-            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
+            self.report(
+                s,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.".into(),
+                None,
+            );
         }
         // The UnreachableStatementNode is a Stmt with the original's doc comment. The phpdoc tag value rules and
         // WrongVariableNameInVarTagRule skip virtual nodes.
@@ -2722,40 +2930,40 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             mago_syntax::walker::walk_statement_mut(self, s, context);
         }
     }
-    fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+    fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, (): &mut ()) {
         invalid_throws::statement(self, s);
         phpdoc_tags::statement(self, s);
         statements::statement_position(self, s);
     }
-    fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, _: &mut ()) {
+    fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, (): &mut ()) {
         statements::declare(self, d);
     }
-    fn walk_in_goto(&mut self, g: &'ast Goto<'arena>, _: &mut ()) {
+    fn walk_in_goto(&mut self, g: &'ast Goto<'arena>, (): &mut ()) {
         self.goto(g);
     }
-    fn walk_in_label(&mut self, l: &'ast Label<'arena>, _: &mut ()) {
+    fn walk_in_label(&mut self, l: &'ast Label<'arena>, (): &mut ()) {
         self.label(l);
     }
-    fn walk_in_constant_access(&mut self, a: &'ast ConstantAccess<'arena>, _: &mut ()) {
+    fn walk_in_constant_access(&mut self, a: &'ast ConstantAccess<'arena>, (): &mut ()) {
         deprecations::constant_fetch(self, a.span(), &a.name);
         names::constant_fetch(self, &a.name);
     }
-    fn walk_in_magic_constant(&mut self, m: &'ast MagicConstant<'arena>, _: &mut ()) {
+    fn walk_in_magic_constant(&mut self, m: &'ast MagicConstant<'arena>, (): &mut ()) {
         statements::magic_constant(self, m);
     }
-    fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, _: &mut ()) {
+    fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, (): &mut ()) {
         types::echo(self, e);
     }
-    fn walk_in_print_construct(&mut self, p: &'ast PrintConstruct<'arena>, _: &mut ()) {
+    fn walk_in_print_construct(&mut self, p: &'ast PrintConstruct<'arena>, (): &mut ()) {
         types::print(self, p);
     }
-    fn walk_in_interpolated_string(&mut self, s: &'ast InterpolatedString<'arena>, _: &mut ()) {
+    fn walk_in_interpolated_string(&mut self, s: &'ast InterpolatedString<'arena>, (): &mut ()) {
         types::interpolated(self, s.parts.as_slice());
     }
-    fn walk_in_document_string(&mut self, s: &'ast DocumentString<'arena>, _: &mut ()) {
+    fn walk_in_document_string(&mut self, s: &'ast DocumentString<'arena>, (): &mut ()) {
         types::interpolated(self, s.parts.as_slice());
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         dead_code::boolean_not(self, u);
         statements::cast(self, u);
         strict::cast(self, u);
@@ -2775,7 +2983,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::property_increment(self, u.operand, u.operator.span(), u.span());
         }
     }
-    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
+    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, (): &mut ()) {
         types::postfix(self, u);
         operators::unary_postfix(self, u);
         assign::increment(self, u.operand);
@@ -2783,10 +2991,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.invalidate_expression(u.operand);
         types::property_increment(self, u.operand, u.operator.span(), u.span());
     }
-    fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
+    fn walk_out_for(&mut self, _: &'ast For<'arena>, (): &mut ()) {
         self.syntax.parents.pop();
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         self.syntax.parents.push(syntax::Parent::Loop);
         assign::foreach(self, f);
         types::foreach(self, f);
@@ -2798,18 +3006,32 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.invalidate_expression(target);
             arrays::destructuring(self, target, true);
         }
-        if matches!(types::flow::unparen(value), Expression::Array(_) | Expression::List(_)) {
-            let iterated = self.phpstan_type(f.expression).map(|t| declared::with_classes(self, || t.iterable_value_type()));
+        if matches!(
+            types::flow::unparen(value),
+            Expression::Array(_) | Expression::List(_)
+        ) {
+            let iterated = self
+                .phpstan_type(f.expression)
+                .map(|t| declared::with_classes(self, || t.iterable_value_type()));
             types::destructuring(self, value.span(), value, iterated, None);
         }
     }
-    fn walk_out_foreach(&mut self, _: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_out_foreach(&mut self, _: &'ast Foreach<'arena>, (): &mut ()) {
         self.syntax.parents.pop();
     }
     fn walk_while(&mut self, w: &'ast While<'arena>, c: &mut ()) {
         dead_code::while_loop(self, w);
-        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS) {
-            operators::condition(self, w.span(), w.condition, "a while condition", "while.condNotBoolean");
+        if self
+            .strict
+            .contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS)
+        {
+            operators::condition(
+                self,
+                w.span(),
+                w.condition,
+                "a while condition",
+                "while.condNotBoolean",
+            );
         }
         self.syntax.parents.push(syntax::Parent::Loop);
         self.walk_expression(w.condition, c);
@@ -2822,52 +3044,61 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.walk_branch(guards, &statements);
         self.syntax.parents.pop();
     }
-    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
+    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, (): &mut ()) {
         dead_code::do_while(self, d);
-        if self.strict.contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS) {
-            operators::condition(self, d.span(), d.condition, "a do-while condition", "doWhile.condNotBoolean");
+        if self
+            .strict
+            .contains(crate::StrictRules::BOOLEANS_IN_LOOP_CONDITIONS)
+        {
+            operators::condition(
+                self,
+                d.span(),
+                d.condition,
+                "a do-while condition",
+                "doWhile.condNotBoolean",
+            );
         }
         self.syntax.parents.push(syntax::Parent::Loop);
     }
-    fn walk_out_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {
+    fn walk_out_do_while(&mut self, _: &'ast DoWhile<'arena>, (): &mut ()) {
         self.syntax.parents.pop();
     }
-    fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
+    fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, (): &mut ()) {
         dead_code::switch_statement(self, s);
         strict::switch(self, s);
         self.syntax.parents.push(syntax::Parent::Loop);
     }
-    fn walk_out_switch(&mut self, _: &'ast Switch<'arena>, _: &mut ()) {
+    fn walk_out_switch(&mut self, _: &'ast Switch<'arena>, (): &mut ()) {
         self.syntax.parents.pop();
     }
-    fn walk_in_break(&mut self, b: &'ast Break<'arena>, _: &mut ()) {
+    fn walk_in_break(&mut self, b: &'ast Break<'arena>, (): &mut ()) {
         syntax::continue_break(self, b, b.level, "break");
     }
-    fn walk_in_continue(&mut self, k: &'ast Continue<'arena>, _: &mut ()) {
+    fn walk_in_continue(&mut self, k: &'ast Continue<'arena>, (): &mut ()) {
         syntax::continue_break(self, k, k.level, "continue");
     }
-    fn walk_in_global(&mut self, g: &'ast Global<'arena>, _: &mut ()) {
+    fn walk_in_global(&mut self, g: &'ast Global<'arena>, (): &mut ()) {
         syntax::global(self, g);
     }
-    fn walk_in_static(&mut self, s: &'ast Static<'arena>, _: &mut ()) {
+    fn walk_in_static(&mut self, s: &'ast Static<'arena>, (): &mut ()) {
         syntax::r#static(self, s);
     }
-    fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
+    fn walk_in_return(&mut self, r: &'ast Return<'arena>, (): &mut ()) {
         syntax::r#return(self, r);
     }
-    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
         assign::unset(self, u);
         types::property_unset(self, u);
         unset::check(self, u);
-        for value in u.values.iter() {
+        for value in &u.values {
             self.invalidate_expression(value);
         }
     }
-    fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
+    fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, (): &mut ()) {
         assign::array_append(self, a);
         types::dim_fetch(self, a.span(), a.array, None);
     }
-    fn walk_in_shell_execute_string(&mut self, s: &'ast ShellExecuteString<'arena>, _: &mut ()) {
+    fn walk_in_shell_execute_string(&mut self, s: &'ast ShellExecuteString<'arena>, (): &mut ()) {
         statements::backtick(self, s);
     }
 }

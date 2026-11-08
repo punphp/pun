@@ -10,7 +10,7 @@ use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error};
 use super::super::{Checker, declared};
 use super::flow::unparen;
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(crate) const IDENTIFIERS: &[&str] = &[
     "method.nameNotString",
     "staticMethod.nameNotString",
     "classConstant.nameNotString",

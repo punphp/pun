@@ -11,11 +11,11 @@ pub(crate) const YYPACT_NINF: i32 = -937;
 pub(crate) const YYTABLE_NINF: i32 = -607;
 /// Internal symbol of a single-character token (`';'`, `'('`, ...).
 pub(crate) fn char_symbol(c: u8) -> i32 {
-    YYTRANSLATE[c as usize] as i32
+    i32::from(YYTRANSLATE[c as usize])
 }
 /// Internal symbol of a PHP token kind ("invalid token" for kinds the grammar never names).
 pub(crate) fn kind_symbol(k: Kind) -> i32 {
-    KIND_SYMBOL.get(k as usize).map_or(2, |&s| s as i32)
+    KIND_SYMBOL.get(k as usize).map_or(2, |&s| i32::from(s))
 }
 pub(crate) const RULE_HALT_INNER: usize = 150;
 pub(crate) const RULE_HALT_TOP: usize = 115;

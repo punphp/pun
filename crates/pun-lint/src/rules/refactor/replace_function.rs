@@ -29,7 +29,7 @@ use crate::{Context, Report, Rule};
 /// The arguments of a call as `pMaybeMultiline` prints them.
 fn printed_args(ctx: &Context<'_>, call: &FunctionCall<'_>) -> String {
     let list = &call.argument_list;
-    let spans: Vec<Span> = list.arguments.iter().map(|a| node_span(a)).collect();
+    let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
     let indent = line_indent(ctx.source, node_span(call).start);
     maybe_multiline(
         ctx,

@@ -41,7 +41,7 @@ impl Fixer for PhpUnitMethodCasingFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         apply_fix(tokens, |tokens, start, end| {
-            self.apply_php_unit_class_fix(tokens, start, end)
+            self.apply_php_unit_class_fix(tokens, start, end);
         });
     }
 }
@@ -141,7 +141,7 @@ impl PhpUnitMethodCasingFixer {
             .map(|l| l.borrow().get_content().to_vec())
             .collect();
         let mut doc_block_needs_update = false;
-        for line in lines.iter_mut() {
+        for line in &mut lines {
             if !line.windows(8).any(|w| w == b"@depends") {
                 continue;
             }

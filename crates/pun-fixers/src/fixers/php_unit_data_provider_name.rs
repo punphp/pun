@@ -41,7 +41,7 @@ impl Fixer for PhpUnitDataProviderNameFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         apply_fix(tokens, |tokens, start_index, end_index| {
-            self.apply_class(tokens, start_index, end_index)
+            self.apply_class(tokens, start_index, end_index);
         });
     }
 }

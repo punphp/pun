@@ -11,44 +11,44 @@ use std::sync::OnceLock;
 
 /// `Lexer::TOKEN_*`.
 pub(crate) mod t {
-    pub const REFERENCE: u8 = 0;
-    pub const UNION: u8 = 1;
-    pub const INTERSECTION: u8 = 2;
-    pub const NULLABLE: u8 = 3;
-    pub const OPEN_PARENTHESES: u8 = 4;
-    pub const CLOSE_PARENTHESES: u8 = 5;
-    pub const OPEN_ANGLE_BRACKET: u8 = 6;
-    pub const CLOSE_ANGLE_BRACKET: u8 = 7;
-    pub const OPEN_SQUARE_BRACKET: u8 = 8;
-    pub const CLOSE_SQUARE_BRACKET: u8 = 9;
-    pub const COMMA: u8 = 10;
-    pub const VARIADIC: u8 = 11;
-    pub const DOUBLE_COLON: u8 = 12;
-    pub const DOUBLE_ARROW: u8 = 13;
-    pub const EQUAL: u8 = 14;
-    pub const OPEN_PHPDOC: u8 = 15;
-    pub const CLOSE_PHPDOC: u8 = 16;
-    pub const PHPDOC_TAG: u8 = 17;
-    pub const DOCTRINE_TAG: u8 = 18;
-    pub const FLOAT: u8 = 19;
-    pub const INTEGER: u8 = 20;
-    pub const SINGLE_QUOTED_STRING: u8 = 21;
-    pub const DOUBLE_QUOTED_STRING: u8 = 22;
-    pub const DOCTRINE_ANNOTATION_STRING: u8 = 23;
-    pub const IDENTIFIER: u8 = 24;
-    pub const THIS_VARIABLE: u8 = 25;
-    pub const VARIABLE: u8 = 26;
-    pub const HORIZONTAL_WS: u8 = 27;
-    pub const PHPDOC_EOL: u8 = 28;
-    pub const OTHER: u8 = 29;
-    pub const END: u8 = 30;
-    pub const COLON: u8 = 31;
-    pub const WILDCARD: u8 = 32;
-    pub const OPEN_CURLY_BRACKET: u8 = 33;
-    pub const CLOSE_CURLY_BRACKET: u8 = 34;
-    pub const NEGATED: u8 = 35;
-    pub const ARROW: u8 = 36;
-    pub const COMMENT: u8 = 37;
+    pub(crate) const REFERENCE: u8 = 0;
+    pub(crate) const UNION: u8 = 1;
+    pub(crate) const INTERSECTION: u8 = 2;
+    pub(crate) const NULLABLE: u8 = 3;
+    pub(crate) const OPEN_PARENTHESES: u8 = 4;
+    pub(crate) const CLOSE_PARENTHESES: u8 = 5;
+    pub(crate) const OPEN_ANGLE_BRACKET: u8 = 6;
+    pub(crate) const CLOSE_ANGLE_BRACKET: u8 = 7;
+    pub(crate) const OPEN_SQUARE_BRACKET: u8 = 8;
+    pub(crate) const CLOSE_SQUARE_BRACKET: u8 = 9;
+    pub(crate) const COMMA: u8 = 10;
+    pub(crate) const VARIADIC: u8 = 11;
+    pub(crate) const DOUBLE_COLON: u8 = 12;
+    pub(crate) const DOUBLE_ARROW: u8 = 13;
+    pub(crate) const EQUAL: u8 = 14;
+    pub(crate) const OPEN_PHPDOC: u8 = 15;
+    pub(crate) const CLOSE_PHPDOC: u8 = 16;
+    pub(crate) const PHPDOC_TAG: u8 = 17;
+    pub(crate) const DOCTRINE_TAG: u8 = 18;
+    pub(crate) const FLOAT: u8 = 19;
+    pub(crate) const INTEGER: u8 = 20;
+    pub(crate) const SINGLE_QUOTED_STRING: u8 = 21;
+    pub(crate) const DOUBLE_QUOTED_STRING: u8 = 22;
+    pub(crate) const DOCTRINE_ANNOTATION_STRING: u8 = 23;
+    pub(crate) const IDENTIFIER: u8 = 24;
+    pub(crate) const THIS_VARIABLE: u8 = 25;
+    pub(crate) const VARIABLE: u8 = 26;
+    pub(crate) const HORIZONTAL_WS: u8 = 27;
+    pub(crate) const PHPDOC_EOL: u8 = 28;
+    pub(crate) const OTHER: u8 = 29;
+    pub(crate) const END: u8 = 30;
+    pub(crate) const COLON: u8 = 31;
+    pub(crate) const WILDCARD: u8 = 32;
+    pub(crate) const OPEN_CURLY_BRACKET: u8 = 33;
+    pub(crate) const CLOSE_CURLY_BRACKET: u8 = 34;
+    pub(crate) const NEGATED: u8 = 35;
+    pub(crate) const ARROW: u8 = 36;
+    pub(crate) const COMMENT: u8 = 37;
 }
 
 /// `Lexer::generateRegexp()`'s alternatives in order (PCRE alternation: the first that matches wins).
@@ -167,7 +167,7 @@ pub(crate) struct Iter<'a> {
 }
 
 impl<'a> Iter<'a> {
-    pub fn new(text: &'a str, toks: &'a [Tok]) -> Iter<'a> {
+    pub(crate) fn new(text: &'a str, toks: &'a [Tok]) -> Iter<'a> {
         let mut iter = Iter {
             text,
             toks,
@@ -185,17 +185,17 @@ impl<'a> Iter<'a> {
     }
 
     /// `currentTokenType()`; past the end (where PHP reads `null`), `TOKEN_END`'s.
-    pub fn ty(&self) -> u8 {
+    pub(crate) fn ty(&self) -> u8 {
         self.token(self.index).map_or(t::END, |t| t.ty)
     }
 
     /// `currentTokenValue()`; past the end, `""`.
-    pub fn value(&self) -> &'a str {
+    pub(crate) fn value(&self) -> &'a str {
         self.token(self.index)
             .map_or("", |t| &self.text[t.start..t.end])
     }
 
-    pub fn is(&self, types: &[u8]) -> bool {
+    pub(crate) fn is(&self, types: &[u8]) -> bool {
         types.contains(&self.ty())
     }
 
@@ -209,7 +209,7 @@ impl<'a> Iter<'a> {
         }
     }
 
-    pub fn next(&mut self) {
+    pub(crate) fn next(&mut self) {
         self.index += 1;
         self.skip_irrelevant();
     }
@@ -224,14 +224,14 @@ impl<'a> Iter<'a> {
         }
     }
 
-    pub fn consume(&mut self, ty: u8) -> Parsed<()> {
+    pub(crate) fn consume(&mut self, ty: u8) -> Parsed<()> {
         match self.try_consume(ty) {
             true => Ok(()),
             false => Err(Fail),
         }
     }
 
-    pub fn try_consume(&mut self, ty: u8) -> bool {
+    pub(crate) fn try_consume(&mut self, ty: u8) -> bool {
         if self.ty() != ty {
             return false;
         }
@@ -250,7 +250,7 @@ impl<'a> Iter<'a> {
         found
     }
 
-    pub fn preceded_by_ws(&self) -> bool {
+    pub(crate) fn preceded_by_ws(&self) -> bool {
         self.index > 0 && self.toks[self.index - 1].ty == t::HORIZONTAL_WS
     }
 
@@ -275,20 +275,20 @@ impl<'a> Iter<'a> {
         joined
     }
 
-    pub fn push(&mut self) {
+    pub(crate) fn push(&mut self) {
         self.saves.push(self.index);
     }
 
-    pub fn drop_save(&mut self) {
+    pub(crate) fn drop_save(&mut self) {
         self.saves.pop();
     }
 
-    pub fn rollback(&mut self) {
+    pub(crate) fn rollback(&mut self) {
         self.index = self.saves.pop().unwrap_or_default();
     }
 
     /// `BetterTokenIterator::isNextTokenType()`.
-    pub fn is_next(&mut self, types: &[u8]) -> bool {
+    pub(crate) fn is_next(&mut self, types: &[u8]) -> bool {
         if self.index + 1 >= self.toks.len() {
             return false;
         }
@@ -440,7 +440,7 @@ pub(crate) struct DocParser<'a> {
 }
 
 impl<'a> DocParser<'a> {
-    pub fn new(
+    pub(crate) fn new(
         text: &'a str,
         toks: &'a [Tok],
         type_end: &'a dyn Fn(usize) -> Result<usize, usize>,
@@ -452,7 +452,7 @@ impl<'a> DocParser<'a> {
     }
 
     /// `BetterPhpDocParser::parseWithNode()` before the decorators, and the position it stops at.
-    pub fn parse_with_node(&mut self) -> Vec<RawChild> {
+    pub(crate) fn parse_with_node(&mut self) -> Vec<RawChild> {
         let it = &mut self.iter;
         it.try_consume(t::OPEN_PHPDOC);
         it.try_consume(t::PHPDOC_EOL);
@@ -581,7 +581,7 @@ impl<'a> DocParser<'a> {
     }
 
     /// `parseText()`.
-    pub fn parse_text(&mut self) -> String {
+    pub(crate) fn parse_text(&mut self) -> String {
         let it = &mut self.iter;
         let ends = [t::CLOSE_PHPDOC, t::END];
         let mut text = String::new();
@@ -1183,7 +1183,7 @@ pub(crate) struct Nested {
 
 impl ArrayItem {
     /// `AbstractValuesAwareNode::isValueKeyEquals()`.
-    pub fn key_is(&self, key: &str) -> bool {
+    pub(crate) fn key_is(&self, key: &str) -> bool {
         matches!(&self.key, Some(Key::Val(Val::StringNode(k) | Val::Str(k))) if k == key)
     }
 }

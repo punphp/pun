@@ -31,7 +31,7 @@ impl Rule for NoDuplicateMatchArm {
     ) {
         let Node::Match(r#match) = node else { return };
         let mut seen: Vec<ConstantValue> = Vec::new();
-        for arm in r#match.arms.iter() {
+        for arm in &r#match.arms {
             let MatchArm::Expression(arm) = arm else {
                 continue;
             };

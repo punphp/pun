@@ -1,0 +1,2 @@
+# Tests print the failing case before they assert.
+allow-print-in-tests = true

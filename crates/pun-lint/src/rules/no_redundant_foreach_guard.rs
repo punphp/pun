@@ -78,20 +78,20 @@ impl Rule for NoRedundantForeachGuard {
                 {
                     return;
                 }
-                let (list, index) = enclosing(source, &tokens, ancestors);
+                let (list, index) = enclosing(source, tokens, ancestors);
                 if index == 0 || index + 1 != list.stmts.len() || list.nop {
                     return;
                 }
                 let Statement::If(previous) = list.stmts[index - 1] else {
                     return;
                 };
-                if !is_empty_guard(source, &tokens, &facts, previous, foreach.expression) {
+                if !is_empty_guard(source, tokens, &facts, previous, foreach.expression) {
                     return;
                 }
-                Some(remove(source, &tokens, &list, &[index - 1]))
+                Some(remove(source, tokens, &list, &[index - 1]))
             }
-            Node::If(_) => run_edits(source, &tokens, ancestors, &|chain| {
-                guard(source, &tokens, &facts, chain)
+            Node::If(_) => run_edits(source, tokens, ancestors, &|chain| {
+                guard(source, tokens, &facts, chain)
             }),
             _ => return,
         };
@@ -240,7 +240,8 @@ fn should_skip_items(
     match items {
         Expression::ArrayAccess(access) => {
             !has_offset(facts, access.array, access.index)
-                && !(native(facts, access.array).is_some_and(|t| t.is_mixed())
+                && !(native(facts, access.array)
+                    .is_some_and(mago_codex::ttype::union::TUnion::is_mixed)
                     && type_of(facts, access.array).is_some_and(is_array)
                     && assigned_offset(source, facts, preceding, access))
         }
@@ -293,7 +294,7 @@ fn has_offset(facts: &Facts, array: &Expression<'_>, index: &Expression<'_>) -> 
             .and_then(|items| items.get(&key))
             .is_some_and(|(optional, _)| !optional),
         [TAtomic::Array(TArray::List(l))] => match key {
-            ArrayKey::Integer(i) => usize::try_from(i).ok().is_some_and(|i| {
+            ArrayKey::Integer(i) => usize::try_from(i).is_ok_and(|i| {
                 l.known_elements
                     .as_ref()
                     .and_then(|e| e.get(&i))

@@ -63,7 +63,7 @@ impl Rule for AddReturnTypeFromTryCatch {
         }
         let mut try_type: Option<&TUnion> = None;
         let mut catch_types: Vec<&TUnion> = Vec::new();
-        for statement in f.body.statements.iter() {
+        for statement in &f.body.statements {
             let Statement::Try(r#try) = statement else {
                 continue;
             };
@@ -72,7 +72,7 @@ impl Rule for AddReturnTypeFromTryCatch {
                 continue;
             }
             try_type = block_type(&facts, &r#try.block);
-            for clause in r#try.catch_clauses.iter() {
+            for clause in &r#try.catch_clauses {
                 // each catch must have type
                 let Some(t) = block_type(&facts, &clause.block) else {
                     return;

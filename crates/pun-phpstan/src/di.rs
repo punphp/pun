@@ -42,7 +42,7 @@ pub(crate) fn merge_arrays(mut v: Array, mut b: Array) -> Array {
             b.push(val);
             index += 1;
         } else {
-            let old = b.get_mut(&k).map(std::mem::take).unwrap_or(Value::Null);
+            let old = b.get_mut(&k).map_or(Value::Null, std::mem::take);
             b.set(k, merge(val, old));
         }
     }
@@ -358,7 +358,13 @@ pub(crate) fn process(
         };
         let key_to_resolve = segment('[', ']');
         val = match val {
-            Value::Array(a) => Value::Array(process(a, &segment('[', ']'), file, expand_relative, known)?),
+            Value::Array(a) => Value::Array(process(
+                a,
+                &segment('[', ']'),
+                file,
+                expand_relative,
+                known,
+            )?),
             Value::Entity(e) => {
                 let pass = if int_key {
                     format!("{file_key}()")
@@ -387,12 +393,11 @@ pub(crate) fn process(
                     Value::OptionalPath(path)
                 } else {
                     let tmp = process(Array::list([e.value]), &pass, file, expand_relative, known)?;
-                    let entity = tmp
-                        .into_iter()
-                        .next()
-                        .map(|(_, v)| v)
-                        .unwrap_or(Value::Null);
-                    statement(entity, process(e.attributes, &pass, file, expand_relative, known)?)
+                    let entity = tmp.into_iter().next().map_or(Value::Null, |(_, v)| v);
+                    statement(
+                        entity,
+                        process(e.attributes, &pass, file, expand_relative, known)?,
+                    )
                 }
             }
             v => v,

@@ -18,7 +18,7 @@ struct Collect<'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collect<'ast, 'arena> {
-    fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, (): &mut ()) {
         self.classes.push(a);
     }
 }
@@ -110,7 +110,7 @@ fn md5(input: &[u8]) -> [u8; 16] {
     ];
     // K[i] = floor(abs(sin(i + 1)) * 2^32)
     let k: Vec<u32> = (0..64)
-        .map(|i| (((i + 1) as f64).sin().abs() * 4_294_967_296.0) as u32)
+        .map(|i| (f64::from(i + 1).sin().abs() * 4_294_967_296.0) as u32)
         .collect();
     let mut message = input.to_vec();
     message.push(0x80);

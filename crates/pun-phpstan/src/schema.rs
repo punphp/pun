@@ -218,13 +218,13 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
                 .into_iter()
                 .next()
                 .map(Arg::value)
-                .and_then(|v| v.to_php_string())
+                .and_then(|v| v.to_php_string());
         }
         ("mergeDefaults", Kind::Type { merge, .. }) => {
             *merge = args
                 .into_iter()
                 .next()
-                .is_none_or(|a| a.value() == Value::Bool(true))
+                .is_none_or(|a| a.value() == Value::Bool(true));
         }
         ("firstIsDefault", Kind::AnyOf(set)) => {
             s.default = match set.first() {
@@ -237,14 +237,14 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
                 args.into_iter()
                     .next()
                     .map_or_else(|| Ok(type_schema("mixed")), Arg::schema)?,
-            ))
+            ));
         }
         ("default", _) => s.default = args.into_iter().next().ok_or(TOO_FEW)?.value(),
         ("required", _) => {
             s.required = args
                 .into_iter()
                 .next()
-                .is_none_or(|a| a.value() == Value::Bool(true))
+                .is_none_or(|a| a.value() == Value::Bool(true));
         }
         // Deprecations are warnings (E_USER_DEPRECATED), which PHPStan's Configurator swallows.
         ("deprecated", _) => {}
@@ -485,7 +485,7 @@ impl Schema {
                             .or(other.as_deref());
                         if let Some(schema) = schema {
                             ctx.path.push(k.as_string());
-                            let v = a.get_mut(&k).map(std::mem::take).unwrap_or(Value::Null);
+                            let v = a.get_mut(&k).map_or(Value::Null, std::mem::take);
                             a.set(k, schema.normalize(v, ctx));
                             ctx.path.pop();
                         }
@@ -691,7 +691,7 @@ impl Schema {
     /// messages in order, empty when valid.
     pub fn validate(&self, data: &Value, path: &[&str]) -> Vec<String> {
         let mut ctx = Context {
-            path: path.iter().map(|s| s.to_string()).collect(),
+            path: path.iter().map(std::string::ToString::to_string).collect(),
             ..Context::default()
         };
         let n = self.normalize(data.clone(), &mut ctx);
@@ -737,14 +737,13 @@ fn validate_range(v: &Value, range: (Option<f64>, Option<f64>), ctx: &mut Contex
         Value::Int(i) => Some(*i as f64),
         Value::Float(f) => Some(*f),
         _ => None,
-    } {
-        if !in_range(n, range) {
-            ctx.error(
-                "The %label% %path% expects to be in range %expected%, %value% given.",
-                v,
-                vec![("expected", range_text(range))],
-            );
-        }
+    } && !in_range(n, range)
+    {
+        ctx.error(
+            "The %label% %path% expects to be in range %expected%, %value% given.",
+            v,
+            vec![("expected", range_text(range))],
+        );
     }
 }
 

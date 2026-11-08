@@ -109,7 +109,7 @@ fn has_only_yielding_expressions(source: &str, body: &Block<'_>) -> bool {
         return false;
     }
     let mut yields = false;
-    for statement in body.statements.iter() {
+    for statement in &body.statements {
         let Statement::Expression(e) = statement else {
             return false;
         };

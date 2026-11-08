@@ -57,7 +57,7 @@ impl Fixer for PhpUnitMockFixer {
                     match analyzer.count_arguments(tokens, open, close) {
                         1 => tokens.set(index, Token::new(T_STRING, b"createMock".to_vec())),
                         2 if self.fix_create_partial_mock => {
-                            tokens.set(index, Token::new(T_STRING, b"createPartialMock".to_vec()))
+                            tokens.set(index, Token::new(T_STRING, b"createPartialMock".to_vec()));
                         }
                         _ => {}
                     }

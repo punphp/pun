@@ -234,7 +234,10 @@ pub(crate) fn is_hint_type(
                 .map(|(own, parent)| {
                     let all = facts.codebase.get_class_like(own.as_bytes());
                     all.map_or(vec![parent], |c| {
-                        c.all_parent_classes.iter().map(|p| p.to_string()).collect()
+                        c.all_parent_classes
+                            .iter()
+                            .map(std::string::ToString::to_string)
+                            .collect()
                     })
                 })
                 .unwrap_or_default();

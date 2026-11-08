@@ -19,7 +19,7 @@ use crate::Context;
 use crate::syntax::{node_span, unparenthesize};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum Kind {
+pub(super) enum Kind {
     All,
     Any,
     Find,
@@ -38,7 +38,7 @@ impl Kind {
 }
 
 /// `refactor()` on one statement list: the first `foreach` that matches, as the edits and the span reported.
-pub fn refactor(
+pub(super) fn refactor(
     ctx: &Context<'_>,
     ancestors: &[Node<'_, '_>],
     list: &List<'_>,

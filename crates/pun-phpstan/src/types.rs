@@ -33,7 +33,9 @@ pub use casts::{Cast, cast_is_error};
 pub use larastan::{StringQuery, with_larastan_strings};
 pub use late_shape::LateArrayShape;
 pub use reasons::accepts_reasons;
-pub use templates::{TemplateMap, infer_template_types, remove_final_by_keyword_overrides, resolve_template_types};
+pub use templates::{
+    TemplateMap, infer_template_types, remove_final_by_keyword_overrides, resolve_template_types,
+};
 pub use unresolvable::{PropertyReflection, with_property_reflections};
 pub use verbosity::recommended_level;
 
@@ -256,7 +258,10 @@ pub enum Type {
     /// RuleLevelHelper's checked mixed, never stored as a declaration or inferred scope value.
     StrictMixed,
     /// MixedType with its excluded value set. Kept separate so existing plain-mixed constructors stay plain.
-    SubtractedMixed { explicit: bool, excluded: Box<Type> },
+    SubtractedMixed {
+        explicit: bool,
+        excluded: Box<Type>,
+    },
     Never(NeverKind),
     Error,
     /// ErrorType/NeverType's explanation, deliberately excluded from type identity.
@@ -324,7 +329,11 @@ pub enum Type {
 
 /// `TemplateTypeVariance::describe()` of a call-site variance
 pub fn variance_name(covariant: bool) -> &'static str {
-    if covariant { "covariant" } else { "contravariant" }
+    if covariant {
+        "covariant"
+    } else {
+        "contravariant"
+    }
 }
 
 pub fn mixed() -> Type {
@@ -433,9 +442,16 @@ impl Type {
             Type::Reasoned(t, _) => t.query_mixed(f, mixed),
             Type::SubtractedObject { object, .. } => object.query_mixed(f, mixed),
             Type::LateArrayShape(s) => s.resolve().query_mixed(f, mixed),
-            Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query_mixed(f, mixed))),
-            Type::Benevolent(types) => types.iter().map(|t| t.query_mixed(f, mixed)).fold(Tri::No, Tri::or),
-            Type::Intersection(types) => Tri::max_min(types.iter().map(|t| t.query_mixed(f, mixed))),
+            Type::Union(types) => {
+                Tri::extreme_identity(types.iter().map(|t| t.query_mixed(f, mixed)))
+            }
+            Type::Benevolent(types) => types
+                .iter()
+                .map(|t| t.query_mixed(f, mixed))
+                .fold(Tri::No, Tri::or),
+            Type::Intersection(types) => {
+                Tri::max_min(types.iter().map(|t| t.query_mixed(f, mixed)))
+            }
             Type::Template(t) => t.bound.query_mixed(f, mixed),
             // LateResolvableTypeTrait
             Type::Conditional(c) => c.resolve().query_mixed(f, mixed),
@@ -478,7 +494,11 @@ impl Type {
             Type::Template(t) => query(&t.bound),
             Type::Conditional(c) => query(&c.resolve()),
             Type::SubtractedMixed { excluded, .. } => {
-                if is_super_type_of(excluded, &domain()).yes() { Tri::No } else { Tri::Maybe }
+                if is_super_type_of(excluded, &domain()).yes() {
+                    Tri::No
+                } else {
+                    Tri::Maybe
+                }
             }
             Type::Mixed { .. } | Type::Error => Tri::Maybe,
             _ => f(self),
@@ -493,7 +513,11 @@ impl Type {
         f: &dyn Fn(&Type) -> Tri,
     ) -> Tri {
         self.query_with_mixed_domain(query, domain, benevolent, &|t| {
-            if matches!(t, Type::Callable(_)) { Tri::Maybe } else { f(t) }
+            if matches!(t, Type::Callable(_)) {
+                Tri::Maybe
+            } else {
+                f(t)
+            }
         })
     }
 
@@ -509,13 +533,18 @@ impl Type {
                 return Tri::extreme_identity(ts.iter().map(Type::is_string));
             }
             Type::Intersection(ts) => return Tri::max_min(ts.iter().map(Type::is_string)),
-            Type::Template(t) if matches!(&t.bound, Type::SubtractedMixed { .. }) => return Tri::Maybe,
+            Type::Template(t) if matches!(&t.bound, Type::SubtractedMixed { .. }) => {
+                return Tri::Maybe;
+            }
             Type::Template(t) => return t.bound.is_string(),
             Type::Conditional(c) => return c.resolve().is_string(),
             _ => {}
         }
         self.query_c_with_mixed_domain(Self::is_string, || Type::String, false, &|t| {
-            if matches!(t, Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..))) {
+            if matches!(
+                t,
+                Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..))
+            ) {
                 return Tri::Maybe;
             }
             Tri::from(matches!(
@@ -550,27 +579,35 @@ impl Type {
     }
 
     pub fn is_float(&self) -> Tri {
-        self.query_with_mixed_domain(Self::is_float, || Type::Float, false, &|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
+        self.query_with_mixed_domain(Self::is_float, || Type::Float, false, &|t| {
+            Tri::from(matches!(t, Type::Float | Type::ConstFloat(_)))
+        })
     }
 
     pub fn is_boolean(&self) -> Tri {
-        self.query_with_mixed_domain(Self::is_boolean, || Type::Bool, false, &|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
+        self.query_with_mixed_domain(Self::is_boolean, || Type::Bool, false, &|t| {
+            Tri::from(matches!(t, Type::Bool | Type::ConstBool(_)))
+        })
     }
 
     /// `isObject()`, not `ObjectWithoutClassType::isSuperTypeOf()`: the latter rejects nonexistent parent.
     pub fn is_object(&self) -> Tri {
-        self.query_c_with_mixed_domain(Self::is_object, || Type::ObjectWithoutClass, true, &|t| match t {
-            Type::NonexistentParent
-            | Type::ObjectWithoutClass
-            | Type::Object(..)
-            | Type::Static(..)
-            | Type::This(_)
-            | Type::EnumCase(..)
-            | Type::ObjectShape(_)
-            | Type::Closure(_) => Tri::Yes,
-            Type::Iterable(..)
-            | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
-            _ => Tri::No,
+        self.query_c_with_mixed_domain(Self::is_object, || Type::ObjectWithoutClass, true, &|t| {
+            match t {
+                Type::NonexistentParent
+                | Type::ObjectWithoutClass
+                | Type::Object(..)
+                | Type::Static(..)
+                | Type::This(_)
+                | Type::EnumCase(..)
+                | Type::ObjectShape(_)
+                | Type::Closure(_) => Tri::Yes,
+                Type::Iterable(..)
+                | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => {
+                    Tri::Maybe
+                }
+                _ => Tri::No,
+            }
         })
     }
 
@@ -599,18 +636,25 @@ impl Type {
     }
 
     pub fn is_array(&self) -> Tri {
-        self.query_c_with_mixed_domain(Self::is_array, || Type::array(mixed(), mixed()), false, &|t| {
-            if matches!(t, Type::Iterable(..)) { return Tri::Maybe; }
-            if matches!(t, Type::Accessory(Accessory::HasOffsetValue(..))) {
-                return Tri::Maybe;
-            }
-            Tri::from(matches!(
-                t,
-                Type::Array(..)
-                    | Type::ConstArray(_)
-                    | Type::Accessory(Accessory::List | Accessory::NonEmptyArray)
-            ))
-        })
+        self.query_c_with_mixed_domain(
+            Self::is_array,
+            || Type::array(mixed(), mixed()),
+            false,
+            &|t| {
+                if matches!(t, Type::Iterable(..)) {
+                    return Tri::Maybe;
+                }
+                if matches!(t, Type::Accessory(Accessory::HasOffsetValue(..))) {
+                    return Tri::Maybe;
+                }
+                Tri::from(matches!(
+                    t,
+                    Type::Array(..)
+                        | Type::ConstArray(_)
+                        | Type::Accessory(Accessory::List | Accessory::NonEmptyArray)
+                ))
+            },
+        )
     }
 
     pub fn is_constant_array(&self) -> Tri {
@@ -619,9 +663,10 @@ impl Type {
         }
         self.query_c(&|t| match t {
             Type::ConstArray(_) => Tri::Yes,
-            Type::Array(..) | Type::Accessory(Accessory::List | Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => {
-                Tri::Maybe
-            }
+            Type::Array(..)
+            | Type::Accessory(
+                Accessory::List | Accessory::NonEmptyArray | Accessory::HasOffsetValue(..),
+            ) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -648,7 +693,9 @@ impl Type {
             | Type::ConstString(_)
             | Type::Null => true,
             // UnionType's query aggregates its members, but it does not implement ConstantScalarType.
-            Type::Union(parts) | Type::Benevolent(parts) => parts.iter().all(Self::is_constant_scalar),
+            Type::Union(parts) | Type::Benevolent(parts) => {
+                parts.iter().all(Self::is_constant_scalar)
+            }
             _ => false,
         }
     }
@@ -685,7 +732,11 @@ impl Type {
         self.query_c_with_mixed_domain(Self::is_list, || Type::list(mixed()), false, &|t| match t {
             Type::Accessory(Accessory::List) => Tri::Yes,
             Type::Accessory(Accessory::HasOffsetValue(key, _)) => {
-                if key.is_string().yes() { Tri::No } else { Tri::Maybe }
+                if key.is_string().yes() {
+                    Tri::No
+                } else {
+                    Tri::Maybe
+                }
             }
             Type::ConstArray(a) => a.is_list,
             // `ArrayType::isList()`: no when no key can be a non-negative int
@@ -693,7 +744,9 @@ impl Type {
                 Tri::No
             }
             // (MaybeArrayTypeTrait)
-            Type::Array(..) | Type::Accessory(Accessory::NonEmptyArray) | Type::Iterable(..) => Tri::Maybe,
+            Type::Array(..) | Type::Accessory(Accessory::NonEmptyArray) | Type::Iterable(..) => {
+                Tri::Maybe
+            }
             _ => Tri::No,
         })
     }
@@ -702,19 +755,26 @@ impl Type {
         if self.is_never() {
             return Tri::Yes;
         }
-        self.query_c_with_mixed_domain(Self::is_iterable, || Type::Iterable(Box::new(mixed()), Box::new(mixed())), true, &|t| match t {
-            Type::Array(..)
-            | Type::ConstArray(_)
-            | Type::Iterable(..)
-            | Type::Accessory(Accessory::List | Accessory::NonEmptyArray) => Tri::Yes,
-            Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
-                is_instance_of(class, "Traversable")
-            }
-            Type::ObjectWithoutClass
-            | Type::ObjectShape(_)
-            | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
-            _ => Tri::No,
-        })
+        self.query_c_with_mixed_domain(
+            Self::is_iterable,
+            || Type::Iterable(Box::new(mixed()), Box::new(mixed())),
+            true,
+            &|t| match t {
+                Type::Array(..)
+                | Type::ConstArray(_)
+                | Type::Iterable(..)
+                | Type::Accessory(Accessory::List | Accessory::NonEmptyArray) => Tri::Yes,
+                Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
+                    is_instance_of(class, "Traversable")
+                }
+                Type::ObjectWithoutClass
+                | Type::ObjectShape(_)
+                | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => {
+                    Tri::Maybe
+                }
+                _ => Tri::No,
+            },
+        )
     }
 
     /// `isCloneable()`: an object, `mixed` and `never`; a common callable or iterable maybe.
@@ -722,7 +782,9 @@ impl Type {
         match self {
             Type::Reasoned(t, _) => t.is_cloneable(),
             Type::LateArrayShape(s) => s.resolve().is_cloneable(),
-            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error | Type::Never(_) => Tri::Yes,
+            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error | Type::Never(_) => {
+                Tri::Yes
+            }
             Type::Template(t) => t.bound.is_cloneable(),
             _ => self.query(&|t| match t {
                 Type::Object(..)
@@ -734,7 +796,9 @@ impl Type {
                 | Type::Closure(_) => Tri::Yes,
                 Type::Callable(_)
                 | Type::Iterable(..)
-                | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
+                | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => {
+                    Tri::Maybe
+                }
                 _ => Tri::No,
             }),
         }
@@ -750,17 +814,28 @@ impl Type {
                 }
                 Tri::max_min(iterable.into_iter().map(Type::is_iterable_at_least_once))
             }
-            _ => self.query_with_mixed_domain(Self::is_iterable_at_least_once, || Type::Iterable(Box::new(mixed()), Box::new(mixed())), true, &|t| match t {
-                Type::Never(_) => Tri::Maybe,
-                Type::ConstArray(a) => a.is_iterable_at_least_once(),
-                Type::Accessory(Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => Tri::Yes,
-                Type::Array(..) | Type::Iterable(..) | Type::Accessory(Accessory::List) => {
-                    Tri::Maybe
-                }
-                // StaticType asks its static object type
-                Type::Object(..) | Type::Static(..) | Type::This(_) | Type::ObjectWithoutClass | Type::Callable(_) => Tri::Maybe,
-                _ => Tri::No,
-            }),
+            _ => self.query_with_mixed_domain(
+                Self::is_iterable_at_least_once,
+                || Type::Iterable(Box::new(mixed()), Box::new(mixed())),
+                true,
+                &|t| match t {
+                    Type::Never(_) => Tri::Maybe,
+                    Type::ConstArray(a) => a.is_iterable_at_least_once(),
+                    Type::Accessory(Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => {
+                        Tri::Yes
+                    }
+                    Type::Array(..) | Type::Iterable(..) | Type::Accessory(Accessory::List) => {
+                        Tri::Maybe
+                    }
+                    // StaticType asks its static object type
+                    Type::Object(..)
+                    | Type::Static(..)
+                    | Type::This(_)
+                    | Type::ObjectWithoutClass
+                    | Type::Callable(_) => Tri::Maybe,
+                    _ => Tri::No,
+                },
+            ),
         }
     }
 
@@ -797,8 +872,9 @@ impl Type {
 
     pub fn is_numeric_string(&self) -> Tri {
         self.query(&|t| match t {
-            Type::Accessory(Accessory::NumericString)
-            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(
+                Accessory::NumericString | Accessory::DecimalIntString { inverse: false },
+            ) => Tri::Yes,
             Type::ConstString(s) => Tri::from(
                 std::str::from_utf8(s)
                     .ok()
@@ -856,8 +932,9 @@ impl Type {
 
     fn is_lowercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::LowercaseString)
-            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(
+                Accessory::LowercaseString | Accessory::DecimalIntString { inverse: false },
+            ) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_lowercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -870,8 +947,9 @@ impl Type {
 
     fn is_uppercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::UppercaseString)
-            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(
+                Accessory::UppercaseString | Accessory::DecimalIntString { inverse: false },
+            ) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_uppercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -883,33 +961,39 @@ impl Type {
     }
 
     pub fn is_callable(&self) -> Tri {
-        self.query_with_mixed_domain(Self::is_callable, || Type::Callable(None), true, &|t| match t {
-            Type::Callable(_) | Type::Closure(_) => Tri::Yes,
-            Type::Accessory(Accessory::HasMethod(n)) if n.eq_ignore_ascii_case("__invoke") => {
-                Tri::Yes
-            }
-            Type::Accessory(Accessory::NumericString)
-            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::No,
-            Type::String
-            | Type::StringAcceptingStringable
-            | Type::StringNotAcceptingStringable
-            | Type::ClassString(_)
-            | Type::Accessory(_)
-            | Type::Iterable(..)
-            | Type::ObjectWithoutClass
-            | Type::ObjectShape(_) => Tri::Maybe,
-            Type::ConstString(s) => string_is_callable(s),
-            Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
-            Type::ConstArray(a) => a.is_callable(),
-            Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
-                match symbols::lookup(class) {
-                    Some(c) if has_method(&c, "__invoke") => Tri::Yes,
-                    Some(c) if c.is_final || matches!(t, Type::Object(_, _, true)) => Tri::No,
-                    _ => Tri::Maybe,
+        self.query_with_mixed_domain(
+            Self::is_callable,
+            || Type::Callable(None),
+            true,
+            &|t| match t {
+                Type::Callable(_) | Type::Closure(_) => Tri::Yes,
+                Type::Accessory(Accessory::HasMethod(n)) if n.eq_ignore_ascii_case("__invoke") => {
+                    Tri::Yes
                 }
-            }
-            _ => Tri::No,
-        })
+                Type::Accessory(
+                    Accessory::NumericString | Accessory::DecimalIntString { inverse: false },
+                ) => Tri::No,
+                Type::String
+                | Type::StringAcceptingStringable
+                | Type::StringNotAcceptingStringable
+                | Type::ClassString(_)
+                | Type::Accessory(_)
+                | Type::Iterable(..)
+                | Type::ObjectWithoutClass
+                | Type::ObjectShape(_) => Tri::Maybe,
+                Type::ConstString(s) => string_is_callable(s),
+                Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
+                Type::ConstArray(a) => a.is_callable(),
+                Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
+                    match symbols::lookup(class) {
+                        Some(c) if has_method(&c, "__invoke") => Tri::Yes,
+                        Some(c) if c.is_final || matches!(t, Type::Object(_, _, true)) => Tri::No,
+                        _ => Tri::Maybe,
+                    }
+                }
+                _ => Tri::No,
+            },
+        )
     }
 
     /// `Type::hasMethod()`, using the same class metadata as the other shared type queries.
@@ -977,8 +1061,7 @@ impl Type {
                     // BenevolentUnionType's pickFromTypes ignores nonobjects, not unnamed objects.
                     if inner.is_empty()
                         && (matches!(self, Type::Union(_))
-                            || matches!(self, Type::Benevolent(_))
-                                && t.is_object().yes())
+                            || matches!(self, Type::Benevolent(_)) && t.is_object().yes())
                     {
                         return Vec::new();
                     }
@@ -1363,7 +1446,11 @@ impl Type {
                 ty
             }
         });
-        if replaced.get() { Traversal::Replace(mapped) } else { Traversal::Retain }
+        if replaced.get() {
+            Traversal::Replace(mapped)
+        } else {
+            Traversal::Retain
+        }
     }
 
     fn map_children(&self, f: &dyn Fn(&Type) -> Type) -> Type {
@@ -1390,7 +1477,9 @@ impl Type {
             Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
                 Type::Accessory(Accessory::HasOffsetValue(k.clone(), Box::new(f(v))))
             }
-            Type::Accessory(Accessory::ModelProperty(t)) => Type::Accessory(Accessory::ModelProperty(Box::new(f(t)))),
+            Type::Accessory(Accessory::ModelProperty(t)) => {
+                Type::Accessory(Accessory::ModelProperty(Box::new(f(t))))
+            }
             Type::Iterable(k, v) => Type::Iterable(Box::new(f(k)), Box::new(f(v))),
             Type::Union(types) => union(types.iter().map(f).collect()),
             Type::Benevolent(types) => to_benevolent(union(types.iter().map(f).collect())),
@@ -1418,10 +1507,15 @@ impl Type {
                 let default = t.default.as_ref().map(f);
                 // TemplateTypeTrait::traverse() rebuilds through TemplateTypeFactory only when changed.
                 // The factory has no StrictMixedType case: that bound falls back to explicit MixedType.
-                if matches!(bound, Type::StrictMixed) && (bound != t.bound || default != t.default) {
+                if matches!(bound, Type::StrictMixed) && (bound != t.bound || default != t.default)
+                {
                     bound = Type::Mixed { explicit: true };
                 }
-                Type::Template(Box::new(Template { bound, default, ..(**t).clone() }))
+                Type::Template(Box::new(Template {
+                    bound,
+                    default,
+                    ..(**t).clone()
+                }))
             }
             Type::Conditional(c) => Type::Conditional(Box::new(Conditional {
                 subject: match &c.subject {
@@ -1465,7 +1559,9 @@ impl Accessory {
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
             Accessory::HasMethod(name) => return format!("hasMethod({name})").into_bytes(),
-            Accessory::ModelProperty(t) => return description!("model property of ", t.describe_bytes(level)),
+            Accessory::ModelProperty(t) => {
+                return description!("model property of ", t.describe_bytes(level));
+            }
             Accessory::ViewString => "view-string",
             Accessory::HasOffsetValue(key, value) => {
                 return description!(
@@ -1483,7 +1579,10 @@ impl Accessory {
     fn is_string_accessory(&self) -> bool {
         !matches!(
             self,
-            Accessory::List | Accessory::NonEmptyArray | Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)
+            Accessory::List
+                | Accessory::NonEmptyArray
+                | Accessory::HasMethod(_)
+                | Accessory::HasOffsetValue(..)
         )
     }
 }
@@ -1592,8 +1691,13 @@ fn string_is_callable(bytes: &[u8]) -> Tri {
     };
     // `#^([a-zA-Z_\x7f-\xff\\][a-zA-Z0-9_\x7f-\xff\\]*)::([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\z#`
     let word = |w: &str, backslash: bool| {
-        let ok = |ch: char| ch == '_' || !ch.is_ascii() || ch.is_ascii_alphanumeric() || (backslash && ch == '\\');
-        w.chars().next().is_some_and(|ch| ok(ch) && !ch.is_ascii_digit()) && w.chars().all(ok)
+        let ok = |ch: char| {
+            ch == '_' || !ch.is_ascii() || ch.is_ascii_alphanumeric() || (backslash && ch == '\\')
+        };
+        w.chars()
+            .next()
+            .is_some_and(|ch| ok(ch) && !ch.is_ascii_digit())
+            && w.chars().all(ok)
     };
     if !word(class, true) || !word(method, false) {
         return Tri::No;
@@ -2406,7 +2510,11 @@ impl ConstArray {
 
     fn is_iterable_at_least_once(&self) -> Tri {
         if self.keys.is_empty() {
-            return if self.is_unsealed().yes() { Tri::Maybe } else { Tri::No };
+            return if self.is_unsealed().yes() {
+                Tri::Maybe
+            } else {
+                Tri::No
+            };
         }
         if self.optional.len() < self.keys.len() {
             Tri::Yes
@@ -2447,10 +2555,10 @@ impl ConstArray {
     /// extras) can be; a sealed one answers from the class's methods (`doFindTypeAndMethodNames()`).
     // ponytail: an unsealed shape answers maybe; `supportsCallableInstanceMethods()` (PHP < 8) is not modelled
     fn is_callable(&self) -> Tri {
-        if self.unsealed.is_none() || !self.is_unsealed().yes() {
-            if let Some(t) = self.callable_methods() {
-                return t;
-            }
+        if (self.unsealed.is_none() || !self.is_unsealed().yes())
+            && let Some(t) = self.callable_methods()
+        {
+            return t;
         }
         self.callable_shape()
     }
@@ -2509,9 +2617,23 @@ impl ConstArray {
         if found.is_empty() {
             return Some(Tri::No);
         }
-        let optional = if self.optional.is_empty() { Tri::Yes } else { Tri::Maybe };
-        let missing = if found.len() < has.len() { Tri::Maybe } else { Tri::Yes };
-        Some(found.into_iter().fold(Tri::Yes, Tri::and).and(optional).and(missing))
+        let optional = if self.optional.is_empty() {
+            Tri::Yes
+        } else {
+            Tri::Maybe
+        };
+        let missing = if found.len() < has.len() {
+            Tri::Maybe
+        } else {
+            Tri::Yes
+        };
+        Some(
+            found
+                .into_iter()
+                .fold(Tri::Yes, Tri::and)
+                .and(optional)
+                .and(missing),
+        )
     }
 
     fn callable_shape(&self) -> Tri {
@@ -2906,6 +3028,12 @@ impl ShapeBuilder {
     }
 }
 
+impl Default for ShapeBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// `$a->isSuperTypeOf($b)`
 pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
@@ -2926,18 +3054,35 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     }
     match a {
         T::Reasoned(t, _) => is_super_type_of(t, b),
-        T::LateArrayShape(s) => if b.is_never() { Tri::Yes } else { is_super_type_of(&s.resolve(), b).and(Tri::Maybe) },
+        T::LateArrayShape(s) => {
+            if b.is_never() {
+                Tri::Yes
+            } else {
+                is_super_type_of(&s.resolve(), b).and(Tri::Maybe)
+            }
+        }
         // `*` is a bivariant `mixed`
         // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
-        T::Mixed { .. } | T::StrictMixed | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
+        T::Mixed { .. }
+        | T::StrictMixed
+        | T::Error
+        | T::Wildcard
+        | T::OffsetAccess(..)
+        | T::Projection(..) => Tri::Yes,
         T::SubtractedMixed { excluded, .. } => mixed::is_super(excluded, b),
         T::SubtractedObject { object, excluded } => {
-            if b.is_compound() { return is_sub_type_of(b, a); }
+            if b.is_compound() {
+                return is_sub_type_of(b, a);
+            }
             let outside = is_super_type_of(excluded, b).negate();
-            if outside.no() { return Tri::No; }
+            if outside.no() {
+                return Tri::No;
+            }
             let positive = match b {
                 T::SubtractedObject { object, excluded } => {
-                    if is_super_type_of(excluded, a).yes() { return Tri::No; }
+                    if is_super_type_of(excluded, a).yes() {
+                        return Tri::No;
+                    }
                     object.as_ref()
                 }
                 b => b,
@@ -3135,7 +3280,10 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                     is_super_type_of(&a.iterable_key_type(), &b.iterable_key_type()),
                 );
                 // a possibly-empty constant array admits `[]`, a subtype of every array type
-                if result.no() && matches!(b, T::ConstArray(_)) && !b.is_iterable_at_least_once().yes() {
+                if result.no()
+                    && matches!(b, T::ConstArray(_))
+                    && !b.is_iterable_at_least_once().yes()
+                {
                     Tri::Maybe
                 } else {
                     result
@@ -3287,7 +3435,9 @@ fn specialize_signature(ours: &Signature, theirs: &Signature) -> Signature {
     let mut map = TemplateMap::default();
     for (i, param) in theirs.params.iter().enumerate() {
         let received = if param.variadic {
-            Some(union(ours.params.iter().skip(i).map(|p| p.ty.clone()).collect()))
+            Some(union(
+                ours.params.iter().skip(i).map(|p| p.ty.clone()).collect(),
+            ))
         } else {
             ours.params.get(i).map(|p| p.ty.clone())
         };
@@ -3297,10 +3447,14 @@ fn specialize_signature(ours: &Signature, theirs: &Signature) -> Signature {
     }
     let map = map.with_errors(&theirs.templates.iter().collect::<Vec<_>>());
     Signature {
-        params: theirs.params.iter().map(|p| Param {
-            ty: resolve_template_types(&p.ty, &map),
-            ..p.clone()
-        }).collect(),
+        params: theirs
+            .params
+            .iter()
+            .map(|p| Param {
+                ty: resolve_template_types(&p.ty, &map),
+                ..p.clone()
+            })
+            .collect(),
         ret: resolve_template_types(&theirs.ret, &map),
         templates: theirs.templates.clone(),
     }
@@ -3334,7 +3488,12 @@ fn callable_signatures(b: &Type) -> Vec<Signature> {
             .and_then(|c| {
                 std::iter::once(c.name.clone())
                     .chain(c.ancestors.iter().cloned())
-                    .find_map(|n| symbols::lookup(&n)?.methods.get(&method.to_ascii_lowercase()).map(of))
+                    .find_map(|n| {
+                        symbols::lookup(&n)?
+                            .methods
+                            .get(&method.to_ascii_lowercase())
+                            .map(of)
+                    })
             })
             .unwrap_or_default()
     };
@@ -3436,12 +3595,21 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
 /// Other offset-accessible kinds retain uncertainty rather than being mistaken for arrays.
 fn offset_value_relation(key: &Type, value: &Type, other: &Type, reverse: bool) -> Tri {
     let (has, item) = match other {
-        Type::Accessory(Accessory::HasOffsetValue(k, v)) if k.as_ref() == key => (Tri::Yes, v.as_ref().clone()),
+        Type::Accessory(Accessory::HasOffsetValue(k, v)) if k.as_ref() == key => {
+            (Tri::Yes, v.as_ref().clone())
+        }
         Type::Accessory(Accessory::HasOffsetValue(..)) => (Tri::Maybe, mixed()),
         Type::Array(k, v) => (is_super_type_of(k, key).and(Tri::Maybe), v.as_ref().clone()),
         Type::ConstArray(a) => {
             if let Some(i) = a.keys.iter().position(|k| k == key) {
-                (if a.is_optional_key(i) { Tri::Maybe } else { Tri::Yes }, a.values[i].clone())
+                (
+                    if a.is_optional_key(i) {
+                        Tri::Maybe
+                    } else {
+                        Tri::Yes
+                    },
+                    a.values[i].clone(),
+                )
             } else if let Some((k, v)) = &a.unsealed {
                 (is_super_type_of(k, key).and(Tri::Maybe), v.clone())
             } else {
@@ -3449,13 +3617,26 @@ fn offset_value_relation(key: &Type, value: &Type, other: &Type, reverse: bool) 
             }
         }
         _ => {
-            let object = matches!(other, Type::Object(..) | Type::ObjectWithoutClass | Type::Static(..) | Type::This(_));
-            return other.is_array().or(other.is_string()).or(Tri::from(object)).and(Tri::Maybe);
+            let object = matches!(
+                other,
+                Type::Object(..) | Type::ObjectWithoutClass | Type::Static(..) | Type::This(_)
+            );
+            return other
+                .is_array()
+                .or(other.is_string())
+                .or(Tri::from(object))
+                .and(Tri::Maybe);
         }
     };
     if reverse {
-        has.and(if matches!(other, Type::Accessory(Accessory::HasOffsetValue(..))) { Tri::Yes } else { Tri::Maybe })
-            .and(is_super_type_of(&item, value))
+        has.and(
+            if matches!(other, Type::Accessory(Accessory::HasOffsetValue(..))) {
+                Tri::Yes
+            } else {
+                Tri::Maybe
+            },
+        )
+        .and(is_super_type_of(&item, value))
     } else {
         has.and(is_super_type_of(value, &item))
     }
@@ -3501,7 +3682,11 @@ fn object_super(class: &str, args: &[Type], b: &Type, strict: bool, exact: bool)
             if this.name == other.name {
                 // Same written class: an override is only maybe wider than a broad reflection.
                 // Differently written aliases keep ObjectType's separate canonical-name shortcut.
-                if class == that && exact && !this.is_final && !input_exact { Tri::Maybe } else { Tri::Yes }
+                if class == that && exact && !this.is_final && !input_exact {
+                    Tri::Maybe
+                } else {
+                    Tri::Yes
+                }
             } else if this.is_trait || other.is_trait {
                 Tri::No
             } else if !exact && !this.is_final && other.ancestors.contains(&this.name) {
@@ -3561,7 +3746,17 @@ fn object_super(class: &str, args: &[Type], b: &Type, strict: bool, exact: bool)
     args.iter()
         .zip(&ancestor)
         .enumerate()
-        .map(|(i, (x, y))| valid_variance(x, y, declared.as_ref().and_then(|c| c.templates.get(i)).map_or("invariant", |t| t.variance), strict))
+        .map(|(i, (x, y))| {
+            valid_variance(
+                x,
+                y,
+                declared
+                    .as_ref()
+                    .and_then(|c| c.templates.get(i))
+                    .map_or("invariant", |t| t.variance),
+                strict,
+            )
+        })
         .fold(Tri::Yes, Tri::and)
 }
 
@@ -3578,10 +3773,17 @@ fn valid_variance(a: &Type, b: &Type, declared: &str, strict: bool) -> Tri {
                 Type::Projection(_, b) => &**b,
                 b => b,
             };
-            if matches!(b, Type::Never(_)) || (!strict && (matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. }))) {
+            if matches!(b, Type::Never(_))
+                || (!strict
+                    && (matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. })))
+            {
                 return Tri::Yes;
             }
-            if *c { is_super_type_of(a, b) } else { is_super_type_of(b, a) }
+            if *c {
+                is_super_type_of(a, b)
+            } else {
+                is_super_type_of(b, a)
+            }
         }
         (_, Type::Projection(..)) => Tri::No,
         (_, Type::Never(_)) => Tri::Yes,
@@ -3590,7 +3792,9 @@ fn valid_variance(a: &Type, b: &Type, declared: &str, strict: bool) -> Tri {
         (_, Type::Benevolent(_)) if !strict && !is_super_type_of(b, a).no() => Tri::Yes,
         _ if declared == "covariant" => is_super_type_of(a, b),
         _ if declared == "contravariant" => is_super_type_of(b, a),
-        (Type::Template(a), Type::Template(b)) if a.name == b.name && a.scope == b.scope => Tri::Yes,
+        (Type::Template(a), Type::Template(b)) if a.name == b.name && a.scope == b.scope => {
+            Tri::Yes
+        }
         (Type::Mixed { .. }, _) => Tri::Yes,
         (Type::Benevolent(_), _) if !is_super_type_of(a, b).no() => Tri::Yes,
         (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Maybe,
@@ -3633,11 +3837,19 @@ fn const_array_super(a: &ConstArray, b: &ConstArray) -> Tri {
 fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
-        T::StrictMixed => Tri::from(matches!(b, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)).or(Tri::Maybe),
+        T::StrictMixed => Tri::from(matches!(
+            b,
+            T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error
+        ))
+        .or(Tri::Maybe),
         // (against a mixed `$b`, isSuperTypeOf() answers yes first)
         T::Mixed { .. } | T::Error => Tri::Maybe,
         T::SubtractedMixed { excluded, .. } => {
-            if is_super_type_of(excluded, b).yes() { Tri::No } else { Tri::Maybe }
+            if is_super_type_of(excluded, b).yes() {
+                Tri::No
+            } else {
+                Tri::Maybe
+            }
         }
         T::Union(types) | T::Benevolent(types) => {
             Tri::extreme_identity(types.iter().map(|t| is_super_type_of(b, t)))
@@ -3728,10 +3940,14 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
                         Accessory::List => b.is_list(),
                         Accessory::HasMethod(name) => b.has_method(name),
-                        Accessory::HasOffsetValue(key, value) => return offset_value_relation(key, value, b, true),
+                        Accessory::HasOffsetValue(key, value) => {
+                            return offset_value_relation(key, value, b, true);
+                        }
                         Accessory::ModelProperty(t) => {
                             return match b {
-                                T::Accessory(Accessory::ModelProperty(other)) => is_super_type_of(other, t),
+                                T::Accessory(Accessory::ModelProperty(other)) => {
+                                    is_super_type_of(other, t)
+                                }
                                 _ => b.is_string().and(Tri::Maybe),
                             };
                         }
@@ -3935,8 +4151,8 @@ fn scalar_class(t: &Type) -> u8 {
     }
 }
 
-/// `TypeUtils::getAccessoryTypes() !== []` of a string type that is not a class string (plain `string` answers
-/// maybe to that, so only intersections get here)
+// `TypeUtils::getAccessoryTypes() !== []` of a string type that is not a class string (plain `string` answers
+// maybe to that, so only intersections get here)
 
 enum Merge {
     A(Type),
@@ -3947,7 +4163,9 @@ enum Merge {
 /// throw point. A type it cannot subtract stays as it is.
 pub fn remove_object(from: &Type, removed: &Type) -> Type {
     if let Type::Union(parts) = removed {
-        return parts.iter().fold(from.clone(), |from, part| remove_object(&from, part));
+        return parts
+            .iter()
+            .fold(from.clone(), |from, part| remove_object(&from, part));
     }
     match is_super_type_of(removed, from) {
         Tri::Yes => Type::Never(NeverKind::Implicit),
@@ -3963,16 +4181,19 @@ fn remove_object_exclusion(from: &Type, removed: &Type) -> Option<Type> {
     }
     if let Type::Union(parts) | Type::Benevolent(parts) = from {
         return Some(union(
-            parts.iter().map(|part| remove_object_exclusion(part, removed)).collect::<Option<_>>()?,
+            parts
+                .iter()
+                .map(|part| remove_object_exclusion(part, removed))
+                .collect::<Option<_>>()?,
         ));
     }
     let (object, previous) = match from {
-        Type::SubtractedObject { object, excluded } => {
-            (object.as_ref(), Some(excluded.as_ref()))
-        }
+        Type::SubtractedObject { object, excluded } => (object.as_ref(), Some(excluded.as_ref())),
         from => (from, None),
     };
-    let Type::Object(class, args, _) = object else { return None };
+    let Type::Object(class, args, _) = object else {
+        return None;
+    };
     match is_super_type_of(removed, from) {
         Tri::Yes => return Some(Type::Never(NeverKind::Implicit)),
         Tri::No => return Some(from.clone()),
@@ -4028,11 +4249,19 @@ fn restore_object_exclusion(positive: &Type, excluded: &Type, other: &Type) -> O
 
 /// TypeCombinator::intersect()'s positive-object pre-check, followed by unionWithSubtractedType().
 fn intersect_object_exclusion(a: &Type, b: &Type) -> Option<Type> {
-    let Type::SubtractedObject { object, excluded } = a else { return None };
+    let Type::SubtractedObject { object, excluded } = a else {
+        return None;
+    };
     if !is_super_type_of(object, b).yes() {
         return None;
     }
-    mixed::intersection(&Type::SubtractedMixed { explicit: false, excluded: excluded.clone() }, b)
+    mixed::intersection(
+        &Type::SubtractedMixed {
+            explicit: false,
+            excluded: excluded.clone(),
+        },
+        b,
+    )
 }
 
 /// `TypeCombinator::compareTypesInUnion()`
@@ -4051,14 +4280,26 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     };
     if let Type::SubtractedMixed { explicit, excluded } = a {
         return Some(Merge::A(
-            restore_object_exclusion(&Type::Mixed { explicit: *explicit }, excluded, b)
-                .unwrap_or_else(|| mixed::join(*explicit, excluded, b)),
+            restore_object_exclusion(
+                &Type::Mixed {
+                    explicit: *explicit,
+                },
+                excluded,
+                b,
+            )
+            .unwrap_or_else(|| mixed::join(*explicit, excluded, b)),
         ));
     }
     if let Type::SubtractedMixed { explicit, excluded } = b {
         return Some(Merge::B(
-            restore_object_exclusion(&Type::Mixed { explicit: *explicit }, excluded, a)
-                .unwrap_or_else(|| mixed::join(*explicit, excluded, a)),
+            restore_object_exclusion(
+                &Type::Mixed {
+                    explicit: *explicit,
+                },
+                excluded,
+                a,
+            )
+            .unwrap_or_else(|| mixed::join(*explicit, excluded, a)),
         ));
     }
     if let Type::SubtractedObject { object, excluded } = a
@@ -4193,7 +4434,9 @@ impl Type {
             Type::Array(_, item) => vec![(self.iterable_key_type(), (**item).clone())],
             Type::Intersection(types) => types.iter().flat_map(Type::general_arrays).collect(),
             // TemplateIntersectionType inherits IntersectionType::getArrays().
-            Type::Template(t) if matches!(t.bound, Type::Intersection(_)) => t.bound.general_arrays(),
+            Type::Template(t) if matches!(t.bound, Type::Intersection(_)) => {
+                t.bound.general_arrays()
+            }
             _ => vec![],
         }
     }
@@ -4343,7 +4586,12 @@ fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
     // (bleeding edge) or past ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT, neither of which signatures reach.
     retained
         .into_iter()
-        .chain(to_process.into_iter().flatten().map(|a| Type::ConstArray(Box::new(a))))
+        .chain(
+            to_process
+                .into_iter()
+                .flatten()
+                .map(|a| Type::ConstArray(Box::new(a))),
+        )
         .collect()
 }
 
@@ -4468,7 +4716,9 @@ pub fn intersect(types: Vec<Type>) -> Type {
         return never.clone();
     }
     // LateResolvableTypeTrait keeps comparisons uncertain until template keys/offsets resolve.
-    if types.iter().any(|t| matches!(t, Type::LateArrayShape(_) | Type::OffsetAccess(..)) && contains_template(t)) {
+    if types.iter().any(|t| {
+        matches!(t, Type::LateArrayShape(_) | Type::OffsetAccess(..)) && contains_template(t)
+    }) {
         return Type::Intersection(types);
     }
     // A & (B | C) → (A & B) | (A & C); with several unions a template union goes first, then a benevolent one
@@ -4602,8 +4852,10 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 if let (Type::ClassString(Some(x)), Type::ClassString(Some(y))) =
                     (&types[i], &types[j])
                 {
-                    types[i] =
-                        Type::ClassString(Some(Box::new(intersect(vec![(**x).clone(), (**y).clone()]))));
+                    types[i] = Type::ClassString(Some(Box::new(intersect(vec![
+                        (**x).clone(),
+                        (**y).clone(),
+                    ]))));
                     types.remove(j);
                     continue;
                 }
@@ -4693,7 +4945,12 @@ pub fn intersect(types: Vec<Type>) -> Type {
             }
             if a_super.no() {
                 let never = Type::Never(NeverKind::Implicit);
-                return a_reasons.into_iter().next().map_or(never.clone(), |reason| never.with_unresolvable_reason(reason));
+                return a_reasons
+                    .into_iter()
+                    .next()
+                    .map_or(never.clone(), |reason| {
+                        never.with_unresolvable_reason(reason)
+                    });
             }
             j += 1;
         }
@@ -4765,18 +5022,31 @@ fn range_try_intersect(min: Option<i64>, max: Option<i64>, other: &Type) -> Opti
 impl Type {
     /// `isNull()`
     pub fn is_null(&self) -> Tri {
-        self.query_with_mixed_domain(Self::is_null, || Type::Null, false, &|t| Tri::from(matches!(t, Type::Null)))
+        self.query_with_mixed_domain(Self::is_null, || Type::Null, false, &|t| {
+            Tri::from(matches!(t, Type::Null))
+        })
     }
 
     /// `isVoid()`
     pub fn is_void(&self) -> Tri {
-        if matches!(self, Type::Intersection(_)) { return Tri::No; }
-        self.query_with_mixed_domain(Self::is_void, || Type::Void, true, &|t| Tri::from(matches!(t, Type::Void)))
+        if matches!(self, Type::Intersection(_)) {
+            return Tri::No;
+        }
+        self.query_with_mixed_domain(Self::is_void, || Type::Void, true, &|t| {
+            Tri::from(matches!(t, Type::Void))
+        })
     }
 
     /// `$type instanceof MixedType && !$type->isExplicitMixed()`
     pub fn is_implicit_mixed(&self) -> bool {
-        matches!(self, Type::Mixed { explicit: false } | Type::SubtractedMixed { explicit: false, .. })
+        matches!(
+            self,
+            Type::Mixed { explicit: false }
+                | Type::SubtractedMixed {
+                    explicit: false,
+                    ..
+                }
+        )
     }
 
     /// `TypeCombinator::addNull()`: unchanged when it may already be null (`never` is not null, so it becomes null)

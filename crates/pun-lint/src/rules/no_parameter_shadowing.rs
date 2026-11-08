@@ -95,7 +95,7 @@ impl<'arena> ShadowCollector<'_, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ShadowCollector<'_, 'arena> {
-    fn walk_in_foreach(&mut self, foreach: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, foreach: &'ast Foreach<'arena>, (): &mut ()) {
         match &foreach.target {
             ForeachTarget::Value(v) => self.check_expression(v.value),
             ForeachTarget::KeyValue(kv) => {
@@ -105,29 +105,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ShadowCollector<'_, 'arena> {
         }
     }
 
-    fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
+    fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, (): &mut ()) {
         if let Some(var) = &clause.variable {
             self.check_variable(var.name);
         }
     }
 
-    fn walk_in_global(&mut self, global: &'ast Global<'arena>, _: &mut ()) {
-        for variable in global.variables.iter() {
+    fn walk_in_global(&mut self, global: &'ast Global<'arena>, (): &mut ()) {
+        for variable in &global.variables {
             if let Variable::Direct(var) = variable {
                 self.check_variable(var.name);
             }
         }
     }
 
-    fn walk_in_static(&mut self, r#static: &'ast Static<'arena>, _: &mut ()) {
-        for item in r#static.items.iter() {
+    fn walk_in_static(&mut self, r#static: &'ast Static<'arena>, (): &mut ()) {
+        for item in &r#static.items {
             self.check_variable(item.variable().name);
         }
     }
 
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_property_hook(&mut self, _: &'ast PropertyHook<'arena>, (): &mut ()) {}
 }

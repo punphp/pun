@@ -75,7 +75,7 @@ impl Rule for AddParamTypeDimFetchKey {
         }
         let body = Node::Block(body);
         let mut edits = Vec::new();
-        for param in method.parameter_list.parameters.iter() {
+        for param in &method.parameter_list.parameters {
             if param.hint.is_some() {
                 continue;
             }
@@ -291,7 +291,7 @@ fn literal_key_order(body: Node<'_, '_>, fetch: &ArrayAccess<'_>) -> Option<Vec<
         Flow::Continue
     });
     let mut ordered: Vec<&'static str> = Vec::new();
-    for element in literal?.iter() {
+    for element in literal? {
         let kind = match element {
             ArrayElement::KeyValue(pair) => match unparenthesize(pair.key) {
                 Expression::Literal(Literal::String(_)) => "string",

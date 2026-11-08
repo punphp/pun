@@ -13,7 +13,7 @@ const RENAME: &str = "Rector\\Renaming\\Rector\\FuncCall\\RenameFunctionRector";
 const NOT_EQUAL: &str = "Rector\\CodeQuality\\Rector\\NotEqual\\CommonNotEqualRector";
 
 fn strings(v: &[&str]) -> Vec<String> {
-    v.iter().map(|s| s.to_string()).collect()
+    v.iter().map(std::string::ToString::to_string).collect()
 }
 
 /// Prepared sets map one to one (Pest's coding-style set is not Rector's), PHP sets are `modernize`; skips split into

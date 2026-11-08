@@ -99,10 +99,10 @@ fn atomic_has_object(facts: &Facts, atomic: &TAtomic) -> bool {
         TAtomic::Scalar(TScalar::String(s)) => s
             .get_known_literal_value()
             .is_some_and(|v| is_declared_class(facts, v)),
-        TAtomic::Scalar(TScalar::ClassLikeString(c)) => match c {
-            TClassLikeString::Literal { value } => is_declared_class(facts, value.as_bytes()),
-            _ => true,
-        },
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => {
+            is_declared_class(facts, value.as_bytes())
+        }
+        TAtomic::Scalar(TScalar::ClassLikeString(_)) => true,
         TAtomic::Scalar(_) => false,
         TAtomic::Array(TArray::List(list)) => {
             has_object(facts, &list.element_type)
@@ -181,7 +181,7 @@ fn normalized(t: &TUnion) -> Option<String> {
 
 /// A side of the new comparison: its text, in parentheses where php-parser's precedence puts them (an operator that
 /// binds as loose as `===` or looser, and a ternary).
-fn operand<'s>(source: &'s str, expr: &Expression<'_>) -> String {
+fn operand(source: &str, expr: &Expression<'_>) -> String {
     let span = node_span(expr);
     let text = &source[span.start..span.end];
     let loose = match expr {

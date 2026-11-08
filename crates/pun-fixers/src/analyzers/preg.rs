@@ -582,7 +582,7 @@ fn pcre_version() -> String {
     let mut buf = [0u8; 64];
     // Returns the length including the terminating NUL.
     // SAFETY: `buf` is a live 64-byte buffer, larger than any PCRE2 version string, that PCRE2 writes into.
-    let n = unsafe { pcre2_config_8(PCRE2_CONFIG_VERSION, buf.as_mut_ptr() as *mut c_void) };
+    let n = unsafe { pcre2_config_8(PCRE2_CONFIG_VERSION, buf.as_mut_ptr().cast::<c_void>()) };
     String::from_utf8_lossy(&buf[..n as usize - 1]).into_owned()
 }
 
@@ -598,19 +598,16 @@ impl Preg {
 
     /// `Preg::match($pattern, $subject, $matches)`; `None` when no match. Offsets (PREG_OFFSET_CAPTURE) are always
     /// available on Captures.
-    pub(crate) fn match_groups<'s>(
-        pattern: impl AsRef<[u8]>,
-        subject: &'s [u8],
-    ) -> Option<Captures<'s>> {
+    pub(crate) fn match_groups(pattern: impl AsRef<[u8]>, subject: &[u8]) -> Option<Captures<'_>> {
         Self::match_at(pattern, subject, 0)
     }
 
     /// `match_groups` for a pattern built from file content: compiled for this call and not kept in the per-thread
     /// cache, which never evicts.
-    pub(crate) fn match_groups_uncached<'s>(
+    pub(crate) fn match_groups_uncached(
         pattern: impl AsRef<[u8]>,
-        subject: &'s [u8],
-    ) -> Option<Captures<'s>> {
+        subject: &[u8],
+    ) -> Option<Captures<'_>> {
         with_fallback(
             pattern.as_ref(),
             subject,
@@ -622,11 +619,11 @@ impl Preg {
     }
 
     /// `Preg::match($pattern, $subject, $matches, 0, $offset)`.
-    pub(crate) fn match_at<'s>(
+    pub(crate) fn match_at(
         pattern: impl AsRef<[u8]>,
-        subject: &'s [u8],
+        subject: &[u8],
         offset: usize,
-    ) -> Option<Captures<'s>> {
+    ) -> Option<Captures<'_>> {
         with_fallback(
             pattern.as_ref(),
             subject,
@@ -639,7 +636,7 @@ impl Preg {
 
     /// `Preg::matchAll($pattern, $subject, $matches, PREG_SET_ORDER)`: every match in order (its
     /// length is matchAll's return value). PREG_PATTERN_ORDER callers read `m.str(i)` of every match.
-    pub(crate) fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
+    pub(crate) fn match_all(pattern: impl AsRef<[u8]>, subject: &[u8]) -> Vec<Captures<'_>> {
         with_fallback(
             pattern.as_ref(),
             subject,
@@ -769,7 +766,7 @@ impl Preg {
     }
 }
 
-pub use pun_tokens::php_compat::preg_quote;
+pub(crate) use pun_tokens::php_compat::preg_quote;
 
 /// php_pcre_split_impl.
 fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Vec<Piece>, i32> {
@@ -781,7 +778,7 @@ fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Ve
         out.push(Piece {
             text: subject[s..e].to_vec(),
             offset: s,
-        })
+        });
     };
     let mut offset = 0;
     let mut last_match_offset = 0;
@@ -916,10 +913,7 @@ impl RawPreg {
     }
 
     /// `preg_match($pattern, $subject, $matches) === 1`.
-    pub(crate) fn match_groups<'s>(
-        pattern: impl AsRef<[u8]>,
-        subject: &'s [u8],
-    ) -> Option<Captures<'s>> {
+    pub(crate) fn match_groups(pattern: impl AsRef<[u8]>, subject: &[u8]) -> Option<Captures<'_>> {
         Self::run(pattern.as_ref(), subject, |re| re.captures_at(subject, 0)).flatten()
     }
 
@@ -929,7 +923,7 @@ impl RawPreg {
 
     /// `preg_match_all($pattern, $subject, $m, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)`: every match;
     /// use `Captures::offset` for offsets.
-    pub(crate) fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
+    pub(crate) fn match_all(pattern: impl AsRef<[u8]>, subject: &[u8]) -> Vec<Captures<'_>> {
         Self::run(pattern.as_ref(), subject, |re| re.captures_all(subject)).unwrap_or_default()
     }
 

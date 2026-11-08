@@ -222,7 +222,7 @@ pub(super) fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
 }
 
 /// OverridingPropertyRule on a ClassPropertyNode, `is_readonly` being its `isReadOnly()`.
-pub fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
+pub(super) fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
     // a trait's property is walked only in a using class's context, where the scope is that class
     let k = c.class_scope().expect("a property is walked inside its class");
     let errors = declared::with_classes(c, || errors(c, node, is_readonly, k));

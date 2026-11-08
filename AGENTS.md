@@ -34,6 +34,7 @@ scripts/coverage.sh punphp-tokens
 ```
 
 - Package `punphp-<x>` lives in `crates/pun-<x>` and is imported as `pun_<x>`.
+- `cargo clippy --workspace --all-targets -- -D warnings` must pass. Every crate uses the shared `[workspace.lints]`; silence a single hit with `#[expect(lint, reason = "...")]`.
 - `scripts/analyse-tests.sh` builds every `punphp-analyse` test target once and runs the binaries in parallel. Every target must pass. `SKIP="levels rules"` leaves out the two slowest while you iterate.
 - `PUN_FIXERS_ONLY=a,b` makes `build.rs` compile only fixers `a` and `b`.
 - `pun-harness` compares Pint with `pun migrate` followed by `pun check --fix`. Add `--fixer <name>` to test one rule.

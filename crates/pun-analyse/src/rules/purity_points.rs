@@ -237,8 +237,8 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
     fn statements(&mut self, statements: &[Statement]) -> bool {
         let mut terminates = false;
         for s in statements {
-            if terminates {
-                if !matches!(
+            if terminates
+                && !matches!(
                     s,
                     Statement::Function(_)
                         | Statement::Class(_)
@@ -248,9 +248,9 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                         | Statement::Noop(_)
                         | Statement::OpeningTag(_)
                         | Statement::ClosingTag(_)
-                ) {
-                    continue;
-                }
+                )
+            {
+                continue;
             }
             terminates |= self.statement(s);
         }
@@ -304,7 +304,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 false
             }
             Statement::Global(g) => {
-                for v in g.variables.iter() {
+                for v in &g.variables {
                     if !matches!(v, Variable::Direct(_)) {
                         self.incomplete();
                     }
@@ -313,7 +313,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 false
             }
             Statement::Static(st) => {
-                for item in st.items.iter() {
+                for item in &st.items {
                     if let Some(value) = item.value() {
                         self.expr(value);
                     }
@@ -322,7 +322,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 false
             }
             Statement::Unset(u) => {
-                for value in u.values.iter() {
+                for value in &u.values {
                     self.unset(value);
                 }
                 false
@@ -374,7 +374,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                     self.expr(e);
                 }
                 self.branch(f.body.statements());
-                for e in f.increments.iter() {
+                for e in &f.increments {
                     self.expr(e);
                 }
                 self.closures.clear();
@@ -403,7 +403,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
             }
             Statement::Try(t) => {
                 let mut all = self.branch(t.block.statements.as_slice());
-                for catch in t.catch_clauses.iter() {
+                for catch in &t.catch_clauses {
                     all &= self.branch(catch.block.statements.as_slice());
                 }
                 self.closures.clear();
@@ -444,6 +444,10 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
     }
 
     /// ImplicitToStringCallHelper::processImplicitToStringCall().
+    #[expect(
+        clippy::wrong_self_convention,
+        reason = "named after upstream's processImplicitToStringCall()"
+    )]
     fn to_string(&mut self, e: &Expression) {
         let Some(t) = self.c.phpstan_type(e) else {
             self.incomplete();
@@ -552,7 +556,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
             }
             Expression::UnaryPrefix(u) => match u.operator {
                 UnaryPrefixOperator::PreIncrement(_) | UnaryPrefixOperator::PreDecrement(_) => {
-                    self.modify(u.operand)
+                    self.modify(u.operand);
                 }
                 UnaryPrefixOperator::StringCast(..) => {
                     self.expr(u.operand);
@@ -585,7 +589,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 }
             }
             Expression::CompositeString(s) => {
-                for part in s.parts().iter() {
+                for part in s.parts() {
                     let e = match part {
                         StringPart::Expression(e) => *e,
                         StringPart::BracedExpression(b) => b.expression,
@@ -627,9 +631,9 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
             }
             Expression::Match(m) => {
                 self.expr(m.expression);
-                for arm in m.arms.iter() {
+                for arm in &m.arms {
                     if let MatchArm::Expression(a) = arm {
-                        for condition in a.conditions.iter() {
+                        for condition in &a.conditions {
                             self.expr(condition);
                         }
                     }
@@ -695,7 +699,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
     fn construct(&mut self, e: &Expression, construct: &Construct) {
         match construct {
             Construct::Isset(i) => {
-                for v in i.values.iter() {
+                for v in &i.values {
                     self.expr(v);
                 }
             }
@@ -973,14 +977,14 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 let raw = self.doc(f);
                 (
                     declared::tagged_params(
-                        &raw,
+                        raw,
                         &[
                             "@pure-unless-callable-is-impure",
                             "@phpstan-pure-unless-callable-is-impure",
                         ],
                     ),
                     declared::tagged_params(
-                        &raw,
+                        raw,
                         &[
                             "@pure-unless-parameter-passed",
                             "@phpstan-pure-unless-parameter-passed",
@@ -1085,10 +1089,10 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
             Expression::Access(Access::StaticProperty(a)) => self.static_property(a),
             _ => self.incomplete(),
         }
-        if !self
+        if self
             .c
             .phpstan_type(e)
-            .is_some_and(|t| t.is_array() == Tri::Yes)
+            .is_none_or(|t| t.is_array() != Tri::Yes)
             && !matches!(unparen(e), Expression::Variable(_))
         {
             self.incomplete(); // offsetSet() of an ArrayAccess container
@@ -1138,17 +1142,17 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 invoked: None,
             }),
             Expression::Array(a) => {
-                for item in a.elements.iter() {
+                for item in &a.elements {
                     self.destructure(item);
                 }
             }
             Expression::LegacyArray(a) => {
-                for item in a.elements.iter() {
+                for item in &a.elements {
                     self.destructure(item);
                 }
             }
             Expression::List(a) => {
-                for item in a.elements.iter() {
+                for item in &a.elements {
                     self.destructure(item);
                 }
             }
@@ -1236,7 +1240,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                 true,
             ));
         }
-        for p in k.parameter_list.parameters.iter() {
+        for p in &k.parameter_list.parameters {
             if p.ampersand.is_some() {
                 simple.push((
                     "functionCall",
@@ -1262,7 +1266,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
             .chain(points.iter())
             .map(|p| (p.identifier, p.description.clone(), p.certain))
             .collect();
-        for p in f.parameter_list.parameters.iter() {
+        for p in &f.parameter_list.parameters {
             if p.ampersand.is_some() {
                 simple.push((
                     "functionCall",
@@ -1276,7 +1280,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
 
     fn arrow_body(&mut self, f: &ArrowFunction) -> Option<(Vec<Point>, Vec<Point>)> {
         let mut inner = Producer::new(self.c, false);
-        inner.closures = self.closures.clone();
+        inner.closures.clone_from(&self.closures);
         inner.expr(f.expression);
         inner.complete.then_some((inner.points, inner.assigns))
     }
@@ -1427,7 +1431,11 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                     };
                     for (identifier, description, certain) in points {
                         self.push(e.span(), identifier, description, certain);
-                        self.points.last_mut().expect("pushed").invoked = invoked.clone();
+                        self.points
+                            .last_mut()
+                            .expect("pushed")
+                            .invoked
+                            .clone_from(&invoked);
                     }
                 }
                 None => self.incomplete(),
@@ -1485,7 +1493,7 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
                     .return_type_metadata
                     .as_ref()
                     .is_some_and(|r| r.type_union.is_void());
-                let pure = super::declaration_effects::purity(&raw)
+                let pure = super::declaration_effects::purity(raw)
                     .or_else(|| f.flags.is_pure().then_some(true));
                 if !void && pure == Some(true) {
                     return None;
@@ -1586,14 +1594,14 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
     fn user_params(&self, f: &FunctionLikeMetadata) -> Vec<Param> {
         let raw = self.doc(f);
         let immediately = declared::tagged_params(
-            &raw,
+            raw,
             &[
                 "@param-immediately-invoked-callable",
                 "@phpstan-param-immediately-invoked-callable",
             ],
         );
         let later = declared::tagged_params(
-            &raw,
+            raw,
             &[
                 "@param-later-invoked-callable",
                 "@phpstan-param-later-invoked-callable",

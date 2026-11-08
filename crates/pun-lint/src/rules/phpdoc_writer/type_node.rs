@@ -7,7 +7,7 @@ use std::fmt;
 use pun_phpstan::phpdoc::{ConstExpr, Node, ShapeKey};
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum TypeNode {
+pub(crate) enum TypeNode {
     /// `IdentifierTypeNode`: a name as written (`int`, `\Foo\Bar`, `Bar`).
     Identifier(String),
     /// `SpacingAwareArrayTypeNode`: `T[]`; `generic_parent` is `ArrayTypeMapper::HAS_GENERIC_TYPE_PARENT`.
@@ -42,19 +42,19 @@ pub enum TypeNode {
 }
 
 impl TypeNode {
-    pub fn ident(name: &str) -> TypeNode {
+    pub(crate) fn ident(name: &str) -> TypeNode {
         TypeNode::Identifier(name.to_string())
     }
 
     /// The node phpdoc-parser parses from `node`, as Rector's `PhpDocNodeMapper` leaves it. `None` for a node Pun
     /// does not print as Rector does (a quoted string, an object shape, a conditional, an offset access).
-    pub fn from_parsed(node: &Node) -> Option<TypeNode> {
+    pub(crate) fn from_parsed(node: &Node) -> Option<TypeNode> {
         from_parsed(node, false, None)
     }
 
     /// [`Self::from_parsed`] that prints object shapes, conditionals, offset accesses and quoted strings too; `quote`
     /// gives a string as written.
-    pub fn from_parsed_all(
+    pub(crate) fn from_parsed_all(
         node: &Node,
         quote: &dyn Fn(&[u8]) -> Option<String>,
     ) -> Option<TypeNode> {

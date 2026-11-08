@@ -268,7 +268,7 @@ fn created_variables_to_types<'a>(
     ancestors: &[Node<'_, '_>],
 ) -> Vec<(&'a [u8], String)> {
     let mut created: Vec<(&[u8], String)> = Vec::new();
-    for statement in body.statements.iter() {
+    for statement in &body.statements {
         let Statement::Expression(e) = statement else {
             continue;
         };
@@ -343,10 +343,10 @@ fn is_written_elsewhere(body: &mago_syntax::cst::Block<'_>, name: &[u8]) -> bool
             Node::UnaryPrefix(UnaryPrefix { operator, operand })
                 if operator.is_increment_or_decrement() =>
             {
-                exact.extend(written_variable(operand))
+                exact.extend(written_variable(operand));
             }
             Node::UnaryPostfix(UnaryPostfix { operand, .. }) => {
-                exact.extend(written_variable(operand))
+                exact.extend(written_variable(operand));
             }
             Node::Unset(u) => exact.extend(u.values.iter().filter_map(|v| written_variable(v))),
             Node::Global(g) => within.push(node_span(g)),

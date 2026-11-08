@@ -4,7 +4,7 @@ use pun_phpstan::{Array, Entity, Key, Value};
 use serde_json::{Value as J, json};
 
 /// Tagged JSON written by scripts/export-neon-fixtures.php and scripts/phpstan-config.php.
-pub fn tagged(v: &Value) -> J {
+pub(crate) fn tagged(v: &Value) -> J {
     match v {
         Value::Null => J::Null,
         Value::Bool(b) => json!(b),
@@ -37,7 +37,7 @@ fn items(a: &Array) -> Vec<J> {
 }
 
 /// Inverse of `tagged` (for encoder inputs).
-pub fn untagged(j: &J) -> Value {
+pub(crate) fn untagged(j: &J) -> Value {
     match j {
         J::Null => Value::Null,
         J::Bool(b) => Value::Bool(*b),
@@ -84,14 +84,14 @@ fn parse_php_float(s: &str) -> f64 {
     }
 }
 
-pub fn fixture(name: &str) -> J {
+pub(crate) fn fixture(name: &str) -> J {
     let path = format!("{}/tests/fixtures/{name}", env!("CARGO_MANIFEST_DIR"));
     serde_json::from_str(&std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{path}: {e}")))
         .unwrap()
 }
 
 /// `dumpValue()` of scripts/phpstan-config.php: lists as arrays, maps as objects, `{"@float": ...}`, `{"@class": ...}`.
-pub fn dumped(v: &Value) -> J {
+pub(crate) fn dumped(v: &Value) -> J {
     match v {
         Value::Float(f) => json!({ "@float": pun_phpstan::value::float_var_export(*f) }),
         Value::Array(a) if a.is_list() => J::Array(a.values().map(dumped).collect()),
@@ -109,7 +109,7 @@ pub fn dumped(v: &Value) -> J {
 }
 
 /// Replace path prefixes with the exporter's placeholders.
-pub fn placeholders(j: J, map: &[(&str, &str)]) -> J {
+pub(crate) fn placeholders(j: J, map: &[(&str, &str)]) -> J {
     match j {
         J::String(mut s) => {
             for (from, to) in map {

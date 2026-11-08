@@ -15,7 +15,7 @@ use super::doc::{Doc, NameScope};
 use super::facts::DocEntry;
 use super::{Checker, declared, generics};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "parameter.notFound",
     "parameter.unresolvableType",
     "parameter.notByRef",
@@ -218,7 +218,7 @@ fn native_ret(c: &Checker, ret: Option<&FunctionLikeReturnTypeHint>, class: Opti
     ret.map_or_else(mixed, |r| declared::native(c, &r.hint, class))
 }
 
-pub fn function(c: &mut Checker, f: &Function) {
+pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
@@ -242,7 +242,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     report(c, f.span(), errors);
 }
 
-pub fn method(c: &mut Checker, m: &Method) {
+pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
@@ -271,7 +271,7 @@ pub fn method(c: &mut Checker, m: &Method) {
 
 /// IncompatiblePropertyHookPhpDocTypeRule: a hook's parameters are never by reference; a `get` hook returns the
 /// property's native type, a `set` hook `void`.
-pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint>) {
+pub(super) fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint>) {
     if c.level < 2 {
         return;
     }
@@ -311,7 +311,7 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint
 
 /// IncompatiblePropertyPhpDocTypeRule (`ClassPropertyNode`) of a declared property: the declaration's single
 /// unnamed `@var`, else the one naming the property.
-pub fn property(c: &mut Checker, p: &Property) {
+pub(super) fn property(c: &mut Checker, p: &Property) {
     if c.level < 2 {
         return;
     }
@@ -344,7 +344,7 @@ pub fn property(c: &mut Checker, p: &Property) {
 }
 
 /// A promoted constructor parameter's property: its own `@var`, else the constructor's `@param` for it.
-pub fn promoted(c: &mut Checker, m: &Method) {
+pub(super) fn promoted(c: &mut Checker, m: &Method) {
     if c.level < 2 || !m.name.value.eq_ignore_ascii_case(b"__construct") {
         return;
     }
@@ -386,13 +386,13 @@ fn property_check(phpdoc: &Type, native: Option<&Type>, description: &str, class
 }
 
 /// IncompatibleClassConstantPhpDocTypeRule (`ClassConst`).
-pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
+pub(super) fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
     if c.level < 2 {
         return;
     }
     let (context, display) = c.member_scope();
     let name_of = declared::original_name(context);
-    for item in k.items.iter() {
+    for item in &k.items {
         let constant = String::from_utf8_lossy(item.name.value).into_owned();
         let errors = declared::with_classes(c, || {
             let phpdoc = declared::constant(c, k.span(), item.name.value, context)?;

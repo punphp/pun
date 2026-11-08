@@ -23,7 +23,9 @@ fn fix() -> String {
 
 #[test]
 fn a_file_sees_the_project_codebase() {
-    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let _lock = LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let files = [
         ("item.php".to_string(), ITEM.to_string()),
         ("holder.php".to_string(), HOLDER.to_string()),
@@ -45,7 +47,9 @@ fn a_deferred_scan_runs_when_a_rule_reads_facts() {
     use pun_lint::rules::facts::set_project_scan;
     use std::sync::atomic::{AtomicBool, Ordering};
     static SCANNED: AtomicBool = AtomicBool::new(false);
-    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let _lock = LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     set_project_scan(|| {
         SCANNED.store(true, Ordering::SeqCst);
         let files = [
@@ -55,10 +59,9 @@ fn a_deferred_scan_runs_when_a_rule_reads_facts() {
         project_codebase(&files, 80400)
     });
     let goto = Linter::new(vec![Box::new(NoGoto)], 80400);
-    assert!(
-        goto.check(Path::new("holder.php"), HOLDER)
-            .unwrap()
-            .is_empty()
+    assert_eq!(
+        goto.check(Path::new("holder.php"), HOLDER).unwrap(),
+        [] as [pun_problem::Problem; 0]
     );
     let scanned_before = SCANNED.load(Ordering::SeqCst);
     let typed = fix();
@@ -78,7 +81,9 @@ fn a_deferred_scan_runs_when_a_rule_reads_facts() {
 #[test]
 fn a_changed_file_keeps_its_methods_called_on_this() {
     use pun_lint::rules::NoUnusedPrivateMethod;
-    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let _lock = LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let changed = "<?php\n\nfinal class Views\n{\n    public function handle(): int\n    {\n        return $this->recent();\n    }\n\n    private function recent(): int\n    {\n        return 1;\n    }\n}\n";
     let scanned = changed.replace(
         "return $this->recent();",
@@ -101,7 +106,9 @@ fn a_changed_file_keeps_its_methods_called_on_this() {
 /// whose psr-4 maps `Acme\` to vendor/acme/pkg/src/) types only the method whose parent is the project's.
 #[test]
 fn autoloaded_vendor_parents_guard_overrides() {
-    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let _lock = LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     use pun_lint::rules::AddReturnTypeFromConstant;
     use pun_lint::rules::facts::project_codebase_autoloaded;
     let base = |ns: &str| {
@@ -144,7 +151,9 @@ fn autoloaded_vendor_parents_guard_overrides() {
 /// above): the method overriding the vendor parent's untyped method stays untyped.
 #[test]
 fn a_file_autoloaded_for_two_names_is_scanned_for_each() {
-    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let _lock = LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     use pun_lint::rules::AddReturnTypeFromConstant;
     use pun_lint::rules::facts::project_codebase_autoloaded;
     let commands = "<?php\n\nnamespace App;\n\nfinal class FromVendor extends \\Acme\\Base\n{\n    public const OK = 1;\n\n    public function run()\n    {\n        return self::OK;\n    }\n\n    public function take(\\Acme\\Missing $a, \\Acme\\Gone $b): void\n    {\n    }\n}\n";

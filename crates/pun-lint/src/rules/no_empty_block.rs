@@ -63,14 +63,14 @@ impl Rule for NoEmptyBlock {
         let source = ctx.source;
         let tokens = tokens(ctx);
         let list = match body {
-            Body::One(s) => body_list(&tokens, s),
-            Body::Open(s, from, to) => open_list(&tokens, s, from, to),
+            Body::One(s) => body_list(tokens, s),
+            Body::Open(s, from, to) => open_list(tokens, s, from, to),
         };
         if !list.is_empty() {
             return;
         }
         // Rector works on the list that holds the statement.
-        let (list, key) = enclosing(source, &tokens, ancestors);
+        let (list, key) = enclosing(source, tokens, ancestors);
         let try_ = try_of(ancestors);
         let fix = match node {
             Node::If(r#if) => {
@@ -80,7 +80,7 @@ impl Rule for NoEmptyBlock {
                         !b.else_if_clauses.is_empty(),
                         b.else_clause.as_ref().map(|e| {
                             let gone = Span::new(node_span(b.statement).end, node_span(e).end);
-                            (body_list(&tokens, e.statement), gone)
+                            (body_list(tokens, e.statement), gone)
                         }),
                     ),
                     IfBody::ColonDelimited(b) => (
@@ -89,7 +89,7 @@ impl Rule for NoEmptyBlock {
                             let endif = b.endif.span.start.offset as usize;
                             let gone = Span::new(node_span(&e.r#else).start, endif);
                             let list = open_list(
-                                &tokens,
+                                tokens,
                                 &e.statements,
                                 e.colon.end.offset as usize,
                                 endif,
@@ -115,7 +115,7 @@ impl Rule for NoEmptyBlock {
                         let span = node_span(r#if);
                         let indent = line_indent(source, span.start);
                         let inner = format!("{indent}    ");
-                        let body = moved_text(source, &tokens, &else_list, &inner);
+                        let body = moved_text(source, tokens, &else_list, &inner);
                         let condition = inverted_condition(source, r#if.condition);
                         vec![Edit::new(
                             span,
@@ -123,7 +123,7 @@ impl Rule for NoEmptyBlock {
                         )]
                     }
                     None if has_side_effect(r#if.condition) => return,
-                    None => remove(source, &tokens, &list, &[key]),
+                    None => remove(source, tokens, &list, &[key]),
                 }
             }
             Node::For(r#for) => {
@@ -140,7 +140,7 @@ impl Rule for NoEmptyBlock {
                         return;
                     }
                 }
-                remove(source, &tokens, &list, &[key])
+                remove(source, tokens, &list, &[key])
             }
             _ => {
                 let Node::Foreach(foreach) = node else { return };
@@ -160,7 +160,7 @@ impl Rule for NoEmptyBlock {
                         return;
                     }
                 }
-                remove(source, &tokens, &list, &[key])
+                remove(source, tokens, &list, &[key])
             }
         };
         out.push(Report {

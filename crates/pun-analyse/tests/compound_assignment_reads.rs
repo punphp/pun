@@ -101,7 +101,7 @@ fn compound_read_diagnostics_match_phpstan_for_implemented_rules() {
 #[derive(Default)]
 struct Targets(BTreeMap<Span, Span>);
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Targets {
-    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         if let Expression::Assignment(assignment) = expression {
             self.0.insert(assignment.rhs.span(), assignment.lhs.span());
         }

@@ -15,7 +15,7 @@ use super::doc::NameScope;
 use super::generics::{self, GenericMessages};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "methodTag.trait",
     "methodTag.unresolvableType",
     "propertyTag.trait",
@@ -281,7 +281,7 @@ fn report(c: &mut Checker, at: Span, found: Found) {
 }
 
 /// MethodTagRule, PropertyTagRule and MixinRule on a class, interface or enum declared at `at`.
-pub fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
+pub(super) fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     if c.level < 2 {
         return;
     }
@@ -295,7 +295,7 @@ pub fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
 }
 
 /// MixinTraitRule on trait `name` declared at `at`.
-pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
+pub(super) fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     if c.level < 2 {
         return;
     }
@@ -312,7 +312,7 @@ pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
 
 /// MethodTagTraitUseRule, PropertyTagTraitUseRule and MixinTraitUseRule on trait `name` in the context of
 /// `class`, the class using it (which `self` and `static` mean).
-pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
+pub(super) fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     if c.level < 2 {
         return;
     }

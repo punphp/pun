@@ -91,8 +91,10 @@ impl App {
         let mut app = App {
             container: HashMap::new(),
             auth,
-            date_class: date_class(root).unwrap_or_else(|| "Illuminate\\Support\\Carbon".to_string()),
-            laravel_12: super::stubs::laravel_version(root).is_some_and(|v| super::stubs::compare(&v, "12.0.0").is_ge()),
+            date_class: date_class(root)
+                .unwrap_or_else(|| "Illuminate\\Support\\Carbon".to_string()),
+            laravel_12: super::stubs::laravel_version(root)
+                .is_some_and(|v| super::stubs::compare(&v, "12.0.0").is_ge()),
         };
         let aliases = core_aliases(&framework.join("src/Illuminate/Foundation/Application.php"));
         for (key, classes) in aliases {
@@ -105,7 +107,8 @@ impl App {
             };
             let Some(concrete) = concrete else { continue };
             for class in classes.iter().chain([&key]) {
-                app.container.insert(class.to_ascii_lowercase(), concrete.clone());
+                app.container
+                    .insert(class.to_ascii_lowercase(), concrete.clone());
             }
         }
         app
@@ -129,24 +132,33 @@ impl App {
         let concretes: Vec<_> = metadata
             .class_likes
             .iter()
-            .filter(|(_, k)| k.kind.is_interface() && k.original_name.as_bytes().starts_with(b"Illuminate\\Contracts\\"))
+            .filter(|(_, k)| {
+                k.kind.is_interface()
+                    && k.original_name
+                        .as_bytes()
+                        .starts_with(b"Illuminate\\Contracts\\")
+            })
             .filter_map(|(key, k)| {
-                let concrete = self.resolve(&String::from_utf8_lossy(k.original_name.as_bytes()))?;
+                let concrete =
+                    self.resolve(&String::from_utf8_lossy(k.original_name.as_bytes()))?;
                 let concrete = metadata.get_class_like(concrete.as_bytes())?;
-                (concrete.name != k.name).then(|| (*key, concrete.original_name))
+                (concrete.name != k.name).then_some((*key, concrete.original_name))
             })
             .collect();
         for (key, concrete) in concretes {
             if let Some(k) = metadata.class_likes.get_mut(&key) {
                 let object = TAtomic::Object(TObject::Named(TNamedObject::new(concrete)));
-                k.mixins.push(TypeMetadata::new(TUnion::from_atomic(object), k.span));
+                k.mixins
+                    .push(TypeMetadata::new(TUnion::from_atomic(object), k.span));
             }
         }
     }
 
     /// LoadsAuthModel::getAuthModels(): the models of the guard's provider, or of every guard's.
     pub(crate) fn auth_models(&self, guard: Option<&str>) -> Vec<String> {
-        let Some(auth) = &self.auth else { return Vec::new() };
+        let Some(auth) = &self.auth else {
+            return Vec::new();
+        };
         let (Some(Value::Array(guards)), Some(providers @ Value::Array(_))) =
             (auth.get("guards"), auth.get("providers"))
         else {
@@ -158,10 +170,16 @@ impl App {
         };
         let mut models: Vec<String> = Vec::new();
         for name in names {
-            let Some(provider) = auth.get("guards").and_then(|g| g.get(name)?.get("provider")?.truthy_str()) else {
+            let Some(provider) = auth
+                .get("guards")
+                .and_then(|g| g.get(name)?.get("provider")?.truthy_str())
+            else {
                 continue;
             };
-            let Some(model) = providers.get(provider).and_then(|p| p.get("model")?.truthy_str()) else {
+            let Some(model) = providers
+                .get(provider)
+                .and_then(|p| p.get("model")?.truthy_str())
+            else {
                 continue;
             };
             if !models.iter().any(|m| m == model) {
@@ -205,19 +223,33 @@ fn core_aliases(path: &Path) -> Vec<(String, Vec<String>)> {
         found: Vec<(String, Vec<String>)>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'_, 'arena> {
-        fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
-            if !m.name.value.eq_ignore_ascii_case(b"registerCoreContainerAliases") {
+        fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
+            if !m
+                .name
+                .value
+                .eq_ignore_ascii_case(b"registerCoreContainerAliases")
+            {
                 return;
             }
-            let MethodBody::Concrete(body) = &m.body else { return };
-            for s in body.statements.iter() {
+            let MethodBody::Concrete(body) = &m.body else {
+                return;
+            };
+            for s in &body.statements {
                 let Statement::Foreach(f) = s else { continue };
-                let Expression::Array(a) = f.expression else { continue };
-                for e in a.elements.iter() {
-                    let ArrayElement::KeyValue(kv) = e else { continue };
-                    let Expression::Literal(Literal::String(key)) = kv.key else { continue };
+                let Expression::Array(a) = f.expression else {
+                    continue;
+                };
+                for e in &a.elements {
+                    let ArrayElement::KeyValue(kv) = e else {
+                        continue;
+                    };
+                    let Expression::Literal(Literal::String(key)) = kv.key else {
+                        continue;
+                    };
                     let Some(key) = key.value else { continue };
-                    let Expression::Array(classes) = kv.value else { continue };
+                    let Expression::Array(classes) = kv.value else {
+                        continue;
+                    };
                     let classes = classes
                         .elements
                         .iter()
@@ -226,25 +258,35 @@ fn core_aliases(path: &Path) -> Vec<(String, Vec<String>)> {
                             _ => None,
                         })
                         .collect();
-                    self.found.push((String::from_utf8_lossy(key).into_owned(), classes));
+                    self.found
+                        .push((String::from_utf8_lossy(key).into_owned(), classes));
                 }
             }
         }
     }
-    let mut find = Find { names: &names, found: Vec::new() };
+    let mut find = Find {
+        names: &names,
+        found: Vec::new(),
+    };
     find.walk_program(program, &mut ());
     find.found
 }
 
 /// The class of `X::class` (`self::class` is the Application).
 fn class_constant(names: &ResolvedNames, e: &Expression) -> Option<String> {
-    let Expression::Access(Access::ClassConstant(c)) = e else { return None };
-    let ClassLikeConstantSelector::Identifier(k) = &c.constant else { return None };
+    let Expression::Access(Access::ClassConstant(c)) = e else {
+        return None;
+    };
+    let ClassLikeConstantSelector::Identifier(k) = &c.constant else {
+        return None;
+    };
     if !k.value.eq_ignore_ascii_case(b"class") {
         return None;
     }
     match c.class {
-        Expression::Identifier(id) => Some(String::from_utf8_lossy(names.get(&id.span())).into_owned()),
+        Expression::Identifier(id) => {
+            Some(String::from_utf8_lossy(names.get(&id.span())).into_owned())
+        }
         Expression::Self_(_) => Some("Illuminate\\Foundation\\Application".to_string()),
         _ => None,
     }
@@ -284,7 +326,11 @@ fn auth_config(root: &Path, framework: &Path, env: &HashMap<String, String>) -> 
     }
     let base = returned(&framework.join("config/auth.php"), env);
     let app = root.join("config/auth.php");
-    let app = if app.is_file() { returned(&app, env) } else { None };
+    let app = if app.is_file() {
+        returned(&app, env)
+    } else {
+        None
+    };
     match (base, app) {
         (Some(base), Some(app)) => {
             let mut config = base.merge(&app);
@@ -317,29 +363,38 @@ fn returned(path: &Path, env: &HashMap<String, String>) -> Option<Value> {
 
 fn value(e: &Expression, names: &ResolvedNames, env: &HashMap<String, String>) -> Value {
     match e {
-        Expression::Literal(Literal::String(s)) => {
-            s.value.map(|s| Value::String(String::from_utf8_lossy(s).into_owned())).unwrap_or(Value::Unknown)
-        }
+        Expression::Literal(Literal::String(s)) => s.value.map_or(Value::Unknown, |s| {
+            Value::String(String::from_utf8_lossy(s).into_owned())
+        }),
         Expression::Literal(Literal::Null(_)) => Value::Null,
         Expression::Access(Access::ClassConstant(_)) => {
-            class_constant(names, e).map(Value::String).unwrap_or(Value::Unknown)
+            class_constant(names, e).map_or(Value::Unknown, Value::String)
         }
         Expression::Parenthesized(p) => value(p.expression, names, env),
         Expression::Array(a) => array(&a.elements, names, env),
         Expression::LegacyArray(a) => array(&a.elements, names, env),
         Expression::Call(Call::Function(call)) => {
-            let Expression::Identifier(id) = call.function else { return Value::Unknown };
+            let Expression::Identifier(id) = call.function else {
+                return Value::Unknown;
+            };
             let name = names.get(&id.span());
             let name = name.rsplit(|&b| b == b'\\').next().unwrap_or(name);
             if !name.eq_ignore_ascii_case(b"env") {
                 return Value::Unknown;
             }
             let args = &call.argument_list.arguments;
-            let Some(Argument::Positional(key)) = args.first() else { return Value::Unknown };
-            let Value::String(key) = value(key.value, names, env) else { return Value::Unknown };
+            let Some(Argument::Positional(key)) = args.first() else {
+                return Value::Unknown;
+            };
+            let Value::String(key) = value(key.value, names, env) else {
+                return Value::Unknown;
+            };
             match env.get(&key) {
                 // Env::get(): the `true`, `false`, `null` and `empty` strings (parenthesized too) are converted
-                Some(v) => match v.to_ascii_lowercase().trim_matches(|c| c == '(' || c == ')') {
+                Some(v) => match v
+                    .to_ascii_lowercase()
+                    .trim_matches(|c| c == '(' || c == ')')
+                {
                     "null" => Value::Null,
                     "empty" => Value::String(String::new()),
                     "true" | "false" => Value::Unknown,
@@ -362,7 +417,7 @@ fn array(
 ) -> Value {
     let mut items = Vec::new();
     let mut next = 0;
-    for element in elements.iter() {
+    for element in elements {
         match element {
             ArrayElement::KeyValue(kv) => {
                 let Value::String(key) = value(kv.key, names, env) else {
@@ -392,7 +447,9 @@ fn date_class(root: &Path) -> Option<String> {
         .collect();
     files.sort();
     for path in files {
-        let Some(file) = read(&path, FileType::Host).ok().flatten() else { continue };
+        let Some(file) = read(&path, FileType::Host).ok().flatten() else {
+            continue;
+        };
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &file);
         struct Find<'n, 'arena> {
@@ -400,14 +457,23 @@ fn date_class(root: &Path) -> Option<String> {
             found: Option<String>,
         }
         impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'_, 'arena> {
-            fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-                let Expression::Identifier(class) = call.class else { return };
+            fn walk_in_static_method_call(
+                &mut self,
+                call: &'ast StaticMethodCall<'arena>,
+                (): &mut (),
+            ) {
+                let Expression::Identifier(class) = call.class else {
+                    return;
+                };
                 let class = self.names.get(&class.span());
                 let date = class.eq_ignore_ascii_case(b"Illuminate\\Support\\Facades\\Date")
                     || class.eq_ignore_ascii_case(b"Illuminate\\Support\\DateFactory");
-                let ClassLikeMemberSelector::Identifier(m) = &call.method else { return };
+                let ClassLikeMemberSelector::Identifier(m) = &call.method else {
+                    return;
+                };
                 if date
-                    && (m.value.eq_ignore_ascii_case(b"use") || m.value.eq_ignore_ascii_case(b"useClass"))
+                    && (m.value.eq_ignore_ascii_case(b"use")
+                        || m.value.eq_ignore_ascii_case(b"useClass"))
                     && let Some(Argument::Positional(arg)) = call.argument_list.arguments.first()
                     && let Some(class) = class_constant(self.names, arg.value)
                 {
@@ -415,7 +481,10 @@ fn date_class(root: &Path) -> Option<String> {
                 }
             }
         }
-        let mut find = Find { names: &names, found: None };
+        let mut find = Find {
+            names: &names,
+            found: None,
+        };
         find.walk_program(program, &mut ());
         found = find.found.or(found);
     }

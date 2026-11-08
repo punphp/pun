@@ -18,7 +18,7 @@ struct OrderedAttributesFixer {
     order: Vec<Vec<u8>>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(OrderedAttributesFixer {
         custom: false,
         order: vec![],

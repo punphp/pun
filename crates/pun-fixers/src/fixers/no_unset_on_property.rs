@@ -7,7 +7,7 @@ use std::path::Path;
 
 struct NoUnsetOnPropertyFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoUnsetOnPropertyFixer)
 }
 

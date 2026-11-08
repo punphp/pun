@@ -18,12 +18,12 @@ fn targets(c: &mut Checker, e: &Expression) {
     match unparen(e) {
         Expression::Access(Access::Property(p)) => property(c, p),
         Expression::List(l) => {
-            for el in l.elements.iter() {
+            for el in &l.elements {
                 element(c, el);
             }
         }
         Expression::Array(l) => {
-            for el in l.elements.iter() {
+            for el in &l.elements {
                 element(c, el);
             }
         }

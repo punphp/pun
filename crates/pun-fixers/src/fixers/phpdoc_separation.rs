@@ -118,7 +118,7 @@ impl PhpdocSeparationFixer {
             match self.should_be_together(annotation, next) {
                 Some(true) => ensure_are_together(doc, annotation, next),
                 s if s == Some(false) || !self.skip_unlisted_annotations => {
-                    ensure_are_separate(doc, annotation, next)
+                    ensure_are_separate(doc, annotation, next);
                 }
                 _ => {}
             }

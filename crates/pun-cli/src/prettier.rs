@@ -41,7 +41,7 @@ pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
         match probe {
             None => missing.push(pkg),
             Some(v) if !v.is_empty() && !caret_satisfies(&v, &constraint[1..]) => {
-                outdated.push((pkg, v, constraint))
+                outdated.push((pkg, v, constraint));
             }
             Some(_) => {}
         }

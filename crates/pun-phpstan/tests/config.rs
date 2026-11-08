@@ -33,7 +33,7 @@ fn options(cwd: &Path, case: &J, base: Options) -> Options {
             "--generated-config" => {
                 o.generated_config = it
                     .next()
-                    .map(|g| cwd.join(g).to_string_lossy().into_owned())
+                    .map(|g| cwd.join(g).to_string_lossy().into_owned());
             }
             _ => o.paths.push(a),
         }

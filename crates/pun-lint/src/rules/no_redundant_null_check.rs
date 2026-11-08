@@ -52,11 +52,11 @@ impl Rule for NoRedundantNullCheck {
         }
         let source = ctx.source;
         let tokens = tokens(ctx);
-        let parts = if_parts(&tokens, r#if);
+        let parts = if_parts(tokens, r#if);
         if parts.has_else || parts.has_elseifs {
             return;
         }
-        let (list, index) = enclosing(source, &tokens, ancestors);
+        let (list, index) = enclosing(source, tokens, ancestors);
         let Some(Statement::Return(next)) = list.stmts.get(index + 1).copied() else {
             return;
         };
@@ -71,27 +71,27 @@ impl Rule for NoRedundantNullCheck {
         let level = indentation(source, if_span.start);
         let nl = format!("\n{}", " ".repeat(level));
         // The inner `return` with the comments php-parser keeps with it, at the `if`'s indent.
-        let before_inner = previous_token_end(source, &tokens, inner.start);
-        let comments = comments_between(&tokens, before_inner, inner.start);
+        let before_inner = previous_token_end(source, tokens, inner.start);
+        let comments = comments_between(tokens, before_inner, inner.start);
         let adjust = level as isize - indentation(source, inner.start) as isize;
-        let mut code = reprint(source, &tokens, inner, adjust);
+        let mut code = reprint(source, tokens, inner, adjust);
         if !comments.is_empty() {
             code = format!("{}{nl}{code}", print_comments(source, &comments, &nl));
         }
         let end = node_span(next).end;
         let edit = if index > 0 {
             // Both statements removed and the inner one inserted after the statement before them.
-            let before = previous_token_end(source, &tokens, if_span.start).max(list.inner.start);
+            let before = previous_token_end(source, tokens, if_span.start).max(list.inner.start);
             Edit::new(Span::new(before, end), format!("{nl}{code}"))
         } else {
             // Removed from the start of the list, with the comments before the `if`: the inner statement goes before
             // the next one, which follows on its own line.
-            let start = comments_between(&tokens, list.inner.start, if_span.start)
+            let start = comments_between(tokens, list.inner.start, if_span.start)
                 .first()
                 .map_or(if_span.start, |c| c.start);
             if list.stmts.len() == 2 && !list.nop {
                 // Nothing left in the list to insert before: php-parser prints the function holding it anew.
-                if let Some(edit) = function_like_reprint(source, &tokens, ancestors, inner) {
+                if let Some(edit) = function_like_reprint(source, tokens, ancestors, inner) {
                     out.push(report(if_span, edit));
                     return;
                 }
@@ -99,7 +99,7 @@ impl Rule for NoRedundantNullCheck {
             match list.stmts.get(index + 2) {
                 Some(after) => {
                     let after = node_span(*after).start;
-                    let after = comments_between(&tokens, end, after)
+                    let after = comments_between(tokens, end, after)
                         .first()
                         .map_or(after, |c| c.start);
                     Edit::new(Span::new(start, after), format!("{code}{nl}"))
@@ -232,7 +232,7 @@ pub(crate) fn reprint_function_like(
         )
     };
     let mut code = String::new();
-    for list in attributes.iter() {
+    for list in attributes {
         code.push_str(text(source, list));
         code.push_str(if inline { " " } else { &nl });
     }

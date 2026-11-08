@@ -748,7 +748,7 @@ impl Reserved<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
-    fn walk_out_program(&mut self, node: &'ast Program<'arena>, _: &mut ()) {
+    fn walk_out_program(&mut self, node: &'ast Program<'arena>, (): &mut ()) {
         // php.y's start production reduces only after every top-level body semantic check has collected.
         if let Some(end) = self.fatal {
             self.errors.truncate(end);
@@ -766,7 +766,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
-    fn walk_out_literal_integer(&mut self, node: &'ast LiteralInteger<'arena>, _: &mut ()) {
+    fn walk_out_literal_integer(&mut self, node: &'ast LiteralInteger<'arena>, (): &mut ()) {
         // scalar: T_LNUMBER calls parseLNumber, which collects an Int_::fromString failure without
         // aborting later reductions. Overflowing octal prefixes are T_DNUMBER, never this callback.
         if self.fatal.is_none()
@@ -785,7 +785,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_literal_string(&mut self, node: &'ast LiteralString<'arena>, _: &mut ()) {
+    fn walk_out_literal_string(&mut self, node: &'ast LiteralString<'arena>, (): &mut ()) {
         if matches!(node.kind, LiteralStringKind::DoubleQuoted) {
             self.lines.string(node.span);
             if self.fatal.is_none() && self.version >= PHPVersion::PHP70 {
@@ -793,17 +793,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
-    fn walk_out_interpolated_string(&mut self, node: &'ast InterpolatedString<'arena>, _: &mut ()) {
+    fn walk_out_interpolated_string(
+        &mut self,
+        node: &'ast InterpolatedString<'arena>,
+        (): &mut (),
+    ) {
         self.encapsed(node.left_double_quote, node.right_double_quote, &node.parts);
     }
     fn walk_out_shell_execute_string(
         &mut self,
         node: &'ast ShellExecuteString<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.encapsed(node.left_backtick, node.right_backtick, &node.parts);
     }
-    fn walk_out_document_string(&mut self, node: &'ast DocumentString<'arena>, _: &mut ()) {
+    fn walk_out_document_string(&mut self, node: &'ast DocumentString<'arena>, (): &mut ()) {
         if self.fatal.is_some() {
             return;
         }
@@ -817,13 +821,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         }
         self.document_body(node);
     }
-    fn walk_out_array(&mut self, node: &'ast Array<'arena>, _: &mut ()) {
+    fn walk_out_array(&mut self, node: &'ast Array<'arena>, (): &mut ()) {
         self.array(node.span(), &node.elements);
     }
-    fn walk_out_legacy_array(&mut self, node: &'ast LegacyArray<'arena>, _: &mut ()) {
+    fn walk_out_legacy_array(&mut self, node: &'ast LegacyArray<'arena>, (): &mut ()) {
         self.array(node.span(), &node.elements);
     }
-    fn walk_out_foreach_target(&mut self, node: &'ast ForeachTarget<'arena>, _: &mut ()) {
+    fn walk_out_foreach_target(&mut self, node: &'ast ForeachTarget<'arena>, (): &mut ()) {
         let value = match node {
             ForeachTarget::Value(target) => target.value,
             ForeachTarget::KeyValue(target) => target.value,
@@ -843,10 +847,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         }
         self.walk_for_body(&node.body, context);
     }
-    fn walk_out_echo(&mut self, node: &'ast Echo<'arena>, _: &mut ()) {
+    fn walk_out_echo(&mut self, node: &'ast Echo<'arena>, (): &mut ()) {
         self.no_comma(&node.values);
     }
-    fn walk_out_echo_tag(&mut self, node: &'ast EchoTag<'arena>, _: &mut ()) {
+    fn walk_out_echo_tag(&mut self, node: &'ast EchoTag<'arena>, (): &mut ()) {
         // ParserAbstract::createTokenMap maps T_OPEN_TAG_WITH_ECHO to the same T_ECHO production.
         self.no_comma(&node.values);
     }
@@ -870,7 +874,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         mago_syntax::walker::walk_statement_expression_mut(self, node, context);
         self.continuation = saved;
     }
-    fn walk_out_namespace(&mut self, node: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_out_namespace(&mut self, node: &'ast Namespace<'arena>, (): &mut ()) {
         // ParserAbstract::checkNamespace runs on reduction, after all body errors, and inspects only direct
         // children. Semicolon namespaces have null stmts at this stage, not Mago's later implicit body.
         if let NamespaceBody::BraceDelimited(body) = &node.body {
@@ -885,7 +889,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
-    fn walk_out_constant(&mut self, node: &'ast Constant<'arena>, _: &mut ()) {
+    fn walk_out_constant(&mut self, node: &'ast Constant<'arena>, (): &mut ()) {
         // ParserAbstract::checkConstantAttributes runs after every value expression has reduced. PHPParser's
         // declaration attributes start at the first attribute group, unlike Mago's const-keyword span.
         if let Some(attributes) = node.attribute_lists.first()
@@ -898,7 +902,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, node: &'ast Class<'arena>, (): &mut ()) {
         self.class_modifiers(
             &node.modifiers,
             node.class.span,
@@ -907,7 +911,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             Some(""),
         );
     }
-    fn walk_in_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_in_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, (): &mut ()) {
         self.class_modifiers(
             &node.modifiers,
             node.class.span,
@@ -918,29 +922,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
                 .map(|(_, follow)| follow),
         );
     }
-    fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, _: &mut ()) {
+    fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, (): &mut ()) {
         self.modifiers(&node.modifiers, false);
     }
-    fn walk_in_hooked_property(&mut self, node: &'ast HookedProperty<'arena>, _: &mut ()) {
+    fn walk_in_hooked_property(&mut self, node: &'ast HookedProperty<'arena>, (): &mut ()) {
         self.modifiers(&node.modifiers, false);
     }
-    fn walk_in_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, node: &'ast Method<'arena>, (): &mut ()) {
         self.modifiers(&node.modifiers, false);
     }
-    fn walk_in_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+    fn walk_in_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, (): &mut ()) {
         self.modifiers(&node.modifiers, false);
     }
     fn walk_in_function_like_parameter(
         &mut self,
         node: &'ast FunctionLikeParameter<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.modifiers(&node.modifiers, false);
     }
     fn walk_out_function_like_parameter(
         &mut self,
         node: &'ast FunctionLikeParameter<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         // ParserAbstract::checkParam runs after the default expression and hooks have reduced. Both checks
         // collect independently, with the variadic default before the direct (not nullable/union) void type.
@@ -966,14 +970,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_in_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, node: &'ast Assignment<'arena>, (): &mut ()) {
         if node.operator.is_assign()
             && let Expression::Array(array) = node.lhs
         {
             self.assignment_arrays.insert(array.span());
         }
     }
-    fn walk_out_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_out_assignment(&mut self, node: &'ast Assignment<'arena>, (): &mut ()) {
         // Only successful array_short_syntax '=' expr reductions fix up the nested arrays.
         if node.operator.is_assign()
             && let Expression::Array(array) = node.lhs
@@ -1011,7 +1015,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_pipe(&mut self, node: &'ast Pipe<'arena>, _: &mut ()) {
+    fn walk_out_pipe(&mut self, node: &'ast Pipe<'arena>, (): &mut ()) {
         // checkPipeOperatorParentheses runs after the RHS reduces. Mago retains parentheses explicitly,
         // unlike PHPParser's parenthesizedArrowFunctions registry. Earlier targets do not tokenize T_PIPE.
         if self.version >= PHPVersion::PHP85
@@ -1024,7 +1028,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_try(&mut self, node: &'ast Try<'arena>, _: &mut ()) {
+    fn walk_out_try(&mut self, node: &'ast Try<'arena>, (): &mut ()) {
         // ParserAbstract::checkTryCatch runs after the body, catches and finally have reduced.
         if node.catch_clauses.is_empty() && node.finally_clause.is_none() {
             self.errors.push(error(
@@ -1034,10 +1038,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, (): &mut ()) {
         self.modifiers(&node.modifiers, true);
     }
-    fn walk_out_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_out_property_hook(&mut self, node: &'ast PropertyHook<'arena>, (): &mut ()) {
         // ParserAbstract::checkPropertyHook follows the parameter list and body, including their errors.
         let name = node.name.value;
         if !name.eq_ignore_ascii_case(b"get") && !name.eq_ignore_ascii_case(b"set") {
@@ -1060,7 +1064,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_property_hook_list(&mut self, node: &'ast PropertyHookList<'arena>, _: &mut ()) {
+    fn walk_out_property_hook_list(&mut self, node: &'ast PropertyHookList<'arena>, (): &mut ()) {
         // checkEmptyPropertyHookList runs for property and parameter hook lists (including promotion),
         // before the enclosing checkParam. An absent list is not an empty list.
         if node.hooks.is_empty() {
@@ -1071,7 +1075,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_out_method(&mut self, node: &'ast Method<'arena>, (): &mut ()) {
         // ParserAbstract::checkClassMethod runs after the body, with method_modifiers' first token as #2.
         let Some(first) = node.modifiers.first() else {
             return;
@@ -1105,7 +1109,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
-    fn walk_out_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+    fn walk_out_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, (): &mut ()) {
         // ParserAbstract::checkClassConst runs on reduction and reports each forbidden flag once at #2.
         let Some(first) = node.modifiers.first() else {
             return;
@@ -1124,14 +1128,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
-    fn walk_out_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_out_class(&mut self, node: &'ast Class<'arena>, (): &mut ()) {
         self.declaration(&node.name);
         self.parents(node.extends.as_ref(), node.implements.as_ref());
     }
-    fn walk_out_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_out_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, (): &mut ()) {
         self.parents(node.extends.as_ref(), node.implements.as_ref());
     }
-    fn walk_out_interface(&mut self, node: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_out_interface(&mut self, node: &'ast Interface<'arena>, (): &mut ()) {
         self.declaration(&node.name);
         if let Some(extends) = &node.extends {
             for id in &extends.types {
@@ -1139,11 +1143,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
-    fn walk_out_enum(&mut self, node: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_out_enum(&mut self, node: &'ast Enum<'arena>, (): &mut ()) {
         self.declaration(&node.name);
         self.parents(None, node.implements.as_ref());
     }
-    fn walk_in_use_item(&mut self, node: &'ast UseItem<'arena>, _: &mut ()) {
+    fn walk_in_use_item(&mut self, node: &'ast UseItem<'arena>, (): &mut ()) {
         if let Some(alias) = &node.alias {
             let value = alias.identifier.value;
             if value.eq_ignore_ascii_case(b"static") {
@@ -1268,12 +1272,12 @@ fn use_kind(kind: Option<&UseType>) -> usize {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Names<'_> {
-    fn walk_in_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, _: &'ast Namespace<'arena>, (): &mut ()) {
         for aliases in &mut self.aliases {
             aliases.clear();
         }
     }
-    fn walk_in_use(&mut self, node: &'ast Use<'arena>, _: &mut ()) {
+    fn walk_in_use(&mut self, node: &'ast Use<'arena>, (): &mut ()) {
         match &node.items {
             UseItems::Sequence(items) => {
                 for item in &items.items {
@@ -1313,22 +1317,22 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Names<'_> {
             }
         }
     }
-    fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, node: &'ast Class<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_interface(&mut self, node: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_in_interface(&mut self, node: &'ast Interface<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_trait(&mut self, node: &'ast Trait<'arena>, _: &mut ()) {
+    fn walk_in_trait(&mut self, node: &'ast Trait<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_constant(&mut self, node: &'ast Constant<'arena>, _: &mut ()) {
+    fn walk_in_constant(&mut self, node: &'ast Constant<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_enum_case(&mut self, node: &'ast EnumCase<'arena>, _: &mut ()) {
+    fn walk_in_enum_case(&mut self, node: &'ast EnumCase<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
     }
-    fn walk_enum(&mut self, node: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_enum(&mut self, node: &'ast Enum<'arena>, (): &mut ()) {
         // Enum_::scalarType is not resolved as a class name; BackedEnumTypeRule checks it instead.
         self.attributes(&node.attribute_lists);
         for group in &node.attribute_lists {
@@ -1338,55 +1342,55 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Names<'_> {
             self.walk_class_like_member(member, &mut ());
         }
     }
-    fn walk_in_function(&mut self, node: &'ast Function<'arena>, _: &mut ()) {
+    fn walk_in_function(&mut self, node: &'ast Function<'arena>, (): &mut ()) {
         self.signature(&node.parameter_list, node.return_type_hint.as_ref());
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
+    fn walk_in_method(&mut self, node: &'ast Method<'arena>, (): &mut ()) {
         self.signature(&node.parameter_list, node.return_type_hint.as_ref());
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_closure(&mut self, node: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_in_closure(&mut self, node: &'ast Closure<'arena>, (): &mut ()) {
         self.signature(&node.parameter_list, node.return_type_hint.as_ref());
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_arrow_function(&mut self, node: &'ast ArrowFunction<'arena>, _: &mut ()) {
+    fn walk_in_arrow_function(&mut self, node: &'ast ArrowFunction<'arena>, (): &mut ()) {
         self.signature(&node.parameter_list, node.return_type_hint.as_ref());
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
+    fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, (): &mut ()) {
         if let Some(params) = &node.parameter_list {
             self.signature(params, None);
         }
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, _: &mut ()) {
+    fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, (): &mut ()) {
         if let Some(hint) = &node.hint {
             self.walk_hint(hint, &mut ());
         }
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_hooked_property(&mut self, node: &'ast HookedProperty<'arena>, _: &mut ()) {
+    fn walk_in_hooked_property(&mut self, node: &'ast HookedProperty<'arena>, (): &mut ()) {
         if let Some(hint) = &node.hint {
             self.walk_hint(hint, &mut ());
         }
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+    fn walk_in_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, (): &mut ()) {
         if let Some(hint) = &node.hint {
             self.walk_hint(hint, &mut ());
         }
         self.attributes(&node.attribute_lists);
     }
-    fn walk_in_attribute_list(&mut self, node: &'ast AttributeList<'arena>, _: &mut ()) {
+    fn walk_in_attribute_list(&mut self, node: &'ast AttributeList<'arena>, (): &mut ()) {
         self.attributes(&Sequence::from_slice(std::slice::from_ref(node)));
     }
-    fn walk_in_hint(&mut self, node: &'ast Hint<'arena>, _: &mut ()) {
+    fn walk_in_hint(&mut self, node: &'ast Hint<'arena>, (): &mut ()) {
         if let Hint::Identifier(id) = node {
             self.class_name(id);
         }
     }
-    fn walk_in_trait_use(&mut self, node: &'ast TraitUse<'arena>, _: &mut ()) {
+    fn walk_in_trait_use(&mut self, node: &'ast TraitUse<'arena>, (): &mut ()) {
         for id in &node.trait_names {
             self.class_name(id);
         }
@@ -1394,55 +1398,55 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Names<'_> {
     fn walk_in_trait_use_absolute_method_reference(
         &mut self,
         node: &'ast TraitUseAbsoluteMethodReference<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.class_name(&node.trait_name);
     }
     fn walk_in_trait_use_precedence_adaptation(
         &mut self,
         node: &'ast TraitUsePrecedenceAdaptation<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.class_name(&node.method_reference.trait_name);
         for id in &node.trait_names {
             self.class_name(id);
         }
     }
-    fn walk_in_instantiation(&mut self, node: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, node: &'ast Instantiation<'arena>, (): &mut ()) {
         self.receiver(node.class);
     }
-    fn walk_in_static_method_call(&mut self, node: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, node: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         self.receiver(node.class);
     }
     fn walk_in_static_method_partial_application(
         &mut self,
         node: &'ast StaticMethodPartialApplication<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.receiver(node.class);
     }
     fn walk_in_static_property_access(
         &mut self,
         node: &'ast StaticPropertyAccess<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.receiver(node.class);
     }
     fn walk_in_class_constant_access(
         &mut self,
         node: &'ast ClassConstantAccess<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.receiver(node.class);
     }
-    fn walk_in_binary(&mut self, node: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_in_binary(&mut self, node: &'ast Binary<'arena>, (): &mut ()) {
         if matches!(node.operator, BinaryOperator::Instanceof(_)) {
             self.receiver(node.rhs);
         }
     }
     // New_ traverses its Class_ (attributes and body) before constructor arguments. Mago stores those
     // arguments inside AnonymousClass, so move just their visit to the end rather than choosing by offset.
-    fn walk_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, (): &mut ()) {
         self.attributes(&node.attribute_lists);
         for group in &node.attribute_lists {
             self.walk_attribute_list(group, &mut ());

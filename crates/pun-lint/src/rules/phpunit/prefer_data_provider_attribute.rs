@@ -167,7 +167,7 @@ fn print_group(ancestors: &[Node<'_, '_>], list: &AttributeList<'_>) -> Option<S
         return Some(format!("#[{name}]"));
     };
     let mut printed = Vec::new();
-    for argument in arguments.arguments.iter() {
+    for argument in &arguments.arguments {
         let PartialArgument::Positional(argument) = argument else {
             return None;
         };

@@ -42,7 +42,7 @@ impl Rule for AddTestVoidReturn {
         if !is_in_test_class(ctx, &scope, None) {
             return;
         }
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

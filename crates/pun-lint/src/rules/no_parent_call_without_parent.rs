@@ -74,7 +74,7 @@ impl Rule for NoParentCallWithoutParent {
                             .any(|i| has(i.as_bytes(), method))
                 })
         };
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

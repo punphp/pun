@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 use std::sync::LazyLock;
 
 /// PHP 8's `$a <=> $b` on two strings: numerically when both are numeric strings, else byte-wise.
-pub fn php_spaceship(a: &[u8], b: &[u8]) -> Ordering {
+pub(crate) fn php_spaceship(a: &[u8], b: &[u8]) -> Ordering {
     match (numeric_value(a), numeric_value(b)) {
         (Some(x), Some(y)) => x.partial_cmp(&y).unwrap(),
         _ => a.cmp(b),
@@ -145,7 +145,7 @@ impl TypeExpression {
     }
 
     /// `sortTypes`: `Utils::stableSort` of every composite type's members, innermost first.
-    pub fn sort_types(
+    pub(crate) fn sort_types(
         &self,
         compare: &dyn Fn(&TypeExpression, &TypeExpression) -> Ordering,
     ) -> Self {
@@ -165,7 +165,7 @@ impl TypeExpression {
     }
 
     /// `removeDuplicateTypes`: drops every composite member equal to an earlier one once both are sorted.
-    pub fn remove_duplicate_types(&self) -> Self {
+    pub(crate) fn remove_duplicate_types(&self) -> Self {
         self.map_types(&mut |t| {
             if !t.is_composite_type {
                 return t;
@@ -209,7 +209,7 @@ impl TypeExpression {
                 seen_glues = Some([false, false]);
             }
             if !glue.is_empty() {
-                seen_glues.as_mut().unwrap()[(glue == b"&") as usize] = true;
+                seen_glues.as_mut().unwrap()[usize::from(glue == b"&")] = true;
             }
             inner_values.push(InnerValue {
                 start_index: index,

@@ -13,7 +13,7 @@ use super::Checker;
 
 /// The class-like a member is declared in, as its ClassReflection answers (in a trait walked in a class's context,
 /// that class).
-pub struct Decl {
+pub(super) struct Decl {
     /// `getDisplayName()`.
     pub display: Option<String>,
     pub kind: SymbolKind,
@@ -26,7 +26,7 @@ pub struct Decl {
 }
 
 /// The tag names of a PHPDoc (`/** ... */`): phpdoc-parser's tags start a line, after the optional leading `*`.
-pub fn doc_tags(doc: &[u8]) -> Vec<String> {
+pub(super) fn doc_tags(doc: &[u8]) -> Vec<String> {
     let body = doc.strip_prefix(b"/**").unwrap_or(doc);
     let body = body.strip_suffix(b"*/").unwrap_or(body);
     let mut tags = Vec::new();
@@ -51,11 +51,11 @@ pub fn doc_tags(doc: &[u8]) -> Vec<String> {
 }
 
 /// Whether a PHPDoc has one of `names`.
-pub fn has_tag(tags: &[String], names: &[&str]) -> bool {
+pub(super) fn has_tag(tags: &[String], names: &[&str]) -> bool {
     tags.iter().any(|t| names.contains(&t.as_str()))
 }
 
-pub const READONLY_TAGS: &[&str] = &[
+pub(super) const READONLY_TAGS: &[&str] = &[
     "@readonly",
     "@phan-read-only",
     "@psalm-readonly",
@@ -71,7 +71,7 @@ const IMMUTABLE_TAGS: &[&str] = &[
 ];
 
 /// ClassReflection::isImmutable() from a class's own PHPDoc: `@immutable` or `@readonly` tags.
-pub fn immutable_tags(tags: &[String]) -> bool {
+pub(super) fn immutable_tags(tags: &[String]) -> bool {
     has_tag(tags, IMMUTABLE_TAGS) || has_tag(tags, READONLY_TAGS)
 }
 
@@ -145,7 +145,7 @@ impl<'arena> Checker<'_, 'arena> {
 
 /// DuplicateDeclarationRule: the duplicate constants, enum cases, properties (promoted ones too) and methods of a
 /// class, interface or enum.
-pub fn duplicates<'arena>(c: &mut Checker<'_, 'arena>, members: &[ClassLikeMember<'arena>]) {
+pub(super) fn duplicates<'arena>(c: &mut Checker<'_, 'arena>, members: &[ClassLikeMember<'arena>]) {
     // called right after the Decl
     let decl = c.decls.last().expect("declared");
     let display = decl.display.clone().expect("named");
@@ -158,7 +158,7 @@ pub fn duplicates<'arena>(c: &mut Checker<'_, 'arena>, members: &[ClassLikeMembe
 }
 
 /// DuplicateTraitDeclarationRule: the same checks on a trait, walked in the context of each class using it.
-pub fn trait_duplicates<'arena>(
+pub(super) fn trait_duplicates<'arena>(
     c: &mut Checker<'_, 'arena>,
     members: &[ClassLikeMember<'arena>],
     display: &str,
@@ -188,7 +188,7 @@ fn duplicates_as<'arena>(
                 }
             }
             ClassLikeMember::Constant(constant) => {
-                for item in constant.items.iter() {
+                for item in &constant.items {
                     let name = String::from_utf8_lossy(item.name.value).into_owned();
                     if !constants.insert(name.clone()) {
                         c.report_non_ignorable(
@@ -228,7 +228,7 @@ fn duplicates_as<'arena>(
             continue;
         };
         if method.name.value.eq_ignore_ascii_case(b"__construct") {
-            for p in method.parameter_list.parameters.iter() {
+            for p in &method.parameter_list.parameters {
                 if !p.modifiers.is_empty() {
                     duplicate_property(c, p.span(), p.variable.name);
                 }
@@ -247,7 +247,7 @@ fn duplicates_as<'arena>(
 }
 
 /// AbstractPrivateMethodRule and FinalPrivateMethodRule on a method (`name` is its name, a trait method's alias).
-pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
+pub(super) fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
     let decl = c.decls.last().expect("in a class-like");
     let (display, class_abstract, kind) = (decl.display.clone(), decl.is_abstract, decl.kind);
     let private = m.modifiers.contains_private();
@@ -282,7 +282,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
 }
 
 /// FinalPrivateConstantRule.
-pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, constant: &ClassLikeConstant<'arena>) {
+pub(super) fn constant<'arena>(c: &mut Checker<'_, 'arena>, constant: &ClassLikeConstant<'arena>) {
     let Some(display) =
         c.decls.last().and_then(|d| d.display.clone()).filter(|_| {
             constant.modifiers.contains_final() && constant.modifiers.contains_private()
@@ -290,7 +290,7 @@ pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, constant: &ClassLikeConstan
     else {
         return;
     };
-    for item in constant.items.iter() {
+    for item in &constant.items {
         c.report_non_ignorable(
             constant,
             "classConstant.finalPrivate",
@@ -305,7 +305,7 @@ pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, constant: &ClassLikeConstan
 
 /// A function-like for InvalidPromotedPropertiesRule: a method's name (a trait method's alias and original name) and
 /// whether it has a body.
-pub enum FunctionLike<'n> {
+pub(super) enum FunctionLike<'n> {
     Method {
         name: &'n str,
         original: &'n [u8],
@@ -315,7 +315,7 @@ pub enum FunctionLike<'n> {
 }
 
 /// InvalidPromotedPropertiesRule.
-pub fn promoted<'arena>(
+pub(super) fn promoted<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     kind: FunctionLike,
@@ -365,7 +365,7 @@ pub fn promoted<'arena>(
             None,
         );
     }
-    for p in parameters.parameters.iter() {
+    for p in &parameters.parameters {
         if p.modifiers.is_empty() {
             continue;
         }

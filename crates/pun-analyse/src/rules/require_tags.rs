@@ -16,7 +16,7 @@ use super::class_names::{self, Pair};
 use super::reflection::known;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "requireExtends.duplicate",
     "requireExtends.nonObject",
     "requireExtends.interface",
@@ -77,7 +77,7 @@ pub(super) fn property_requirements(c: &Checker, k: &ClassLikeMetadata) -> Vec<T
 }
 
 /// The rules on InClassNode: a class, an interface or an enum declared at `at`.
-pub fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
+pub(super) fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     if c.level < 2 {
         return;
     }
@@ -155,7 +155,7 @@ fn unknown(c: &mut Checker, at: Span, tag: &str, class: &str) {
 }
 
 /// The rules on a trait declared at `at` (Stmt\Trait_).
-pub fn trait_(c: &mut Checker, at: Span, name: &str) {
+pub(super) fn trait_(c: &mut Checker, at: Span, name: &str) {
     if c.level < 2 {
         return;
     }

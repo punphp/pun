@@ -198,9 +198,9 @@ fn glob(pattern: &str) -> Vec<String> {
     let mut found = vec![String::new()];
     for segment in pattern.split('/').filter(|s| !s.is_empty()) {
         if !segment.contains(['*', '?', '[']) {
-            found
-                .iter_mut()
-                .for_each(|base| *base = format!("{base}/{segment}"));
+            for base in &mut found {
+                *base = format!("{base}/{segment}");
+            }
             continue;
         }
         let mut next = Vec::new();

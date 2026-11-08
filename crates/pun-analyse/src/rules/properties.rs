@@ -10,7 +10,7 @@ use super::{Checker, overriding_property};
 use super::declarations::{READONLY_TAGS, has_tag};
 
 /// ClassPropertyNode.
-pub struct PropertyNode<'n, 'arena> {
+pub(super) struct PropertyNode<'n, 'arena> {
     /// Where the node is (the property's variable, or the promoted parameter).
     pub at: Span,
     /// The name with its `$`.
@@ -53,7 +53,7 @@ impl PropertyNode<'_, '_> {
 }
 
 /// The ClassPropertyNodes of a property declaration.
-pub fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
+pub(super) fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
     let tags = c.tags_before(p);
     let readonly_by_phpdoc = has_tag(&tags, READONLY_TAGS);
     let allowed_private_mutation = has_tag(&tags, ALLOW_PRIVATE_MUTATION_TAGS);
@@ -81,11 +81,11 @@ pub fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
 
 /// The ClassPropertyNodes of a constructor's promoted parameters. Their default is always null, so whether they are
 /// read-only by PHPDoc never matters.
-pub fn promoted<'arena>(
+pub(super) fn promoted<'arena>(
     c: &mut Checker<'_, 'arena>,
     parameters: &FunctionLikeParameterList<'arena>,
 ) {
-    for p in parameters.parameters.iter() {
+    for p in &parameters.parameters {
         let hooks = p.hooks.as_ref().map_or(&[][..], |h| h.hooks.as_slice());
         if p.modifiers.is_empty() && hooks.is_empty() {
             continue;
@@ -363,7 +363,7 @@ struct Fetches<'n> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Fetches<'_> {
-    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, _: &mut ()) {
+    fn walk_in_property_access(&mut self, a: &'ast PropertyAccess<'arena>, (): &mut ()) {
         if let (Expression::Variable(Variable::Direct(v)), ClassLikeMemberSelector::Identifier(p)) =
             (a.object, &a.property)
             && v.name == b"$this"

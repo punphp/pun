@@ -43,7 +43,7 @@ pub(super) fn typed_expressions<'arena>(
         spans: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, 'arena> {
-        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
             let Expression::Identifier(id) = call.function else {
                 return;
             };
@@ -62,7 +62,7 @@ pub(super) fn typed_expressions<'arena>(
                     .filter_map(|&i| args.get(i).map(|a| a.value().span())),
             );
         }
-        fn walk_in_pipe(&mut self, pipe: &'ast Pipe<'arena>, _: &mut ()) {
+        fn walk_in_pipe(&mut self, pipe: &'ast Pipe<'arena>, (): &mut ()) {
             if let Some(id) = piped_function(pipe)
                 && matches!(
                     function_name(self.names, self.codebase, id).as_str(),

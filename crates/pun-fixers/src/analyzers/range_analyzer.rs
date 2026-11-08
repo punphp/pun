@@ -3,7 +3,7 @@ use pun_tokens::{Kind::*, Proto, Tokens};
 
 /// `array{start: int, end: int}`.
 #[derive(Clone, Copy, Debug)]
-pub struct Range {
+pub(crate) struct Range {
     pub start: usize,
     pub end: usize,
 }
@@ -27,7 +27,7 @@ fn trim(tokens: &Tokens, range: Range) -> (usize, usize) {
 }
 
 /// Meaningful compare of tokens within ranges.
-pub fn range_equals_range(tokens: &Tokens, range1: Range, range2: Range) -> bool {
+pub(crate) fn range_equals_range(tokens: &Tokens, range1: Range, range2: Range) -> bool {
     let (mut left_start, left_end) = trim(tokens, range1);
     let (mut right_start, right_end) = trim(tokens, range2);
     loop {

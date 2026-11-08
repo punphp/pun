@@ -57,7 +57,7 @@ impl Rule for AddMockObjectType {
         let doc = Annotated::of(ctx, node, ancestors).and_then(|a| a.doc);
         let roots: Vec<Node<'_, '_>> = body.statements.iter().map(Node::Statement).collect();
         let mut edits = Vec::new();
-        for param in method.parameter_list.parameters.iter() {
+        for param in &method.parameter_list.parameters {
             if param
                 .hint
                 .as_ref()

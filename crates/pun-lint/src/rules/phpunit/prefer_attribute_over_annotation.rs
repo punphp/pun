@@ -63,13 +63,13 @@ impl Rule for PreferAttributeOverAnnotation {
             };
             for (key, value) in item {
                 match (key.as_str(), value) {
-                    ("annotation-name", Value::String(s)) => annotation.name = s.clone(),
+                    ("annotation-name", Value::String(s)) => annotation.name.clone_from(s),
                     ("attribute-class", Value::String(s)) => {
-                        annotation.attribute_class = s.trim_start_matches('\\').to_string()
+                        annotation.attribute_class = s.trim_start_matches('\\').to_string();
                     }
                     ("value-map", Value::Object(map)) => {
                         annotation.value_map =
-                            map.iter().map(|(k, v)| (k.clone(), v.clone())).collect()
+                            map.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
                     }
                     // PHP's `[]`
                     ("value-map", Value::Array(a)) if a.is_empty() => {}
@@ -117,7 +117,7 @@ impl Rule for PreferAttributeOverAnnotation {
             };
             class_doc = found;
         }
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
@@ -181,7 +181,6 @@ impl PreferAttributeOverAnnotation {
     /// `refactorClassMethodOrClass()` for the class (`is_class`) or method `annotated`: its doc's span, its new doc
     /// and its own groups when a tag moved (the class's and the class-level groups go to `class_groups`); `None` for a
     /// doc Pun does not read.
-    #[allow(clippy::type_complexity)]
     fn refactor(
         &self,
         ctx: &Context<'_>,

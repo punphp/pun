@@ -16,7 +16,7 @@ use super::super::{Checker, declared};
 use super::flow::unparen;
 use super::properties::with_args;
 
-pub const IDENTIFIERS: &[&str] = &["offsetAssign.dimType", "offsetAssign.valueType"];
+pub(super) const IDENTIFIERS: &[&str] = &["offsetAssign.dimType", "offsetAssign.valueType"];
 
 /// Mago's `never` argument of a template nothing resolved (`new SplObjectStorage()`) as PHPStan's bound.
 fn bounds(c: &Checker, t: Type) -> Type {

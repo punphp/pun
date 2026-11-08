@@ -44,15 +44,15 @@ impl Rule for RequireParentVisibility {
         };
         // `getParents()`: the parent classes, nearest first, as far as they are known.
         let mut parents = Vec::new();
-        let mut next = own.direct_parent_class.clone();
+        let mut next = own.direct_parent_class;
         while let Some(parent) = next {
             let Some(known) = codebase.get_class_like(parent.as_bytes()) else {
                 break;
             };
-            next = known.direct_parent_class.clone();
+            next = known.direct_parent_class;
             parents.push(parent);
         }
-        for member in class.members.iter() {
+        for member in &class.members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

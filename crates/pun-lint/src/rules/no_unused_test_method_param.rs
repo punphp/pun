@@ -230,7 +230,7 @@ fn caller_edits(
     let params: Vec<&FunctionLikeParameter<'_>> = method.parameter_list.parameters.iter().collect();
     let name = method.name.value;
     let mut callers = Vec::new();
-    for member in class.members.iter() {
+    for member in class.members {
         let ClassLikeMember::Method(m) = member else {
             continue;
         };

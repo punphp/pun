@@ -13,7 +13,7 @@ use super::reflection::Lookup;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// CallToNonExistentFunctionRule (level 0: no name-case check), then CallToFunctionParametersRule.
-pub fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
+pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
     if let Expression::Identifier(id) = call.function {
         let first_level = c.is_top_level(call.span());
         named_call(c, id, params::count(&call.argument_list), first_level, call.span());
@@ -21,7 +21,7 @@ pub fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'a
 }
 
 /// `$x |> f(...)`: PHPStan analyses it as `f($x)`.
-pub fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
+pub(super) fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
     if let Expression::PartialApplication(PartialApplication::Function(f)) = pipe.callable
         && let Expression::Identifier(id) = f.function
         && matches!(
@@ -95,7 +95,7 @@ fn named_call<'arena>(
 }
 
 /// class_exists(), interface_exists(), trait_exists() or enum_exists() (`isInClassExists()` holds in its arguments).
-pub fn is_class_exists_family(c: &Checker, call: &FunctionCall) -> bool {
+pub(super) fn is_class_exists_family(c: &Checker, call: &FunctionCall) -> bool {
     let Expression::Identifier(id) = call.function else {
         return false;
     };
@@ -107,7 +107,7 @@ pub fn is_class_exists_family(c: &Checker, call: &FunctionCall) -> bool {
 }
 
 /// CallMethodsRule with level 0's `checkThisOnly`: calls on `$this` only.
-pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena>) {
+pub(super) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena>) {
     check_this_method(c, call.object, &call.method, Some(call));
 }
 
@@ -344,7 +344,10 @@ fn declaring_display(c: &Checker, method: &members::Method, through_scope: bool)
 }
 
 /// CallStaticMethodsRule (StaticMethodCallCheck, then the parameters check).
-pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
+pub(super) fn static_method_call<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    call: &StaticMethodCall<'arena>,
+) {
     check_static_method(c, call.class, &call.method, Some(call));
 }
 
@@ -627,7 +630,7 @@ pub(super) fn check_static_method<'arena>(
 }
 
 /// `$scope->canCallMethod()`: public anywhere, private from the declaring class, protected from its hierarchy.
-pub fn can_call(
+pub(super) fn can_call(
     c: &Checker,
     scope: Option<&ClassLikeMetadata>,
     declaring: &str,

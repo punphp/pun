@@ -65,7 +65,7 @@ impl Rule for PreferUnserializeMethod {
             let span = node_span(method);
             let indent = line_indent(source, span.start);
             let mut code = String::new();
-            for list in method.attribute_lists.iter() {
+            for list in &method.attribute_lists {
                 let s = node_span(list);
                 code.push_str(&source[s.start..s.end]);
                 code.push('\n');
@@ -77,7 +77,7 @@ impl Rule for PreferUnserializeMethod {
                 code.push('&');
             }
             code.push_str("__unserialize(");
-            for parameter in method.parameter_list.parameters.iter() {
+            for parameter in &method.parameter_list.parameters {
                 let s = node_span(parameter);
                 code.push_str(&source[s.start..s.end]);
                 code.push_str(", ");

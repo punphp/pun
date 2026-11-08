@@ -150,7 +150,7 @@ impl Rule for PreferYieldDataProvider {
             if is_class_method_used(&facts, ancestors, &class, provider.name.value) {
                 continue;
             }
-            let Some(more) = transform(ctx, &tokens, &scope, &class, provider, &list, array) else {
+            let Some(more) = transform(ctx, tokens, &scope, &class, provider, &list, array) else {
                 continue;
             };
             edits.extend(more);
@@ -179,8 +179,8 @@ fn provider_names(
     let mut names = Vec::new();
     for method in methods {
         let mut attributes = Vec::new();
-        for list in method.attribute_lists.iter() {
-            for attribute in list.attributes.iter() {
+        for list in &method.attribute_lists {
+            for attribute in &list.attributes {
                 if resolve(scope, &attribute.name).eq_ignore_ascii_case(DATA_PROVIDER) {
                     // `$attribute->args[0]->value`, `null` (with a warning) without arguments
                     let argument = attribute

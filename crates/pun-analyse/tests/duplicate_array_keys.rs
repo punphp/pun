@@ -139,7 +139,7 @@ fn wide_integer_cst_preserves_php_parser_values_bytes_and_spans() {
 
     struct Literals(Vec<Value>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Literals {
-        fn walk_in_expression(&mut self, expr: &'ast Expression<'arena>, _: &mut ()) {
+        fn walk_in_expression(&mut self, expr: &'ast Expression<'arena>, (): &mut ()) {
             let Expression::Literal(literal) = expr else {
                 return;
             };
@@ -231,7 +231,9 @@ fn raw_phpdoc_ingestion_preserves_binary_values_and_error_offsets() {
         .as_str()
         .unwrap()
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
         .collect();
     let root = std::env::temp_dir().join(format!("pun-raw-doc-test-{}", std::process::id()));

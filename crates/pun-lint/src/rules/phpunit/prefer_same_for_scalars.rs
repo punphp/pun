@@ -184,7 +184,7 @@ fn assigned_array<'a>(
         _ => None,
     })?;
     let mut found = None;
-    for statement in body.statements.iter() {
+    for statement in &body.statements {
         if crate::syntax::node_span(statement).end > before {
             break;
         }

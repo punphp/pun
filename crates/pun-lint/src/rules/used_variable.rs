@@ -119,7 +119,9 @@ pub(crate) fn try_of<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>]) -> Option<&
         ancestors.get(n.checked_sub(3)?),
         ancestors.get(n.checked_sub(2)?),
     ) {
-        (Some(Node::Try(t)), Some(Node::Block(b))) if std::ptr::eq(*b, &t.block) => Some(t),
+        (Some(Node::Try(t)), Some(Node::Block(b))) if std::ptr::eq(*b, &raw const t.block) => {
+            Some(t)
+        }
         _ => None,
     }
 }

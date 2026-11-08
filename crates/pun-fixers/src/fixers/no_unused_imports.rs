@@ -229,9 +229,9 @@ fn clean_up_after_import_chunk_removal(tokens: &mut Tokens, u: &NamespaceUseAnal
     let safe = has_before.1 || has_after.1;
     let clear = |tokens: &mut Tokens, i: usize| {
         if safe {
-            tokens.clear_token_and_merge_surrounding_whitespace(i)
+            tokens.clear_token_and_merge_surrounding_whitespace(i);
         } else {
-            tokens.clear_at(i)
+            tokens.clear_at(i);
         }
     };
     if tokens[after].equals(",", true) {

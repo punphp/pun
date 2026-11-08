@@ -261,7 +261,7 @@ impl AnnotationToAttribute {
                     }
                 },
                 None => {
-                    edits.extend(annotated.edits_at(ctx.source, Some(&new_doc), &printed, &nl)?)
+                    edits.extend(annotated.edits_at(ctx.source, Some(&new_doc), &printed, &nl)?);
                 }
             }
         }
@@ -275,7 +275,6 @@ impl AnnotationToAttribute {
 
     /// `refactor()` on the doc comment at `span`: the doc without the tags that went and the attributes, `Some(None)`
     /// without any, `None` where Pun does not read the doc.
-    #[allow(clippy::type_complexity)]
     fn convert(
         &self,
         ctx: &Context<'_>,
@@ -455,10 +454,12 @@ fn constructor_parameters(ctx: &Context<'_>, class: &str) -> Vec<(String, bool)>
                 .unwrap_or_default()
                 .trim_start_matches('$')
                 .to_string();
-            let has_int = p
-                .type_metadata
-                .as_ref()
-                .is_some_and(|t| t.type_union.types.iter().any(|a| a.is_int()));
+            let has_int = p.type_metadata.as_ref().is_some_and(|t| {
+                t.type_union
+                    .types
+                    .iter()
+                    .any(mago_codex::ttype::atomic::TAtomic::is_int)
+            });
             (name, has_int)
         })
         .collect()
@@ -472,7 +473,7 @@ fn foldable_parameters(ctx: &Context<'_>, class: &str) -> Option<Vec<String>> {
     let constructor = facts.codebase.get_method(class.as_bytes(), b"__construct")?;
     let mut names = Vec::new();
     let mut has_options = false;
-    for p in constructor.parameters.iter() {
+    for p in &constructor.parameters {
         if p.flags.is_variadic() {
             return None;
         }

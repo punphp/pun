@@ -32,7 +32,7 @@ pub(crate) enum DocType {
 
 impl DocType {
     /// The class name `ClassRenamePhpDocNodeVisitor::ensureFQCNObject()` compares, `None` for no object type.
-    pub fn class_name(&self) -> Option<&str> {
+    pub(crate) fn class_name(&self) -> Option<&str> {
         match self {
             DocType::Other => None,
             DocType::FullyQualified(name) | DocType::NonExisting(name) => Some(name),
@@ -42,7 +42,7 @@ impl DocType {
 
     /// `NameImportingPhpDocNodeVisitor::resolveFullyQualified()`: the class of a fully qualified, shortened or
     /// aliased type.
-    pub fn fully_qualified(&self) -> Option<&str> {
+    pub(crate) fn fully_qualified(&self) -> Option<&str> {
         match self {
             DocType::FullyQualified(name) => Some(name),
             DocType::Aliased(_, fq) | DocType::Shortened(_, fq) => Some(fq),
@@ -329,8 +329,7 @@ pub(crate) fn resolve_string_name(scope: Scope<'_>, name: &str) -> String {
         .uses
         .iter()
         .flat_map(|u| u.items.iter().map(move |i| (u, i)))
-        .filter(|(_, i)| i.alias_or_last().to_ascii_lowercase() == lowered)
-        .last();
+        .rfind(|(_, i)| i.alias_or_last().to_ascii_lowercase() == lowered);
     if let Some((r#use, item)) = imported {
         let full = format!("{}{}", r#use.prefix(), item.name);
         return match rest {

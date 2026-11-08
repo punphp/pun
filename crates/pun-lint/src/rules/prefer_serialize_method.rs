@@ -114,7 +114,7 @@ fn items(
 ) -> Option<Vec<Edit>> {
     let mut spans = Vec::new();
     let mut names = Vec::new();
-    for element in elements.iter() {
+    for element in elements {
         let value = match element {
             ArrayElement::KeyValue(e) => Some(e.value),
             ArrayElement::Value(e) => Some(e.value),

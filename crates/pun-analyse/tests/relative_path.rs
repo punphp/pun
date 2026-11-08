@@ -72,7 +72,7 @@ fn relative_paths_match_phpstan() {
         ("/a/b", &[], "rel/x.php", "rel/x.php"),
     ];
     for (cwd, paths, file, expected) in cases {
-        let paths: Vec<String> = paths.iter().map(|p| p.to_string()).collect();
+        let paths: Vec<String> = paths.iter().map(std::string::ToString::to_string).collect();
         assert_eq!(
             RelativePath::new(cwd, &paths).get(file),
             *expected,

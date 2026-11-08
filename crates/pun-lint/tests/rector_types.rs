@@ -314,7 +314,10 @@ fn return_type_from_strict_typed_call_never_is_not_propagated() {
         let fixed = linter.fix(path, input).unwrap();
         assert_eq!(fixed.source, expected, "PHP {version}");
         assert_eq!(fixed.applied, problems);
-        assert!(linter.check(path, expected).unwrap().is_empty());
+        assert_eq!(
+            linter.check(path, expected).unwrap(),
+            [] as [pun_problem::Problem; 0]
+        );
     }
 }
 

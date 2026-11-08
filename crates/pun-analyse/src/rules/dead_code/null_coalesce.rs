@@ -68,23 +68,23 @@ impl Chains {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
-    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
+    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, (): &mut ()) {
         for value in &i.values {
             self.chain(value, None);
         }
     }
 
-    fn walk_in_empty_construct(&mut self, e: &'ast EmptyConstruct<'arena>, _: &mut ()) {
+    fn walk_in_empty_construct(&mut self, e: &'ast EmptyConstruct<'arena>, (): &mut ()) {
         self.chain(e.value, None);
     }
 
-    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
         if b.operator.is_null_coalesce() {
             self.chain(b.lhs, None);
         }
     }
 
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
             self.chain(a.lhs, Some(a.span()));
         }

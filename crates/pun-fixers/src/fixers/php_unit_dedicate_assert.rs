@@ -144,10 +144,10 @@ impl Fixer for PhpUnitDedicateAssertFixer {
                 // test and fix for assertTrue/False to dedicated asserts
                 match assert_call.lowered_name.as_slice() {
                     b"asserttrue" | b"assertfalse" => {
-                        self.fix_assert_true_false(tokens, &assert_call)
+                        self.fix_assert_true_false(tokens, &assert_call);
                     }
                     b"assertsame" | b"assertnotsame" | b"assertequals" | b"assertnotequals" => {
-                        fix_assert_same_equals(tokens, &assert_call)
+                        fix_assert_same_equals(tokens, &assert_call);
                     }
                     _ => {}
                 }

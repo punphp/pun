@@ -111,7 +111,7 @@ fn oracle_blade_fixtures() {
         .unwrap();
     let mut tokens = pun_tokens::Tokens::from_code(html);
     let error = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        blade.fix(Path::new("a.blade.php"), &mut tokens)
+        blade.fix(Path::new("a.blade.php"), &mut tokens);
     }))
     .unwrap_err();
     let error = error.downcast_ref::<String>().unwrap();

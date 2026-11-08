@@ -19,7 +19,7 @@ pub(super) const TIP: &str =
 
 /// What the walk needs to know of a file's property fetches before it reaches them.
 #[derive(Default)]
-pub struct State {
+pub(super) struct State {
     /// `isUndefinedExpressionAllowed()`: inside `isset()`, `empty()`, `unset()`, the left of `??` and a list
     /// destructuring target, with the expressions they hold (lookForSetAllowedUndefinedExpressions).
     allowed: HashSet<(u32, u32)>,
@@ -37,12 +37,12 @@ pub struct State {
 }
 
 /// `isUndefinedExpressionAllowed()` of the expression at `span`.
-pub fn undefined_allowed(c: &Checker, span: Span) -> bool {
+pub(super) fn undefined_allowed(c: &Checker, span: Span) -> bool {
     c.property_access.allowed.contains(&key(span))
 }
 
 /// `isInExpressionAssign()` of the offset fetch at `span`.
-pub fn dim_assigned(c: &Checker, span: Span) -> bool {
+pub(super) fn dim_assigned(c: &Checker, span: Span) -> bool {
     c.property_access.dim_assigned.contains(&key(span))
 }
 
@@ -162,25 +162,25 @@ impl Contexts<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
-    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
-        for v in i.values.iter() {
+    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, (): &mut ()) {
+        for v in &i.values {
             self.allow(v);
         }
     }
-    fn walk_in_empty_construct(&mut self, e: &'ast EmptyConstruct<'arena>, _: &mut ()) {
+    fn walk_in_empty_construct(&mut self, e: &'ast EmptyConstruct<'arena>, (): &mut ()) {
         self.allow(e.value);
     }
-    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
-        for v in u.values.iter() {
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
+        for v in &u.values {
             self.allow(v);
         }
     }
-    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, (): &mut ()) {
         if b.operator.is_null_coalesce() {
             self.allow(b.lhs);
         }
     }
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if matches!(a.operator, AssignmentOperator::Assign(_)) {
             self.assigned(a.lhs);
             self.dim_assigned(a.lhs);
@@ -195,7 +195,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
             self.dim_assigned(a.lhs);
         }
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         if let ForeachTarget::KeyValue(t) = &f.target {
             self.expression_assigned(t.key);
             self.dim_assigned(t.key);
@@ -206,7 +206,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
 }
 
 /// The [`State`] of `program`.
-pub fn state(program: &Program) -> State {
+pub(super) fn state(program: &Program) -> State {
     let mut state = State::default();
     Contexts { state: &mut state }.walk_program(program, &mut ());
     state
@@ -230,7 +230,7 @@ fn var_guard(var: &[u8], name: &[u8]) -> Guard {
 }
 
 /// The key of a variable an `isset()` of its offset gives a HasOffsetType.
-pub fn offset_guard(var: &[u8]) -> Guard {
+pub(super) fn offset_guard(var: &[u8]) -> Guard {
     Guard::Expr(format!("{}[]", String::from_utf8_lossy(var)))
 }
 
@@ -248,7 +248,7 @@ fn guard(name: &[u8]) -> Guard {
 }
 
 /// The `$this->name` fetches a condition specifies a type for (TypeSpecifier), as guards.
-pub fn narrowed(
+pub(super) fn narrowed(
     e: &Expression,
     truthy: bool,
     resolve: &dyn Fn(&Identifier) -> String,
@@ -266,7 +266,7 @@ pub fn narrowed(
     match e {
         // a true `isset()` and a false `empty()` give the fetches a type
         Expression::Construct(Construct::Isset(i)) if truthy => {
-            for v in i.values.iter() {
+            for v in &i.values {
                 chain(v, resolve, out);
             }
         }
@@ -303,7 +303,7 @@ fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<
             if let Expression::Variable(Variable::Direct(v)) = unparen(a.array) {
                 out.push(offset_guard(v.name));
             }
-            chain(a.array, resolve, out)
+            chain(a.array, resolve, out);
         }
         Expression::Access(Access::Property(p)) => chain(p.object, resolve, out),
         Expression::Access(Access::NullSafeProperty(p)) => chain(p.object, resolve, out),
@@ -455,7 +455,7 @@ impl Checker<'_, '_> {
 }
 
 /// `$this->name = ...` (a compound assignment and a destructuring too) leaves `$this->name` an expression type.
-pub fn assigned(c: &mut Checker, a: &Assignment) {
+pub(super) fn assigned(c: &mut Checker, a: &Assignment) {
     remember(c, a.lhs);
 }
 
@@ -480,7 +480,7 @@ fn remember(c: &mut Checker, e: &Expression) {
         Expression::Array(a) => &a.elements,
         _ => return,
     };
-    for el in items.iter() {
+    for el in items {
         match el {
             ArrayElement::KeyValue(kv) => remember(c, kv.value),
             ArrayElement::Value(v) => remember(c, v.value),
@@ -490,7 +490,7 @@ fn remember(c: &mut Checker, e: &Expression) {
 }
 
 /// AccessPropertiesRule on one property fetch.
-pub fn read(c: &mut Checker, p: &PropertyAccess) {
+pub(super) fn read(c: &mut Checker, p: &PropertyAccess) {
     // checkStringCastableName() runs on every fetch, the assigned one too
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
         super::types::dynamic_names::check(c, name, true, "Property", p.object, false, "property.nameNotString");
@@ -503,7 +503,7 @@ pub fn read(c: &mut Checker, p: &PropertyAccess) {
 
 /// AccessPropertiesInAssignRule: an assignment (not a compound one) to a property, one of its offsets, or a
 /// destructuring item.
-pub fn assign(c: &mut Checker, a: &Assignment) {
+pub(super) fn assign(c: &mut Checker, a: &Assignment) {
     if matches!(a.operator, AssignmentOperator::Assign(_)) {
         written(c, a.lhs);
     }
@@ -730,7 +730,7 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
 }
 
 /// AccessPropertiesRule on a nullsafe fetch, which it sees as a fetch on the object without `null`.
-pub fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
+pub(super) fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
         super::types::dynamic_names::check(c, name, true, "Property", p.object, true, "property.nameNotString");
     }
@@ -739,7 +739,7 @@ pub fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
 }
 
 /// AccessStaticPropertiesRule on one static property fetch.
-pub fn static_read(c: &mut Checker, p: &StaticPropertyAccess) {
+pub(super) fn static_read(c: &mut Checker, p: &StaticPropertyAccess) {
     if let Some(name) = super::types::dynamic_names::static_property(&p.property) {
         super::types::dynamic_names::check(c, name, true, "Static property", p.class, false, "staticProperty.nameNotString");
     }

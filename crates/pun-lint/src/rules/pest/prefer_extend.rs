@@ -168,7 +168,7 @@ fn classes_and_traits(
 ) -> (Vec<String>, Vec<String>) {
     let facts = facts(ctx);
     let (mut classes, mut traits) = (Vec::new(), Vec::new());
-    for argument in arguments.arguments.iter() {
+    for argument in &arguments.arguments {
         let value = unparenthesize(argument.value());
         let Expression::Access(Access::ClassConstant(fetch)) = value else {
             continue;

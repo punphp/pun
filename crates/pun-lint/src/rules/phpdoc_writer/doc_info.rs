@@ -30,7 +30,7 @@ pub(crate) enum Kind {
 
 /// A typed tag's value: phpdoc-parser's `ParamTagValueNode`, `VarTagValueNode`, `ReturnTagValueNode`.
 #[derive(Clone, Debug)]
-pub struct TypedValue {
+pub(crate) struct TypedValue {
     /// The type node as Rector prints it.
     pub ty: TypeNode,
     /// The type as phpdoc-parser parsed it, for PHPStan's type of it; `None` for a type Pun made.
@@ -45,7 +45,7 @@ pub struct TypedValue {
 
 /// A tag's value.
 #[derive(Clone, Debug)]
-pub enum TagValue {
+pub(crate) enum TagValue {
     /// `@param`, `@var` or `@return` with a type.
     Typed(TypedValue),
     /// Any other value, never reprinted: an untyped tag (a typeless `@param $a`).
@@ -55,7 +55,7 @@ pub enum TagValue {
 }
 
 #[derive(Clone, Debug)]
-pub enum ChildNode {
+pub(crate) enum ChildNode {
     /// `PhpDocTextNode`.
     Text,
     /// `PhpDocTagNode`.
@@ -105,7 +105,7 @@ impl Child {
 
 /// A doc comment as Rector's `PhpDocInfo` holds it.
 #[derive(Clone, Debug)]
-pub struct PhpDocInfo {
+pub(crate) struct PhpDocInfo {
     text: String,
     tokens: Vec<(Kind, usize, usize)>,
     children: Vec<Child>,
@@ -122,7 +122,7 @@ const TYPED: [&str; 3] = ["@param", "@var", "@return"];
 
 impl PhpDocInfo {
     /// `PhpDocInfoFactory::createEmpty()` (and `createFromNode()` of a node with comments but no doc comment).
-    pub fn empty() -> PhpDocInfo {
+    pub(crate) fn empty() -> PhpDocInfo {
         PhpDocInfo {
             text: String::new(),
             tokens: Vec::new(),
@@ -133,7 +133,7 @@ impl PhpDocInfo {
     }
 
     /// `PhpDocInfoFactory::createFromNode()` of a node whose doc comment is `text`.
-    pub fn parse(text: &str) -> PhpDocInfo {
+    pub(crate) fn parse(text: &str) -> PhpDocInfo {
         let tokens = lex(text);
         let children = child_ranges(text, &tokens)
             .into_iter()
@@ -160,22 +160,22 @@ impl PhpDocInfo {
     }
 
     /// `hasInvalidTag()`: a tag named `name` whose value its parser rejects.
-    pub fn has_invalid_tag(&self, name: &str) -> bool {
+    pub(crate) fn has_invalid_tag(&self, name: &str) -> bool {
         (self.children.iter()).any(|c| matches!(&c.node, ChildNode::Tag { name: n, value: TagValue::Invalid } if n == name))
     }
 
     /// `getReturnTagValue()`.
-    pub fn return_tag(&self) -> Option<&TypedValue> {
+    pub(crate) fn return_tag(&self) -> Option<&TypedValue> {
         self.typed("@return").next()
     }
 
     /// `getVarTagValueNode()`.
-    pub fn var_tag(&self) -> Option<&TypedValue> {
+    pub(crate) fn var_tag(&self) -> Option<&TypedValue> {
         self.typed("@var").next()
     }
 
     /// `getParamTagValueByName()`: the first `@param` of `$name`.
-    pub fn param_tag(&self, name: &str) -> Option<&TypedValue> {
+    pub(crate) fn param_tag(&self, name: &str) -> Option<&TypedValue> {
         let wanted = format!("${}", name.trim_start_matches('$'));
         self.typed("@param").find(|v| v.variable == wanted)
     }
@@ -222,23 +222,23 @@ impl PhpDocInfo {
     }
 
     /// `changeReturnTypeNode()`.
-    pub fn set_return_type(&mut self, ty: TypeNode) {
+    pub(crate) fn set_return_type(&mut self, ty: TypeNode) {
         self.set_type("@return", "", false, ty);
     }
 
     /// `changeVarTypeNode()`.
-    pub fn set_var_type(&mut self, ty: TypeNode) {
+    pub(crate) fn set_var_type(&mut self, ty: TypeNode) {
         self.set_type("@var", "", false, ty);
     }
 
     /// `changeParamTypeNode()`: `$name` (`ParamPhpDocNodeFactory` marks a new tag of a variadic parameter
     /// variadic).
-    pub fn set_param_type(&mut self, name: &str, is_variadic: bool, ty: TypeNode) {
+    pub(crate) fn set_param_type(&mut self, name: &str, is_variadic: bool, ty: TypeNode) {
         self.set_type("@param", &format!("${name}"), is_variadic, ty);
     }
 
     /// `DocBlockUpdater::printPhpDocInfoToString()`: the doc as Rector prints it after the changes.
-    pub fn print(&self) -> String {
+    pub(crate) fn print(&self) -> String {
         // `isNewNode()`
         if !self.children.is_empty() && self.tokens.is_empty() {
             return self.print_new();

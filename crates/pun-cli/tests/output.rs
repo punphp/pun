@@ -232,7 +232,7 @@ impl Cx {
             if !want.stdout.starts_with("named: ") {
                 want.stdout = String::new();
             }
-            want.stderr = got.stderr.clone();
+            want.stderr.clone_from(&got.stderr);
         }
         assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
         got
@@ -472,7 +472,7 @@ fn format_samples() {
             Some(0)
         )
     );
-    let one = &t[..2].iter().copied().collect::<Vec<_>>();
+    let one = &t[..2].to_vec();
     assert_eq!(
         sample(one, &[&never[..], &["--test"]].concat(), PLAIN),
         (

@@ -316,7 +316,7 @@ impl Rule for AddDoctrineRepositoryReturnType {
             return;
         };
         let mut edits: Vec<Edit> = Vec::new();
-        for member in view.members.iter() {
+        for member in view.members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
@@ -385,7 +385,7 @@ fn entity_from_doc(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[No
         }
     }
     let rest = extends?.strip_prefix("EntityRepository<")?;
-    let end = rest.find(|c: char| c == ',' || c == '>')?;
+    let end = rest.find([',', '>'])?;
     let entity = rest[..end].trim();
     (!entity.is_empty() && is_name(entity) && !templates.contains(&entity))
         .then(|| entity.to_string())

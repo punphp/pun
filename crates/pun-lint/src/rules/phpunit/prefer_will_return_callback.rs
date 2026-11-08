@@ -637,7 +637,7 @@ fn pretty_closure(source: &str, closure: &Closure<'_>, indent: &str) -> Option<S
         return None;
     }
     let mut attributes = String::new();
-    for list in closure.attribute_lists.iter() {
+    for list in &closure.attribute_lists {
         attributes.push_str(&as_written(node_span(list))?);
         attributes.push(' ');
     }

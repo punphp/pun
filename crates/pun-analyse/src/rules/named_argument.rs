@@ -161,7 +161,7 @@ pub(super) fn requests(program: &Program) -> Vec<CallScopeRequest> {
 
 struct Requests(Vec<CallScopeRequest>);
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
-    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         let (object, selector, args) = match expression {
             Expression::Call(Call::Method(call)) => (call.object, &call.method, &call.argument_list),
             Expression::Call(Call::NullSafeMethod(call)) => (call.object, &call.method, &call.argument_list),
@@ -185,10 +185,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
 
 struct Expressions(Vec<Span>);
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Expressions {
-    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, (): &mut ()) {
         self.0.push(expression.span());
     }
-    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, _: &mut ()) {
+    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, (): &mut ()) {
         self.0.push(variable.span());
     }
 }

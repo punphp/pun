@@ -59,7 +59,7 @@ pub(super) struct ReferenceSource {
 }
 
 impl ReferenceSource {
-    pub fn of(a: &Assignment, context: &HookContext<'_, '_>) -> Option<Self> {
+    pub(super) fn of(a: &Assignment, context: &HookContext<'_, '_>) -> Option<Self> {
         let Expression::UnaryPrefix(u) = a.rhs else {
             return None;
         };
@@ -83,7 +83,7 @@ impl ReferenceSource {
         })
     }
 
-    pub fn restore(self, context: &mut HookContext<'_, '_>) {
+    pub(super) fn restore(self, context: &mut HookContext<'_, '_>) {
         let block = context.block_context_mut();
         match self.local {
             Some(ty) => {
@@ -115,7 +115,7 @@ impl ReferenceSource {
 }
 
 impl Certainty {
-    pub fn of(context: &HookContext<'_, '_>) -> Self {
+    pub(super) fn of(context: &HookContext<'_, '_>) -> Self {
         let block = context.block_context();
         let variables = block
             .locals
@@ -136,7 +136,7 @@ impl Certainty {
     }
 
     /// DefinedVariableRule filters each constant name's scope by `name-expression === name`.
-    pub fn for_name(guard: &Expression<'_>, context: &HookContext<'_, '_>) -> Self {
+    pub(super) fn for_name(guard: &Expression<'_>, context: &HookContext<'_, '_>) -> Self {
         let mut result = Self::of(context);
         let guard = super::types::flow::unparen(guard);
         let ty = match guard {
@@ -175,7 +175,7 @@ impl Certainty {
         result
     }
 
-    pub fn get(&self, name: &str) -> Tri {
+    pub(super) fn get(&self, name: &str) -> Tri {
         if super::functions::SUPERGLOBALS.contains(&name.as_bytes()) {
             return Tri::Yes;
         }
@@ -185,7 +185,7 @@ impl Certainty {
             .unwrap_or(self.otherwise)
     }
 
-    pub fn captured(&self, name: &str) -> Tri {
+    pub(super) fn captured(&self, name: &str) -> Tri {
         // An arrow's function scope does not inherit main's canAnyVariableExist().
         self.variables
             .get(&format!("${name}"))
@@ -233,7 +233,7 @@ impl OffsetName {
     }
 
     /// Materialize only selected name offsets after a real write, never by replaying statement syntax.
-    pub fn assigned(&self, assignment: &Assignment<'_>, context: &mut HookContext<'_, '_>) {
+    pub(super) fn assigned(&self, assignment: &Assignment<'_>, context: &mut HookContext<'_, '_>) {
         let mut lhs = super::types::flow::unparen(assignment.lhs);
         while let Expression::ArrayAccess(access) = lhs {
             lhs = super::types::flow::unparen(access.array);
@@ -311,7 +311,7 @@ pub(super) fn typed_expressions(
         names: &'n mago_names::ResolvedNames<'arena>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_> {
-        fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
+        fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, (): &mut ()) {
             self.spans.push(v.span());
             self.spans
                 .extend(super::types::dynamic_names::static_property(v));
@@ -322,10 +322,10 @@ pub(super) fn typed_expressions(
                 self.offset_names.insert(name);
             }
         }
-        fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
+        fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, (): &mut ()) {
             self.spans.push(c.span());
         }
-        fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
+        fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, (): &mut ()) {
             // FileAssertRule's assertVariableCertainty() reads the same scope before its arguments
             if is_compact(f, self.names) || super::debug::is_variable_certainty(f, self.names) {
                 self.compact_calls.insert(f.span());
@@ -365,7 +365,7 @@ pub(super) fn allow_target(expr: &Expression, out: &mut HashSet<Span>) {
 fn allow_named<'arena>(expr: &Expression<'arena>, names: &mut Vec<&'arena [u8]>, out: &mut HashSet<Span>) {
     struct Named<'n, 'arena>(&'n [&'arena [u8]], &'n mut HashSet<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Named<'_, 'arena> {
-        fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, _: &mut ()) {
+        fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, (): &mut ()) {
             if self.0.contains(&v.name) {
                 self.1.insert(v.span());
             }
@@ -395,7 +395,7 @@ fn allow_named<'arena>(expr: &Expression<'arena>, names: &mut Vec<&'arena [u8]>,
 pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
     struct Allowed(HashSet<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Allowed {
-        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
             match e {
                 Expression::Construct(Construct::Isset(i)) => {
                     // IssetHandler unsets the allowed expressions only after its last operand.
@@ -416,7 +416,7 @@ pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
                 Expression::Assignment(a)
                     if matches!(a.operator, AssignmentOperator::Coalesce(_)) =>
                 {
-                    allow_target(a.lhs, &mut self.0)
+                    allow_target(a.lhs, &mut self.0);
                 }
                 Expression::Assignment(a)
                     if matches!(a.operator, AssignmentOperator::Assign(_)) =>
@@ -434,12 +434,12 @@ pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
                     }
                 }
                 Expression::UnaryPrefix(u) if u.operator.is_reference() => {
-                    allow_target(u.operand, &mut self.0)
+                    allow_target(u.operand, &mut self.0);
                 }
                 _ => {}
             }
         }
-        fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+        fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
             for value in &u.values {
                 allow_target(value, &mut self.0);
             }

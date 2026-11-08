@@ -340,9 +340,12 @@ impl Config {
             Check::Integer => {
                 type_of(&facts(), value).is_some_and(|t| t.is_int() && !t.types.is_empty())
             }
-            Check::True => type_of(&facts(), value).is_some_and(|t| t.is_true()),
+            Check::True => {
+                type_of(&facts(), value).is_some_and(mago_codex::ttype::union::TUnion::is_true)
+            }
             Check::TrueOrConstant => {
-                type_of(&facts(), value).is_some_and(|t| t.is_true()) || is_constant(value, "true")
+                type_of(&facts(), value).is_some_and(mago_codex::ttype::union::TUnion::is_true)
+                    || is_constant(value, "true")
             }
             Check::FalseConstant => is_constant(value, "false"),
         }
@@ -454,7 +457,7 @@ pub(crate) fn rewrite(
     let mut froms: Vec<usize> = (0..spans.len())
         .map(|i| member_from(class.members, class.left_brace, i))
         .collect();
-    let mut kept_flags = flags.clone();
+    let mut kept_flags = flags;
     // A comment after the last member is php-parser's `Nop`, a statement that stays.
     let after = spans.last().map_or(open, |s| s.end);
     if let Some(comment) = first_comment(source, after, close) {
@@ -480,7 +483,7 @@ pub(crate) fn rewrite(
         let sep = if matches!(class.kind, Kind::Anonymous(_)) {
             " ".to_string()
         } else {
-            nl.clone()
+            nl
         };
         match lists.last() {
             Some(last) => {

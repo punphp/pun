@@ -172,7 +172,7 @@ fn header(ctx: &Context<'_>, node: Node<'_, '_>, parts: &Parts<'_>, start: usize
     if let Node::AnonymousClass(_) = node {
         out.push_str("new ");
     }
-    for list in parts.attributes.iter() {
+    for list in parts.attributes {
         out.push_str(text(node_span(list)));
         out.push_str(&nl);
     }

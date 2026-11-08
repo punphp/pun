@@ -21,7 +21,7 @@ struct MultilinePromotedPropertiesFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(MultilinePromotedPropertiesFixer {
         keep_blank_lines: false,
         minimum_number_of_parameters: 1,

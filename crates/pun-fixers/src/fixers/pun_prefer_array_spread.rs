@@ -117,7 +117,7 @@ impl Fixer for PreferArraySpread {
                     if let Some(a) = args.iter().position(|&(s, e)| s <= k && k <= e) {
                         match kinds[a] {
                             Arg::Spread if k == args[a].0 => {
-                                out.push(Token::new(T_ELLIPSIS, "..."))
+                                out.push(Token::new(T_ELLIPSIS, "..."));
                             }
                             _ => {}
                         }

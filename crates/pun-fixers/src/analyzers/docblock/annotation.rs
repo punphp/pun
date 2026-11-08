@@ -179,9 +179,7 @@ impl Annotation {
     pub(crate) fn get_types_content(&self) -> Option<Vec<u8>> {
         if self.types_content.borrow().is_none() {
             let name = self.get_tag().get_name();
-            if !self.support_types() {
-                panic!("This tag does not support types.");
-            }
+            assert!(self.support_types(), "This tag does not support types.");
             let pattern = [
                 &br"{^(?:\h*\*|/\*\*)[\h*]*@"[..],
                 name,
@@ -235,7 +233,7 @@ fn variable_name_ascii(content: &[u8], tag: &[u8], types: &[u8]) -> Option<Vec<u
         .iter()
         .take_while(|b| b.is_ascii_alphanumeric() || **b == b'_')
         .count();
-    (len > 0 && !name[0].is_ascii_digit()).then(|| rest[..1 + len].to_vec())
+    (len > 0 && !name[0].is_ascii_digit()).then(|| rest[..=len].to_vec())
 }
 
 #[cfg(test)]

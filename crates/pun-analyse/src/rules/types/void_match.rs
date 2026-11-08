@@ -7,7 +7,7 @@ use mago_syntax::cst::*;
 
 use super::super::Checker;
 
-pub const IDENTIFIERS: &[&str] = &["match.void"];
+pub(super) const IDENTIFIERS: &[&str] = &["match.void"];
 
 /// The match result, whose arm union retains void independently of ordinary call values.
 pub(super) fn typed(m: &Match, spans: &mut Vec<mago_span::Span>) {

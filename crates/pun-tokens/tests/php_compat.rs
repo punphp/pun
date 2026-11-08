@@ -1,4 +1,8 @@
 //! `php_compat` against real PHP functions and pinned upstream PCRE fixtures.
+#![allow(
+    clippy::unicode_not_nfc,
+    reason = "the inputs test non-NFC bytes on purpose"
+)]
 
 mod common;
 
@@ -72,7 +76,7 @@ fn matches_php() {
         "[{}]",
         INPUTS
             .iter()
-            .map(|s| format!("{:?}", s))
+            .map(|s| format!("{s:?}"))
             .collect::<Vec<_>>()
             .join(",")
     );
@@ -95,7 +99,7 @@ fn matches_php() {
             let (a, b) = (a.as_bytes(), b.as_bytes());
             let got = format!("{} {}", strcasecmp(a, b), strnatcmp(a, b));
             let line = lines.next().expect("php output");
-            assert_eq!(got, line, "{:?} vs {:?}", a, b);
+            assert_eq!(got, line, "{a:?} vs {b:?}");
         }
     }
     for a in INPUTS {
@@ -174,7 +178,7 @@ fn php_lines(script: &str, input: &serde_json::Value) -> Vec<serde_json::Value> 
 
 /// `false` or the offset, as PHP's search functions return it.
 fn pos(p: Option<usize>) -> serde_json::Value {
-    p.map_or(serde_json::Value::Bool(false), |p| p.into())
+    p.map_or(serde_json::Value::Bool(false), std::convert::Into::into)
 }
 
 fn utf8(b: &[u8]) -> String {
@@ -314,18 +318,18 @@ fn preg_compile_matches_php() {
         ("/a(/r", "a"),
         ("/a(/rZ", "a"),
         ("/a(/Zr", "a"),
-        ("/^k$/iu", "K"),
-        ("/^k$/iur", "K"),
+        ("/^k$/iu", "K"),
+        ("/^k$/iur", "K"),
         ("/^\\x{212A}$/iur", "k"),
         ("/^s$/iur", "ſ"),
         ("/^\\x{017F}$/iur", "s"),
-        ("/^[^k]$/iur", "K"),
+        ("/^[^k]$/iur", "K"),
         ("/^k$/iur", "K"),
         ("/^é$/iur", "É"),
-        ("/(*UTF)(?i)^k$/r", "K"),
-        ("/^(?-r:k)$/iur", "K"),
-        ("/k(?^i)k/iur", "KK"),
-        ("/k(?^i)k/iur", "KK"),
+        ("/(*UTF)(?i)^k$/r", "K"),
+        ("/^(?-r:k)$/iur", "K"),
+        ("/k(?^i)k/iur", "KK"),
+        ("/k(?^i)k/iur", "KK"),
         ("/(?r)a/", "a"),
         ("/s(?r)s(?-r)s(?r:s)s/iu", "ſSſSſ"),
         ("/(*UTF)a(/r", "a"),
@@ -393,33 +397,33 @@ fn preg_caseless_restrict_matches_upstream() {
         ("/AskZ/iur", "AskZ", Some("AskZ")),
         ("/AskZ/iur", "aSKz", Some("aSKz")),
         ("/AskZ/iur", "AſkZ", None),
-        ("/AskZ/iur", "AsKZ", None),
-        ("/k/iur", "K", None),
+        ("/AskZ/iur", "AsKZ", None),
+        ("/k/iur", "K", None),
         ("/A\\x{17f}\\x{212a}Z/iur", "AskZ", None),
         ("/[AskZ]+/iur", "AſkZ", Some("A")),
-        ("/[AskZ]+/iur", "AsKZ", Some("As")),
+        ("/[AskZ]+/iur", "AsKZ", Some("As")),
         ("/[\\x{17f}\\x{212a}]+/iur", "AskZ", None),
         ("/[^s]+/iur", "AſZ", Some("AſZ")),
-        ("/k(?^i)k/iur", "KK", Some("KK")),
-        ("/k(?^i)k/iur", "KK", None),
+        ("/k(?^i)k/iur", "KK", Some("KK")),
+        ("/k(?^i)k/iur", "KK", None),
         // Anchored, inline and ordinary-case controls follow the same ASCII/non-ASCII boundary contract:
         // PCRE2 10.43, doc/pcre2api.3:2005-2014; (?r) does not enable caseless matching itself.
-        ("/^k$/iur", "K", None),
+        ("/^k$/iur", "K", None),
         ("/^\\x{212A}$/iur", "k", None),
         ("/^s$/iur", "ſ", None),
         ("/^\\x{017F}$/iur", "s", None),
-        ("/^[^k]$/iur", "K", Some("K")),
+        ("/^[^k]$/iur", "K", Some("K")),
         ("/^k$/iur", "K", Some("K")),
         ("/^é$/iur", "É", Some("É")),
         ("/^k$/ur", "K", None),
         ("/a/SXr", "a", Some("a")),
         ("/a/rr", "a", Some("a")),
-        ("/(*UTF)(?i)^k$/r", "K", None),
+        ("/(*UTF)(?i)^k$/r", "K", None),
         ("/(*UTF)(?i)^k$/r", "K", Some("K")),
         ("/(*UTF)(?i)k/rA", "aK", None),
         ("/(*UTF)(?i)k/rA", "K", Some("K")),
-        ("/(*UTF)(?i)k/rA", "K", None),
-        ("/^(?-r:k)$/iur", "K", Some("K")),
+        ("/(*UTF)(?i)k/rA", "K", None),
+        ("/^(?-r:k)$/iur", "K", Some("K")),
     ];
     for (pattern, subject, want) in cases {
         if supports_r {

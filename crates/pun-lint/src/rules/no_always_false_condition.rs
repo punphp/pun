@@ -88,6 +88,8 @@ pub(crate) fn is_safe(facts: &Facts, ancestors: &[Node<'_, '_>], left: &Expressi
     // a call PHPStan types as `mixed` natively (taken as implicit, as in `class_method`)
     !found(&|e| {
         matches!(e, Expression::Call(_) | Expression::Instantiation(_))
-            && facts.native_type(node_span(e)).is_none_or(|t| t.is_mixed())
+            && facts
+                .native_type(node_span(e))
+                .is_none_or(mago_codex::ttype::union::TUnion::is_mixed)
     })
 }

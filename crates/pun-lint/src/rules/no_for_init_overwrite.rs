@@ -34,7 +34,7 @@ impl Rule for NoForInitOverwrite {
         out: &mut Vec<Report>,
     ) {
         let Node::For(r#for) = node else { return };
-        for init in r#for.initializations.iter() {
+        for init in &r#for.initializations {
             if let Expression::Assignment(assign) = unparenthesize(init)
                 && matches!(assign.operator, AssignmentOperator::Assign(_))
                 && !matches!(assign.rhs, Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::Reference(_)))
@@ -67,7 +67,7 @@ fn check_value_var(
             }
         }
         Expression::Array(Array { elements, .. }) | Expression::List(List { elements, .. }) => {
-            for element in elements.iter() {
+            for element in elements {
                 match element {
                     ArrayElement::KeyValue(e) => check_value_var(r#for, ancestors, e.value, out),
                     ArrayElement::Value(e) => check_value_var(r#for, ancestors, e.value, out),

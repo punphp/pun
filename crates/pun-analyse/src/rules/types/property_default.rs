@@ -7,7 +7,7 @@ use pun_phpstan::types::recommended_level;
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &["property.defaultValue"];
+pub(super) const IDENTIFIERS: &[&str] = &["property.defaultValue"];
 
 fn defaults<'p, 'arena>(p: &'p Property<'arena>) -> Vec<&'p PropertyConcreteItem<'arena>> {
     let items = match p {

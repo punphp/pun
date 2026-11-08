@@ -80,7 +80,7 @@ fn error_assignments_preserve_primary_errors_and_types_without_suppressing_mixed
         })
         .collect();
     expected.extend(mixed_lines.iter().map(|&line| (line, "mixed-assignment")));
-    got.sort();
-    expected.sort();
+    got.sort_unstable();
+    expected.sort_unstable();
     assert_eq!(got, expected);
 }

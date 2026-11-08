@@ -82,7 +82,7 @@ impl Rule for NoUnusedPrivateProperty {
                 read: false,
             };
             let mut stack = path.clone();
-            for m in members.iter() {
+            for m in members {
                 if matches!(
                     m,
                     ClassLikeMember::Method(_) | ClassLikeMember::Property(Property::Hooked(_))
@@ -182,7 +182,7 @@ fn typed_properties<'a>(
     own: Option<&[u8]>,
 ) -> Vec<&'a [u8]> {
     let mut out = Vec::new();
-    for member in members.iter() {
+    for member in members {
         let ClassLikeMember::Property(Property::Plain(p)) = member else {
             continue;
         };
@@ -194,7 +194,7 @@ fn typed_properties<'a>(
         if own.is_some_and(|own| own.eq_ignore_ascii_case(short)) {
             continue;
         }
-        for item in p.items.iter() {
+        for item in &p.items {
             out.push(&item.variable().name[1..]);
         }
     }

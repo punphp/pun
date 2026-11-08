@@ -259,7 +259,7 @@ fn inline_constructor_default_to_property() {
         run(
             &only(rules::PreferPropertyDefault, 80400),
             "InlineConstructorDefaultToPropertyRector/Fixture",
-        )
+        );
     });
     // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
     run(

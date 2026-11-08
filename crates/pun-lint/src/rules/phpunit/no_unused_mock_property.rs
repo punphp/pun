@@ -100,9 +100,10 @@ impl Rule for NoUnusedMockProperty {
             .iter()
             .map(|m| {
                 let variable = match m {
-                    ClassLikeMember::Property(Property::Plain(p)) => {
-                        p.items.first().map(|i| i.variable())
-                    }
+                    ClassLikeMember::Property(Property::Plain(p)) => p
+                        .items
+                        .first()
+                        .map(mago_syntax::cst::PropertyItem::variable),
                     ClassLikeMember::Property(Property::Hooked(p)) => Some(p.item.variable()),
                     _ => None,
                 };
@@ -184,7 +185,7 @@ fn collect_from_class_method<'a>(stmts: &[&'a Statement<'a>]) -> Vec<&'a [u8]> {
         if !call.is_some_and(|c| c.is_name(&["createMock"])) {
             continue;
         }
-        if !names.iter().any(|n| *n == name) {
+        if !names.contains(&name) {
             names.push(name);
         }
     }
@@ -296,7 +297,7 @@ pub(super) fn traits_in_file<'n, 'a>(
         let ClassLikeMember::TraitUse(trait_use) = member else {
             continue;
         };
-        for id in trait_use.trait_names.iter() {
+        for id in &trait_use.trait_names {
             let trait_name = resolve(scope, id);
             let Some(metadata) = facts
                 .codebase

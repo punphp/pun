@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 /// The PHP the oracle scripts run on: PHP 8.5, which `token_get_all` and tools/api.php need (8.5 syntax such as a
 /// `final` promoted parameter). `PUN_PHP` names it; else the first `php`, `php8.5` (Debian) or `php85` (Herd) on
 /// PATH that reports 8.5. Anything else fails the test with the versions it found.
-pub fn php_path() -> PathBuf {
+pub(crate) fn php_path() -> PathBuf {
     static PHP: OnceLock<Result<PathBuf, String>> = OnceLock::new();
     PHP.get_or_init(find_php)
         .clone()
@@ -17,7 +17,7 @@ pub fn php_path() -> PathBuf {
 }
 
 /// `php_path()` as a command.
-pub fn php() -> Command {
+pub(crate) fn php() -> Command {
     Command::new(php_path())
 }
 
@@ -71,7 +71,7 @@ fn version(php: &Path) -> Option<String> {
 }
 
 /// The PHP-CS-Fixer checkout the `tools/*.php` scripts load: `PUN_PHP_CS_FIXER`, else `.oracle/php-cs-fixer`.
-pub fn require_php_cs_fixer() {
+pub(crate) fn require_php_cs_fixer() {
     let dir = std::env::var_os("PUN_PHP_CS_FIXER").map_or_else(
         || Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/php-cs-fixer"),
         PathBuf::from,

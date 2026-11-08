@@ -10,7 +10,7 @@ use super::Checker;
 
 /// What a scope boundary on [`Checker::frames`] is.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum FrameKind {
+pub(super) enum FrameKind {
     /// The file's top level.
     Top,
     /// A class-like body: a fresh scope with no function.
@@ -24,7 +24,7 @@ pub enum FrameKind {
 }
 
 /// A scope boundary, with the goto labels and gotos directly in it (GotoLabelVisitor's scope stack).
-pub struct Frame {
+pub(super) struct Frame {
     pub kind: FrameKind,
     labels: Vec<(Vec<u8>, Span)>,
     gotos: Vec<(Vec<u8>, Span)>,
@@ -33,7 +33,7 @@ pub struct Frame {
 }
 
 impl Frame {
-    pub fn new(kind: FrameKind) -> Frame {
+    pub(super) fn new(kind: FrameKind) -> Frame {
         Frame {
             kind,
             labels: Vec::new(),
@@ -121,7 +121,7 @@ impl Checker<'_, '_> {
 }
 
 /// MagicConstantContextRule.
-pub fn magic_constant(c: &mut Checker, m: &MagicConstant) {
+pub(super) fn magic_constant(c: &mut Checker, m: &MagicConstant) {
     let (name, identifier, message) = match m {
         MagicConstant::Class(_) if c.classes.is_empty() => {
             ("__CLASS__", "magicConstant.outOfClass", "outside a class")
@@ -154,7 +154,7 @@ pub fn magic_constant(c: &mut Checker, m: &MagicConstant) {
 }
 
 /// MagicConstantParamDefaultVisitor: a parameter's default that is a magic constant.
-pub fn parameter_default(c: &mut Checker, p: &FunctionLikeParameter) {
+pub(super) fn parameter_default(c: &mut Checker, p: &FunctionLikeParameter) {
     if let Some(d) = &p.default_value
         && let Expression::MagicConstant(m) = d.value
     {
@@ -164,7 +164,7 @@ pub fn parameter_default(c: &mut Checker, p: &FunctionLikeParameter) {
 
 /// DeclarePositionVisitor: whether each `declare` is the file's first statement (a shebang line before it is not a
 /// statement, nor are the tags).
-pub fn statement_position(c: &mut Checker, s: &Statement) {
+pub(super) fn statement_position(c: &mut Checker, s: &Statement) {
     match s {
         Statement::OpeningTag(_) | Statement::ClosingTag(_) => {}
         Statement::Inline(i)
@@ -184,7 +184,7 @@ pub fn statement_position(c: &mut Checker, s: &Statement) {
 }
 
 /// DeclareStrictTypesRule.
-pub fn declare(c: &mut Checker, d: &Declare) {
+pub(super) fn declare(c: &mut Checker, d: &Declare) {
     let Some(item) = d.items.iter().find(|i| i.name.value == b"strict_types") else {
         return;
     };
@@ -227,7 +227,7 @@ fn print_expr(c: &Checker, e: &Expression) -> String {
 }
 
 /// ConstructorReturnTypeRule (`InClassMethodNode`).
-pub fn constructor_return_type(c: &mut Checker, m: &Method) {
+pub(super) fn constructor_return_type(c: &mut Checker, m: &Method) {
     let (Some(_), Some(class)) = (&m.return_type_hint, c.class_scope()) else {
         return;
     };
@@ -271,7 +271,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
 }
 
 /// DeprecatedCastRule, UnsetCastRule and VoidCastRule.
-pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
+pub(super) fn cast(c: &mut Checker, u: &UnaryPrefix) {
     let deprecated = match u.operator {
         UnaryPrefixOperator::IntegerCast(..) => Some(("integer", "int")),
         UnaryPrefixOperator::BooleanCast(..) => Some(("boolean", "bool")),
@@ -326,7 +326,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
 }
 
 /// BacktickRule.
-pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
+pub(super) fn backtick(c: &mut Checker, s: &ShellExecuteString) {
     // PhpVersion::deprecatesBacktickOperator()
     if c.php_version < 80500 {
         return;
@@ -344,7 +344,7 @@ pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
 }
 
 /// NoncapturingCatchRule.
-pub fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
+pub(super) fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
     if clause.variable.is_some() || c.surely_at_least(80000) {
         return;
     }
@@ -357,14 +357,14 @@ pub fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
 }
 
 /// StandaloneThrowExprVisitor: a `throw` that is an expression statement.
-pub fn standalone_throw(c: &mut Checker, s: &ExpressionStatement) {
+pub(super) fn standalone_throw(c: &mut Checker, s: &ExpressionStatement) {
     if let Expression::Throw(t) = super::types::flow::unparen(s.expression) {
         c.standalone_throws.insert(t.span());
     }
 }
 
 /// ThrowExpressionRule.
-pub fn throw_expression(c: &mut Checker, t: &Throw) {
+pub(super) fn throw_expression(c: &mut Checker, t: &Throw) {
     // PhpVersion::supportsThrowExpression()
     if c.surely_at_least(80000) || c.standalone_throws.contains(&t.span()) {
         return;
@@ -379,7 +379,7 @@ pub fn throw_expression(c: &mut Checker, t: &Throw) {
 
 /// The PHP version branch of FunctionCallableRule, MethodCallableRule and StaticMethodCallableRule on `f(...)` at
 /// `at`: whether it reported (the rest of the rule is then skipped).
-pub fn first_class_callable(c: &mut Checker, at: Span, args: &PartialArgumentList) -> bool {
+pub(super) fn first_class_callable(c: &mut Checker, at: Span, args: &PartialArgumentList) -> bool {
     // PhpVersion::supportsFirstClassCallables(); `x |> f(...)` is the call `f(x)`
     if c.surely_at_least(80100)
         || c.piped.contains(&at)
@@ -401,7 +401,7 @@ pub fn first_class_callable(c: &mut Checker, at: Span, args: &PartialArgumentLis
 
 /// InstantiationCallableRule: `new X(...)`, which Mago parses as one unpacked argument that is a parse error. Whether it
 /// reported (NodeScopeResolver then analyses no `new`).
-pub fn instantiation_callable(c: &mut Checker, new: &Instantiation) -> bool {
+pub(super) fn instantiation_callable(c: &mut Checker, new: &Instantiation) -> bool {
     let Some(list) = &new.argument_list else {
         return false;
     };

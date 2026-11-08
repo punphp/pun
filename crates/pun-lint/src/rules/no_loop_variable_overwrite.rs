@@ -52,7 +52,7 @@ fn check_value_var(
 ) {
     match unparenthesize(expr) {
         Expression::Array(Array { elements, .. }) | Expression::List(List { elements, .. }) => {
-            for element in elements.iter() {
+            for element in elements {
                 match element {
                     ArrayElement::KeyValue(e) => check_value_var(foreach, ancestors, e.value, out),
                     ArrayElement::Value(e) => check_value_var(foreach, ancestors, e.value, out),

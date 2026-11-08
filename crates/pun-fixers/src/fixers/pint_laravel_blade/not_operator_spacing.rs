@@ -38,7 +38,7 @@ pub(super) fn post_format(content: &[u8]) -> Vec<u8> {
     if inserts.is_empty() {
         return content.to_vec();
     }
-    inserts.sort();
+    inserts.sort_unstable();
     let mut result = Vec::with_capacity(content.len() + inserts.len());
     let mut cursor = 0;
     for position in inserts {

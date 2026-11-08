@@ -253,7 +253,10 @@ pub(crate) fn describe(t: &TUnion) -> String {
     let mut arrays: Option<Array> = None;
     for a in t.types.iter() {
         match a {
-            TAtomic::Array(array) if a.get_intersection_types().is_none_or(|o| o.is_empty()) => {
+            TAtomic::Array(array)
+                if a.get_intersection_types()
+                    .is_none_or(<[mago_codex::ttype::atomic::TAtomic]>::is_empty) =>
+            {
                 let array = Array::of(array);
                 arrays = Some(match arrays {
                     Some(before) => before.merge(array),

@@ -13,10 +13,10 @@ use super::doc::NameScope;
 use super::facts::DocEntry;
 use super::{Checker, declared, require_tags, var_tags};
 
-pub const IDENTIFIERS: &[&str] = &["throws.notThrowable"];
+pub(super) const IDENTIFIERS: &[&str] = &["throws.notThrowable"];
 
 /// `processNode()` for php-parser's real statements. The virtual declaration entry points run in their new scope.
-pub fn statement(c: &mut Checker, statement: &Statement) {
+pub(super) fn statement(c: &mut Checker, statement: &Statement) {
     if matches!(
         statement,
         Statement::Class(_)
@@ -35,22 +35,27 @@ pub fn statement(c: &mut Checker, statement: &Statement) {
 }
 
 /// `InFunctionNode`: not an inherited reflection throw type, and not the surrounding function's templates.
-pub fn function(c: &mut Checker, function: &Function) {
+pub(super) fn function(c: &mut Checker, function: &Function) {
     check(c, function.span(), |c, entry| {
         declared::function_scope(c, function, &entry.doc)
     });
 }
 
 /// `InClassMethodNode`: the method's own tags, resolved in the declaring trait's/using class's context.
-pub fn method(c: &mut Checker, method: &Method) {
-    let (Some(context), Some(declaring)) = (c.class_scope(), super::missing_types::declaring(c, method.span())) else {
+pub(super) fn method(c: &mut Checker, method: &Method) {
+    let (Some(context), Some(declaring)) = (
+        c.class_scope(),
+        super::missing_types::declaring(c, method.span()),
+    ) else {
         return;
     };
-    check(c, method.span(), |c, entry| declared::method_scope(c, method, &entry.doc, declaring, context));
+    check(c, method.span(), |c, entry| {
+        declared::method_scope(c, method, &entry.doc, declaring, context)
+    });
 }
 
 /// The anonymous `InClassNode` starts at its attributes/modifiers/`class`, not its enclosing `new` expression.
-pub fn anonymous(c: &mut Checker, class: &AnonymousClass) {
+pub(super) fn anonymous(c: &mut Checker, class: &AnonymousClass) {
     let start = class
         .attribute_lists
         .first()
@@ -61,7 +66,7 @@ pub fn anonymous(c: &mut Checker, class: &AnonymousClass) {
 }
 
 /// Other statements and virtual class/hook nodes: FileTypeMapper's class and enclosing function name scope.
-pub fn node(c: &mut Checker, at: Span) {
+pub(super) fn node(c: &mut Checker, at: Span) {
     check(c, at, |c, _| statement_scope(c, at));
 }
 

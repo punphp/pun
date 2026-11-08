@@ -61,7 +61,7 @@ fn type_of(ctx: &Context<'_>, expr: &Expression<'_>, nullsafe: bool) -> Option<S
     match described
         .strip_prefix("{anonymous-class:")
         .and_then(|rest| rest.strip_suffix('}'))
-        .and_then(|rest| rest.rsplitn(3, ':').nth(1))
+        .and_then(|rest| rest.rsplit(':').nth(1))
     {
         Some(line) => Some(format!(
             "class@anonymous/{}:{line}",

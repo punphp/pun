@@ -223,7 +223,7 @@ fn raw_union_preserves_distinct_primary_parameters_and_receiver_identity() {
                     &codebase,
                     Default::default(),
                 );
-                assert_eq!(result.types.as_ref(), &[expected.clone()]);
+                assert_eq!(result.types.as_ref(), std::slice::from_ref(expected));
             }
         }
     }
@@ -324,7 +324,7 @@ fn exact_objects_keep_semantic_identity_without_changing_printed_class_names() {
             &codebase,
             Default::default(),
         );
-        assert_eq!(result.types.as_ref(), &[broad_box.clone()]);
+        assert_eq!(result.types.as_ref(), std::slice::from_ref(&broad_box));
     }
 
     // PHPStan retains unrelated generic classes and non-class/unknown nominal types.
@@ -887,7 +887,7 @@ fn codex_object_exclusion_queries_preserve_negative_constraints() {
         |excluded| TUnion::from_atomic(TAtomic::Mixed(TMixed::with_subtracted_type(excluded)));
     let ac = conjunction("C", object("A"));
     let bc = conjunction("C", object("B"));
-    let ca = subtracted("C", ac.clone());
+    let ca = subtracted("C", ac);
     let cb = subtracted("C", bc.clone());
     let types = BTreeMap::from([
         ("A", TUnion::from_atomic(object("A"))),

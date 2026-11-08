@@ -152,7 +152,7 @@ pub(crate) fn doc_tags(doc: &str) -> Vec<&str> {
             let len = rest
                 .find(|c: char| !(c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '\\' | ':')))
                 .unwrap_or(rest.len());
-            (len > 0).then(|| &line[..len + 1])
+            (len > 0).then(|| &line[..=len])
         })
         .collect()
 }
@@ -411,8 +411,8 @@ impl CallerType {
     fn of(t: Option<&TUnion>) -> CallerType {
         CallerType {
             names: t.map(object_class_names).unwrap_or_default(),
-            never: t.is_some_and(|t| t.is_never()),
-            mixed: t.is_none_or(|t| t.is_mixed()),
+            never: t.is_some_and(mago_codex::ttype::union::TUnion::is_never),
+            mixed: t.is_none_or(mago_codex::ttype::union::TUnion::is_mixed),
         }
     }
 
@@ -587,16 +587,15 @@ fn static_caller(
         }
         Expression::Parent(_) => {
             let (name, parent) = scope_of(facts, ancestors, class, path);
-            let parents: Vec<String> = facts
-                .codebase
-                .get_class_like(name.as_bytes())
-                .map(|c| {
+            let parents: Vec<String> = facts.codebase.get_class_like(name.as_bytes()).map_or_else(
+                || parent.into_iter().collect(),
+                |c| {
                     c.all_parent_classes
                         .iter()
                         .map(|p| String::from_utf8_lossy(p.as_bytes()).into_owned())
                         .collect()
-                })
-                .unwrap_or_else(|| parent.into_iter().collect());
+                },
+            );
             let caller = CallerType {
                 mixed: parents.is_empty(),
                 names: parents,
@@ -866,7 +865,7 @@ fn does_method_exist_in_trait(facts: &Facts, class: &ClassInfo<'_, '_>, method: 
         let Some(c) = codebase.get_class_like(name.as_bytes()) else {
             continue;
         };
-        for t in c.used_traits.iter() {
+        for t in &c.used_traits {
             let t = String::from_utf8_lossy(t.as_bytes()).into_owned();
             if !traits.iter().any(|k| k.eq_ignore_ascii_case(&t)) {
                 pending.push(t.clone());
@@ -911,7 +910,7 @@ fn is_used_by_trait(source: &str, trait_name: &str, class_name: &str, method: &[
                 return false;
             };
             let mut called = false;
-            for statement in body.statements.iter() {
+            for statement in &body.statements {
                 walk(Node::Statement(statement), &mut |n, inner| {
                     if called || matches!(n, Node::Class(_) | Node::AnonymousClass(_) | Node::Function(_)) {
                         return false;
@@ -1004,8 +1003,8 @@ pub(crate) fn method_data_providers(
                 }
             }
         }
-        for list in method.attribute_lists.iter() {
-            for attribute in list.attributes.iter() {
+        for list in &method.attribute_lists {
+            for attribute in &list.attributes {
                 let name = resolve_class_name(ancestors, &attribute.name);
                 let first = attribute
                     .argument_list

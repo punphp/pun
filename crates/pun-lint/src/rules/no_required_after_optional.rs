@@ -63,7 +63,7 @@ impl Rule for NoRequiredAfterOptional {
 fn edits(source: &str, list: &FunctionLikeParameterList<'_>) -> Vec<Edit> {
     let mut edits = Vec::new();
     let mut previous_optional = false;
-    for parameter in list.parameters.iter() {
+    for parameter in &list.parameters {
         if parameter.default_value.is_some() || parameter.ellipsis.is_some() {
             previous_optional = parameter.default_value.is_some();
             continue;

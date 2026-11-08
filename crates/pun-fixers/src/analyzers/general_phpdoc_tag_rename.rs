@@ -143,10 +143,10 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
                     self.replacements
                         .iter()
                         .find(|(f, _)| *f == tag)
-                        .map(|(_, t)| t.clone())
-                        // Keys go into the pattern unquoted, so `a|b` matches `a`, which is no key: upstream's
-                        // assert fails and the file errors with its message.
-                        .unwrap_or_else(|| panic!("assert(isset($replacements[$matches['tag']]))"))
+                        .map_or_else(
+                            || panic!("assert(isset($replacements[$matches['tag']]))"),
+                            |(_, t)| t.clone(),
+                        )
                 },
                 tokens[index].get_content(),
             );

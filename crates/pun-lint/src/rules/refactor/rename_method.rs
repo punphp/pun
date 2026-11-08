@@ -188,7 +188,7 @@ impl RenameMethod {
             })
         };
         let mut edits = Vec::new();
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };

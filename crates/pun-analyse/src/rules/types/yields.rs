@@ -10,7 +10,7 @@ use pun_phpstan::types::{Level, NeverKind, Tri, Type, is_super_type_of, mixed, r
 use super::super::{Checker, declared};
 use super::missing_return::generator_return;
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "generator.outOfFunction",
     "generator.returnType",
     "generator.keyType",
@@ -34,14 +34,14 @@ pub(super) fn typed(y: &Yield, spans: &mut Vec<Span>) {
 struct Outside(Vec<Span>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Outside {
-    fn walk_in_yield(&mut self, y: &'ast Yield<'arena>, _: &mut ()) {
+    fn walk_in_yield(&mut self, y: &'ast Yield<'arena>, (): &mut ()) {
         self.0.push(y.span());
     }
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {}
-    fn walk_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {}
+    fn walk_property_hook(&mut self, _: &'ast PropertyHook<'arena>, (): &mut ()) {}
 }
 
 pub(in super::super) fn program(c: &mut Checker, program: &Program) {

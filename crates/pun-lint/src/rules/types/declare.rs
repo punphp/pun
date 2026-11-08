@@ -230,9 +230,10 @@ pub(crate) fn expression_order<'a>(
     if let Expression::Conditional(conditional) = unparenthesize(expr) {
         let condition = type_of(conditional.condition);
         let branches = [
-            (!condition.is_some_and(|t| t.is_always_falsy()))
+            (!condition.is_some_and(mago_codex::ttype::union::TUnion::is_always_falsy))
                 .then_some(conditional.then.unwrap_or(conditional.condition)),
-            (!condition.is_some_and(|t| t.is_always_truthy())).then_some(conditional.r#else),
+            (!condition.is_some_and(mago_codex::ttype::union::TUnion::is_always_truthy))
+                .then_some(conditional.r#else),
         ];
         let order: Vec<&TAtomic> = branches
             .into_iter()

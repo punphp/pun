@@ -22,7 +22,7 @@ pub(super) fn typed_expressions(program: &Program, level: u8) -> Vec<Span> {
         fn walk_in_function_partial_application(
             &mut self,
             f: &'ast FunctionPartialApplication<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             if internal::is_callable(&f.argument_list) && checked_expression(f.function, self.0) {
                 self.1.push(unparen(f.function).span());

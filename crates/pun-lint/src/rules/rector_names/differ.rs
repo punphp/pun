@@ -51,7 +51,7 @@ pub(crate) struct NewItem {
 
 impl NewItem {
     /// The old item `i`, kept with its comments.
-    pub fn kept(i: usize) -> NewItem {
+    pub(crate) fn kept(i: usize) -> NewItem {
         NewItem {
             key: Some(i),
             text: String::new(),
@@ -277,7 +277,7 @@ fn string_spans(text: &str, scripting: bool) -> Vec<Span> {
                 }
             }
             TokenKind::LiteralString | TokenKind::StringPart if heredoc.is_none() => {
-                spans.push(Span::new(start, end))
+                spans.push(Span::new(start, end));
             }
             _ => {}
         }

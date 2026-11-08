@@ -11,12 +11,19 @@ use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, property_access};
 use super::flow::is_this;
 
-pub const IDENTIFIERS: &[&str] = &["property.nonObject", "property.protected", "staticProperty.nonObject", "staticProperty.protected"];
+pub(super) const IDENTIFIERS: &[&str] = &[
+    "property.nonObject",
+    "property.protected",
+    "staticProperty.nonObject",
+    "staticProperty.protected",
+];
 
 /// The class a receiver type names, for its properties.
 fn class_of(t: &Type) -> Option<&str> {
     match t {
-        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
+            Some(n)
+        }
         Type::Closure(_) => Some("Closure"),
         _ => None,
     }
@@ -24,7 +31,10 @@ fn class_of(t: &Type) -> Option<&str> {
 
 impl<'a> Checker<'a, '_> {
     /// The classes of `k` and its ancestors and traits.
-    fn lineage(&self, k: &'a ClassLikeMetadata) -> impl Iterator<Item = &'a ClassLikeMetadata> + '_ {
+    fn lineage(
+        &self,
+        k: &'a ClassLikeMetadata,
+    ) -> impl Iterator<Item = &'a ClassLikeMetadata> + '_ {
         std::iter::once(&k.name)
             .chain(k.all_parent_classes.iter())
             .chain(k.all_parent_interfaces.iter())
@@ -34,7 +44,10 @@ impl<'a> Checker<'a, '_> {
 
     /// The `@mixin` types of `k` and its lineage.
     pub(super) fn mixins(&self, k: &'a ClassLikeMetadata) -> Vec<Type> {
-        self.lineage(k).flat_map(|a| a.mixins.iter()).map(|m| self.to_phpstan(&m.type_union)).collect()
+        self.lineage(k)
+            .flat_map(|a| a.mixins.iter())
+            .map(|m| self.to_phpstan(&m.type_union))
+            .collect()
     }
 
     /// The classes `@phpstan-require-extends` and `@phpstan-require-implements` of `k` (and its lineage) name, whose
@@ -49,28 +62,42 @@ impl<'a> Checker<'a, '_> {
     /// [`Self::has_property()`] of class `n`.
     fn class_has_property(&self, n: &str, property: &[u8], is_static: bool) -> Tri {
         // an unknown class is findTypeToCheck()'s ErrorType, never checked
-        let Lookup::Found(k) = self.class_like(n) else { return Tri::Yes };
+        let Lookup::Found(k) = self.class_like(n) else {
+            return Tri::Yes;
+        };
         let has = if is_static {
             property_access::native_property(self, k, property) == Some(true)
         } else {
             property_access::has_instance_property(self, k, property)
         };
         // SimpleXMLElementProperties: every name is a child element
-        let xml = std::iter::once(&k.name).chain(k.all_parent_classes.iter()).any(|n| n.as_bytes().eq_ignore_ascii_case(b"SimpleXMLElement"));
+        let xml = std::iter::once(&k.name)
+            .chain(k.all_parent_classes.iter())
+            .any(|n| n.as_bytes().eq_ignore_ascii_case(b"SimpleXMLElement"));
         // the class reflection extensions answer instance properties only
         let extended = || {
             // MixinPropertiesClassReflectionExtension; ponytail: a mixin other than a class (`@mixin T`) is not resolved
-            self.mixins(k).iter().any(|t| !matches!(t, Type::Object(..)) || self.mixin_has_property(t, property))
+            self.mixins(k)
+                .iter()
+                .any(|t| !matches!(t, Type::Object(..)) || self.mixin_has_property(t, property))
                 || xml
-                || self.required(k).iter().any(|r| property_access::has_instance_property(self, r, property))
+                || self
+                    .required(k)
+                    .iter()
+                    .any(|r| property_access::has_instance_property(self, r, property))
                 || super::super::larastan::has_model_property(self, k, property)
         };
         if has || !is_static && extended() {
             return Tri::Yes;
         }
-        let is_final = k.flags.is_final() || k.original_name.as_bytes().starts_with(b"{anonymous-class:");
+        let is_final =
+            k.flags.is_final() || k.original_name.as_bytes().starts_with(b"{anonymous-class:");
         let dynamic = !is_static && property_access::allows_dynamic_properties(self, k);
-        if dynamic || !is_final { Tri::Maybe } else { Tri::No }
+        if dynamic || !is_final {
+            Tri::Maybe
+        } else {
+            Tri::No
+        }
     }
 
     /// MixinPropertiesClassReflectionExtension::findProperty(): a mixin type already being asked for the same property
@@ -79,7 +106,10 @@ impl<'a> Checker<'a, '_> {
         thread_local! {
             static IN_PROCESS: std::cell::RefCell<std::collections::HashSet<(String, Vec<u8>)>> = Default::default();
         }
-        let key = (declared::with_classes(self, || t.describe(Level::TypeOnly)), property.to_vec());
+        let key = (
+            declared::with_classes(self, || t.describe(Level::TypeOnly)),
+            property.to_vec(),
+        );
         if !IN_PROCESS.with_borrow_mut(|p| p.insert(key.clone())) {
             return false;
         }
@@ -114,7 +144,11 @@ impl<'a> Checker<'a, '_> {
 
     /// The declaring class and visibility of the instance property a type has.
     // ponytail: a union's UnionTypePropertyReflection is its first member's property
-    fn property_of(&self, t: &Type, property: &[u8]) -> Option<(&'a ClassLikeMetadata, mago_codex::visibility::Visibility)> {
+    fn property_of(
+        &self,
+        t: &Type,
+        property: &[u8],
+    ) -> Option<(&'a ClassLikeMetadata, mago_codex::visibility::Visibility)> {
         match t {
             Type::Union(ts) | Type::Benevolent(ts) | Type::Intersection(ts) => {
                 ts.iter().find_map(|t| self.property_of(t, property))
@@ -122,7 +156,9 @@ impl<'a> Checker<'a, '_> {
             Type::Template(tt) => self.property_of(&tt.bound, property),
             t => {
                 let k = self.class_like(class_of(t)?).found()?;
-                let declaring = self.codebase.get_declaring_property_class(k.name.as_bytes(), property)?;
+                let declaring = self
+                    .codebase
+                    .get_declaring_property_class(k.name.as_bytes(), property)?;
                 let d = self.codebase.get_class_like(declaring.as_bytes())?;
                 Some((d, d.properties.get(&word(property))?.read_visibility))
             }
@@ -149,14 +185,19 @@ pub(in super::super) fn property_fetch(
     let name = String::from_utf8_lossy(id.value).into_owned();
     let property = format!("${name}");
     let property = property.as_bytes();
-    let ty = c
-        .phpstan_type(object)
-        .map(|t| if nullsafe || super::super::assign::contains_nullsafe(object) { super::receivers::non_null(t) } else { t });
+    let ty = c.phpstan_type(object).map(|t| {
+        if nullsafe || super::super::assign::contains_nullsafe(object) {
+            super::receivers::non_null(t)
+        } else {
+            t
+        }
+    });
     let found = {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
             c.can_access_properties(t).yes()
-                && (c.has_property(t, property, false).yes() || c.has_property(t, property, true).yes())
+                && (c.has_property(t, property, false).yes()
+                    || c.has_property(t, property, true).yes())
         })
     };
     let Some(t) = found else {
@@ -190,40 +231,68 @@ pub(in super::super) fn property_fetch(
         if let [n] = names.as_slice()
             && let Lookup::Found(k) = c.class_like(n)
         {
-            let mut parent = k.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()));
+            let mut parent = k
+                .direct_parent_class
+                .and_then(|n| c.codebase.get_class_like(n.as_bytes()));
             while let Some(p) = parent {
                 if property_access::has_instance_property(c, p, property) {
                     let refused = p.properties.get(&word(property)).is_some_and(|x| {
-                        !calls::can_call(c, c.class_scope(), &String::from_utf8_lossy(p.name.as_bytes()), x.read_visibility)
+                        !calls::can_call(
+                            c,
+                            c.class_scope(),
+                            &String::from_utf8_lossy(p.name.as_bytes()),
+                            x.read_visibility,
+                        )
                     });
                     if refused {
-                        let message = format!("Access to private property ${name} of parent class {}.", c.display(p));
+                        let message = format!(
+                            "Access to private property ${name} of parent class {}.",
+                            c.display(p)
+                        );
                         c.report(id.span(), "property.private", message, None);
                     }
                     return;
                 }
-                parent = p.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()));
+                parent = p
+                    .direct_parent_class
+                    .and_then(|n| c.codebase.get_class_like(n.as_bytes()));
             }
         }
         if has_static.yes() {
             let declaring = names
                 .iter()
-                .find_map(|n| c.codebase.get_declaring_property_class(n.as_bytes(), property))
+                .find_map(|n| {
+                    c.codebase
+                        .get_declaring_property_class(n.as_bytes(), property)
+                })
                 .and_then(|d| c.codebase.get_class_like(d.as_bytes()))
                 .map_or_else(|| describe(c, &t), |d| c.display(d));
             let message = format!("Non-static access to static property {declaring}::${name}.");
             c.report(id.span(), "staticProperty.nonStaticAccess", message, None);
             return;
         }
-        let message = format!("Access to an undefined property {}::${name}.", describe(c, &t));
-        c.report(span, "property.notFound", message, Some(property_access::TIP));
+        let message = format!(
+            "Access to an undefined property {}::${name}.",
+            describe(c, &t)
+        );
+        c.report(
+            span,
+            "property.notFound",
+            message,
+            Some(property_access::TIP),
+        );
         return;
     }
     // ponytail: a write is checked as a read: asymmetric visibility (`private(set)`, `protected(set)`) is not
     let Some((declaring, visibility)) = c.property_of(&t, property) else {
         return;
     };
-    if calls::can_call(c, c.class_scope(), &String::from_utf8_lossy(declaring.name.as_bytes()), visibility) {
+    if calls::can_call(
+        c,
+        c.class_scope(),
+        &String::from_utf8_lossy(declaring.name.as_bytes()),
+        visibility,
+    ) {
         return;
     }
     // ClassReflection::getInstanceProperty(): a class allowing dynamic properties answers an unreadable native
@@ -238,7 +307,11 @@ pub(in super::super) fn property_fetch(
     if allowed && !declaring.flags.is_final() {
         return;
     }
-    let v = if visibility.is_private() { "private" } else { "protected" };
+    let v = if visibility.is_private() {
+        "private"
+    } else {
+        "protected"
+    };
     let described = declared::with_classes(c, || t.describe(Level::TypeOnly));
     let message = format!("Access to {v} property {described}::${name}.");
     c.report(id.span(), &format!("property.{v}"), message, None);
@@ -250,7 +323,10 @@ pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
     let class = super::flow::unparen(class);
     if !matches!(
         class,
-        Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+        Expression::Identifier(_)
+            | Expression::Self_(_)
+            | Expression::Static(_)
+            | Expression::Parent(_)
     ) {
         spans.push(class.span());
     }
@@ -259,14 +335,22 @@ pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
 /// AccessStaticPropertiesCheck::processSingleProperty() on `$class::$name`. As for a named class (property_access.rs),
 /// no allowed-undefined context exempts it (oracle-checked: `isset($class::$x)` on `C|false` is reported).
 /// `property` has its `$` (a dynamic name is not checked).
-pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
+pub(in super::super) fn static_property_fetch(
+    c: &mut Checker,
+    p: &StaticPropertyAccess,
+    property: &[u8],
+) {
     if !c.checks_expression(p.class) {
         return;
     }
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
-    let ty = c
-        .phpstan_type(super::flow::unparen(p.class))
-        .map(|t| if super::super::assign::contains_nullsafe(p.class) { t.remove_null() } else { t });
+    let ty = c.phpstan_type(super::flow::unparen(p.class)).map(|t| {
+        if super::super::assign::contains_nullsafe(p.class) {
+            t.remove_null()
+        } else {
+            t
+        }
+    });
     let found = {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
@@ -286,7 +370,12 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
     let described = declared::with_classes(c, || for_describe.describe(Level::TypeOnly));
     // TypeCombinator::remove($classType, new StringType())
     if let Type::Union(ts) = &t {
-        t = pun_phpstan::types::union(ts.iter().filter(|t| !t.is_string().yes()).cloned().collect());
+        t = pun_phpstan::types::union(
+            ts.iter()
+                .filter(|t| !t.is_string().yes())
+                .cloned()
+                .collect(),
+        );
     }
     let at = p.property.span();
     let can = c.can_access_properties(&t);
@@ -306,19 +395,31 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
         if let [n] = names.as_slice()
             && let Lookup::Found(k) = c.class_like(n)
         {
-            let mut parent = k.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()));
+            let mut parent = k
+                .direct_parent_class
+                .and_then(|n| c.codebase.get_class_like(n.as_bytes()));
             while let Some(p) = parent {
                 if property_access::native_property(c, p, property) == Some(true) {
                     let refused = p.properties.get(&word(property)).is_some_and(|x| {
-                        !calls::can_call(c, c.class_scope(), &String::from_utf8_lossy(p.name.as_bytes()), x.read_visibility)
+                        !calls::can_call(
+                            c,
+                            c.class_scope(),
+                            &String::from_utf8_lossy(p.name.as_bytes()),
+                            x.read_visibility,
+                        )
                     });
                     if refused {
-                        let message = format!("Access to private static property ${name} of parent class {}.", c.display(p));
+                        let message = format!(
+                            "Access to private static property ${name} of parent class {}.",
+                            c.display(p)
+                        );
                         c.report(at, "staticProperty.private", message, None);
                     }
                     return;
                 }
-                parent = p.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()));
+                parent = p
+                    .direct_parent_class
+                    .and_then(|n| c.codebase.get_class_like(n.as_bytes()));
             }
         }
         if c.has_property(&t, property, false).yes() {
@@ -331,12 +432,22 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
         c.report(at, "staticProperty.notFound", message, None);
         return;
     }
-    let found = declaring.and_then(|d| Some((d, d.properties.get(&word(property))?.read_visibility)));
+    let found =
+        declaring.and_then(|d| Some((d, d.properties.get(&word(property))?.read_visibility)));
     let Some((d, visibility)) = found else { return };
-    if calls::can_call(c, c.class_scope(), &String::from_utf8_lossy(d.name.as_bytes()), visibility) {
+    if calls::can_call(
+        c,
+        c.class_scope(),
+        &String::from_utf8_lossy(d.name.as_bytes()),
+        visibility,
+    ) {
         return;
     }
-    let v = if visibility.is_private() { "private" } else { "protected" };
+    let v = if visibility.is_private() {
+        "private"
+    } else {
+        "protected"
+    };
     let message = format!("Access to {v} property ${name} of class {}.", c.display(d));
     c.report(at, &format!("staticProperty.{v}"), message, None);
 }

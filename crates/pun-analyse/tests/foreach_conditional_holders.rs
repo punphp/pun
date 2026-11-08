@@ -1,4 +1,9 @@
 //! ForeachHandler's constant-entry conditional holders through both public analyzers.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "the helpers print the failing case before the test asserts"
+)]
 
 use std::borrow::Cow;
 use std::path::Path;
@@ -111,8 +116,10 @@ fn constant_entry_observations_are_independent_of_native_tracking() {
         let program = parse_file(&arena, &file);
         assert!(!program.has_errors());
         let names = NameResolver::new(&arena).resolve(program);
-        let mut settings = Settings::default();
-        settings.track_native_types = native;
+        let settings = Settings {
+            track_native_types: native,
+            ..Default::default()
+        };
         let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
         let mut references = SymbolReferences::new();
         populate_codebase(

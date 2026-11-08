@@ -152,7 +152,7 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
             Some(Expression::LegacyArray(a)) => &a.elements,
             _ => return None,
         };
-        for set in elements.iter() {
+        for set in elements {
             let items = match set.get_value().map(unparenthesize) {
                 Some(Expression::Array(a)) => &a.elements,
                 Some(Expression::LegacyArray(a)) => &a.elements,

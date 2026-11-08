@@ -243,7 +243,7 @@ impl Checker<'_, '_> {
             Expression::Variable(Variable::Direct(v)) => p.impure |= SUPERGLOBALS.contains(&v.name),
             Expression::Variable(Variable::Indirect(v)) => self.points(v.expression, p),
             Expression::Variable(Variable::Nested(v)) => {
-                self.points(&Expression::Variable(v.variable.clone()), p)
+                self.points(&Expression::Variable(v.variable.clone()), p);
             }
             Expression::Parenthesized(e) => self.points(e.expression, p),
             Expression::Binary(b) => {
@@ -252,7 +252,7 @@ impl Checker<'_, '_> {
             }
             Expression::UnaryPrefix(u) => match u.operator {
                 UnaryPrefixOperator::PreIncrement(_) | UnaryPrefixOperator::PreDecrement(_) => {
-                    self.assign_points(u.operand, p)
+                    self.assign_points(u.operand, p);
                 }
                 _ => self.points(u.operand, p),
             },
@@ -323,7 +323,7 @@ impl Checker<'_, '_> {
                 }
             }
             Expression::Construct(Construct::Isset(i)) => {
-                all(self, &mut i.values.iter().copied(), p)
+                all(self, &mut i.values.iter().copied(), p);
             }
             Expression::Construct(Construct::Empty(i)) => self.points(i.value, p),
             Expression::Clone(k) => self.points(k.object, p),
@@ -331,7 +331,7 @@ impl Checker<'_, '_> {
                 // a match that isn't exhaustive has an explicit UnhandledMatchError throw point
                 p.impure |= !self.exhaustive(m);
                 self.points(m.expression, p);
-                for arm in m.arms.iter() {
+                for arm in &m.arms {
                     if let MatchArm::Expression(a) = arm {
                         all(self, &mut a.conditions.iter().copied(), p);
                     }
@@ -437,7 +437,7 @@ impl Checker<'_, '_> {
 
     /// An argument list: a closure or arrow function argument runs its body (when the callee calls it).
     fn arguments(&self, args: &ArgumentList, p: &mut Points) {
-        for arg in args.arguments.iter() {
+        for arg in &args.arguments {
             match unparen(arg.value()) {
                 Expression::ArrowFunction(f) => self.points(f.expression, p),
                 Expression::Closure(k) => match k.body.statements.as_slice() {
@@ -519,7 +519,7 @@ impl Checker<'_, '_> {
             Some(values)
         };
         let mut covered: Vec<Vec<u8>> = Vec::new();
-        for arm in m.arms.iter() {
+        for arm in &m.arms {
             let MatchArm::Expression(a) = arm else {
                 return true;
             };
@@ -789,27 +789,27 @@ impl Checker<'_, '_> {
             p: Points,
         }
         impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Body<'_, '_, '_> {
-            fn walk_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+            fn walk_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
                 self.c.points(e, &mut self.p);
             }
-            fn walk_in_echo(&mut self, _: &'ast Echo<'arena>, _: &mut ()) {
+            fn walk_in_echo(&mut self, _: &'ast Echo<'arena>, (): &mut ()) {
                 self.p.impure = true;
             }
-            fn walk_in_echo_tag(&mut self, _: &'ast EchoTag<'arena>, _: &mut ()) {
+            fn walk_in_echo_tag(&mut self, _: &'ast EchoTag<'arena>, (): &mut ()) {
                 self.p.impure = true;
             }
-            fn walk_in_global(&mut self, _: &'ast Global<'arena>, _: &mut ()) {
+            fn walk_in_global(&mut self, _: &'ast Global<'arena>, (): &mut ()) {
                 self.p.impure = true;
             }
-            fn walk_in_static(&mut self, _: &'ast Static<'arena>, _: &mut ()) {
+            fn walk_in_static(&mut self, _: &'ast Static<'arena>, (): &mut ()) {
                 self.p.impure = true;
             }
-            fn walk_in_inline(&mut self, _: &'ast Inline<'arena>, _: &mut ()) {
+            fn walk_in_inline(&mut self, _: &'ast Inline<'arena>, (): &mut ()) {
                 self.p.impure = true;
             }
-            fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+            fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
                 // a property unset
-                for value in u.values.iter() {
+                for value in &u.values {
                     let mut target = unparen(value);
                     while let Expression::ArrayAccess(a) = target {
                         target = unparen(a.array);
@@ -817,8 +817,8 @@ impl Checker<'_, '_> {
                     self.p.impure |= matches!(target, Expression::Access(_));
                 }
             }
-            fn walk_function(&mut self, _: &'ast mago_syntax::cst::Function<'arena>, _: &mut ()) {}
-            fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
+            fn walk_function(&mut self, _: &'ast mago_syntax::cst::Function<'arena>, (): &mut ()) {}
+            fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
         }
         let mut body = Body { c: self, p: Points::default() };
         for s in statements {
@@ -972,8 +972,9 @@ fn noop(c: &mut Checker, e: &Expression, assign: bool) {
 fn noop_expression(c: &mut Checker, e: &Expression) {
     match e {
         // NoopRule: a call is printed only when its callee is callable: here, a string naming a function
-        Expression::Call(Call::Function(f)) if matches!(unparen(f.function), Expression::Literal(Literal::String(s)) if s.value.and_then(|n| c.string_callable(n)).is_some()) => {
-            report_expression(c, e)
+        Expression::Call(Call::Function(f)) if matches!(unparen(f.function), Expression::Literal(Literal::String(s)) if s.value.and_then(|n| c.string_callable(n)).is_some()) =>
+        {
+            report_expression(c, e);
         }
         Expression::Call(_)
         | Expression::PartialApplication(_)
@@ -1097,43 +1098,43 @@ fn method_message(
 pub(super) fn typed(s: &ExpressionStatement) -> Vec<Span> {
     struct Wanted(Vec<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, _: &mut ()) {
+        fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, (): &mut ()) {
             self.0.push(unparen(m.object).span());
         }
         fn walk_in_null_safe_method_call(
             &mut self,
             m: &'ast NullSafeMethodCall<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.0.push(unparen(m.object).span());
         }
         fn walk_in_method_partial_application(
             &mut self,
             m: &'ast MethodPartialApplication<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.0.push(unparen(m.object).span());
         }
         fn walk_in_static_method_partial_application(
             &mut self,
             m: &'ast StaticMethodPartialApplication<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.0.push(unparen(m.class).span());
         }
-        fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, (): &mut ()) {
             self.0.push(unparen(m.class).span());
         }
-        fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+        fn walk_in_match(&mut self, m: &'ast Match<'arena>, (): &mut ()) {
             self.0.push(m.expression.span());
-            for arm in m.arms.iter() {
+            for arm in &m.arms {
                 if let MatchArm::Expression(a) = arm {
                     self.0.extend(a.conditions.iter().map(|c| c.span()));
                 }
             }
         }
-        fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-        fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
+        fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+        fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
     }
     let mut w = Wanted(vec![s.expression.span(), unparen(s.expression).span()]);
     w.walk_expression(s.expression, &mut ());
@@ -1232,12 +1233,12 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
         Expression::Construct(Construct::Empty(i)) => format!("empty({})", print(c, i.value)),
         Expression::CompositeString(CompositeString::Interpolated(s)) => {
             let mut out = String::from("\"");
-            for part in s.parts.iter() {
+            for part in &s.parts {
                 match part {
                     StringPart::Literal(l) => out.push_str(&String::from_utf8_lossy(l.raw)),
                     StringPart::Expression(e) => out.push_str(&format!("{{{}}}", print(c, e))),
                     StringPart::BracedExpression(b) => {
-                        out.push_str(&format!("{{{}}}", print(c, b.expression)))
+                        out.push_str(&format!("{{{}}}", print(c, b.expression)));
                     }
                 }
             }
@@ -1281,7 +1282,7 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
         // pExpr_ArrowFunction(): inline attribute groups with resolved names, then `fn(...) => `
         Expression::ArrowFunction(f) => {
             let mut out = String::new();
-            for list in f.attribute_lists.iter() {
+            for list in &f.attribute_lists {
                 let attributes: Vec<String> = list
                     .attributes
                     .iter()

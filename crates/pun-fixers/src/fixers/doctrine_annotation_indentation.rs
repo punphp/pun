@@ -14,7 +14,7 @@ struct DoctrineAnnotationIndentationFixer {
     indent_mixed_lines: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(DoctrineAnnotationIndentationFixer {
         ignored_tags: vec![],
         indent_mixed_lines: false,

@@ -14,7 +14,7 @@ use super::rector_stmts::{List, line_indent};
 use crate::syntax::{node_span, unparenthesize};
 
 /// `Arg::$value`.
-pub fn value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
+pub(super) fn value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
     match arg {
         Argument::Positional(a) => a.value,
         Argument::Named(a) => a.value,
@@ -22,13 +22,13 @@ pub fn value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
 }
 
 /// `$arg->unpack`.
-pub fn unpacked(arg: &Argument<'_>) -> bool {
+pub(super) fn unpacked(arg: &Argument<'_>) -> bool {
     matches!(arg, Argument::Positional(a) if a.ellipsis.is_some())
 }
 
 /// The edit php-parser's printer makes when it removes the argument at `index`: the argument and the separator before
 /// it, or, for the first, the argument and the text up to the next one (the callers never remove a sole argument).
-pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
+pub(super) fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
     let items = list.arguments.as_slice();
     let span = node_span(&items[index]);
     if index > 0 {
@@ -39,7 +39,7 @@ pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
 }
 
 /// The edit php-parser's printer makes when it appends `code` as a new last argument.
-pub fn append_argument(source: &str, list: &ArgumentList<'_>, code: &str) -> Edit {
+pub(super) fn append_argument(source: &str, list: &ArgumentList<'_>, code: &str) -> Edit {
     let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
     append_item(
         source,
@@ -53,7 +53,7 @@ pub fn append_argument(source: &str, list: &ArgumentList<'_>, code: &str) -> Edi
 /// `spans` and whose `(` ends at `open`: after the last item, or (`emptyListInsertionMap`) right after the `(`.
 /// `isMultiline()`: with a line break between every two items, the new one goes on a line of its own at the indent
 /// of the last.
-pub fn append_item(source: &str, spans: &[Span], open: usize, code: &str) -> Edit {
+pub(super) fn append_item(source: &str, spans: &[Span], open: usize, code: &str) -> Edit {
     let Some(last) = spans.last() else {
         return Edit::new(Span::new(open, open), code.to_string());
     };
@@ -70,7 +70,7 @@ pub fn append_item(source: &str, spans: &[Span], open: usize, code: &str) -> Edi
 
 /// The namespace and the class imports (`use A\B as C;`: alias lower-cased => `A\B`) that apply at a node, from its
 /// ancestors.
-fn scope<'a>(ancestors: &[Node<'a, '_>]) -> (String, Vec<(String, String)>) {
+fn scope(ancestors: &[Node<'_, '_>]) -> (String, Vec<(String, String)>) {
     let mut namespace = String::new();
     let mut statements: Option<&[Statement<'_>]> = None;
     for node in ancestors.iter().rev() {
@@ -125,7 +125,7 @@ fn scope<'a>(ancestors: &[Node<'a, '_>]) -> (String, Vec<(String, String)>) {
 
 /// `NameResolver`'s fully qualified class name for `name` (without a leading backslash), as written at a node with
 /// these ancestors.
-pub fn class_name(ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> String {
+pub(super) fn class_name(ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> String {
     let written = String::from_utf8_lossy(name.value()).into_owned();
     if let Identifier::FullyQualified(_) = name {
         return written.trim_start_matches('\\').to_string();
@@ -165,7 +165,7 @@ fn join(namespace: &str, name: &str) -> String {
 /// Class(...)` itself, or a variable that is a parameter declared with that class and never written, or that its scope
 /// assigns exactly once, with `new Class(...)`, before `at`. PHPStan's `isObjectType` also accepts subclasses, which
 /// needs reflection.
-pub fn is_object_of(
+pub(super) fn is_object_of(
     ancestors: &[Node<'_, '_>],
     expr: &Expression<'_>,
     class: &str,
@@ -182,7 +182,7 @@ pub fn is_object_of(
 
 /// What the syntax knows about an expression: the parameter declaration of a variable that is never written, or the
 /// one value a variable is assigned.
-pub enum Known<'a> {
+pub(super) enum Known<'a> {
     Hint(&'a Hint<'a>),
     Value(&'a Expression<'a>),
 }
@@ -190,7 +190,7 @@ pub enum Known<'a> {
 /// See [`Known`]: `expr` itself unless it is a variable; for a variable, its parameter's type when it is never
 /// written, or the right side of its one plain assignment before `at` in its scope. An arrow function, and a closure
 /// through `use ($x)`, read the variable from the scope around them.
-pub fn known<'a>(
+pub(super) fn known<'a>(
     ancestors: &[Node<'a, '_>],
     expr: &'a Expression<'a>,
     at: usize,
@@ -280,7 +280,7 @@ fn top_level(scope: &Node<'_, '_>, assignment: &Assignment<'_>) -> bool {
 
 /// A constant value of PHPStan's type for an expression.
 #[derive(Clone, Debug, PartialEq)]
-pub enum Constant {
+pub(super) enum Constant {
     Int(i64),
     Float(f64),
     String(Vec<u8>),
@@ -291,7 +291,11 @@ pub enum Constant {
 /// `ValueResolver::getValue` where the syntax decides it: a literal, `-`/`+` on a number, `~` on a number or string, a
 /// constant PHPStan knows the value of (`PHP_INT_MAX` and the like; not the `PHP_FLOAT_*` ones, which it types
 /// `float`), or a variable whose one value (see [`known`]) is one of those.
-pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> Option<Constant> {
+pub(super) fn constant(
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    at: usize,
+) -> Option<Constant> {
     let expr = match known(ancestors, expr, at)? {
         Known::Value(v) => v,
         Known::Hint(_) => return None,
@@ -379,10 +383,10 @@ fn writes_of<'ast, 'arena>(node: Node<'ast, 'arena>, name: &[u8], out: &mut Writ
         Node::Assignment(a) => {
             match a.lhs {
                 Expression::Variable(Variable::Direct(v)) if v.name == name => {
-                    out.assignments.push(a)
+                    out.assignments.push(a);
                 }
                 lhs if mentions(Node::Expression(lhs), name) => {
-                    out.other = Some(node_span(a).start)
+                    out.other = Some(node_span(a).start);
                 }
                 _ => {}
             }
@@ -429,7 +433,7 @@ fn mentions(node: Node<'_, '_>, name: &[u8]) -> bool {
 
 /// A native type PHPStan's `getNativeType()` proves for an expression, as far as lint-b's rules ask.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Native {
+pub(super) enum Native {
     String,
     Int,
 }
@@ -437,7 +441,11 @@ pub enum Native {
 /// `getNativeType($expr)->isString()->yes()` or `->isInteger()->yes()`, where the syntax proves it: literals, an
 /// interpolated string, `.`, the string and int casts, `-`/`+` on an int, and a variable whose declaration or one value
 /// (see [`known`]) is one of those.
-pub fn native(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> Option<Native> {
+pub(super) fn native(
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    at: usize,
+) -> Option<Native> {
     match known(ancestors, expr, at)? {
         Known::Hint(Hint::String(_)) => Some(Native::String),
         Known::Hint(Hint::Integer(_)) => Some(Native::Int),
@@ -477,7 +485,7 @@ pub fn native(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> O
 
 /// php-parser's `pDereferenceLhs`: `expr` as the left side of `[...]`, `->` or `::`, in parentheses unless it is a
 /// variable, a name, a fetch, a call, an array or a plain string.
-pub fn dereferenceable(source: &str, expr: &Expression<'_>) -> String {
+pub(super) fn dereferenceable(source: &str, expr: &Expression<'_>) -> String {
     let expr = unparenthesize(expr);
     let code = &source[node_span(expr).start..node_span(expr).end];
     match expr {
@@ -632,7 +640,11 @@ const ARRAY_FUNCTIONS: &[&str] = &[
 
 /// `getNativeType($expr)->isArray()->yes()` where the syntax proves it: an array literal, an `(array)` cast, or a
 /// variable declared `array` or whose one value (see [`known`]) is one of those.
-pub fn is_native_array(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> bool {
+pub(super) fn is_native_array(
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    at: usize,
+) -> bool {
     match known(ancestors, expr, at) {
         Some(Known::Hint(Hint::Array(_))) => true,
         Some(Known::Value(value)) => match value {
@@ -654,7 +666,13 @@ pub fn is_native_array(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: us
 /// and comments before the removed statements are lost and those after them are kept. From the list's start, the
 /// blanks before the removed statements are kept and the new statement runs straight into the next kept one (or the
 /// comments of the trailing `Nop`); with nothing kept after them, php-parser reprints the whole list.
-pub fn replace_run(ctx: &crate::Context<'_>, list: &List<'_>, first: usize, last: usize, new: &str) -> Edit {
+pub(super) fn replace_run(
+    ctx: &crate::Context<'_>,
+    list: &List<'_>,
+    first: usize,
+    last: usize,
+    new: &str,
+) -> Edit {
     let source = ctx.source;
     let end = node_span(list.stmts[last]).end;
     if first > 0 {
@@ -678,7 +696,7 @@ pub fn replace_run(ctx: &crate::Context<'_>, list: &List<'_>, first: usize, last
 
 /// `File::containsHTML()`, which keeps Rector's `HTMLAverseRectorInterface` rules off a file: an `InlineHTML`
 /// statement anywhere in it (the newline php-parser's `?>` takes is not one). `node` is the visited node.
-pub fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
+pub(super) fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
     // An explicit stack, not recursion: a debug build's `visit_children` frame is large enough that a recursive walk
     // of a whole file overflows a 2 MB worker stack on pinkary.
     let mut stack = vec![ancestors.first().copied().unwrap_or(node)];
@@ -694,6 +712,6 @@ pub fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
 }
 
 /// The number of line breaks in `source[from..to]`.
-pub fn lines_between(source: &str, from: usize, to: usize) -> usize {
+pub(super) fn lines_between(source: &str, from: usize, to: usize) -> usize {
     source[from..to].bytes().filter(|&b| b == b'\n').count()
 }

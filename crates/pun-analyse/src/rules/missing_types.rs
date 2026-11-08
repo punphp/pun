@@ -13,7 +13,7 @@ use super::Checker;
 use super::declared;
 use super::generics::resolved_names;
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "missingType.parameter",
     "missingType.return",
     "missingType.property",
@@ -34,7 +34,7 @@ const ITERABLE_GENERIC: [&str; 4] = ["Traversable", "Iterator", "IteratorAggrega
 
 /// `getIterableTypesWithMissingValueTypehint()`: "iterable type X" for each iterable with an implicit `mixed`
 /// value type, each once.
-pub fn iterables_without_value(ty: &Type) -> Vec<String> {
+pub(super) fn iterables_without_value(ty: &Type) -> Vec<String> {
     let out = RefCell::new(Vec::new());
     iterable_walk(ty, &out);
     unique(out.into_inner())
@@ -125,7 +125,10 @@ fn drop_unsealed(ty: &Type) -> Type {
 
 /// `getNonGenericObjectTypesWithGenericClass()`: ("class Foo", "T, U") for each generic class used without its
 /// type arguments, each once.
-pub fn generics_without_args(ty: &Type, check_iterable_classes: bool) -> Vec<(String, String)> {
+pub(super) fn generics_without_args(
+    ty: &Type,
+    check_iterable_classes: bool,
+) -> Vec<(String, String)> {
     let out = RefCell::new(Vec::new());
     generic_walk(ty, check_iterable_classes, &out);
     unique(out.into_inner())
@@ -189,7 +192,7 @@ impl Opts {
 
 /// `getCallablesWithMissingSignature()`: each `callable` or `Closure` without a signature (described), when
 /// `checkMissingCallableSignature` is on.
-pub fn callables_without_signature(ty: &Type, on: bool) -> Vec<String> {
+pub(super) fn callables_without_signature(ty: &Type, on: bool) -> Vec<String> {
     fn walk(ty: &Type, out: &RefCell<Vec<String>>) {
         // (a template's bound is not traversed)
         if matches!(ty, Type::Template(_)) {
@@ -358,7 +361,7 @@ fn report(c: &mut Checker, at: mago_span::Span, found: Found) {
 }
 
 /// MissingMethodParameterTypehintRule and MissingMethodReturnTypehintRule (`InClassMethodNode`).
-pub fn method(c: &mut Checker, m: &Method) {
+pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 6 {
         return;
     }
@@ -409,7 +412,7 @@ pub(super) fn declaring<'a>(
 }
 
 /// MissingFunctionParameterTypehintRule and MissingFunctionReturnTypehintRule (`InFunctionNode`).
-pub fn function(c: &mut Checker, f: &Function) {
+pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 6 {
         return;
     }
@@ -424,7 +427,7 @@ pub fn function(c: &mut Checker, f: &Function) {
 }
 
 /// MissingPropertyTypehintRule (`ClassPropertyNode`, not promoted).
-pub fn property(c: &mut Checker, p: &Property) {
+pub(super) fn property(c: &mut Checker, p: &Property) {
     if c.level < 6 {
         return;
     }
@@ -459,13 +462,13 @@ pub fn property(c: &mut Checker, p: &Property) {
 }
 
 /// MissingClassConstantTypehintRule (`ClassConst`): the PHPDoc type of each constant.
-pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
+pub(super) fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
     if c.level < 6 {
         return;
     }
     let (context, display) = c.member_scope();
     let iterables = Opts::of(c);
-    for item in k.items.iter() {
+    for item in &k.items {
         let name = item.name.value;
         let subject = format!("Constant {display}::{}", String::from_utf8_lossy(name));
         let found = declared::with_classes(c, || {
@@ -672,7 +675,7 @@ fn class_level(
     report(c, span, found);
 }
 
-pub fn class(c: &mut Checker, class: &Class) {
+pub(super) fn class(c: &mut Checker, class: &Class) {
     let name = c.resolved_span(class.name.span);
     let extends = format!("Class {name} extends generic class");
     let implements = format!("Class {name} implements generic interface");
@@ -694,7 +697,7 @@ pub fn class(c: &mut Checker, class: &Class) {
     class_level(c, class.span(), &name, "Class", &natives);
 }
 
-pub fn interface(c: &mut Checker, i: &Interface) {
+pub(super) fn interface(c: &mut Checker, i: &Interface) {
     let name = c.resolved_span(i.name.span);
     let extends = format!("Interface {name} extends generic interface");
     let natives: Vec<(String, &str)> = i
@@ -710,7 +713,7 @@ pub fn interface(c: &mut Checker, i: &Interface) {
     class_level(c, i.span(), &name, "Interface", &natives);
 }
 
-pub fn enum_(c: &mut Checker, e: &Enum) {
+pub(super) fn enum_(c: &mut Checker, e: &Enum) {
     let name = c.resolved_span(e.name.span);
     let implements = format!("Enum {name} implements generic interface");
     let natives: Vec<(String, &str)> = e
@@ -727,7 +730,7 @@ pub fn enum_(c: &mut Checker, e: &Enum) {
 }
 
 /// A trait's own node (MethodTagTraitRule, PropertyTagTraitRule, MixinTraitRule in the definition context).
-pub fn trait_(c: &mut Checker, t: &Trait) {
+pub(super) fn trait_(c: &mut Checker, t: &Trait) {
     let name = c.resolved_span(t.name.span);
     class_level(c, t.span(), &name, "Trait", &[]);
 }

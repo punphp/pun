@@ -41,7 +41,7 @@ impl Rule for NoReturnInConstructor {
         if !method.name.value.eq_ignore_ascii_case(b"__construct") {
             return;
         }
-        for statement in body.statements.iter() {
+        for statement in &body.statements {
             walk(
                 ctx.source,
                 Node::Statement(statement),

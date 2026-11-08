@@ -13,21 +13,21 @@ use mago_codex::ttype::union::TUnion;
 
 /// How many loops a `break`/`continue` leaves: `break;` (Bare), `break 3;` (Levels(3)), `break $n;` (Dynamic).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum Num {
+pub(crate) enum Num {
     Bare,
     Levels(i64),
     Dynamic,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct Jump {
+pub(crate) struct Jump {
     pub is_break: bool,
     pub num: Num,
 }
 
 /// An `InternalStatementResult`.
 #[derive(Clone, Default, Debug)]
-pub struct Flow {
+pub(crate) struct Flow {
     pub always: bool,
     pub has_yield: bool,
     /// The break and continue exit points (returns and throws only matter through `always`).
@@ -69,7 +69,11 @@ impl Flow {
             .filter_map(|j| match j.num {
                 Num::Levels(n) if n > 1 => Some(Jump {
                     is_break: j.is_break,
-                    num: if n == 2 { Num::Bare } else { Num::Levels(n - 1) },
+                    num: if n == 2 {
+                        Num::Bare
+                    } else {
+                        Num::Levels(n - 1)
+                    },
                 }),
                 _ => None,
             })
@@ -78,7 +82,7 @@ impl Flow {
 }
 
 /// The statements php-parser has for a body: a block's statements, or the one statement.
-pub fn body<'s, 'arena>(s: &'s Statement<'arena>) -> Vec<&'s Statement<'arena>> {
+pub(crate) fn body<'s, 'arena>(s: &'s Statement<'arena>) -> Vec<&'s Statement<'arena>> {
     match s {
         Statement::Block(b) => list(b.statements.as_slice()),
         s => list(std::slice::from_ref(s)),
@@ -86,20 +90,25 @@ pub fn body<'s, 'arena>(s: &'s Statement<'arena>) -> Vec<&'s Statement<'arena>> 
 }
 
 /// The statements php-parser keeps: no opening or closing tags, no empty statements.
-pub fn list<'s, 'arena>(s: &'s [Statement<'arena>]) -> Vec<&'s Statement<'arena>> {
+pub(crate) fn list<'s, 'arena>(s: &'s [Statement<'arena>]) -> Vec<&'s Statement<'arena>> {
     s.iter()
-        .filter(|s| !matches!(s, Statement::OpeningTag(_) | Statement::ClosingTag(_) | Statement::Noop(_)))
+        .filter(|s| {
+            !matches!(
+                s,
+                Statement::OpeningTag(_) | Statement::ClosingTag(_) | Statement::Noop(_)
+            )
+        })
         .collect()
 }
 
 /// The start of the node an end statement reports at.
-pub struct End {
+pub(crate) struct End {
     pub at: Span,
     pub flow: Flow,
 }
 
 /// Statement results over Mago's types of the analysed file (none when only the syntax is known).
-pub struct Results<'t> {
+pub(crate) struct Results<'t> {
     pub types: &'t HashMap<Span, TUnion>,
     pub call_terminations: Option<&'t HashMap<(u32, u32), bool>>,
     /// the analysed file's contents, for the comments php-parser turns into a trailing `Nop` statement
@@ -110,7 +119,7 @@ pub struct Results<'t> {
 
 /// The `Nop` php-parser appends to a statement list when a comment comes right before its closing brace, on the
 /// comment's last line. `close` is the brace.
-pub fn nop(contents: &[u8], close: Span) -> Option<Span> {
+pub(crate) fn nop(contents: &[u8], close: Span) -> Option<Span> {
     let mut p = close.start.offset as usize;
     while p > 0 && contents[p - 1].is_ascii_whitespace() {
         p -= 1;
@@ -125,7 +134,10 @@ pub fn nop(contents: &[u8], close: Span) -> Option<Span> {
 /// The line ending at `p` ends with a `//` or `#` comment.
 // ponytail: the line is scanned for quotes only; a line inside a heredoc or multi-line string is not told apart
 fn line_comment(contents: &[u8], p: usize) -> bool {
-    let start = contents[..p].iter().rposition(|&b| b == b'\n').map_or(0, |i| i + 1);
+    let start = contents[..p]
+        .iter()
+        .rposition(|&b| b == b'\n')
+        .map_or(0, |i| i + 1);
     let line = &contents[start..p];
     let mut quote = None;
     let mut i = 0;
@@ -136,7 +148,11 @@ fn line_comment(contents: &[u8], p: usize) -> bool {
             Some(q) if b == q => quote = None,
             Some(_) => {}
             None if b == b'\'' || b == b'"' => quote = Some(b),
-            None if line[i..].starts_with(b"//") || (b == b'#' && line.get(i + 1) != Some(&b'[')) => return true,
+            None if line[i..].starts_with(b"//")
+                || (b == b'#' && line.get(i + 1) != Some(&b'[')) =>
+            {
+                return true;
+            }
             None => {}
         }
         i += 1;
@@ -159,9 +175,9 @@ impl<'t> Results<'t> {
 
     /// `processStmtNodes()` of a function-like body: its result and, when the last statement is reached, the
     /// ExecutionEndNodes (`parent` is the function-like, reported for an empty body).
-    pub fn execution_ends<'arena>(
+    pub(crate) fn execution_ends(
         &self,
-        stmts: &[&Statement<'arena>],
+        stmts: &[&Statement<'_>],
         parent: Span,
         close: Option<Span>,
     ) -> (Flow, Vec<End>) {
@@ -169,7 +185,17 @@ impl<'t> Results<'t> {
         let mut flow = Flow::default();
         let mut ends = Vec::new();
         for (i, s) in stmts.iter().enumerate() {
-            if flow.always && !matches!(s, Statement::Function(_) | Statement::Class(_) | Statement::Interface(_) | Statement::Trait(_) | Statement::Enum(_) | Statement::Label(_)) {
+            if flow.always
+                && !matches!(
+                    s,
+                    Statement::Function(_)
+                        | Statement::Class(_)
+                        | Statement::Interface(_)
+                        | Statement::Trait(_)
+                        | Statement::Enum(_)
+                        | Statement::Label(_)
+                )
+            {
                 continue;
             }
             let (result, s_ends) = self.statement(s);
@@ -217,10 +243,20 @@ impl<'t> Results<'t> {
     }
 
     /// `processStmtNodes()` of a statement list.
-    pub fn statements<'arena>(&self, stmts: &[&Statement<'arena>]) -> Flow {
+    pub(crate) fn statements(&self, stmts: &[&Statement<'_>]) -> Flow {
         let mut flow = Flow::default();
         for s in stmts {
-            if flow.always && !matches!(s, Statement::Function(_) | Statement::Class(_) | Statement::Interface(_) | Statement::Trait(_) | Statement::Enum(_) | Statement::Label(_)) {
+            if flow.always
+                && !matches!(
+                    s,
+                    Statement::Function(_)
+                        | Statement::Class(_)
+                        | Statement::Interface(_)
+                        | Statement::Trait(_)
+                        | Statement::Enum(_)
+                        | Statement::Label(_)
+                )
+            {
                 continue;
             }
             let result = self.statement(s).0;
@@ -232,7 +268,7 @@ impl<'t> Results<'t> {
     }
 
     /// `processStmtNode()`: the statement's result and its end statements (an `if`'s branches).
-    fn statement<'arena>(&self, s: &Statement<'arena>) -> (Flow, Vec<End>) {
+    fn statement(&self, s: &Statement<'_>) -> (Flow, Vec<End>) {
         let flow = match s {
             Statement::Return(r) => Flow {
                 always: true,
@@ -299,7 +335,7 @@ impl<'t> Results<'t> {
     }
 
     /// `toBoolean()->isTrue()` of a condition, by Mago's type of it.
-    pub fn condition<'arena>(&self, e: &Expression<'arena>) -> Tri {
+    pub(crate) fn condition(&self, e: &Expression<'_>) -> Tri {
         if let Some(t) = constant_truth(e) {
             return Tri::from(t);
         }
@@ -316,21 +352,46 @@ impl<'t> Results<'t> {
             Statement::Block(b) => nop(self.contents, b.right_brace),
             _ => None,
         };
-        let mut branches: Vec<(Option<&Expression<'arena>>, Span, Vec<&Statement<'arena>>, Option<Span>)> = Vec::new();
+        let mut branches: Vec<(
+            Option<&Expression<'arena>>,
+            Span,
+            Vec<&Statement<'arena>>,
+            Option<Span>,
+        )> = Vec::new();
         match &i.body {
             IfBody::Statement(b) => {
-                branches.push((Some(i.condition), i.r#if.span(), body(b.statement), close(b.statement)));
-                for e in b.else_if_clauses.iter() {
-                    branches.push((Some(e.condition), e.elseif.span(), body(e.statement), close(e.statement)));
+                branches.push((
+                    Some(i.condition),
+                    i.r#if.span(),
+                    body(b.statement),
+                    close(b.statement),
+                ));
+                for e in &b.else_if_clauses {
+                    branches.push((
+                        Some(e.condition),
+                        e.elseif.span(),
+                        body(e.statement),
+                        close(e.statement),
+                    ));
                 }
                 if let Some(e) = &b.else_clause {
                     branches.push((None, e.r#else.span(), body(e.statement), close(e.statement)));
                 }
             }
             IfBody::ColonDelimited(b) => {
-                branches.push((Some(i.condition), i.r#if.span(), list(b.statements.as_slice()), None));
-                for e in b.else_if_clauses.iter() {
-                    branches.push((Some(e.condition), e.elseif.span(), list(e.statements.as_slice()), None));
+                branches.push((
+                    Some(i.condition),
+                    i.r#if.span(),
+                    list(b.statements.as_slice()),
+                    None,
+                ));
+                for e in &b.else_if_clauses {
+                    branches.push((
+                        Some(e.condition),
+                        e.elseif.span(),
+                        list(e.statements.as_slice()),
+                        None,
+                    ));
                 }
                 if let Some(e) = &b.else_clause {
                     branches.push((None, e.r#else.span(), list(e.statements.as_slice()), None));
@@ -359,7 +420,11 @@ impl<'t> Results<'t> {
             };
             if considered {
                 flow.jumps.extend(branch.jumps.iter().copied());
-                flow.always = if n == 0 { branch.always } else { flow.always && branch.always };
+                flow.always = if n == 0 {
+                    branch.always
+                } else {
+                    flow.always && branch.always
+                };
                 flow.has_yield |= branch.has_yield;
                 ends.push(End {
                     at: nop.unwrap_or_else(|| stmts.last().map_or(keyword, |s| s.span())),
@@ -380,7 +445,7 @@ impl<'t> Results<'t> {
         (flow, ends)
     }
 
-    fn foreach<'arena>(&self, f: &Foreach<'arena>) -> Flow {
+    fn foreach(&self, f: &Foreach<'_>) -> Flow {
         let stmts = match &f.body {
             ForeachBody::Statement(s) => body(s),
             ForeachBody::ColonDelimited(b) => list(b.statements.as_slice()),
@@ -388,8 +453,10 @@ impl<'t> Results<'t> {
         let inner = self.statements(&stmts).without_loop_exits();
         let at_least_once = match self.type_of(f.expression) {
             Some(t) if !t.types.is_empty() => t.types.iter().all(non_empty_array),
-            _ => matches!(unparen(f.expression), Expression::Array(a) if !a.elements.is_empty())
-                || matches!(unparen(f.expression), Expression::LegacyArray(a) if !a.elements.is_empty()),
+            _ => {
+                matches!(unparen(f.expression), Expression::Array(a) if !a.elements.is_empty())
+                    || matches!(unparen(f.expression), Expression::LegacyArray(a) if !a.elements.is_empty())
+            }
         };
         Flow {
             always: at_least_once && inner.always,
@@ -398,7 +465,7 @@ impl<'t> Results<'t> {
         }
     }
 
-    fn r#while<'arena>(&self, w: &While<'arena>) -> Flow {
+    fn r#while(&self, w: &While<'_>) -> Flow {
         let stmts = match &w.body {
             WhileBody::Statement(s) => body(s),
             WhileBody::ColonDelimited(b) => list(b.statements.as_slice()),
@@ -417,7 +484,7 @@ impl<'t> Results<'t> {
         }
     }
 
-    fn do_while<'arena>(&self, d: &DoWhile<'arena>) -> Flow {
+    fn do_while(&self, d: &DoWhile<'_>) -> Flow {
         let inner = self.statements(&body(d.statement)).without_loop_exits();
         let always = if self.condition(d.condition).yes() {
             inner.this_loop(true) == 0
@@ -431,13 +498,17 @@ impl<'t> Results<'t> {
         }
     }
 
-    fn r#for<'arena>(&self, f: &For<'arena>) -> Flow {
+    fn r#for(&self, f: &For<'_>) -> Flow {
         let stmts = match &f.body {
             ForBody::Statement(s) => body(s),
             ForBody::ColonDelimited(b) => list(b.statements.as_slice()),
         };
         let inner = self.statements(&stmts).without_loop_exits();
-        let truth = f.conditions.iter().last().map_or(Tri::Yes, |c| self.condition(c));
+        let truth = f
+            .conditions
+            .iter()
+            .last()
+            .map_or(Tri::Yes, |c| self.condition(c));
         let always = if truth.yes() {
             inner.this_loop(true) == 0
         } else {
@@ -456,7 +527,7 @@ impl<'t> Results<'t> {
         }
     }
 
-    fn switch<'arena>(&self, s: &Switch<'arena>) -> Flow {
+    fn switch(&self, s: &Switch<'_>) -> Flow {
         let cases = match &s.body {
             SwitchBody::BraceDelimited(b) => b.cases.as_slice(),
             SwitchBody::ColonDelimited(b) => b.cases.as_slice(),
@@ -504,12 +575,12 @@ impl<'t> Results<'t> {
         }
     }
 
-    fn r#try<'arena>(&self, t: &Try<'arena>) -> Flow {
+    fn r#try(&self, t: &Try<'_>) -> Flow {
         let inner = self.statements(&list(t.block.statements.as_slice()));
         let mut always = inner.always;
         let mut has_yield = inner.has_yield;
         let mut jumps = inner.jumps;
-        for c in t.catch_clauses.iter() {
+        for c in &t.catch_clauses {
             let branch = self.statements(&list(c.block.statements.as_slice()));
             always = always && branch.always;
             has_yield |= branch.has_yield;
@@ -529,7 +600,7 @@ impl<'t> Results<'t> {
     }
 
     /// An expression statement also terminates when its value is explicit never.
-    fn early_terminating<'arena>(&self, e: &Expression<'arena>) -> bool {
+    fn early_terminating(&self, e: &Expression<'_>) -> bool {
         matches!(
             e,
             Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
@@ -537,9 +608,10 @@ impl<'t> Results<'t> {
     }
 
     /// `ExpressionResult::isAlwaysTerminating()`: the expression always ends the execution where it is evaluated.
-    pub fn terminates<'arena>(&self, e: &Expression<'arena>) -> bool {
+    pub(crate) fn terminates(&self, e: &Expression<'_>) -> bool {
         match e {
-            Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => true,
+            Expression::Throw(_)
+            | Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => true,
             Expression::Parenthesized(p) => self.terminates(p.expression),
             Expression::Binary(b)
                 if matches!(
@@ -555,18 +627,22 @@ impl<'t> Results<'t> {
             }
             Expression::Conditional(c) => self.terminates(c.condition),
             Expression::Match(m) => self.terminates(m.expression),
-            Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Coalesce(_)) => false,
+            Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Coalesce(_)) => {
+                false
+            }
             Expression::Closure(_)
             | Expression::ArrowFunction(_)
             | Expression::AnonymousClass(_)
             | Expression::Call(Call::NullSafeMethod(_)) => false,
-            Expression::Call(_) => self.call_terminates(e) || self.children_terminate(Node::Expression(e)),
+            Expression::Call(_) => {
+                self.call_terminates(e) || self.children_terminate(Node::Expression(e))
+            }
             _ => self.children_terminate(Node::Expression(e)),
         }
     }
 
     /// (a nested function or class is an expression that [`Self::terminates`] stops at, so no statement is reached)
-    fn children_terminate<'arena>(&self, n: Node<'_, 'arena>) -> bool {
+    fn children_terminate(&self, n: Node<'_, '_>) -> bool {
         n.children().into_iter().any(|c| match c {
             Node::Expression(e) => self.terminates(e),
             c => self.children_terminate(c),
@@ -577,7 +653,9 @@ impl<'t> Results<'t> {
 fn jump(is_break: bool, level: Option<&Expression>) -> Flow {
     let num = match level.map(unparen) {
         None => Num::Bare,
-        Some(Expression::Literal(Literal::Integer(i))) => i.value.map_or(Num::Dynamic, |v| Num::Levels(v as i64)),
+        Some(Expression::Literal(Literal::Integer(i))) => {
+            i.value.map_or(Num::Dynamic, |v| Num::Levels(v as i64))
+        }
         Some(_) => Num::Dynamic,
     };
     Flow {
@@ -587,14 +665,14 @@ fn jump(is_break: bool, level: Option<&Expression>) -> Flow {
     }
 }
 
-pub fn unparen<'s, 'arena>(mut e: &'s Expression<'arena>) -> &'s Expression<'arena> {
+pub(crate) fn unparen<'s, 'arena>(mut e: &'s Expression<'arena>) -> &'s Expression<'arena> {
     while let Expression::Parenthesized(p) = e {
         e = p.expression;
     }
     e
 }
 
-pub fn is_this(e: &Expression) -> bool {
+pub(crate) fn is_this(e: &Expression) -> bool {
     matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
@@ -614,7 +692,10 @@ fn constant_truth(e: &Expression) -> Option<bool> {
 }
 
 /// The single values of a type: enum cases, literal scalars (`None` for any other type).
-fn values(codebase: &mago_codex::metadata::CodebaseMetadata, a: &mago_codex::ttype::atomic::TAtomic) -> Option<Vec<String>> {
+fn values(
+    codebase: &mago_codex::metadata::CodebaseMetadata,
+    a: &mago_codex::ttype::atomic::TAtomic,
+) -> Option<Vec<String>> {
     use mago_codex::ttype::atomic::TAtomic;
     use mago_codex::ttype::atomic::object::TObject;
     use mago_codex::ttype::atomic::scalar::TScalar;
@@ -653,17 +734,29 @@ fn non_empty_array(a: &mago_codex::ttype::atomic::TAtomic) -> bool {
     use mago_codex::ttype::atomic::TAtomic;
     use mago_codex::ttype::atomic::array::TArray;
     match a {
-        TAtomic::Array(TArray::List(l)) => l.non_empty || l.known_elements.as_ref().is_some_and(|k| k.values().any(|(optional, _)| !optional)),
-        TAtomic::Array(TArray::Keyed(k)) => k.non_empty || k.known_items.as_ref().is_some_and(|k| k.values().any(|(optional, _)| !optional)),
+        TAtomic::Array(TArray::List(l)) => {
+            l.non_empty
+                || l.known_elements
+                    .as_ref()
+                    .is_some_and(|k| k.values().any(|(optional, _)| !optional))
+        }
+        TAtomic::Array(TArray::Keyed(k)) => {
+            k.non_empty
+                || k.known_items
+                    .as_ref()
+                    .is_some_and(|k| k.values().any(|(optional, _)| !optional))
+        }
         _ => false,
     }
 }
 
 /// The expression contains a `yield` (outside nested functions and classes).
-pub fn yields(e: &Expression) -> bool {
+pub(crate) fn yields(e: &Expression) -> bool {
     match e {
         Expression::Yield(_) => true,
-        Expression::Closure(_) | Expression::ArrowFunction(_) | Expression::AnonymousClass(_) => false,
+        Expression::Closure(_) | Expression::ArrowFunction(_) | Expression::AnonymousClass(_) => {
+            false
+        }
         e => node_yields(Node::Expression(e)),
     }
 }

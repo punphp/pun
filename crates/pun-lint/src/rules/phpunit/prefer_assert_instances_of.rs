@@ -34,9 +34,9 @@ impl Rule for PreferAssertInstancesOf {
         let Node::Foreach(foreach) = node else { return };
         let tokens = tokens(ctx);
         let list = match &foreach.body {
-            ForeachBody::Statement(statement) => body_list(&tokens, statement),
+            ForeachBody::Statement(statement) => body_list(tokens, statement),
             ForeachBody::ColonDelimited(body) => open_list(
-                &tokens,
+                tokens,
                 &body.statements,
                 body.colon.end.offset as usize,
                 mago_span::HasSpan::span(&body.end_foreach).start.offset as usize,
@@ -76,7 +76,7 @@ impl Rule for PreferAssertInstancesOf {
             expr_text(ctx, foreach.expression),
         );
         let span = node_span(foreach);
-        let from = previous_token_end(ctx.source, &tokens, span.start);
+        let from = previous_token_end(ctx.source, tokens, span.start);
         let start = crate::rules::rector_stmts::first_comment(ctx.source, from, span.start)
             .unwrap_or(span.start);
         out.push(Report::fixed(

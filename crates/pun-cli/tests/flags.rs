@@ -214,7 +214,7 @@ impl Cx {
             if !want.stdout.starts_with("named: ") {
                 want.stdout = String::new();
             }
-            got.stderr = want.stderr.clone();
+            got.stderr.clone_from(&want.stderr);
         }
         got.code = want.code;
         assert_eq!(got, want, "{args:?}");
@@ -233,7 +233,7 @@ fn listed(r: &Run) -> Vec<&str> {
                 .map(|x| x.1)
         })
         .collect();
-    v.sort();
+    v.sort_unstable();
     v
 }
 

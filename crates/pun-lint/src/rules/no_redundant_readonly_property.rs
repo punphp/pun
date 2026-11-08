@@ -55,7 +55,7 @@ impl Rule for NoRedundantReadonlyProperty {
             _ => None,
         });
         if let Some(constructor) = constructor {
-            for param in constructor.parameter_list.parameters.iter() {
+            for param in &constructor.parameter_list.parameters {
                 if has_readonly(&param.modifiers) {
                     // Param::isPromoted() after removing `readonly`: any modifier left, or hooks.
                     let promoted = param.modifiers.len() > 1 || param.hooks.is_some();
@@ -63,7 +63,7 @@ impl Rule for NoRedundantReadonlyProperty {
                 }
             }
         }
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Property(property) = member else {
                 continue;
             };

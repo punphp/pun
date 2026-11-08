@@ -8,7 +8,7 @@ use pun_phpstan::types::{
     Accessory, Cast, Level, StrictMixed, Type, accepts, cast_is_error, intersect, is_super_type_of, union,
 };
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "arrayFilter.empty",
     "arrayFilter.same",
     "arrayFilter.alwaysEmpty",

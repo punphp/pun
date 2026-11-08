@@ -8,7 +8,7 @@ use pun_phpstan::types::{Type, accepts, recommended_level};
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &["parameter.defaultValue"];
+pub(super) const IDENTIFIERS: &[&str] = &["parameter.defaultValue"];
 
 /// The default values, whose types the rule reads.
 pub(super) fn typed(params: &FunctionLikeParameterList, spans: &mut Vec<mago_span::Span>) {

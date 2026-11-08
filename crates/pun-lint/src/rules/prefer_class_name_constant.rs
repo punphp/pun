@@ -29,7 +29,7 @@ pub struct PreferClassNameConstant {
 /// indentation and the newline before it taken out).
 fn document_value(doc: &mago_syntax::cst::DocumentString<'_>) -> Option<Vec<u8>> {
     let mut value = Vec::new();
-    for part in doc.parts.iter() {
+    for part in &doc.parts {
         let StringPart::Literal(literal) = part else {
             return None;
         };

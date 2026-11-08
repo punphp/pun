@@ -16,7 +16,7 @@ use crate::bitset::BitSet;
 
 /// A ParametersAcceptor, as far as counting and naming go.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Acceptor {
+pub(super) struct Acceptor {
     /// `isOptional()` per parameter.
     pub optional: BitSet,
     /// `isVariadic()`: a variadic parameter, or a body calling `func_get_args()`.
@@ -44,7 +44,7 @@ pub struct Acceptor {
 
 /// A user's storage identity stays separate from the reflected class and method name (trait aliases included).
 #[derive(Clone, Debug, PartialEq)]
-pub struct UserCallee {
+pub(super) struct UserCallee {
     pub class: Option<String>,
     pub name: String,
     pub reflected_name: String,
@@ -52,7 +52,7 @@ pub struct UserCallee {
 
 /// A parameter's type as its reflection declares it, converted when an argument type is checked against it.
 #[derive(Clone, Debug, PartialEq)]
-pub enum ParamType {
+pub(super) enum ParamType {
     /// A built-in's PHPDoc type string and allowed-constant policy (data/symbols.json).
     Builtin(String, Option<ParameterAllowedConstants>),
     /// A user parameter, typed from its function's reflection (`declared::codex_params()`).
@@ -62,11 +62,16 @@ pub enum ParamType {
 }
 
 /// The source reflection's policy, also for a first-class callable whose signature has lost its callee identity.
-pub(super) fn accepts_named(c: &Checker, f: &FunctionLikeMetadata, class: Option<&ClassLikeMetadata>) -> Tri {
+pub(super) fn accepts_named(
+    c: &Checker,
+    f: &FunctionLikeMetadata,
+    class: Option<&ClassLikeMetadata>,
+) -> Tri {
     let yes = match class {
         Some(class) => super::named_argument::accepts(c, class, f),
-        None => !super::declared::doc_at(c, f.span)
-            .is_some_and(|(_, entry, _)| super::declarations::has_tag(&entry.names, &["@no-named-arguments"])),
+        None => !super::declared::doc_at(c, f.span).is_some_and(|(_, entry, _)| {
+            super::declarations::has_tag(&entry.names, &["@no-named-arguments"])
+        }),
     };
     Tri::from(yes)
 }
@@ -75,25 +80,44 @@ impl Acceptor {
     /// Resolve a user reflection's PHPDoc before selection can discard its callee identity. Methods share the
     /// inheritance and declaring-class contract used by the named-argument collector.
     pub(super) fn accepts_named(&self, c: &Checker) -> Tri {
-        let accepts = self.user(c).zip(self.callee.as_ref()).map(|((f, class), callee)| match class {
-            Some(class) => if super::declared::reflected_accepts_named(c, class, &callee.reflected_name) {
-                Tri::Yes
-            } else {
-                Tri::No
-            },
-            None => accepts_named(c, f, None),
-        });
+        let accepts =
+            self.user(c)
+                .zip(self.callee.as_ref())
+                .map(|((f, class), callee)| match class {
+                    Some(class) => {
+                        if super::declared::reflected_accepts_named(
+                            c,
+                            class,
+                            &callee.reflected_name,
+                        ) {
+                            Tri::Yes
+                        } else {
+                            Tri::No
+                        }
+                    }
+                    None => accepts_named(c, f, None),
+                });
         accepts.unwrap_or(self.accepts_named_arguments)
     }
 
     /// The stored declaration and consuming-class context used by PHPStan's method reflection.
-    pub(super) fn user<'c>(&self, c: &'c Checker) -> Option<(&'c FunctionLikeMetadata, Option<&'c ClassLikeMetadata>)> {
+    pub(super) fn user<'c>(
+        &self,
+        c: &'c Checker,
+    ) -> Option<(&'c FunctionLikeMetadata, Option<&'c ClassLikeMetadata>)> {
         let callee = self.callee.as_ref()?;
         let f = match &callee.class {
-            Some(class) => c.codebase.get_method(class.as_bytes(), callee.name.as_bytes())?,
+            Some(class) => c
+                .codebase
+                .get_method(class.as_bytes(), callee.name.as_bytes())?,
             None => c.codebase.get_function(callee.name.as_bytes())?,
         };
-        Some((f, self.class.as_ref().and_then(|name| c.codebase.get_class_like(name.as_bytes()))))
+        Some((
+            f,
+            self.class
+                .as_ref()
+                .and_then(|name| c.codebase.get_class_like(name.as_bytes())),
+        ))
     }
 
     fn min(&self) -> usize {
@@ -106,7 +130,7 @@ impl Acceptor {
 
     /// A user-defined function-like (Mago's metadata): a parameter is optional when it and every later one has a
     /// default or is variadic, as `ReflectionParameter::isOptional()` says.
-    pub fn of(f: &FunctionLikeMetadata) -> Acceptor {
+    pub(super) fn of(f: &FunctionLikeMetadata) -> Acceptor {
         let mut optional = BitSet::new(f.parameters.len());
         let mut tail = true;
         for (i, p) in f.parameters.iter().enumerate().rev() {
@@ -130,7 +154,12 @@ impl Acceptor {
             types: f
                 .parameters
                 .iter()
-                .map(|p| p.type_metadata.as_ref().map_or_else(|| "mixed".to_string(), |t| describe(&t.type_union.get_id().to_string())))
+                .map(|p| {
+                    p.type_metadata.as_ref().map_or_else(
+                        || "mixed".to_string(),
+                        |t| describe(&t.type_union.get_id().to_string()),
+                    )
+                })
                 .collect(),
             variadics: f.parameters.iter().map(|p| p.flags.is_variadic()).collect(),
             builtin: false,
@@ -140,9 +169,19 @@ impl Acceptor {
             by_ref: f
                 .parameters
                 .iter()
-                .map(|p| if p.flags.is_by_reference() { ByRef::CreatesNewVariable } else { ByRef::No })
+                .map(|p| {
+                    if p.flags.is_by_reference() {
+                        ByRef::CreatesNewVariable
+                    } else {
+                        ByRef::No
+                    }
+                })
                 .collect(),
-            closure_this: f.parameters.iter().map(|p| p.closure_this_type.is_some()).collect(),
+            closure_this: f
+                .parameters
+                .iter()
+                .map(|p| p.closure_this_type.is_some())
+                .collect(),
             class: None,
             callee: Some(UserCallee {
                 class: None,
@@ -153,7 +192,7 @@ impl Acceptor {
     }
 
     /// A built-in, as PHPStan reflects it (data/symbols.json).
-    pub fn of_builtin(v: &pun_phpstan::symbols::Variant) -> Acceptor {
+    pub(super) fn of_builtin(v: &pun_phpstan::symbols::Variant) -> Acceptor {
         Acceptor {
             optional: v.params.iter().map(|p| p.optional).collect(),
             variadic: v.params.iter().any(|p| p.variadic),
@@ -163,7 +202,11 @@ impl Acceptor {
             variadics: v.params.iter().map(|p| p.variadic).collect(),
             builtin: true,
             accepts_named_arguments: Tri::Yes,
-            param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone(), p.allowed_constants.clone())).collect(),
+            param_types: v
+                .params
+                .iter()
+                .map(|p| ParamType::Builtin(p.ty.clone(), p.allowed_constants.clone()))
+                .collect(),
             by_ref: v.params.iter().map(|p| p.by_ref).collect(),
             closure_this: BitSet::new(v.params.len()),
             class: None,
@@ -178,38 +221,58 @@ fn describe(ty: &str) -> String {
 
 /// A function-like's variants, and a built-in's variants for calls with named arguments (PHP's parameter names
 /// where PHPStan's stubs use others).
-pub struct Variants {
+pub(super) struct Variants {
     pub all: Vec<Acceptor>,
     pub named: Option<Vec<Acceptor>>,
 }
 
 impl Variants {
-    pub fn of(f: &FunctionLikeMetadata) -> Variants {
-        Variants { all: vec![Acceptor::of(f)], named: None }
+    pub(super) fn of(f: &FunctionLikeMetadata) -> Variants {
+        Variants {
+            all: vec![Acceptor::of(f)],
+            named: None,
+        }
     }
 
-    pub fn of_builtin(f: &pun_phpstan::symbols::Function) -> Variants {
-        let list = |v: &[pun_phpstan::symbols::Variant]| v.iter().map(Acceptor::of_builtin).collect();
-        Variants { all: list(&f.variants), named: f.named.as_deref().map(list) }
+    pub(super) fn of_builtin(f: &pun_phpstan::symbols::Function) -> Variants {
+        let list =
+            |v: &[pun_phpstan::symbols::Variant]| v.iter().map(Acceptor::of_builtin).collect();
+        Variants {
+            all: list(&f.variants),
+            named: f.named.as_deref().map(list),
+        }
     }
 }
 
 /// `ParametersAcceptorSelector::selectFromArgs()`: named variants, arity filtering and type-based winners.
-pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
+pub(super) fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
     select_in(c, variants, counts, None)
 }
 
 /// ArgumentsHandler's count-stable structural metadata selection. Ordinary arguments consume reference,
 /// name and variadic policy before their values are evaluated, so every written argument contributes mixed.
 pub(super) fn select_metadata(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
-    let types: Vec<_> = counts.args.iter().enumerate().map(|(i, arg)| {
-        (arg.name.clone().map_or(Key::Int(i as i64), Key::Str), Type::Mixed { explicit: false })
-    }).collect();
+    let types: Vec<_> = counts
+        .args
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| {
+            (
+                arg.name.clone().map_or(Key::Int(i as i64), Key::Str),
+                Type::Mixed { explicit: false },
+            )
+        })
+        .collect();
     select_from_types(c, variants, counts, Some(&types))
 }
 
 /// A dynamic method's acceptor is selected using that name's filtered argument types.
-pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope: Option<&super::infer::NamedCallScope>) -> Acceptor {
+pub(super) fn select_in(
+    c: &Checker,
+    variants: Variants,
+    counts: &Counts,
+    scope: Option<&super::infer::NamedCallScope>,
+) -> Acceptor {
     // selectFromArgs builds an ordered int|string keyed map, not the checker's bound argument list. All constant
     // alternatives (including optional keys) contribute, and numeric indexes start at the written argument index.
     let types = (|| {
@@ -227,20 +290,33 @@ pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope:
                     vec![(index, ty.iterable_value_type())]
                 } else {
                     union_existing = true;
-                    arrays.into_iter().flat_map(|array| array.keys.into_iter().zip(array.values).enumerate().map(move |(j, (key, value))| {
-                        let index = match key {
-                            Type::ConstString(key) => Key::Str(String::from_utf8_lossy(&key).into_owned()),
-                            _ => Key::Int((i + j) as i64),
-                        };
-                        (index, value)
-                    })).collect()
+                    arrays
+                        .into_iter()
+                        .flat_map(|array| {
+                            array.keys.into_iter().zip(array.values).enumerate().map(
+                                move |(j, (key, value))| {
+                                    let index = match key {
+                                        Type::ConstString(key) => {
+                                            Key::Str(String::from_utf8_lossy(&key).into_owned())
+                                        }
+                                        _ => Key::Int((i + j) as i64),
+                                    };
+                                    (index, value)
+                                },
+                            )
+                        })
+                        .collect()
                 }
             } else {
                 vec![(index, ty)]
             };
             for (index, ty) in values {
                 if let Some((_, previous)) = types.iter_mut().find(|(key, _)| *key == index) {
-                    *previous = if union_existing { pun_phpstan::types::union(vec![previous.clone(), ty]) } else { ty };
+                    *previous = if union_existing {
+                        pun_phpstan::types::union(vec![previous.clone(), ty])
+                    } else {
+                        ty
+                    };
                 } else {
                     types.push((index, ty));
                 }
@@ -251,20 +327,35 @@ pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope:
     select_from_types(c, variants, counts, types.as_deref())
 }
 
-fn select_from_types(c: &Checker, variants: Variants, counts: &Counts, types: Option<&[(Key, Type)]>) -> Acceptor {
-    let named = types.map_or(counts.named, |types| types.iter().any(|(key, _)| matches!(key, Key::Str(_))));
+fn select_from_types(
+    c: &Checker,
+    variants: Variants,
+    counts: &Counts,
+    types: Option<&[(Key, Type)]>,
+) -> Acceptor {
+    let named = types.map_or(counts.named, |types| {
+        types.iter().any(|(key, _)| matches!(key, Key::Str(_)))
+    });
     let variants = match variants.named {
         Some(variants) if named => variants,
         _ => variants.all,
     };
-    let variants: Vec<_> = variants.into_iter().map(|mut v| {
-        v.accepts_named_arguments = v.accepts_named(c);
-        if let (Some((f, class)), Some(callee)) = (v.user(c), v.callee.as_ref()) {
-            let bindings = super::declared::reflected_closure_this(c, f, class, &callee.reflected_name);
-            v.closure_this = v.names.iter().map(|name| bindings.contains_key(name)).collect();
-        }
-        v
-    }).collect();
+    let variants: Vec<_> = variants
+        .into_iter()
+        .map(|mut v| {
+            v.accepts_named_arguments = v.accepts_named(c);
+            if let (Some((f, class)), Some(callee)) = (v.user(c), v.callee.as_ref()) {
+                let bindings =
+                    super::declared::reflected_closure_this(c, f, class, &callee.reflected_name);
+                v.closure_this = v
+                    .names
+                    .iter()
+                    .map(|name| bindings.contains_key(name))
+                    .collect();
+            }
+            v
+        })
+        .collect();
     if variants.len() == 1 {
         return variants.into_iter().next().expect("one");
     }
@@ -286,14 +377,21 @@ fn select_from_types(c: &Checker, variants: Variants, counts: &Counts, types: Op
 
 /// `selectFromTypes()`'s winning acceptors: those whose parameters are supertypes of the arguments' types with the
 /// highest certainty. An unpack repeats the last inserted type when a parameter has no positional key.
-fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], types: &[(Key, Type)], unpack: bool) -> Vec<&'v Acceptor> {
+fn winning<'v>(
+    c: &Checker,
+    acceptable: &[&'v Acceptor],
+    types: &[(Key, Type)],
+    unpack: bool,
+) -> Vec<&'v Acceptor> {
     let rank = |t: Tri| [Tri::No, Tri::Maybe, Tri::Yes].iter().position(|x| *x == t);
     let scored: Vec<_> = acceptable
         .iter()
         .map(|a| {
             let mut sup = Tri::Yes;
             for i in 0..a.names.len() {
-                let entry = types.iter().find(|(key, _)| *key == Key::Int(i as i64))
+                let entry = types
+                    .iter()
+                    .find(|(key, _)| *key == Key::Int(i as i64))
                     .or_else(|| if unpack { types.last() } else { None });
                 let Some((_, ty)) = entry else { break };
                 // GenericParametersAcceptorResolver resolves a template from the argument, an uninferred one to its
@@ -301,9 +399,17 @@ fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], types: &[(Key, Type)], 
                 let resolved = super::types::declared_type(c, a, i).map(|p| {
                     super::declared::with_classes(c, || {
                         let templates = std::cell::RefCell::new(Vec::new());
-                        fn collect(t: &Type, out: &std::cell::RefCell<Vec<pun_phpstan::types::Template>>) {
-                            if let Type::Template(tt) = t { out.borrow_mut().push((**tt).clone()); }
-                            t.traverse(&|i| { collect(i, out); i.clone() });
+                        fn collect(
+                            t: &Type,
+                            out: &std::cell::RefCell<Vec<pun_phpstan::types::Template>>,
+                        ) {
+                            if let Type::Template(tt) = t {
+                                out.borrow_mut().push((**tt).clone());
+                            }
+                            t.traverse(&|i| {
+                                collect(i, out);
+                                i.clone()
+                            });
                         }
                         collect(&p, &templates);
                         let templates = templates.into_inner();
@@ -326,7 +432,11 @@ fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], types: &[(Key, Type)], 
         .filter(|(r, _)| *r > rank(Tri::No))
         .collect();
     let best = scored.iter().map(|(r, _)| *r).max();
-    scored.into_iter().filter(|(r, _)| Some(*r) == best).map(|(_, a)| a).collect()
+    scored
+        .into_iter()
+        .filter(|(r, _)| Some(*r) == best)
+        .map(|(_, a)| a)
+        .collect()
 }
 
 /// `combineAcceptors()`.
@@ -340,7 +450,9 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
         types: Vec::new(),
         variadics: BitSet::default(),
         builtin: variants.iter().any(|v| v.builtin),
-        accepts_named_arguments: variants.iter().fold(Tri::No, |accepts, v| accepts.or(v.accepts_named_arguments)),
+        accepts_named_arguments: variants
+            .iter()
+            .fold(Tri::No, |accepts, v| accepts.or(v.accepts_named_arguments)),
         param_types: Vec::new(),
         by_ref: Vec::new(),
         closure_this: BitSet::default(),
@@ -368,10 +480,16 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 combined.types[i] = format!("{}|{}", combined.types[i], v.types[i]);
             }
             combined.param_types[i] = match (&combined.param_types[i], &v.param_types[i]) {
-                (ParamType::Builtin(a, allowed), ParamType::Builtin(b, other)) => ParamType::Builtin(
-                    if a == b { a.clone() } else { format!("{a}|{b}") },
-                    allowed.clone().filter(|_| allowed == other),
-                ),
+                (ParamType::Builtin(a, allowed), ParamType::Builtin(b, other)) => {
+                    ParamType::Builtin(
+                        if a == b {
+                            a.clone()
+                        } else {
+                            format!("{a}|{b}")
+                        },
+                        allowed.clone().filter(|_| allowed == other),
+                    )
+                }
                 (ParamType::Builtin(a, _), _) => ParamType::Builtin(a.clone(), None),
                 (a, _) => a.clone(),
             };
@@ -379,8 +497,13 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
             let bound = combined.closure_this.get(i) && v.closure_this.get(i);
             combined.closure_this.set(i, bound);
             // `PassedByReference::combine()`: the stronger
-            let rank = |b: ByRef| [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable].iter().position(|x| *x == b);
-            combined.by_ref[i] = std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
+            let rank = |b: ByRef| {
+                [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable]
+                    .iter()
+                    .position(|x| *x == b)
+            };
+            combined.by_ref[i] =
+                std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
             let variadic = combined.variadics.get(i) || v.variadics.get(i);
             combined.variadics.set(i, variadic);
             if variadic {
@@ -402,7 +525,7 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
 
 /// `CallToFunctionParametersRule::getVariantForArgumentsCount()`: when no variant accepts the argument count but
 /// their combination does, the count is checked against the variant closest to it.
-pub fn closest_variant(
+pub(super) fn closest_variant(
     variants: &[Acceptor],
     counts: &Counts,
     selected: &Acceptor,
@@ -437,7 +560,7 @@ pub fn closest_variant(
 
 /// One argument as written.
 #[derive(Clone, Debug)]
-pub struct Arg {
+pub(super) struct Arg {
     pub name: Option<String>,
     /// `...$value`: what unpacking it gives.
     pub unpack: Option<Unpacked>,
@@ -453,7 +576,7 @@ pub struct Arg {
 
 /// What an argument expression is, as the by-reference check reads it.
 #[derive(Clone, Debug)]
-pub enum ArgKind {
+pub(super) enum ArgKind {
     /// A variable, an offset or a property fetch.
     Writable,
     /// Holds a nullsafe fetch or call.
@@ -474,9 +597,16 @@ pub enum ArgKind {
 }
 
 #[derive(Clone, Debug)]
-pub enum ConstantFetch {
-    Global { name: Span, unqualified: bool },
-    Class { class: Span, named: bool, name: String },
+pub(super) enum ConstantFetch {
+    Global {
+        name: Span,
+        unqualified: bool,
+    },
+    Class {
+        class: Span,
+        named: bool,
+        name: String,
+    },
 }
 
 /// `resolveConstantReflections()`'s syntax contract, before resolving the leaves in the call's scope.
@@ -488,8 +618,16 @@ fn constant_fetches(e: &Expression) -> Option<Vec<ConstantFetch>> {
             unqualified: matches!(a.name, Identifier::Local(_)),
         }]),
         Expression::Access(Access::ClassConstant(a)) => {
-            let ClassLikeConstantSelector::Identifier(id) = &a.constant else { return None };
-            if !matches!(a.class, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) {
+            let ClassLikeConstantSelector::Identifier(id) = &a.constant else {
+                return None;
+            };
+            if !matches!(
+                a.class,
+                Expression::Identifier(_)
+                    | Expression::Self_(_)
+                    | Expression::Static(_)
+                    | Expression::Parent(_)
+            ) {
                 return None;
             }
             Some(vec![ConstantFetch::Class {
@@ -533,10 +671,14 @@ fn kind(e: &Expression) -> ArgKind {
             Expression::Identifier(id) => ArgKind::Function(id.span()),
             _ => ArgKind::Other,
         },
-        Expression::Call(mago_syntax::cst::Call::Method(m)) => ArgKind::MethodCall(m.object.span(), selector(&m.method)),
+        Expression::Call(mago_syntax::cst::Call::Method(m)) => {
+            ArgKind::MethodCall(m.object.span(), selector(&m.method))
+        }
         Expression::Call(mago_syntax::cst::Call::StaticMethod(m)) => match m.class {
             Expression::Identifier(id) => ArgKind::StaticCall(Some(id.span()), selector(&m.method)),
-            Expression::Self_(_) | Expression::Static(_) => ArgKind::StaticCall(None, selector(&m.method)),
+            Expression::Self_(_) | Expression::Static(_) => {
+                ArgKind::StaticCall(None, selector(&m.method))
+            }
             _ => ArgKind::OtherCall,
         },
         _ => ArgKind::Other,
@@ -545,7 +687,7 @@ fn kind(e: &Expression) -> ArgKind {
 
 /// How an argument list counts.
 #[derive(Clone, Debug, Default)]
-pub struct Counts {
+pub(super) struct Counts {
     pub positional: usize,
     /// How many named arguments.
     pub names: usize,
@@ -558,12 +700,12 @@ pub struct Counts {
     pub args: Vec<Arg>,
 }
 
-pub fn count(args: &ArgumentList) -> Counts {
+pub(super) fn count(args: &ArgumentList) -> Counts {
     let mut counts = Counts {
         any: !args.arguments.is_empty(),
         ..Counts::default()
     };
-    for arg in args.arguments.iter() {
+    for arg in &args.arguments {
         match arg {
             Argument::Named(n) => counts.named(n),
             Argument::Positional(p) => counts.positional(p),
@@ -573,12 +715,12 @@ pub fn count(args: &ArgumentList) -> Counts {
 }
 
 /// [`count()`] of an anonymous class's constructor arguments or an attribute's.
-pub fn count_partial(args: &PartialArgumentList) -> Counts {
+pub(super) fn count_partial(args: &PartialArgumentList) -> Counts {
     let mut counts = Counts {
         any: !args.arguments.is_empty(),
         ..Counts::default()
     };
-    for arg in args.arguments.iter() {
+    for arg in &args.arguments {
         // placeholders (`?`) are no PHP 8.5 syntax here, so php-parser rejects them
         if let PartialArgument::Positional(p) = arg {
             counts.positional(p);
@@ -591,7 +733,11 @@ pub fn count_partial(args: &PartialArgumentList) -> Counts {
 
 impl Counts {
     fn named(&mut self, n: &NamedArgument) {
-        self.push_named(String::from_utf8_lossy(n.name.value).into_owned(), n.value, n.span());
+        self.push_named(
+            String::from_utf8_lossy(n.name.value).into_owned(),
+            n.value,
+            n.span(),
+        );
     }
 
     fn positional(&mut self, p: &PositionalArgument) {
@@ -599,7 +745,9 @@ impl Counts {
     }
 
     /// Some of a call's arguments (`call_user_func()`'s after the callback).
-    pub fn of<'x, 'arena: 'x>(args: impl IntoIterator<Item = &'x Argument<'arena>>) -> Counts {
+    pub(super) fn of<'x, 'arena: 'x>(
+        args: impl IntoIterator<Item = &'x Argument<'arena>>,
+    ) -> Counts {
         let mut counts = Counts::default();
         for arg in args {
             counts.any = true;
@@ -612,23 +760,28 @@ impl Counts {
     }
 
     /// One positional argument (a pipe's input).
-    pub fn of_value(value: &Expression) -> Counts {
-        let mut counts = Counts { any: true, ..Counts::default() };
+    pub(super) fn of_value(value: &Expression) -> Counts {
+        let mut counts = Counts {
+            any: true,
+            ..Counts::default()
+        };
         counts.push_positional(value, false, value.span());
         counts
     }
 
     /// `call_user_func_array()`'s constant array as arguments (`reorderCallUserFuncArrayArguments()`): a string key
     /// names one; `None` for a dynamic or empty key.
-    pub fn of_array(elements: &[&ArrayElement]) -> Option<Counts> {
+    pub(super) fn of_array(elements: &[&ArrayElement]) -> Option<Counts> {
         let mut counts = Counts::default();
         for e in elements {
             counts.any = true;
             match e {
                 ArrayElement::Value(v) => counts.push_positional(v.value, false, e.span()),
                 ArrayElement::Variadic(v) => counts.push_positional(v.value, true, e.span()),
-                ArrayElement::KeyValue(kv) if let Expression::Literal(Literal::Integer(_)) = kv.key => {
-                    counts.push_positional(kv.value, false, e.span())
+                ArrayElement::KeyValue(kv)
+                    if let Expression::Literal(Literal::Integer(_)) = kv.key =>
+                {
+                    counts.push_positional(kv.value, false, e.span());
                 }
                 ArrayElement::KeyValue(kv)
                     if let Expression::Literal(Literal::String(s)) = kv.key
@@ -674,8 +827,12 @@ impl Counts {
             Some(Unpacked::Unknown) => self.unpack = true,
         }
         let elements = match (&unpack, value) {
-            (Some(Unpacked::Keys(_)), Expression::Array(a)) => a.elements.iter().map(element).collect(),
-            (Some(Unpacked::Keys(_)), Expression::LegacyArray(a)) => a.elements.iter().map(element).collect(),
+            (Some(Unpacked::Keys(_)), Expression::Array(a)) => {
+                a.elements.iter().map(element).collect()
+            }
+            (Some(Unpacked::Keys(_)), Expression::LegacyArray(a)) => {
+                a.elements.iter().map(element).collect()
+            }
             _ => Vec::new(),
         };
         self.args.push(Arg {
@@ -700,7 +857,7 @@ pub(super) fn element(e: &ArrayElement) -> Span {
 
 /// What unpacking an expression gives.
 #[derive(Clone, Debug)]
-pub enum Unpacked {
+pub(super) enum Unpacked {
     /// A constant array: each element's string key (a named argument) or none.
     Keys(Vec<Option<String>>),
     /// Not a constant array.
@@ -744,25 +901,44 @@ fn unpacked_types(ty: &Type) -> Option<Vec<(Option<String>, Type)>> {
         }
     }
     let arrays = arrays(ty)?;
-    let count = arrays.iter().map(|a| {
-        if a.unsealed.as_ref().is_some_and(|(key, _)| !matches!(key, Type::Never(_))) { 0 } else { a.keys.len() }
-    }).min()?;
-    Some((0..count).filter_map(|i| {
-        let key = &arrays[0].keys[i];
-        let name = match key {
-            Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(String::from_utf8_lossy(s).into_owned()),
-            _ => None,
-        };
-        if name.is_none() && arrays.last().unwrap().optional.contains(&i) {
-            return None;
-        }
-        Some((name, pun_phpstan::types::union(arrays.iter().map(|a| a.values[i].clone()).collect())))
-    }).collect())
+    let count = arrays
+        .iter()
+        .map(|a| {
+            if a.unsealed
+                .as_ref()
+                .is_some_and(|(key, _)| !matches!(key, Type::Never(_)))
+            {
+                0
+            } else {
+                a.keys.len()
+            }
+        })
+        .min()?;
+    Some(
+        (0..count)
+            .filter_map(|i| {
+                let key = &arrays[0].keys[i];
+                let name = match key {
+                    Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => {
+                        Some(String::from_utf8_lossy(s).into_owned())
+                    }
+                    _ => None,
+                };
+                if name.is_none() && arrays.last().unwrap().optional.contains(&i) {
+                    return None;
+                }
+                Some((
+                    name,
+                    pun_phpstan::types::union(arrays.iter().map(|a| a.values[i].clone()).collect()),
+                ))
+            })
+            .collect(),
+    )
 }
 
 /// The calls FunctionCallParametersCheck checks.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum CallKind {
+pub(super) enum CallKind {
     Function,
     /// CallUserFuncRule uses function identifiers, but passes `isBuiltin: false` for the forwarded call.
     CallUserFunc,
@@ -775,7 +951,7 @@ pub enum CallKind {
 }
 
 /// The messages of one call kind: `subject` is e.g. `Function foo`, `Method Foo::bar()`, `Class Foo constructor`.
-pub struct Call<'s> {
+pub(super) struct Call<'s> {
     pub kind: CallKind,
     pub subject: &'s str,
     /// The operand-position scope's logical call, separate from the selector used for diagnostics.
@@ -785,7 +961,7 @@ pub struct Call<'s> {
 }
 
 /// `counts` is [`count()`] of the call's arguments.
-pub fn check(
+pub(super) fn check(
     c: &mut Checker,
     acceptor: &Acceptor,
     counts: &Counts,
@@ -793,8 +969,11 @@ pub fn check(
     call: Call,
     first_level: bool,
 ) {
-    let scope = call.scope.and_then(|span| c.named_call_scopes.get(&span))
-        .and_then(|scopes| scopes.iter().find(|scope| !scope.filtered)).cloned();
+    let scope = call
+        .scope
+        .and_then(|span| c.named_call_scopes.get(&span))
+        .and_then(|scopes| scopes.iter().find(|scope| !scope.filtered))
+        .cloned();
     check_in(c, acceptor, counts, at, call, first_level, scope.as_ref());
 }
 
@@ -825,16 +1004,24 @@ pub(super) fn check_bound_in(
     semantic: bool,
 ) {
     // the arguments after unpacking constant arrays
-    let unpacked: Vec<_> = counts.args.iter().map(|arg| {
-        (arg.unpack.is_some() && (scope.is_some_and(|scope| scope.filtered)
-            || matches!(arg.unpack, Some(Unpacked::Unknown)))).then(|| {
-            match scope {
+    let unpacked: Vec<_> = counts
+        .args
+        .iter()
+        .map(|arg| {
+            (arg.unpack.is_some()
+                && (scope.is_some_and(|scope| scope.filtered)
+                    || matches!(arg.unpack, Some(Unpacked::Unknown))))
+            .then(|| match scope {
                 Some(scope) => c.phpstan_type_at_in(arg.value, &scope.types),
                 None => c.types.get(&arg.value).map(|t| c.to_phpstan(t)),
-            }
-        }).flatten()
-    }).collect();
-    let inferred: Vec<_> = unpacked.iter().map(|ty| ty.as_ref().and_then(unpacked_types)).collect();
+            })
+            .flatten()
+        })
+        .collect();
+    let inferred: Vec<_> = unpacked
+        .iter()
+        .map(|ty| ty.as_ref().and_then(unpacked_types))
+        .collect();
     // the fix of every `named argument $x` error of the call
     let positional_fix = !acceptor.accepts_named_arguments.yes()
         && counts.args.iter().any(|a| a.name.is_some())
@@ -844,12 +1031,15 @@ pub(super) fn check_bound_in(
     for ((arg, inferred), unpacked) in counts.args.iter().zip(&inferred).zip(&unpacked) {
         has_named |= arg.name.is_some();
         if has_named && arg.unpack.is_some() {
-            let message = "Named argument cannot be followed by an unpacked (...) argument.".to_string();
+            let message =
+                "Named argument cannot be followed by an unpacked (...) argument.".to_string();
             c.report_non_ignorable(arg.span, "argument.unpackAfterNamed", message, None);
         }
         // PHP 8.1 allows a named argument after an unpacked one
-        if has_unpacked && arg.unpack.is_none() && (arg.name.is_none() || !c.surely_at_least(80100)) {
-            let message = "Unpacked argument (...) cannot be followed by a non-unpacked argument.".to_string();
+        if has_unpacked && arg.unpack.is_none() && (arg.name.is_none() || !c.surely_at_least(80100))
+        {
+            let message = "Unpacked argument (...) cannot be followed by a non-unpacked argument."
+                .to_string();
             c.report_non_ignorable(arg.span, "argument.nonUnpackAfterUnpacked", message, None);
         }
         let entry = |name, unpack, value| Entry {
@@ -883,7 +1073,9 @@ pub(super) fn check_bound_in(
                     }));
                     // An open shape expands no concrete positions, but a required key still guarantees an unpack.
                     if arguments.is_empty()
-                        && unpacked.as_ref().is_some_and(|ty| ty.is_iterable_at_least_once().yes())
+                        && unpacked
+                            .as_ref()
+                            .is_some_and(|ty| ty.is_iterable_at_least_once().yes())
                     {
                         arguments.push(entry(None, true, arg.value));
                     }
@@ -925,13 +1117,20 @@ pub(super) fn check_bound_in(
             c.report(at, "arguments.count", message, None);
         }
     }
-    if semantic && let Some(void) = call.void_message.clone()
+    if semantic
+        && let Some(void) = call.void_message.clone()
         && !first_level
-        && call.scope.and_then(|span| c.keep_void_type_at(span)).map_or(acceptor.void, |ty| {
-            // NullsafeMethodCallHandler checks the ensured plain twin, before adding short-circuit null.
-            // The provenance flag excludes null declared by any actual target.
-            ty.is_void() || call.kind == CallKind::Method && ty.has_nullsafe_null() && ty.remove_null().is_void()
-        })
+        && call
+            .scope
+            .and_then(|span| c.keep_void_type_at(span))
+            .map_or(acceptor.void, |ty| {
+                // NullsafeMethodCallHandler checks the ensured plain twin, before adding short-circuit null.
+                // The provenance flag excludes null declared by any actual target.
+                ty.is_void()
+                    || call.kind == CallKind::Method
+                        && ty.has_nullsafe_null()
+                        && ty.remove_null().is_void()
+            })
     {
         let identifier = match call.kind {
             CallKind::Function | CallKind::CallUserFunc => "function.void",
@@ -942,9 +1141,19 @@ pub(super) fn check_bound_in(
         c.report(at, identifier, void, None);
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
-    if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) || c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE) {
+    if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES)
+        || c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE)
+    {
         if semantic {
-            super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call, positional_fix);
+            super::types::arguments(
+                c,
+                acceptor,
+                &arguments,
+                &parameters,
+                at.span(),
+                &call,
+                positional_fix,
+            );
         } else {
             for (argument, parameter) in arguments.iter().zip(parameters) {
                 if parameter.is_some() {
@@ -958,7 +1167,13 @@ pub(super) fn check_bound_in(
 /// The per-bound-argument `@no-named-arguments` check. Like upstream, it runs only after processArguments and
 /// only when argument type/reference checking is enabled, immediately before that argument's type checks.
 /// `positional_fix`: the call's named arguments can be made positional ([`positional_arguments_fix()`]).
-pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call: &Call, positional_fix: bool) {
+pub(super) fn check_named(
+    c: &mut Checker,
+    acceptor: &Acceptor,
+    e: &Entry,
+    call: &Call,
+    positional_fix: bool,
+) {
     if acceptor.accepts_named_arguments.yes() {
         return;
     }
@@ -970,7 +1185,7 @@ pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call:
             Some(_) => e.value_type(c),
             None => c.types.get(&e.value).map(|t| c.to_phpstan(t)),
         };
-        let key = ty.map(|t| {
+        let key = ty.map_or(Tri::Maybe, |t| {
             let key = t.iterable_key_type();
             // This is a certainty query, not lenient argument acceptance. BenevolentUnionType inherits
             // UnionType::isString(), so an int|string array key is still only possibly a string.
@@ -978,19 +1193,29 @@ pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call:
                 Type::Benevolent(parts) => Type::Union(parts).is_string(),
                 key => key.is_string(),
             }
-        }).unwrap_or(Tri::Maybe);
+        });
         if key.no() {
             return;
         }
-        let key = if key.yes() { "string key" } else { "possibly string key" };
+        let key = if key.yes() {
+            "string key"
+        } else {
+            "possibly string key"
+        };
         format!("unpacked array with {key}")
     } else {
         return;
     };
     let count = c.errors.len();
-    c.report(e.span, "argument.named", format!(
-        "{} invoked with {argument}, but it's not allowed because of @no-named-arguments.", call.subject
-    ), None);
+    c.report(
+        e.span,
+        "argument.named",
+        format!(
+            "{} invoked with {argument}, but it's not allowed because of @no-named-arguments.",
+            call.subject
+        ),
+        None,
+    );
     if fixable {
         c.fixable_since(count);
     }
@@ -1000,7 +1225,12 @@ pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call:
 /// one names a different non-variadic parameter, and each skipped parameter before the last one passed is optional,
 /// not by reference, with a default createDefaultValueExpr() can write. A call made from an attribute is not in
 /// the file.
-fn positional_arguments_fix(c: &Checker, acceptor: &Acceptor, args: &[Arg], kind: CallKind) -> bool {
+fn positional_arguments_fix(
+    c: &Checker,
+    acceptor: &Acceptor,
+    args: &[Arg],
+    kind: CallKind,
+) -> bool {
     if kind == CallKind::Attribute {
         return false;
     }
@@ -1031,7 +1261,8 @@ fn positional_arguments_fix(c: &Checker, acceptor: &Acceptor, args: &[Arg], kind
             return false;
         }
         // ponytail: a built-in's default (data/symbols.json's type string) is not read; such a call is not fixable
-        let Some(default) = user.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref()) else {
+        let Some(default) = user.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref())
+        else {
             return false;
         };
         // createDefaultValueExpr()
@@ -1039,16 +1270,27 @@ fn positional_arguments_fix(c: &Checker, acceptor: &Acceptor, args: &[Arg], kind
         (ty.is_constant_array().yes() && ty.is_iterable_at_least_once().no())
             || matches!(
                 ty,
-                Type::Null | Type::ConstBool(_) | Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_)
+                Type::Null
+                    | Type::ConstBool(_)
+                    | Type::ConstInt(_)
+                    | Type::ConstFloat(_)
+                    | Type::ConstString(_)
             )
     })
 }
 
 /// The declared parameter types with a policy, for the built-in fallback check on other parameters.
 pub(super) fn allowed_constants_type(c: &Checker, acceptor: &Acceptor) -> Option<Type> {
-    let types: Vec<_> = acceptor.param_types.iter().enumerate().filter_map(|(i, p)| {
-        matches!(p, ParamType::Builtin(_, Some(_))).then(|| super::types::declared_type(c, acceptor, i)).flatten()
-    }).collect();
+    let types: Vec<_> = acceptor
+        .param_types
+        .iter()
+        .enumerate()
+        .filter_map(|(i, p)| {
+            matches!(p, ParamType::Builtin(_, Some(_)))
+                .then(|| super::types::declared_type(c, acceptor, i))
+                .flatten()
+        })
+        .collect();
     (!types.is_empty()).then(|| pun_phpstan::types::union(types))
 }
 
@@ -1066,8 +1308,16 @@ pub(super) fn check_constants(
     if !c.surely_at_least(80000) {
         return;
     }
-    let ArgKind::Constants(fetches) = e.kind else { return };
-    let Some(constants) = fetches.iter().map(|f| resolve_constant(c, f)).collect::<Option<Vec<_>>>() else { return };
+    let ArgKind::Constants(fetches) = e.kind else {
+        return;
+    };
+    let Some(constants) = fetches
+        .iter()
+        .map(|f| resolve_constant(c, f))
+        .collect::<Option<Vec<_>>>()
+    else {
+        return;
+    };
     let policy = match &acceptor.param_types[p] {
         ParamType::Builtin(_, policy) => policy.as_ref(),
         _ => None,
@@ -1075,9 +1325,15 @@ pub(super) fn check_constants(
     let of = call.subject[..1].to_ascii_lowercase() + &call.subject[1..];
     let parameter = parameter[..1].to_ascii_lowercase() + &parameter[1..];
     let invalid = |c: &mut Checker, constant: &ConstantReflection| {
-        c.report(e.span, "argument.invalidConstant", format!(
-            "Constant {} is not allowed for {parameter} of {of}.", constant.name
-        ), None);
+        c.report(
+            e.span,
+            "argument.invalidConstant",
+            format!(
+                "Constant {} is not allowed for {parameter} of {of}.",
+                constant.name
+            ),
+            None,
+        );
     };
     if let Some(policy) = policy {
         let result = policy.check(&constants);
@@ -1085,23 +1341,39 @@ pub(super) fn check_constants(
             invalid(c, constant);
         }
         for group in result.violated_groups {
-            c.report(e.span, "argument.exclusiveConstants", format!(
-                "Constants {} cannot be combined for {parameter} of {of}.", group.join(", ")
-            ), None);
+            c.report(
+                e.span,
+                "argument.exclusiveConstants",
+                format!(
+                    "Constants {} cannot be combined for {parameter} of {of}.",
+                    group.join(", ")
+                ),
+                None,
+            );
         }
         if result.bitmask_not_allowed {
-            c.report(e.span, "argument.bitmaskNotAllowed", format!(
-                "Combining constants with | is not allowed for {parameter} of {of}."
-            ), None);
+            c.report(
+                e.span,
+                "argument.bitmaskNotAllowed",
+                format!("Combining constants with | is not allowed for {parameter} of {of}."),
+                None,
+            );
         }
-    } else if acceptor.builtin && !matches!(call.kind, CallKind::Callable | CallKind::CallUserFunc) && allowed_type.zip(parameter_type).is_some_and(|(a, p)| {
-        super::declared::with_classes(c, || is_super_type_of(a, p).yes())
-    }) {
+    } else if acceptor.builtin
+        && !matches!(call.kind, CallKind::Callable | CallKind::CallUserFunc)
+        && allowed_type
+            .zip(parameter_type)
+            .is_some_and(|(a, p)| super::declared::with_classes(c, || is_super_type_of(a, p).yes()))
+    {
         // only a constant another parameter of the function takes is reported here
-        let policies: Vec<_> = acceptor.param_types.iter().filter_map(|p| match p {
-            ParamType::Builtin(_, Some(policy)) => Some(policy),
-            _ => None,
-        }).collect();
+        let policies: Vec<_> = acceptor
+            .param_types
+            .iter()
+            .filter_map(|p| match p {
+                ParamType::Builtin(_, Some(policy)) => Some(policy),
+                _ => None,
+            })
+            .collect();
         for constant in constants.iter().filter(|k| k.builtin) {
             let one = std::slice::from_ref(constant);
             if policies.iter().any(|policy| policy.check(one).is_ok()) {
@@ -1119,19 +1391,34 @@ fn resolve_constant(c: &Checker, fetch: &ConstantFetch) -> Option<ConstantReflec
             let written = c.written(*name).trim_start_matches('\\').to_string();
             let fallback = *unqualified && !c.names.is_imported(name);
             for name in std::iter::once(resolved).chain(fallback.then_some(written)) {
-                if ["null", "true", "false"].iter().any(|n| name.eq_ignore_ascii_case(n)) {
+                if ["null", "true", "false"]
+                    .iter()
+                    .any(|n| name.eq_ignore_ascii_case(n))
+                {
                     return None;
                 }
-                if let Some(k) = c.codebase.get_constant(name.as_bytes()).filter(|k| !k.flags.is_built_in()) {
+                if let Some(k) = c
+                    .codebase
+                    .get_constant(name.as_bytes())
+                    .filter(|k| !k.flags.is_built_in())
+                {
                     // As in ReflectionProvider, a define() inside a class-like is not a global declaration.
                     if !c.codebase.class_likes.values().any(|o| {
-                        o.span.file_id == k.span.file_id && o.span.start.offset <= k.span.start.offset && k.span.end.offset <= o.span.end.offset
+                        o.span.file_id == k.span.file_id
+                            && o.span.start.offset <= k.span.start.offset
+                            && k.span.end.offset <= o.span.end.offset
                     }) {
-                        return Some(ConstantReflection { name, builtin: false });
+                        return Some(ConstantReflection {
+                            name,
+                            builtin: false,
+                        });
                     }
                 }
                 if c.builtins.constants.contains_key(&name) {
-                    return Some(ConstantReflection { name, builtin: true });
+                    return Some(ConstantReflection {
+                        name,
+                        builtin: true,
+                    });
                 }
             }
             None
@@ -1151,23 +1438,42 @@ fn resolve_constant(c: &Checker, fetch: &ConstantFetch) -> Option<ConstantReflec
             let builtin = match known(c, &class)? {
                 Known::User(k) => {
                     let key = mago_word::word(name.as_bytes());
-                    if k.constants.get(&key).is_some_and(|k| !k.flags.is_built_in()) || k.enum_cases.contains_key(&key) {
-                        return Some(ConstantReflection { name: format!("{class}::{name}"), builtin: false });
+                    if k.constants
+                        .get(&key)
+                        .is_some_and(|k| !k.flags.is_built_in())
+                        || k.enum_cases.contains_key(&key)
+                    {
+                        return Some(ConstantReflection {
+                            name: format!("{class}::{name}"),
+                            builtin: false,
+                        });
                     }
-                    k.all_parent_classes.iter().chain(k.all_parent_interfaces.iter())
+                    k.all_parent_classes
+                        .iter()
+                        .chain(k.all_parent_interfaces.iter())
                         .filter_map(|n| c.builtins.classes.get(&n.to_string().to_ascii_lowercase()))
                         .find(|k| k.constants.iter().any(|(n, _)| n == name))?
                 }
-                Known::Builtin(k) => std::iter::once(k).chain(k.ancestors.iter().filter_map(|n| c.builtins.classes.get(&n.to_ascii_lowercase())))
-                    .find(|k| k.constants.iter().any(|(n, _)| n == name) || k.cases.contains(name))?,
+                Known::Builtin(k) => std::iter::once(k)
+                    .chain(
+                        k.ancestors
+                            .iter()
+                            .filter_map(|n| c.builtins.classes.get(&n.to_ascii_lowercase())),
+                    )
+                    .find(|k| {
+                        k.constants.iter().any(|(n, _)| n == name) || k.cases.contains(name)
+                    })?,
             };
-            Some(ConstantReflection { name: format!("{}::{name}", builtin.name), builtin: true })
+            Some(ConstantReflection {
+                name: format!("{}::{name}", builtin.name),
+                builtin: true,
+            })
         }
     }
 }
 
 /// One argument after unpacking constant arrays.
-pub struct Entry<'a> {
+pub(super) struct Entry<'a> {
     pub name: Option<&'a str>,
     /// Unpacks a non-constant array.
     pub unpack: bool,
@@ -1240,7 +1546,8 @@ fn process_arguments(
                     }
                     None => {
                         if named_for_variadic.contains(name) {
-                            let message = format!("Named parameter ${name} overwrites previous argument.");
+                            let message =
+                                format!("Named parameter ${name} overwrites previous argument.");
                             c.report(*span, "argument.duplicate", message, None);
                         }
                         named_for_variadic.push(name);
@@ -1255,7 +1562,10 @@ fn process_arguments(
             continue;
         }
         if has_named && !acceptor.variadics.get(parameter) && !unused.contains(&parameter) {
-            let message = format!("Argument for parameter ${} has already been passed.", acceptor.names[parameter]);
+            let message = format!(
+                "Argument for parameter ${} has already been passed.",
+                acceptor.names[parameter]
+            );
             parameters[i] = Some(parameter);
             c.report(*span, "argument.duplicate", message, None);
             continue;
@@ -1266,9 +1576,14 @@ fn process_arguments(
     if has_named {
         // (keyed by name: callable(int, int)'s unnamed parameters are one)
         let mut seen = std::collections::HashSet::new();
-        for p in unused.into_iter().filter(|p| !acceptor.optional.get(*p) && seen.insert(&acceptor.names[*p])) {
-            let message =
-                format!("Missing parameter ${} ({}) in call to {callee}.", acceptor.names[p], acceptor.types[p]);
+        for p in unused
+            .into_iter()
+            .filter(|p| !acceptor.optional.get(*p) && seen.insert(&acceptor.names[*p]))
+        {
+            let message = format!(
+                "Missing parameter ${} ({}) in call to {callee}.",
+                acceptor.names[p], acceptor.types[p]
+            );
             c.report(at.span(), "argument.missing", message, None);
         }
     }

@@ -99,65 +99,65 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Finder<'_, '_, '_> {
         }
     }
 
-    fn walk_in_program(&mut self, p: &'ast Program<'arena>, _: &mut ()) {
+    fn walk_in_program(&mut self, p: &'ast Program<'arena>, (): &mut ()) {
         self.list(p.statements.as_slice(), true);
     }
-    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, (): &mut ()) {
         self.list(n.statements().as_slice(), true);
     }
-    fn walk_in_block(&mut self, b: &'ast Block<'arena>, _: &mut ()) {
+    fn walk_in_block(&mut self, b: &'ast Block<'arena>, (): &mut ()) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body(
         &mut self,
         b: &'ast IfColonDelimitedBody<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body_else_if_clause(
         &mut self,
         b: &'ast IfColonDelimitedBodyElseIfClause<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body_else_clause(
         &mut self,
         b: &'ast IfColonDelimitedBodyElseClause<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_while_colon_delimited_body(
         &mut self,
         b: &'ast WhileColonDelimitedBody<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_for_colon_delimited_body(
         &mut self,
         b: &'ast ForColonDelimitedBody<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_foreach_colon_delimited_body(
         &mut self,
         b: &'ast ForeachColonDelimitedBody<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
     fn walk_in_declare_colon_delimited_body(
         &mut self,
         b: &'ast DeclareColonDelimitedBody<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         self.list(b.statements.as_slice(), false);
     }
-    fn walk_in_switch_case(&mut self, b: &'ast SwitchCase<'arena>, _: &mut ()) {
+    fn walk_in_switch_case(&mut self, b: &'ast SwitchCase<'arena>, (): &mut ()) {
         self.list(b.statements(), false);
     }
 }

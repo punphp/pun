@@ -46,7 +46,7 @@ impl Rule for NoSideEffectsWithDeclarations {
         configure(options, |key, value| {
             match key {
                 "allow-conditional-declarations" => {
-                    self.allow_conditional_declarations = boolean(value)?
+                    self.allow_conditional_declarations = boolean(value)?;
                 }
                 "allow-class-alias" => self.allow_class_alias = boolean(value)?,
                 "allow-class-exists" => self.allow_class_exists = boolean(value)?,
@@ -92,7 +92,7 @@ struct Collector<'r, 'ast, 'arena> {
     first_side_effect: Option<mago_span::Span>,
 }
 
-impl<'ast, 'arena> Collector<'_, 'ast, 'arena> {
+impl<'arena> Collector<'_, '_, 'arena> {
     fn is_allowed_expression(&self, statement: &ExpressionStatement<'arena>) -> bool {
         let Expression::Call(Call::Function(call)) = statement.expression else {
             return false;
@@ -104,15 +104,15 @@ impl<'ast, 'arena> Collector<'_, 'ast, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, 'ast, 'arena> {
-    fn walk_in_namespace(&mut self, namespace: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_in_namespace(&mut self, namespace: &'ast Namespace<'arena>, (): &mut ()) {
         self.scope.push(Node::Namespace(namespace));
     }
 
-    fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {
+    fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, (): &mut ()) {
         self.scope.pop();
     }
 
-    fn walk_in_statement(&mut self, statement: &'ast Statement<'arena>, _: &mut ()) {
+    fn walk_in_statement(&mut self, statement: &'ast Statement<'arena>, (): &mut ()) {
         match statement {
             _ if statement.is_declaration()
                 && !matches!(statement, Statement::Declare(_) | Statement::Namespace(_)) =>
@@ -134,12 +134,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collector<'_, 'ast, 'arena> {
         }
     }
 
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
 }

@@ -17,3 +17,6 @@ serde_json.workspace = true
 pun-config.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true
+
+[lints]
+workspace = true

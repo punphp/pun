@@ -279,7 +279,7 @@ pub(crate) fn method_without_params(ctx: &crate::Context<'_>, method: &Method<'_
     let span = node_span(method);
     let indent = line_indent(source, span.start);
     let mut out = String::new();
-    for list in method.attribute_lists.iter() {
+    for list in &method.attribute_lists {
         let s = node_span(list);
         out.push_str(&source[s.start..s.end]);
         out.push('\n');

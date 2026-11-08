@@ -157,11 +157,11 @@ impl<'s> Annotated<'s> {
                     edits.push(Edit::new(Span::new(doc.start, after), ""));
                 }
             } else {
-                lead = format!("{}{nl}", reformatted(new_doc).replace('\n', &nl));
+                lead = format!("{}{nl}", reformatted(new_doc).replace('\n', nl));
                 at_start = doc.start;
             }
         } else if let Some(new_doc) = new_doc.filter(|d| !d.is_empty() && self.doc.is_none()) {
-            lead = format!("{}{nl}", reformatted(new_doc).replace('\n', &nl));
+            lead = format!("{}{nl}", reformatted(new_doc).replace('\n', nl));
         }
         match self.last_attribute_end {
             Some(end) if !groups.is_empty() => {
@@ -218,7 +218,7 @@ impl<'s> Annotated<'s> {
 pub(crate) fn reformatted(text: &str) -> String {
     let text = &text.replace("\r\n", "\n");
     let Some((first, _)) = text.split_once('\n') else {
-        return text.to_string();
+        return text.clone();
     };
     if starred(text) {
         // `preg_replace('(^\s+\*)m', ' *', $text)`: at each line start, white space (newlines too) and a `*`
@@ -252,7 +252,7 @@ pub(crate) fn reformatted(text: &str) -> String {
         .len()..];
     if let (true, Some(at)) = (opens_alone, run.find('\n')) {
         // `preg_replace('(^' . preg_quote($matches[1]) . ')m', '', $text)`
-        let prefix = run[at + 1..].as_bytes();
+        let prefix = &run.as_bytes()[at + 1..];
         return strip_line_starts(text, |rest| {
             if rest.starts_with(prefix) {
                 prefix.len()
@@ -863,17 +863,17 @@ fn number(b: &[u8], i: usize) -> Option<usize> {
     };
     let s = i + usize::from(matches!(at(i), Some(b'+' | b'-')));
     // `D\.[0-9]*+(_[0-9]++)*(e…)?`
-    if let Some(d) = digits(s, &dec) {
-        if at(d) == Some(b'.') {
-            let mut j = d + 1;
-            while at(j).is_some_and(dec) {
-                j += 1;
-            }
-            while at(j) == Some(b'_') && at(j + 1).is_some_and(dec) {
-                j = digits(j + 1, &dec)?;
-            }
-            return Some(exponent(j).unwrap_or(j));
+    if let Some(d) = digits(s, &dec)
+        && at(d) == Some(b'.')
+    {
+        let mut j = d + 1;
+        while at(j).is_some_and(dec) {
+            j += 1;
         }
+        while at(j) == Some(b'_') && at(j + 1).is_some_and(dec) {
+            j = digits(j + 1, &dec)?;
+        }
+        return Some(exponent(j).unwrap_or(j));
     }
     // `[0-9]*+(_[0-9]++)*\.D(e…)?`
     let mut j = s;
@@ -883,16 +883,16 @@ fn number(b: &[u8], i: usize) -> Option<usize> {
     while at(j) == Some(b'_') && at(j + 1).is_some_and(dec) {
         j = digits(j + 1, &dec)?;
     }
-    if at(j) == Some(b'.') {
-        if let Some(d) = digits(j + 1, &dec) {
-            return Some(exponent(d).unwrap_or(d));
-        }
+    if at(j) == Some(b'.')
+        && let Some(d) = digits(j + 1, &dec)
+    {
+        return Some(exponent(d).unwrap_or(d));
     }
     // `D e[+\-]?D`
-    if let Some(d) = digits(s, &dec) {
-        if let Some(e) = exponent(d) {
-            return Some(e);
-        }
+    if let Some(d) = digits(s, &dec)
+        && let Some(e) = exponent(d)
+    {
+        return Some(e);
     }
     // TOKEN_INTEGER
     if at(s) == Some(b'0') {

@@ -212,7 +212,7 @@ fn renamed_to_set_up(
         let span = node_span(method);
         let indent = line_indent(source, span.start);
         let mut text = String::new();
-        for attributes in method.attribute_lists.iter() {
+        for attributes in &method.attribute_lists {
             let s = node_span(attributes);
             text.push_str(&source[s.start..s.end]);
             text.push('\n');

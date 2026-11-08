@@ -51,7 +51,7 @@ impl Fixer for PhpdocTagCasingFixer {
         self.proxy.is_candidate(tokens)
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens) {
-        self.proxy.fix(file, tokens)
+        self.proxy.fix(file, tokens);
     }
 }
 

@@ -93,7 +93,7 @@ pub(crate) fn view_names(directories: &[PathBuf]) -> Vec<String> {
 /// The `InlineHTML` statements of a file parsed as PHP (none when it does not parse), with their first lines.
 fn inline_html(path: &Path) -> Vec<(String, u32)> {
     let mut found = Vec::new();
-    for file in read(path, FileType::Host).ok().flatten().into_iter() {
+    if let Some(file) = read(path, FileType::Host).ok().flatten() {
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
         for s in program.statements.iter().filter(|_| !program.has_errors()) {
@@ -277,14 +277,14 @@ pub(crate) fn available_translations(directories: &[PathBuf]) -> Vec<String> {
 
 /// `keys()` of the array a PHP translation file returns (`getRequire()`), read from its `return` literal.
 fn php_keys(path: &Path, root: &str, out: &mut Vec<String>) {
-    for file in read(path, FileType::Host).ok().flatten().into_iter() {
+    if let Some(file) = read(path, FileType::Host).ok().flatten() {
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
         let returned = program.statements.iter().find_map(|s| match s {
             Statement::Return(r) => r.value,
             _ => None,
         });
-        for value in returned.into_iter() {
+        if let Some(value) = returned {
             keys(value, root, out);
         }
     }
@@ -297,7 +297,7 @@ fn keys(e: &Expression, prefix: &str, out: &mut Vec<String>) {
         _ => return,
     };
     let mut next = 0i64;
-    for element in elements.iter() {
+    for element in elements {
         let (key, value) = match element {
             ArrayElement::KeyValue(kv) => {
                 let key = match kv.key {

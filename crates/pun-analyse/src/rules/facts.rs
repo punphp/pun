@@ -22,7 +22,7 @@ pub(crate) struct Facts {
 
 impl Facts {
     /// `analysed`: the rules check this file, so they read every tag of its doc comments.
-    pub fn of(contents: &[u8], program: &Program, analysed: bool) -> Facts {
+    pub(crate) fn of(contents: &[u8], program: &Program, analysed: bool) -> Facts {
         let mut scopes = FileScopes::of(program);
         let mut declarations = Declarations::default();
         let mut traits = Vec::new();
@@ -41,9 +41,9 @@ impl Facts {
             comments.keep_trait_tags(contents, &traits);
         }
         Facts {
+            scopes,
             comments,
             declarations,
-            scopes,
             strict_types,
         }
     }
@@ -73,7 +73,7 @@ fn strict_types(contents: &[u8]) -> bool {
 
 /// What the rules read of one doc comment.
 #[derive(Clone)]
-pub struct DocEntry {
+pub(crate) struct DocEntry {
     pub doc: Doc,
     /// [`super::doc::tags()`]
     pub tags: Vec<(String, Vec<u8>)>,
@@ -143,7 +143,7 @@ const TRAIT_TAGS: &[&str] = &[
 ];
 
 impl DocEntry {
-    pub fn parse(raw: &[u8], analysed: bool) -> DocEntry {
+    pub(crate) fn parse(raw: &[u8], analysed: bool) -> DocEntry {
         let mut tags = Vec::new();
         if analysed {
             tags = phpdoc::tags(raw).unwrap_or_default();
@@ -168,7 +168,7 @@ const NONE: u32 = u32::MAX;
 /// Each `*/` of a file with the comment starts the backward searches of [`Comments::doc_before()`] find before it,
 /// and the doc comments those close, parsed.
 #[derive(Default)]
-pub struct Comments {
+pub(crate) struct Comments {
     /// The offset after each `*/`, ascending.
     ends: Vec<u32>,
     /// The doc comment each `*/` closes (an index into `docs`), else NONE.
@@ -180,7 +180,7 @@ pub struct Comments {
 }
 
 impl Comments {
-    pub fn of(contents: &[u8], analysed: bool) -> Comments {
+    pub(crate) fn of(contents: &[u8], analysed: bool) -> Comments {
         let mut out = Comments::default();
         // the last two `/**` and `/*` seen: the last one can overlap the `*/` (`/**/`, `/*/`), the one before cannot
         let (mut doc_opens, mut opens, mut last_close) = ([None; 2], [None; 2], None);
@@ -251,7 +251,7 @@ impl Comments {
 
     /// The doc comment (`/**` ... `*/`) that ends right before `offset`, skipping other comments in between: the one
     /// PHP's tokenizer reads (the start is the last `/**` before its `*/`, so `/*` inside the text is no start).
-    pub fn doc_before<'c>(
+    pub(crate) fn doc_before<'c>(
         &'c self,
         contents: &'c [u8],
         offset: usize,
@@ -278,7 +278,7 @@ impl Comments {
     }
 
     /// The parsed doc comment at `start..end`, when it is one [`Comments::doc_before()`] finds.
-    pub fn entry(&self, start: u32, end: u32) -> Option<&DocEntry> {
+    pub(crate) fn entry(&self, start: u32, end: u32) -> Option<&DocEntry> {
         let i = self
             .docs
             .binary_search_by_key(&end, |(_, end, _)| *end)
@@ -289,7 +289,11 @@ impl Comments {
 
     /// php-parser's `getDocComment()`: the last `/** */` comment before `offset` with only whitespace and other block
     /// comments between.
-    pub fn php_doc_comment<'c>(&self, contents: &'c [u8], offset: usize) -> Option<&'c [u8]> {
+    pub(crate) fn php_doc_comment<'c>(
+        &self,
+        contents: &'c [u8],
+        offset: usize,
+    ) -> Option<&'c [u8]> {
         let mut end = offset.min(contents.len());
         loop {
             end -= contents[..end]
@@ -313,7 +317,7 @@ impl Comments {
 
 /// Declaration offsets the codex does not keep.
 #[derive(Default)]
-pub struct Declarations {
+pub(crate) struct Declarations {
     /// Where each property or constant declaration starts, by the offset of each item's name.
     pub starts: HashMap<u32, u32>,
     /// The offsets of native `readonly` modifiers' properties, promoted parameters and classes.
@@ -341,7 +345,7 @@ impl DeclarationWalker<'_> {
     ) {
         let scope = self.scopes.at(at.start.offset);
         let resolved = names
-            .map(|id| scope.resolve(NameKind::Default, id.value()).0.to_vec())
+            .map(|id| scope.resolve(NameKind::Default, id.value()).0)
             .collect();
         self.out
             .parents
@@ -350,7 +354,7 @@ impl DeclarationWalker<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
-    fn walk_in_trait_use(&mut self, t: &'ast TraitUse<'arena>, _: &mut ()) {
+    fn walk_in_trait_use(&mut self, t: &'ast TraitUse<'arena>, (): &mut ()) {
         let names = t
             .trait_names
             .iter()
@@ -359,7 +363,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
         self.trait_uses.push((t.span().start.offset, names));
     }
 
-    fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
+    fn walk_in_property(&mut self, p: &'ast Property<'arena>, (): &mut ()) {
         for v in p.variables() {
             self.out
                 .starts
@@ -372,13 +376,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
     fn walk_in_function_like_parameter(
         &mut self,
         p: &'ast FunctionLikeParameter<'arena>,
-        _: &mut (),
+        (): &mut (),
     ) {
         if p.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(p.variable.span.start.offset);
         }
     }
-    fn walk_in_class(&mut self, c: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_in_class(&mut self, c: &'ast Class<'arena>, (): &mut ()) {
         if c.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(c.span().start.offset);
         }
@@ -388,7 +392,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
             c.implements.iter().flat_map(|i| i.types.iter()),
         );
     }
-    fn walk_in_anonymous_class(&mut self, c: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_in_anonymous_class(&mut self, c: &'ast AnonymousClass<'arena>, (): &mut ()) {
         if c.modifiers.iter().any(Modifier::is_readonly) {
             self.out.readonly.insert(c.span().start.offset);
         }
@@ -398,32 +402,32 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
             c.implements.iter().flat_map(|i| i.types.iter()),
         );
     }
-    fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, (): &mut ()) {
         self.parents(
             e.span(),
             false,
             e.implements.iter().flat_map(|i| i.types.iter()),
         );
     }
-    fn walk_in_trait(&mut self, t: &'ast Trait<'arena>, _: &mut ()) {
+    fn walk_in_trait(&mut self, t: &'ast Trait<'arena>, (): &mut ()) {
         self.traits.push(t.span().start.offset);
     }
-    fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, (): &mut ()) {
         self.parents(
             i.span(),
             true,
             i.extends.iter().flat_map(|e| e.types.iter()),
         );
     }
-    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
-        for item in k.items.iter() {
+    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, (): &mut ()) {
+        for item in &k.items {
             self.out
                 .starts
                 .insert(item.span().start.offset, k.span().start.offset);
         }
     }
-    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
-        for item in k.items.iter() {
+    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, (): &mut ()) {
+        for item in &k.items {
             self.out
                 .starts
                 .insert(item.span().start.offset, k.span().start.offset);

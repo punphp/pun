@@ -292,12 +292,9 @@ pub(crate) const VOID_TYPE: u32 = 70100;
 pub(crate) fn add_return_type(span: Span, at: usize, r#type: &str) -> Report {
     Report::fixed(
         span,
-        format!("Add the `{type}` return type.", type = r#type),
+        format!("Add the `{type}` return type."),
         Safety::Unsafe,
-        vec![Edit::new(
-            Span::new(at, at),
-            format!(": {type}", type = r#type),
-        )],
+        vec![Edit::new(Span::new(at, at), format!(": {type}"))],
     )
 }
 

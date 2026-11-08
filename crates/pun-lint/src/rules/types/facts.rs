@@ -32,7 +32,8 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    get_float, get_int, get_int_or_float, get_int_or_string, get_mixed_keyed_array, get_object, get_string,
+    get_float, get_int, get_int_or_float, get_int_or_string, get_mixed_keyed_array, get_object,
+    get_string,
 };
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
@@ -41,8 +42,8 @@ use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_syntax::cst::{
-    Access, BinaryOperator, Call, ClassLikeConstantSelector, Expression,
-    FunctionCall, Node, Program, Sequence, Trivia, TriviaKind, UnaryPrefixOperator, Variable,
+    Access, BinaryOperator, Call, ClassLikeConstantSelector, Expression, FunctionCall, Node,
+    Program, Sequence, Trivia, TriviaKind, UnaryPrefixOperator, Variable,
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
@@ -76,7 +77,9 @@ static PROJECT: RwLock<Option<Arc<ProjectCodebase>>> = RwLock::new(None);
 
 /// Use `codebase` for every file from now on, or go back to analysing each file on its own with `None`.
 pub fn set_project_codebase(codebase: Option<Arc<ProjectCodebase>>) {
-    *PROJECT.write().unwrap_or_else(|e| e.into_inner()) = codebase;
+    *PROJECT
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = codebase;
 }
 
 /// A build of the project's codebase that runs when a rule first asks for a file's facts.
@@ -90,7 +93,9 @@ static PENDING: Mutex<Option<PendingScan>> = Mutex::new(None);
 /// lock, so `build` must not hand work to the pool those files run on (rayon's global pool: give it a pool of its own
 /// on a thread of its own).
 pub fn set_project_scan(build: impl FnOnce() -> Arc<ProjectCodebase> + Send + 'static) {
-    *PENDING.lock().unwrap_or_else(|e| e.into_inner()) = Some(Box::new(build));
+    *PENDING
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(Box::new(build));
 }
 
 /// The codebase of a project: the prelude with the symbols of `files` (path, code), populated, for
@@ -244,7 +249,7 @@ impl Prefetching {
         }
         (scans.flat_map(|s| &s.names))
             .filter(|n| !self.declared.contains(*n) && PRELUDE.0.get_class_like(n).is_none())
-            .filter(|n| self.seen.insert(n.to_vec()))
+            .filter(|n| self.seen.insert((*n).clone()))
             .cloned()
             .collect()
     }
@@ -258,7 +263,10 @@ fn prefetch(
     autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Prefetched {
     let state = Mutex::new(Prefetching::default());
-    let names = (state.lock().unwrap_or_else(|e| e.into_inner())).unknown(scans.iter());
+    let names = (state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .unknown(scans.iter());
     let look_up = |name: Vec<u8>| Lookup {
         name,
         state: &state,
@@ -271,7 +279,10 @@ fn prefetch(
             scope.spawn(move |scope| lookup.run(scope));
         }
     });
-    (state.into_inner().unwrap_or_else(|e| e.into_inner())).found
+    (state
+        .into_inner()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .found
 }
 
 /// One class name for [`prefetch`] to look up.
@@ -286,7 +297,11 @@ impl<'a> Lookup<'a> {
     /// Look the name up, scan the file found unless another name found it first, and look up the names it adds.
     fn run(self, scope: &rayon::Scope<'a>) {
         let file = (self.autoload)(&self.name);
-        let lock = || self.state.lock().unwrap_or_else(|e| e.into_inner());
+        let lock = || {
+            self.state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+        };
         let new = match &file {
             Some((path, code)) if lock().paths.insert(path.clone()) => {
                 Some((path.clone(), code.clone()))
@@ -320,14 +335,21 @@ impl<'a> Lookup<'a> {
 fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion, native: bool) {
     const STUB: &str = include_str!("../../../data/phpstan-preg-match.stub");
     const NATIVE: &str = include_str!("../../../data/phpstan-preg-match-native.stub");
-    let file = mago_file("phpstan/stubs/core.stub", if native { NATIVE } else { STUB }, FileType::Host);
+    let file = mago_file(
+        "phpstan/stubs/core.stub",
+        if native { NATIVE } else { STUB },
+        FileType::Host,
+    );
     let arena = LocalArena::new();
     let program = parse_file(&arena, &file);
     let names = NameResolver::new(&arena).resolve(program);
     let scanned = scan_program(&arena, &file, program, &names, version);
     for (key, stub) in scanned.function_likes {
-        let builtin = codebase.function_likes.get_mut(&key).expect("a built-in function");
-        builtin.template_types = stub.template_types.clone();
+        let builtin = codebase
+            .function_likes
+            .get_mut(&key)
+            .expect("a built-in function");
+        builtin.template_types.clone_from(&stub.template_types);
         for parameter in &mut builtin.parameters {
             let name = parameter.name.0.as_bytes();
             if name != b"$flags" && name != b"$matches" {
@@ -347,7 +369,10 @@ static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::defaul
 
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
-    (VENDOR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
+    (VENDOR
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .contains(&file)
 }
 
 /// The files [`project_codebase_autoloaded`] read from a path with `phpstan.phar` in it, which Rector's
@@ -356,13 +381,19 @@ static PHPSTAN_PHAR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::
 
 fn remember_phar(file: FileId, path: &str) {
     if path.contains("phpstan.phar") {
-        (PHPSTAN_PHAR.write().unwrap_or_else(|e| e.into_inner())).insert(file);
+        (PHPSTAN_PHAR
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner))
+        .insert(file);
     }
 }
 
 /// Whether `file`'s path has `phpstan.phar` in it.
 pub(crate) fn is_phpstan_phar_file(file: FileId) -> bool {
-    (PHPSTAN_PHAR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
+    (PHPSTAN_PHAR
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .contains(&file)
 }
 
 /// The sources of the files the codebases were built from, docblocks kept, by file id, for the rules that read
@@ -371,7 +402,10 @@ pub(crate) fn is_phpstan_phar_file(file: FileId) -> bool {
 static SOURCES_BY_ID: LazyLock<RwLock<HashMap<FileId, Arc<str>>>> = LazyLock::new(Default::default);
 
 fn remember_source(file: FileId, code: &str) {
-    (SOURCES_BY_ID.write().unwrap_or_else(|e| e.into_inner())).insert(file, Arc::from(code));
+    (SOURCES_BY_ID
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .insert(file, Arc::from(code));
 }
 
 thread_local! {
@@ -419,7 +453,7 @@ impl Facts {
     /// `$scope->hasVariableType()` of the variable at the root of each `$v[...] = ...` / `$v[] = ...` (an `Assign`),
     /// read before the assignment: the assignment's span, the variable's name, and whether it is maybe (`true`) or
     /// surely not (`false`) defined. Defined variables are left out.
-    pub fn implicit_array_writes(&self) -> Vec<((u32, u32), String, bool)> {
+    pub(crate) fn implicit_array_writes(&self) -> Vec<((u32, u32), String, bool)> {
         let file = mago_file(&self.path, &self.native_source, FileType::Host);
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
@@ -427,7 +461,8 @@ impl Facts {
         let found = Arc::new(Mutex::new(HashMap::new()));
         let mut registry = create_registry_with_plugins(&[], false);
         super::union_method::register(&mut registry);
-        registry.register_expression_hook(super::implicit_array_observer::Observer(Arc::clone(&found)));
+        registry
+            .register_expression_hook(super::implicit_array_observer::Observer(Arc::clone(&found)));
         let analyzer = Analyzer::new(
             &arena,
             &file,
@@ -440,10 +475,18 @@ impl Facts {
         let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             analyzer.analyze_with_artifacts(program, &mut result)
         }));
-        let found = found.lock().unwrap_or_else(|e| e.into_inner());
+        let found = found
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let mut out: Vec<_> = (found.iter())
             .filter(|(_, (_, state))| *state != super::implicit_array_observer::YES)
-            .map(|(span, (name, state))| (*span, name.clone(), *state == super::implicit_array_observer::MAYBE))
+            .map(|(span, (name, state))| {
+                (
+                    *span,
+                    name.clone(),
+                    *state == super::implicit_array_observer::MAYBE,
+                )
+            })
             .collect();
         out.sort();
         out
@@ -451,7 +494,7 @@ impl Facts {
 
     /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan 2.3.5 (as
     /// Rector runs it, at the version Pinkary pins) does not know `$this`, so a value that comes from it has no type.
-    pub fn native_type(&self, span: Span) -> Option<&TUnion> {
+    pub(crate) fn native_type(&self, span: Span) -> Option<&TUnion> {
         let analysis = self.artifacts.get_or_init(|| self.analyse());
         let (start, end) = (span.start as u32, span.end as u32);
         if analysis.untyped.contains(&(start, end)) {
@@ -469,9 +512,11 @@ impl Facts {
 
     /// Whether PHPStan leaves the value at `span` untyped in its full scope as in its native one: inside a trait, a
     /// value that comes from `$this`.
-    pub fn is_untyped(&self, span: Span) -> bool {
+    pub(crate) fn is_untyped(&self, span: Span) -> bool {
         let analysis = self.artifacts.get_or_init(|| self.analyse());
-        analysis.untyped.contains(&(span.start as u32, span.end as u32))
+        analysis
+            .untyped
+            .contains(&(span.start as u32, span.end as u32))
     }
 
     /// The declared return type of the built-in function `call` calls (PHP's own signature, not the stub's
@@ -539,7 +584,7 @@ impl Facts {
     }
 
     /// The text at `span` when it is in this file.
-    pub fn text(&self, span: mago_span::Span) -> Option<&str> {
+    pub(crate) fn text(&self, span: mago_span::Span) -> Option<&str> {
         let file = mago_file(&self.path, "", FileType::Host);
         (span.file_id == file.id)
             .then(|| {
@@ -550,20 +595,22 @@ impl Facts {
     }
 
     /// The codebase with the docblocks read (PHPStan's reflection with PHPDoc types).
-    pub fn documented(&self) -> &CodebaseMetadata {
+    pub(crate) fn documented(&self) -> &CodebaseMetadata {
         &self.documented
     }
 
     /// The source of the file `file` of the codebase, docblocks kept, as the codebase read it (its spans point into
     /// it).
-    pub fn source_of(&self, file: FileId) -> Option<Arc<str>> {
-        (SOURCES_BY_ID.read().unwrap_or_else(|e| e.into_inner()))
-            .get(&file)
-            .cloned()
+    pub(crate) fn source_of(&self, file: FileId) -> Option<Arc<str>> {
+        (SOURCES_BY_ID
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner))
+        .get(&file)
+        .cloned()
     }
 
     /// The name Mago gives the anonymous class at `span` (`{anonymous-class:<path>:<line>:<column>}`).
-    pub fn anonymous_class_name(&self, span: mago_span::Span) -> String {
+    pub(crate) fn anonymous_class_name(&self, span: mago_span::Span) -> String {
         let file = mago_file(&self.path, &self.native_source, FileType::Host);
         mago_codex::get_anonymous_class_name(&file, span).to_string()
     }
@@ -572,7 +619,7 @@ impl Facts {
     /// it. A docblock never widens a native type (`TypehintHelper::decideType`), so where Mago loses the documented
     /// type to `mixed` (a variable a closure captured by reference, once the closure is called) the native type
     /// stands.
-    pub fn full_type(&self, span: Span) -> Option<&TUnion> {
+    pub(crate) fn full_type(&self, span: Span) -> Option<&TUnion> {
         let full = (self.documented_artifacts()?.expression_types)
             .get(&(span.start as u32, span.end as u32))?;
         match self.native_type(span) {
@@ -700,7 +747,12 @@ impl Facts {
                                     targets.push(v.name);
                                 }
                             });
-                            if !matches!(a.lhs, Expression::Variable(Variable::Direct(_)) | Expression::Array(_) | Expression::List(_)) {
+                            if !matches!(
+                                a.lhs,
+                                Expression::Variable(Variable::Direct(_))
+                                    | Expression::Array(_)
+                                    | Expression::List(_)
+                            ) {
                                 continue;
                             }
                             // a value passed on from a variable such a value reached last (`$files = [$files]`) is
@@ -708,12 +760,18 @@ impl Facts {
                             let mut reads_this = false;
                             for v in passed_on(a.rhs) {
                                 let last = (writes.iter())
-                                    .filter(|(name, end, _)| *name == v.name && *end <= v.span.start.offset)
+                                    .filter(|(name, end, _)| {
+                                        *name == v.name && *end <= v.span.start.offset
+                                    })
                                     .max_by_key(|(_, end, _)| *end);
                                 reads_this |= matches!(last, Some((_, _, true)));
                             }
-                            let this = a.operator.is_assign() && own(a.span()) && (from_this(a.rhs) || reads_this);
-                            writes.extend(targets.into_iter().map(|t| (t, a.span().end.offset, this)));
+                            let this = a.operator.is_assign()
+                                && own(a.span())
+                                && (from_this(a.rhs) || reads_this);
+                            writes.extend(
+                                targets.into_iter().map(|t| (t, a.span().end.offset, this)),
+                            );
                         }
                         if !writes.iter().any(|w| w.2) {
                             return;
@@ -821,9 +879,10 @@ impl Facts {
             // (unresolved names can remain references or named objects without class metadata).
             let unknown = |t: &TUnion| {
                 t.types.iter().any(|t| match t {
-                    TAtomic::Object(TObject::Named(object)) => {
-                        self.codebase.get_class_like(object.name.as_bytes()).is_none()
-                    }
+                    TAtomic::Object(TObject::Named(object)) => self
+                        .codebase
+                        .get_class_like(object.name.as_bytes())
+                        .is_none(),
                     TAtomic::Reference(_) | TAtomic::Never => true,
                     _ => false,
                 })
@@ -938,8 +997,12 @@ impl Facts {
                     if untyped.contains(&key(e)) {
                         return None;
                     }
-                    let t = (declared.get(&key(e)))
-                        .or_else(|| artifacts.expression_types.get(&key(e)).map(|t| t.as_ref()))?;
+                    let t = (declared.get(&key(e))).or_else(|| {
+                        artifacts
+                            .expression_types
+                            .get(&key(e))
+                            .map(std::convert::AsRef::as_ref)
+                    })?;
                     operand(t)
                 };
                 let (Some(left), Some(right)) = (kind(b.lhs), kind(b.rhs)) else {
@@ -980,10 +1043,10 @@ impl Facts {
                     vec![c.then.unwrap_or(c.condition), c.r#else],
                 )),
                 Node::Binary(b) if b.operator.is_arithmetic() => {
-                    around.push((b.span(), true, vec![b.lhs, b.rhs]))
+                    around.push((b.span(), true, vec![b.lhs, b.rhs]));
                 }
                 Node::UnaryPrefix(u) if u.operator.is_arithmetic() => {
-                    around.push((u.span(), true, vec![u.operand]))
+                    around.push((u.span(), true, vec![u.operand]));
                 }
                 _ => {}
             });
@@ -1014,8 +1077,10 @@ impl Facts {
         // narrowed to an array with that key is an array.
         let mut holders: Vec<(&[u8], mago_span::Span, Vec<u8>)> = Vec::new();
         any_node(Node::Program(program), &mut |n| {
-            let Node::IssetConstruct(isset) = n else { return };
-            for value in isset.values.iter() {
+            let Node::IssetConstruct(isset) = n else {
+                return;
+            };
+            for value in &isset.values {
                 let Expression::ArrayAccess(access) = crate::syntax::unparenthesize(value) else {
                     continue;
                 };
@@ -1026,7 +1091,9 @@ impl Facts {
                 };
                 let key = match literal {
                     mago_syntax::cst::Literal::String(s) => s.value.map(<[u8]>::to_vec),
-                    mago_syntax::cst::Literal::Integer(i) => i.value.map(|i| i.to_string().into_bytes()),
+                    mago_syntax::cst::Literal::Integer(i) => {
+                        i.value.map(|i| i.to_string().into_bytes())
+                    }
                     _ => None,
                 };
                 if let Some(key) = key {
@@ -1034,24 +1101,29 @@ impl Facts {
                 }
             }
         });
-        if let (false, Some(native), Some(documented)) =
-            (holders.is_empty(), artifacts.as_ref(), self.documented_artifacts())
-        {
+        if let (false, Some(native), Some(documented)) = (
+            holders.is_empty(),
+            artifacts.as_ref(),
+            self.documented_artifacts(),
+        ) {
             let key = |s: mago_span::Span| (s.start.offset, s.end.offset);
             let mixed = |t: &TUnion| t.types.iter().all(|a| matches!(a, TAtomic::Mixed(_)));
             let has_key = |t: &TUnion, k: &[u8]| {
                 t.types.iter().any(|a| match a {
                     TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(keyed)) => {
-                        (keyed.known_items.iter().flat_map(|i| i.iter())).any(|(name, (optional, _))| {
-                            !optional
-                                && match name {
-                                    mago_codex::ttype::atomic::array::key::ArrayKey::String(w) => w.as_bytes() == k,
+                        (keyed.known_items.iter().flat_map(|i| i.iter())).any(
+                            |(name, (optional, _))| {
+                                !optional && match name {
+                                    mago_codex::ttype::atomic::array::key::ArrayKey::String(w) => {
+                                        w.as_bytes() == k
+                                    }
                                     mago_codex::ttype::atomic::array::key::ArrayKey::Integer(i) => {
                                         i.to_string().as_bytes() == k
                                     }
                                     _ => false,
                                 }
-                        })
+                            },
+                        )
                     }
                     _ => false,
                 })
@@ -1063,7 +1135,12 @@ impl Facts {
                     .copied()
             };
             let holders: Vec<_> = (holders.into_iter())
-                .filter(|(_, s, _)| documented.expression_types.get(&key(*s)).is_some_and(|t| !mixed(t)))
+                .filter(|(_, s, _)| {
+                    documented
+                        .expression_types
+                        .get(&key(*s))
+                        .is_some_and(|t| !mixed(t))
+                })
                 .collect();
             any_node(Node::Program(program), &mut |n| {
                 let Node::DirectVariable(v) = n else { return };
@@ -1071,11 +1148,17 @@ impl Facts {
                     *name == v.name
                         && s.end.offset <= v.span.start.offset
                         && within(*s) == within(v.span)
-                        && documented.expression_types.get(&key(v.span)).is_some_and(|t| has_key(t, k))
+                        && documented
+                            .expression_types
+                            .get(&key(v.span))
+                            .is_some_and(|t| has_key(t, k))
                 });
                 if narrowed
                     && !declared.contains_key(&key(v.span))
-                    && native.expression_types.get(&key(v.span)).is_some_and(|t| mixed(t))
+                    && native
+                        .expression_types
+                        .get(&key(v.span))
+                        .is_some_and(|t| mixed(t))
                 {
                     declared.insert(key(v.span), get_mixed_keyed_array());
                 }
@@ -1096,7 +1179,10 @@ impl Facts {
                     });
                     if inside
                         && !declared.contains_key(&key(v.span))
-                        && native.expression_types.get(&key(v.span)).is_some_and(|t| mixed(t))
+                        && native
+                            .expression_types
+                            .get(&key(v.span))
+                            .is_some_and(|t| mixed(t))
                     {
                         declared.insert(key(v.span), get_object());
                     }
@@ -1174,8 +1260,8 @@ fn mixed_math(operator: &BinaryOperator<'_>, left: Operand, right: Operand) -> O
     })
 }
 
-/// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone
-/// of it; a constant of `self` or `static`.
+// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone
+// of it; a constant of `self` or `static`.
 
 /// The variables whose value `e` is or holds as it is: `e` itself, an offset of it, the branches of a ternary or `??`,
 /// the values of an array literal, through parentheses.
@@ -1184,12 +1270,27 @@ fn passed_on<'a>(e: &'a Expression<'a>) -> Vec<&'a mago_syntax::cst::DirectVaria
         Expression::Variable(Variable::Direct(v)) => vec![v],
         Expression::Parenthesized(p) => passed_on(p.expression),
         Expression::ArrayAccess(a) => passed_on(a.array),
-        Expression::Conditional(c) => c.then.into_iter().chain([c.r#else]).flat_map(passed_on).collect(),
+        Expression::Conditional(c) => c
+            .then
+            .into_iter()
+            .chain([c.r#else])
+            .flat_map(passed_on)
+            .collect(),
         Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
             [b.lhs, b.rhs].into_iter().flat_map(passed_on).collect()
         }
-        Expression::Array(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
-        Expression::LegacyArray(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
+        Expression::Array(a) => a
+            .elements
+            .iter()
+            .filter_map(|e| e.get_value())
+            .flat_map(passed_on)
+            .collect(),
+        Expression::LegacyArray(a) => a
+            .elements
+            .iter()
+            .filter_map(|e| e.get_value())
+            .flat_map(passed_on)
+            .collect(),
         _ => Vec::new(),
     }
 }
@@ -1259,14 +1360,16 @@ pub(crate) fn facts_with_dead_code(ctx: &Context<'_>) -> Rc<Facts> {
 }
 
 fn build(ctx: &Context<'_>, dead_code: bool) -> Rc<Facts> {
-    let mut pending = PENDING.lock().unwrap_or_else(|e| e.into_inner());
+    let mut pending = PENDING
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     if let Some(build) = pending.take() {
         set_project_codebase(Some(build()));
     }
     drop(pending);
     let project = PROJECT
         .read()
-        .unwrap_or_else(|e| e.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .as_ref()
         .map(Arc::clone);
     Rc::new(scan(ctx, project, dead_code))
@@ -1328,15 +1431,25 @@ static PATHS: LazyLock<RwLock<HashMap<FileId, Arc<str>>>> = LazyLock::new(Defaul
 
 /// The path of the file `file` of the codebase.
 pub(crate) fn path_of(file: FileId) -> Option<Arc<str>> {
-    (PATHS.read().unwrap_or_else(|e| e.into_inner())).get(&file).cloned()
+    (PATHS
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .get(&file)
+    .cloned()
 }
 
 /// [`remember_source`] for the file `id` at `path`, which counts as vendor code when [`is_vendor_path`] says so.
 fn remember(id: FileId, path: &str, code: &str) {
     remember_source(id, code);
-    (PATHS.write().unwrap_or_else(|e| e.into_inner())).insert(id, Arc::from(path));
+    (PATHS
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner))
+    .insert(id, Arc::from(path));
     if is_vendor_path(path) {
-        (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(id);
+        (VENDOR
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner))
+        .insert(id);
     }
 }
 
@@ -1403,15 +1516,22 @@ fn isset_property_regions<'a>(program: &'a Program<'a>) -> Vec<(&'a [u8], u32, u
     fn property_holders<'a>(expr: &'a Expression<'a>, out: &mut Vec<&'a [u8]>) {
         match crate::syntax::unparenthesize(expr) {
             Expression::Construct(Construct::Isset(isset)) => {
-                for value in isset.values.iter() {
-                    if let Expression::Access(Access::Property(p)) = crate::syntax::unparenthesize(value)
-                        && let Expression::Variable(Variable::Direct(v)) = crate::syntax::unparenthesize(p.object)
+                for value in &isset.values {
+                    if let Expression::Access(Access::Property(p)) =
+                        crate::syntax::unparenthesize(value)
+                        && let Expression::Variable(Variable::Direct(v)) =
+                            crate::syntax::unparenthesize(p.object)
                     {
                         out.push(v.name);
                     }
                 }
             }
-            Expression::Binary(b) if matches!(b.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)) => {
+            Expression::Binary(b)
+                if matches!(
+                    b.operator,
+                    BinaryOperator::And(_) | BinaryOperator::LowAnd(_)
+                ) =>
+            {
                 property_holders(b.lhs, out);
                 property_holders(b.rhs, out);
             }
@@ -1429,17 +1549,28 @@ fn isset_property_regions<'a>(program: &'a Program<'a>) -> Vec<(&'a [u8], u32, u
     let mut regions: Vec<(&'a [u8], u32, u32)> = Vec::new();
     any_node(Node::Program(program), &mut |n| match n {
         Node::If(r#if) => {
-            let IfBody::Statement(body) = &r#if.body else { return };
+            let IfBody::Statement(body) = &r#if.body else {
+                return;
+            };
             let mut holders = Vec::new();
             property_holders(r#if.condition, &mut holders);
             let span = body.statement.span();
-            regions.extend(holders.into_iter().map(|h| (h, span.start.offset, span.end.offset)));
+            regions.extend(
+                holders
+                    .into_iter()
+                    .map(|h| (h, span.start.offset, span.end.offset)),
+            );
         }
         Node::Block(block) => {
             for (i, statement) in block.statements.iter().enumerate() {
-                let Statement::If(r#if) = statement else { continue };
-                let IfBody::Statement(body) = &r#if.body else { continue };
-                let Expression::UnaryPrefix(not) = crate::syntax::unparenthesize(r#if.condition) else {
+                let Statement::If(r#if) = statement else {
+                    continue;
+                };
+                let IfBody::Statement(body) = &r#if.body else {
+                    continue;
+                };
+                let Expression::UnaryPrefix(not) = crate::syntax::unparenthesize(r#if.condition)
+                else {
                     continue;
                 };
                 if !matches!(not.operator, UnaryPrefixOperator::Not(_))
@@ -1450,13 +1581,19 @@ fn isset_property_regions<'a>(program: &'a Program<'a>) -> Vec<(&'a [u8], u32, u
                 {
                     continue;
                 }
-                let Expression::Construct(Construct::Isset(_)) = crate::syntax::unparenthesize(not.operand) else {
+                let Expression::Construct(Construct::Isset(_)) =
+                    crate::syntax::unparenthesize(not.operand)
+                else {
                     continue;
                 };
                 let mut holders = Vec::new();
                 property_holders(not.operand, &mut holders);
                 let end = block.right_brace.start.offset;
-                regions.extend(holders.into_iter().map(|h| (h, r#if.span().end.offset, end)));
+                regions.extend(
+                    holders
+                        .into_iter()
+                        .map(|h| (h, r#if.span().end.offset, end)),
+                );
             }
         }
         _ => {}
@@ -1470,6 +1607,10 @@ fn isset_property_regions<'a>(program: &'a Program<'a>) -> Vec<(&'a [u8], u32, u
             assigned.push((v.name, v.span.start.offset));
         }
     });
-    regions.retain(|(name, from, to)| !assigned.iter().any(|(n, at)| n == name && from <= at && at < to));
+    regions.retain(|(name, from, to)| {
+        !assigned
+            .iter()
+            .any(|(n, at)| n == name && from <= at && at < to)
+    });
     regions
 }

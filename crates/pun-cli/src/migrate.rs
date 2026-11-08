@@ -362,7 +362,10 @@ fn check_from(from: &[Source], detected: &[(Source, String)], pint: &Path) -> Re
             let files = if *s == Source::Pint {
                 vec![pint.display().to_string()]
             } else {
-                s.files().iter().map(|f| f.to_string()).collect()
+                s.files()
+                    .iter()
+                    .map(std::string::ToString::to_string)
+                    .collect()
             };
             bail!(
                 "--from {}: no {} found",

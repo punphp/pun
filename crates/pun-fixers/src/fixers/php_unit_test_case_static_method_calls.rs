@@ -465,7 +465,7 @@ impl Fixer for PhpUnitTestCaseStaticMethodCallsFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         apply_fix(tokens, |tokens, start_index, end_index| {
-            self.apply_php_unit_class_fix(tokens, start_index, end_index)
+            self.apply_php_unit_class_fix(tokens, start_index, end_index);
         });
     }
 }

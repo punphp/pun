@@ -24,7 +24,8 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::symbols;
 use pun_phpstan::types::{
-    Level, NeverKind, StrictMixed, Type, accepts_reasons, ancestor_args, is_super_type_of, recommended_level, union,
+    Level, NeverKind, StrictMixed, Type, accepts_reasons, ancestor_args, is_super_type_of,
+    recommended_level, union,
 };
 
 use super::super::assign::{Callee, by_ref_arguments, by_ref_call_arguments};
@@ -34,7 +35,7 @@ use super::super::{Checker, declared, generics};
 use super::flow::{self, list};
 use super::missing_return::{late, method_name};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(crate) const IDENTIFIERS: &[&str] = &[
     "paramOut.type",
     "parameterByRef.type",
     "paramOut.unusedType",
@@ -64,16 +65,20 @@ pub(in super::super) struct Observed {
 pub(in super::super) fn watched(program: &Program) -> Vec<(Span, Vec<Vec<u8>>)> {
     struct W(Vec<(Span, Vec<Vec<u8>>)>);
     fn names(l: &FunctionLikeParameterList) -> Vec<Vec<u8>> {
-        l.parameters.iter().filter(|p| p.ampersand.is_some()).map(|p| p.variable.name.to_vec()).collect()
+        l.parameters
+            .iter()
+            .filter(|p| p.ampersand.is_some())
+            .map(|p| p.variable.name.to_vec())
+            .collect()
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for W {
-        fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        fn walk_in_function(&mut self, f: &'ast Function<'arena>, (): &mut ()) {
             let n = names(&f.parameter_list);
             if !n.is_empty() {
                 self.0.push((f.body.span(), n));
             }
         }
-        fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        fn walk_in_method(&mut self, m: &'ast Method<'arena>, (): &mut ()) {
             if let MethodBody::Concrete(b) = &m.body {
                 let n = names(&m.parameter_list);
                 if !n.is_empty() {
@@ -101,27 +106,54 @@ impl Observer {
             .iter()
             .filter(|(b, _)| b.start.offset <= span.start.offset && span.end.offset <= b.end.offset)
             .min_by_key(|(b, _)| b.end.offset - b.start.offset)?;
-        Some(names.iter().map(|n| (n.clone(), context.get_variable_type(n).map(|t| (**t).clone()))).collect())
+        Some(
+            names
+                .iter()
+                .map(|n| {
+                    (
+                        n.clone(),
+                        context.get_variable_type(n).map(|t| (**t).clone()),
+                    )
+                })
+                .collect(),
+        )
     }
 }
 
 impl Provider for Observer {
     fn meta() -> &'static ProviderMeta {
-        static META: ProviderMeta = ProviderMeta::new("pun-param-out", "param-out", "by-reference parameter types");
+        static META: ProviderMeta =
+            ProviderMeta::new("pun-param-out", "param-out", "by-reference parameter types");
         &META
     }
 }
 
 impl StatementHook for Observer {
-    fn before_statement(&self, s: &Statement<'_>, context: &mut HookContext<'_, '_>) -> HookResult<HookAction> {
+    fn before_statement(
+        &self,
+        s: &Statement<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<HookAction> {
         if let Some(r) = self.read(s.span(), context) {
-            self.found.lock().expect("no hook panics while holding the lock").before.insert(s.span(), r);
+            self.found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .before
+                .insert(s.span(), r);
         }
         Ok(HookAction::Continue)
     }
-    fn after_statement(&self, s: &Statement<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+    fn after_statement(
+        &self,
+        s: &Statement<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
         if let Some(r) = self.read(s.span(), context) {
-            self.found.lock().expect("no hook panics while holding the lock").after.insert(s.span(), r);
+            self.found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .after
+                .insert(s.span(), r);
         }
         Ok(())
     }
@@ -131,14 +163,25 @@ impl ExpressionHook for Observer {
     fn is_observer(&self) -> bool {
         true
     }
-    fn after_expression(&self, e: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+    fn after_expression(
+        &self,
+        e: &Expression<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
         let write = match e {
-            Expression::Assignment(_) | Expression::Call(_) | Expression::Instantiation(_) | Expression::UnaryPostfix(_) => true,
+            Expression::Assignment(_)
+            | Expression::Call(_)
+            | Expression::Instantiation(_)
+            | Expression::UnaryPostfix(_) => true,
             Expression::UnaryPrefix(u) => u.operator.is_increment_or_decrement(),
             _ => false,
         };
         if write && let Some(r) = self.read(e.span(), context) {
-            self.found.lock().expect("no hook panics while holding the lock").expressions.insert(e.span(), r);
+            self.found
+                .lock()
+                .expect("no hook panics while holding the lock")
+                .expressions
+                .insert(e.span(), r);
         }
         Ok(())
     }
@@ -185,7 +228,11 @@ struct Sites<'c, 'a, 'arena> {
 impl Sites<'_, '_, '_> {
     fn push(&mut self, v: &DirectVariable, at: At) {
         if self.names.iter().any(|n| n.as_slice() == v.name) {
-            self.out.push(Site { name: v.name.to_vec(), variable: v.span(), at });
+            self.out.push(Site {
+                name: v.name.to_vec(),
+                variable: v.span(),
+                at,
+            });
         }
     }
     fn arguments(&mut self, refs: crate::bitset::BitSet, args: &ArgumentList, call: Span) {
@@ -203,25 +250,25 @@ impl Sites<'_, '_, '_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sites<'_, '_, 'arena> {
-    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, (): &mut ()) {
         if let Some(v) = root(a.lhs) {
             self.push(v, At::Expression(a.span()));
         }
     }
-    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, (): &mut ()) {
         if u.operator.is_increment_or_decrement()
             && let Expression::Variable(Variable::Direct(v)) = u.operand
         {
             self.push(v, At::Expression(u.span()));
         }
     }
-    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
+    fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, (): &mut ()) {
         if let Expression::Variable(Variable::Direct(v)) = u.operand {
             self.push(v, At::Expression(u.span()));
         }
     }
-    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
-        for value in u.values.iter() {
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, (): &mut ()) {
+        for value in &u.values {
             if !matches!(value, Expression::Variable(_))
                 && let Some(v) = root(value)
             {
@@ -229,25 +276,25 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sites<'_, '_, 'arena> {
             }
         }
     }
-    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
+    fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, (): &mut ()) {
         let refs = by_ref_arguments(self.c, f);
         self.arguments(refs, &f.argument_list, f.span());
     }
-    fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_in_method_call(&mut self, m: &'ast MethodCall<'arena>, (): &mut ()) {
         let refs = by_ref_call_arguments(self.c, Callee::Method(m), &m.argument_list);
         self.arguments(refs, &m.argument_list, m.span());
     }
-    fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, (): &mut ()) {
         let refs = by_ref_call_arguments(self.c, Callee::StaticMethod(m), &m.argument_list);
         self.arguments(refs, &m.argument_list, m.span());
     }
-    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, _: &mut ()) {
+    fn walk_in_instantiation(&mut self, n: &'ast Instantiation<'arena>, (): &mut ()) {
         if let Some(args) = &n.argument_list {
             let refs = by_ref_call_arguments(self.c, Callee::New(n), args);
             self.arguments(refs, args, n.span());
         }
     }
-    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, (): &mut ()) {
         let targets = match &f.target {
             ForeachTarget::Value(v) => vec![v.value],
             ForeachTarget::KeyValue(kv) => vec![kv.key, kv.value],
@@ -262,21 +309,28 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sites<'_, '_, 'arena> {
             }
         }
     }
-    fn walk_in_try_catch_clause(&mut self, k: &'ast TryCatchClause<'arena>, _: &mut ()) {
+    fn walk_in_try_catch_clause(&mut self, k: &'ast TryCatchClause<'arena>, (): &mut ()) {
         if let Some(v) = &k.variable {
             let class = self.c.class_scope();
-            let t = declared::with_classes(self.c, || late(self.c, &declared::native(self.c, &k.hint, class), class, false));
+            let t = declared::with_classes(self.c, || {
+                late(
+                    self.c,
+                    &declared::native(self.c, &k.hint, class),
+                    class,
+                    false,
+                )
+            });
             self.push(v, At::Type(t));
         }
     }
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
 }
 
 /// A by-reference parameter as the function reflection gives it.
@@ -292,7 +346,11 @@ struct Param {
 impl Param {
     /// The variable's type on entry (a variadic one packs the arguments).
     fn entry(&self) -> Type {
-        if self.variadic { Type::array(pun_phpstan::types::mixed(), self.ty.clone()) } else { self.ty.clone() }
+        if self.variadic {
+            Type::array(pun_phpstan::types::mixed(), self.ty.clone())
+        } else {
+            self.ty.clone()
+        }
     }
 }
 
@@ -332,7 +390,11 @@ impl<'s, 'arena> Paths<'s, 'arena> {
                 }
                 IfBody::ColonDelimited(b) => {
                     let mut v = vec![list(b.statements.as_slice())];
-                    v.extend(b.else_if_clauses.iter().map(|e| list(e.statements.as_slice())));
+                    v.extend(
+                        b.else_if_clauses
+                            .iter()
+                            .map(|e| list(e.statements.as_slice())),
+                    );
                     v.extend(b.else_clause.iter().map(|e| list(e.statements.as_slice())));
                     v
                 }
@@ -341,11 +403,24 @@ impl<'s, 'arena> Paths<'s, 'arena> {
             Statement::While(w) => vec![list(w.body.statements())],
             Statement::For(f) => vec![list(f.body.statements())],
             Statement::DoWhile(d) => vec![flow::body(d.statement)],
-            Statement::Switch(sw) => sw.body.cases().iter().map(|c| list(c.statements())).collect(),
+            Statement::Switch(sw) => sw
+                .body
+                .cases()
+                .iter()
+                .map(|c| list(c.statements()))
+                .collect(),
             Statement::Try(t) => {
                 let mut v = vec![list(t.block.statements.as_slice())];
-                v.extend(t.catch_clauses.iter().map(|k| list(k.block.statements.as_slice())));
-                v.extend(t.finally_clause.iter().map(|f| list(f.block.statements.as_slice())));
+                v.extend(
+                    t.catch_clauses
+                        .iter()
+                        .map(|k| list(k.block.statements.as_slice())),
+                );
+                v.extend(
+                    t.finally_clause
+                        .iter()
+                        .map(|f| list(f.block.statements.as_slice())),
+                );
                 v
             }
             Statement::Declare(d) => match &d.body {
@@ -360,20 +435,31 @@ impl<'s, 'arena> Paths<'s, 'arena> {
     fn always(s: &'s Statement<'arena>, sites: &[Span]) -> bool {
         let any = |at: Span| sites.iter().any(|w| inside(at, *w));
         match s {
-            Statement::Expression(_) | Statement::Return(_) | Statement::Unset(_) | Statement::Echo(_) => any(s.span()),
-            Statement::Block(b) => list(b.statements.as_slice()).iter().any(|s| Self::always(s, sites)),
+            Statement::Expression(_)
+            | Statement::Return(_)
+            | Statement::Unset(_)
+            | Statement::Echo(_) => any(s.span()),
+            Statement::Block(b) => list(b.statements.as_slice())
+                .iter()
+                .any(|s| Self::always(s, sites)),
             Statement::If(i) => {
                 let has_else = match &i.body {
                     IfBody::Statement(b) => b.else_clause.is_some(),
                     IfBody::ColonDelimited(b) => b.else_clause.is_some(),
                 };
                 any(i.condition.span())
-                    || (has_else && Self::children(s).iter().all(|l| l.iter().any(|s| Self::always(s, sites))))
+                    || (has_else
+                        && Self::children(s)
+                            .iter()
+                            .all(|l| l.iter().any(|s| Self::always(s, sites))))
             }
             // (the catches write it when each catches into it or its body does)
             Statement::Try(t) => {
-                list(t.block.statements.as_slice()).iter().any(|s| Self::always(s, sites))
-                    || (!t.catch_clauses.is_empty() && t.catch_clauses.iter().all(|k| any(k.span())))
+                list(t.block.statements.as_slice())
+                    .iter()
+                    .any(|s| Self::always(s, sites))
+                    || (!t.catch_clauses.is_empty()
+                        && t.catch_clauses.iter().all(|k| any(k.span())))
             }
             _ => false,
         }
@@ -391,7 +477,10 @@ impl<'s, 'arena> Paths<'s, 'arena> {
     }
 
     fn of(b: &'s Block<'arena>, sites: &[Span]) -> Self {
-        let mut p = Paths { statements: Vec::new(), written_before: HashMap::new() };
+        let mut p = Paths {
+            statements: Vec::new(),
+            written_before: HashMap::new(),
+        };
         p.walk(list(b.statements.as_slice()), false, sites);
         p
     }
@@ -440,7 +529,8 @@ fn end_at(c: &Checker, paths: &Paths, body: Span, at: Span) -> Option<(EndAt, Wr
     }
     let around = paths.around(at);
     let text = &c.file.contents[at.start.offset as usize..];
-    let keyword = text.starts_with(b"if") || text.starts_with(b"elseif") || text.starts_with(b"else");
+    let keyword =
+        text.starts_with(b"if") || text.starts_with(b"elseif") || text.starts_with(b"else");
     if keyword && let Some(i @ Statement::If(_)) = around {
         return Some((EndAt::Before(i.span()), Written::Before(i.span()), false));
     }
@@ -450,11 +540,15 @@ fn end_at(c: &Checker, paths: &Paths, body: Span, at: Span) -> Option<(EndAt, Wr
         .statements
         .iter()
         .copied()
-        .filter(|s| inside(scope, s.span()) && s.span() != scope && s.span().end.offset <= at.start.offset)
+        .filter(|s| {
+            inside(scope, s.span()) && s.span() != scope && s.span().end.offset <= at.start.offset
+        })
         .max_by_key(|s| (s.span().end.offset, u32::MAX - s.span().start.offset));
     match (last, around) {
         (Some(s), _) => Some((EndAt::After(s.span()), Written::Through(s.span()), false)),
-        (None, Some(i @ Statement::If(_))) => Some((EndAt::Before(i.span()), Written::Before(i.span()), false)),
+        (None, Some(i @ Statement::If(_))) => {
+            Some((EndAt::Before(i.span()), Written::Before(i.span()), false))
+        }
         (None, None) => Some((EndAt::Entry, Written::Never, false)),
         (None, Some(_)) => None,
     }
@@ -487,7 +581,14 @@ impl Checker<'_, '_> {
 }
 
 /// `ParameterOutTypeCheck::check()`: the error of a parameter left holding `ty`.
-fn out_check(c: &Checker, b: &Body, p: &Param, ty: Type, out: &Type, param_out: bool) -> Option<(String, &'static str)> {
+fn out_check(
+    c: &Checker,
+    b: &Body,
+    p: &Param,
+    ty: Type,
+    out: &Type,
+    param_out: bool,
+) -> Option<(String, &'static str)> {
     // findTypeToCheck() only decides whether there is a type to check
     c.find_type_to_check_of(Some(ty.clone()), &|t| is_super_type_of(out, t).yes())?;
     let assigned = if p.variadic {
@@ -505,21 +606,40 @@ fn out_check(c: &Checker, b: &Body, p: &Param, ty: Type, out: &Type, param_out: 
     let message = format!(
         "Parameter &${} {} of {} expects {}, {} given.",
         p.name,
-        if param_out { "@param-out type" } else { "by-ref type" },
+        if param_out {
+            "@param-out type"
+        } else {
+            "by-ref type"
+        },
         b.of,
         out.describe(level),
         assigned.describe(level)
     );
-    Some((message, if param_out { "paramOut.type" } else { "parameterByRef.type" }))
+    Some((
+        message,
+        if param_out {
+            "paramOut.type"
+        } else {
+            "parameterByRef.type"
+        },
+    ))
 }
 
 const CHANGE_TIP: &str = "You can change the parameter out type with @param-out PHPDoc tag.";
 const NARROW_TIP: &str = "You can narrow the parameter out type with @param-out PHPDoc tag.";
 
 fn sites(c: &Checker, b: &Body) -> Vec<Site> {
-    let names: Vec<Vec<u8>> = b.params.iter().map(|p| format!("${}", p.name).into_bytes()).collect();
-    let mut s = Sites { c, names: &names, out: Vec::new() };
-    for st in b.block.statements.iter() {
+    let names: Vec<Vec<u8>> = b
+        .params
+        .iter()
+        .map(|p| format!("${}", p.name).into_bytes())
+        .collect();
+    let mut s = Sites {
+        c,
+        names: &names,
+        out: Vec::new(),
+    };
+    for st in &b.block.statements {
         s.walk_statement(st, &mut ());
     }
     s.out
@@ -533,22 +653,46 @@ fn check(c: &mut Checker, b: Body) {
         if c.level >= 3 {
             // ParameterOutAssignedTypeRule
             for s in &sites {
-                let Some(p) = b.params.iter().find(|p| p.name.as_bytes() == &s.name[1..]) else { continue };
+                let Some(p) = b.params.iter().find(|p| p.name.as_bytes() == &s.name[1..]) else {
+                    continue;
+                };
                 let read = match &s.at {
                     At::Expression(e) => c.variables.param_out.expressions.get(e),
                     At::After(e) => c.variables.param_out.after.get(e),
                     At::Before(e) => c.variables.param_out.before.get(e),
                     At::Type(t) => {
-                        if let Some((m, id)) = out_check(c, &b, p, t.clone(), &p.out.clone().unwrap_or_else(|| p.ty.clone()), p.out.is_some()) {
-                            errors.push((s.variable, m, id, p.out.is_none().then(|| CHANGE_TIP.to_string())));
+                        if let Some((m, id)) = out_check(
+                            c,
+                            &b,
+                            p,
+                            t.clone(),
+                            &p.out.clone().unwrap_or_else(|| p.ty.clone()),
+                            p.out.is_some(),
+                        ) {
+                            errors.push((
+                                s.variable,
+                                m,
+                                id,
+                                p.out.is_none().then(|| CHANGE_TIP.to_string()),
+                            ));
                         }
                         continue;
                     }
                 };
-                let Some(ty) = read.and_then(|r| c.read_param(r, &p.name)) else { continue };
-                let (out, param_out) = p.out.clone().map_or_else(|| (p.ty.clone(), false), |o| (o, true));
+                let Some(ty) = read.and_then(|r| c.read_param(r, &p.name)) else {
+                    continue;
+                };
+                let (out, param_out) = p
+                    .out
+                    .clone()
+                    .map_or_else(|| (p.ty.clone(), false), |o| (o, true));
                 if let Some((m, id)) = out_check(c, &b, p, ty, &out, param_out) {
-                    errors.push((s.variable, m, id, (!param_out).then(|| CHANGE_TIP.to_string())));
+                    errors.push((
+                        s.variable,
+                        m,
+                        id,
+                        (!param_out).then(|| CHANGE_TIP.to_string()),
+                    ));
                 }
             }
         }
@@ -559,12 +703,21 @@ fn check(c: &mut Checker, b: Body) {
             contents: &c.file.contents,
             codebase: Some(c.codebase),
         };
-        let (_, ends) = results.execution_ends(&list(b.block.statements.as_slice()), b.span, Some(b.block.right_brace));
-        let ends: Vec<(Span, Option<(EndAt, Written, bool)>)> = ends.iter().map(|e| (e.at, end_at(c, &paths, b.span, e.at))).collect();
+        let (_, ends) = results.execution_ends(
+            &list(b.block.statements.as_slice()),
+            b.span,
+            Some(b.block.right_brace),
+        );
+        let ends: Vec<(Span, Option<(EndAt, Written, bool)>)> = ends
+            .iter()
+            .map(|e| (e.at, end_at(c, &paths, b.span, e.at)))
+            .collect();
         if c.level >= 3 {
             // ParameterOutExecutionEndTypeRule
             for (at, end) in &ends {
-                let Some((read, w, never)) = end else { continue };
+                let Some((read, w, never)) = end else {
+                    continue;
+                };
                 if *never {
                     continue;
                 }
@@ -573,10 +726,15 @@ fn check(c: &mut Checker, b: Body) {
                     if written(&b, &sites, *w, p) {
                         continue;
                     }
-                    let Some(ty) = c.param_out_read(read, &p.name, &p.entry()) else { continue };
+                    let Some(ty) = c.param_out_read(read, &p.name, &p.entry()) else {
+                        continue;
+                    };
                     if let Some((m, id)) = out_check(c, &b, p, ty, out, true) {
                         let line = c.line_of(*at);
-                        if !errors.iter().any(|(s, em, ..)| c.line_of(*s) == line && *em == m) {
+                        if !errors
+                            .iter()
+                            .any(|(s, em, ..)| c.line_of(*s) == line && *em == m)
+                        {
                             errors.push((*at, m, id, None));
                         }
                     }
@@ -595,7 +753,11 @@ fn check(c: &mut Checker, b: Body) {
 
 /// Whether every path to an end wrote parameter `p` (`ParameterVariableOriginalValueExpr` is gone).
 fn written(b: &Body, sites: &[Site], w: Written, p: &Param) -> bool {
-    let own: Vec<Span> = sites.iter().filter(|s| s.name[1..] == *p.name.as_bytes()).map(|s| s.variable).collect();
+    let own: Vec<Span> = sites
+        .iter()
+        .filter(|s| s.name[1..] == *p.name.as_bytes())
+        .map(|s| s.variable)
+        .collect();
     let paths = Paths::of(b.block, &own);
     let before = |s: Span| paths.written_before.get(&s).copied().unwrap_or(false);
     match w {
@@ -606,26 +768,32 @@ fn written(b: &Body, sites: &[Site], w: Written, p: &Param) -> bool {
 }
 
 /// `TooWideParameterOutTypeCheck::check()`.
-fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>)]) -> Vec<(Span, String, &'static str, Option<String>)> {
+fn too_wide(
+    c: &Checker,
+    b: &Body,
+    ends: &[(Span, Option<(EndAt, Written, bool)>)],
+) -> Vec<(Span, String, &'static str, Option<String>)> {
     let of = format!("{}{}", b.of[..1].to_ascii_uppercase(), &b.of[1..]);
     struct Returns(Vec<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Returns {
-        fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
+        fn walk_in_return(&mut self, r: &'ast Return<'arena>, (): &mut ()) {
             self.0.push(r.span());
         }
-        fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-        fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-        fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-        fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
-        fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
+        fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+        fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+        fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+        fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
+        fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
     }
     let mut r = Returns(Vec::new());
-    for s in b.block.statements.iter() {
+    for s in &b.block.statements {
         r.walk_statement(s, &mut ());
     }
     let mut reads: Vec<EndAt> = Vec::new();
     for (_, end) in ends {
-        let Some((at, ..)) = end else { return Vec::new() };
+        let Some((at, ..)) = end else {
+            return Vec::new();
+        };
         reads.push(match at {
             EndAt::After(s) => EndAt::After(*s),
             EndAt::Before(s) => EndAt::Before(*s),
@@ -640,7 +808,9 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
     for p in &b.params {
         let mut types = Vec::new();
         for at in &reads {
-            let Some(t) = c.param_out_read(at, &p.name, &p.entry()) else { return errors };
+            let Some(t) = c.param_out_read(at, &p.name, &p.entry()) else {
+                return errors;
+            };
             types.push(t);
         }
         let mut actual = union(types);
@@ -650,8 +820,15 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
             }
             actual = actual.iterable_value_type();
         }
-        let (out, param_out) = p.out.clone().map_or_else(|| (p.ty.clone(), false), |o| (o, true));
-        let kind = if param_out { "@param-out type" } else { "by-ref type" };
+        let (out, param_out) = p
+            .out
+            .clone()
+            .map_or_else(|| (p.ty.clone(), false), |o| (o, true));
+        let kind = if param_out {
+            "@param-out type"
+        } else {
+            "by-ref type"
+        };
         let tip = (!param_out).then(|| NARROW_TIP.to_string());
         let narrowed = narrow(c, &out, &actual);
         if narrowed == out {
@@ -665,7 +842,11 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
             let described = |t: &Type| t.describe(recommended_level(t, None));
             let message = format!(
                 "{} {} of {} can be narrowed to {}.",
-                if param_out { "PHPDoc tag @param-out type" } else { "By-ref type" },
+                if param_out {
+                    "PHPDoc tag @param-out type"
+                } else {
+                    "By-ref type"
+                },
                 described(&out),
                 b.of,
                 described(&nested)
@@ -674,21 +855,38 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
             let tip = match reasons.as_slice() {
                 [] => None,
                 [one] => Some(one.clone()),
-                all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+                all => Some(
+                    all.iter()
+                        .map(|r| format!("• {r}"))
+                        .collect::<Vec<_>>()
+                        .join("\n"),
+                ),
             };
-            let id = if param_out { "paramOut.nestedUnusedType" } else { "parameterByRef.nestedUnusedType" };
+            let id = if param_out {
+                "paramOut.nestedUnusedType"
+            } else {
+                "parameterByRef.nestedUnusedType"
+            };
             errors.push((b.span, message, id, tip));
             continue;
         }
         // createErrors()
         if out.is_boolean().yes() {
-            let never = if matches!(narrowed, Type::ConstBool(true)) { "false" } else { "true" };
+            let never = if matches!(narrowed, Type::ConstBool(true)) {
+                "false"
+            } else {
+                "true"
+            };
             let message = format!(
                 "{of} never assigns {never} to &${} so the {kind} can be changed to {}.",
                 p.name,
                 narrowed.describe(recommended_level(&narrowed, None))
             );
-            let id = if param_out { "paramOut.tooWideBool" } else { "parameterByRef.tooWideBool" };
+            let id = if param_out {
+                "paramOut.tooWideBool"
+            } else {
+                "parameterByRef.tooWideBool"
+            };
             errors.push((b.span, message, id, tip.clone()));
             continue;
         }
@@ -700,7 +898,11 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
                     m.describe(recommended_level(m, None)),
                     p.name
                 );
-                let id = if param_out { "paramOut.unusedType" } else { "parameterByRef.unusedType" };
+                let id = if param_out {
+                    "paramOut.unusedType"
+                } else {
+                    "parameterByRef.unusedType"
+                };
                 errors.push((b.span, message, id, tip.clone()));
             }
         }
@@ -711,7 +913,11 @@ fn too_wide(c: &Checker, b: &Body, ends: &[(Span, Option<(EndAt, Written, bool)>
 /// `isConstantScalarValue()->yes()`.
 fn constant_scalar(t: &Type) -> bool {
     match t {
-        Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::Null => true,
+        Type::ConstInt(_)
+        | Type::ConstFloat(_)
+        | Type::ConstString(_)
+        | Type::ConstBool(_)
+        | Type::Null => true,
         Type::Union(ts) => ts.iter().all(constant_scalar),
         _ => false,
     }
@@ -723,9 +929,18 @@ fn narrow(c: &Checker, declared: &Type, actual: &Type) -> Type {
         if constant_scalar(declared) && constant_scalar(actual) {
             return declared.clone();
         }
-        return union(members.iter().filter(|m| !is_super_type_of(m, actual).no()).cloned().collect());
+        return union(
+            members
+                .iter()
+                .filter(|m| !is_super_type_of(m, actual).no())
+                .cloned()
+                .collect(),
+        );
     }
-    if !c.too_wide.contains(crate::TooWide::REPORT_BOOL) || !declared.is_boolean().yes() || matches!(declared, Type::ConstBool(_)) {
+    if !c.too_wide.contains(crate::TooWide::REPORT_BOOL)
+        || !declared.is_boolean().yes()
+        || matches!(declared, Type::ConstBool(_))
+    {
         return declared.clone();
     }
     union(
@@ -759,8 +974,15 @@ fn traverse(declared: &Type, actual: &Type, narrow: &dyn Fn(&Type, &Type) -> Typ
     let go = |d: &Type, a: &Type| traverse(d, a, narrow);
     match declared {
         Type::Array(k, v) => {
-            let (nk, nv) = (go(k, &actual.iterable_key_type()), go(v, &actual.iterable_value_type()));
-            if nk == **k && nv == **v { declared.clone() } else { Type::Array(Box::new(nk), Box::new(nv)) }
+            let (nk, nv) = (
+                go(k, &actual.iterable_key_type()),
+                go(v, &actual.iterable_value_type()),
+            );
+            if nk == **k && nv == **v {
+                declared.clone()
+            } else {
+                Type::Array(Box::new(nk), Box::new(nv))
+            }
         }
         Type::ConstArray(a) if actual.is_array().yes() => {
             let mut a = (**a).clone();
@@ -776,24 +998,37 @@ fn traverse(declared: &Type, actual: &Type, narrow: &dyn Fn(&Type, &Type) -> Typ
             };
             let mut out = Vec::new();
             for m in members {
-                let (candidates, rest): (Vec<Type>, Vec<Type>) =
-                    right.into_iter().partition(|r| is_super_type_of(m, r).yes());
+                let (candidates, rest): (Vec<Type>, Vec<Type>) = right
+                    .into_iter()
+                    .partition(|r| is_super_type_of(m, r).yes());
                 right = rest;
-                out.push(if candidates.is_empty() { m.clone() } else { go(m, &union(candidates)) });
+                out.push(if candidates.is_empty() {
+                    m.clone()
+                } else {
+                    go(m, &union(candidates))
+                });
             }
-            if out == *members { declared.clone() } else { union(out) }
+            if out == *members {
+                declared.clone()
+            } else {
+                union(out)
+            }
         }
         Type::Object(name, args, exact) if !args.is_empty() => {
-            let Type::Object(other, other_args, _) = actual else { return declared.clone() };
+            let Type::Object(other, other_args, _) = actual else {
+                return declared.clone();
+            };
             let theirs = if other.eq_ignore_ascii_case(name) {
                 Some(other_args.clone())
             } else {
                 symbols::lookup(other).and_then(|k| ancestor_args(&k, name, other_args))
             };
             match theirs {
-                Some(theirs) if theirs.len() == args.len() => {
-                    Type::Object(name.clone(), args.iter().zip(&theirs).map(|(a, o)| go(a, o)).collect(), *exact)
-                }
+                Some(theirs) if theirs.len() == args.len() => Type::Object(
+                    name.clone(),
+                    args.iter().zip(&theirs).map(|(a, o)| go(a, o)).collect(),
+                    *exact,
+                ),
                 _ => declared.clone(),
             }
         }
@@ -803,7 +1038,9 @@ fn traverse(declared: &Type, actual: &Type, narrow: &dyn Fn(&Type, &Type) -> Typ
                 parts
                     .iter()
                     .map(|p| match p {
-                        Type::Array(pk, pv) => Type::Array(Box::new(go(pk, &k)), Box::new(go(pv, &v))),
+                        Type::Array(pk, pv) => {
+                            Type::Array(Box::new(go(pk, &k)), Box::new(go(pv, &v)))
+                        }
                         p => p.clone(),
                     })
                     .collect(),
@@ -813,7 +1050,12 @@ fn traverse(declared: &Type, actual: &Type, narrow: &dyn Fn(&Type, &Type) -> Typ
     }
 }
 
-fn params(c: &Checker, list: &FunctionLikeParameterList, sig: &declared::Signature, class: Option<&ClassLikeMetadata>) -> Vec<Param> {
+fn params(
+    c: &Checker,
+    list: &FunctionLikeParameterList,
+    sig: &declared::Signature,
+    class: Option<&ClassLikeMetadata>,
+) -> Vec<Param> {
     list.parameters
         .iter()
         .zip(&sig.params)
@@ -831,33 +1073,67 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 3 {
         return;
     }
-    let params = declared::with_classes(c, || params(c, &f.parameter_list, &declared::function(c, f), None));
+    let params = declared::with_classes(c, || {
+        params(c, &f.parameter_list, &declared::function(c, f), None)
+    });
     if params.is_empty() {
         return;
     }
     let of = format!("function {}()", c.resolved_span(f.name.span()));
-    check(c, Body { block: &f.body, span: f.span(), of, params, too_wide: true });
+    check(
+        c,
+        Body {
+            block: &f.body,
+            span: f.span(),
+            of,
+            params,
+            too_wide: true,
+        },
+    );
 }
 
 pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 3 || c.in_trait().is_some() {
         return;
     }
-    let MethodBody::Concrete(block) = &m.body else { return };
-    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else { return };
-    let params =
-        declared::with_classes(c, || params(c, &m.parameter_list, &declared::method(c, m, declaring, context), Some(context)));
+    let MethodBody::Concrete(block) = &m.body else {
+        return;
+    };
+    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else {
+        return;
+    };
+    let params = declared::with_classes(c, || {
+        params(
+            c,
+            &m.parameter_list,
+            &declared::method(c, m, declaring, context),
+            Some(context),
+        )
+    });
     if params.is_empty() {
         return;
     }
     let of = format!("method {}::{}()", c.display(context), method_name(c, m));
     let checked = m.modifiers.contains_private()
         || context.flags.is_final()
-        || context.original_name.as_bytes().starts_with(b"{anonymous-class:")
+        || context
+            .original_name
+            .as_bytes()
+            .starts_with(b"{anonymous-class:")
         || m.modifiers.contains_final()
         || has_tag(&c.tags_before(m), &["@final"])
-        || c.too_wide.contains(crate::TooWide::PARAM_OUT_IN_PROTECTED_AND_PUBLIC_METHODS);
-    check(c, Body { block, span: m.span(), of, params, too_wide: checked });
+        || c.too_wide
+            .contains(crate::TooWide::PARAM_OUT_IN_PROTECTED_AND_PUBLIC_METHODS);
+    check(
+        c,
+        Body {
+            block,
+            span: m.span(),
+            of,
+            params,
+            too_wide: checked,
+        },
+    );
 }
 
 /// `UnresolvableTypeHelper::getUnresolvableType() !== null`.
@@ -872,7 +1148,9 @@ fn unresolvable(t: &Type) -> bool {
 /// An OffsetAccessType of a constant array resolved to the offset's value (`OffsetAccessType::getResult()`).
 fn offsets_resolved(t: &Type) -> Type {
     match t {
-        Type::OffsetAccess(on, offset) => offset_value(&offsets_resolved(on), &offsets_resolved(offset)),
+        Type::OffsetAccess(on, offset) => {
+            offset_value(&offsets_resolved(on), &offsets_resolved(offset))
+        }
         t => t.traverse(&offsets_resolved),
     }
 }
@@ -891,8 +1169,14 @@ pub(in super::super) fn self_out(c: &mut Checker, m: &Method) {
     if c.level < 2 || c.in_trait().is_some() {
         return;
     }
-    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else { return };
-    let Some(self_out) = declared::with_classes(c, || declared::method(c, m, declaring, context).self_out) else { return };
+    let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else {
+        return;
+    };
+    let Some(self_out) =
+        declared::with_classes(c, || declared::method(c, m, declaring, context).self_out)
+    else {
+        return;
+    };
     let name = method_name(c, m);
     let display = c.display(context);
     let errors = declared::with_classes(c, || {
@@ -902,7 +1186,11 @@ pub(in super::super) fn self_out(c: &mut Checker, m: &Method) {
         let class = Type::Object(c.reflected_name(context.name.as_bytes()), Vec::new(), false);
         let mut errors: Vec<(&'static str, String)> = Vec::new();
         if !is_super_type_of(&class, &self_out).yes() {
-            let described = if has_offset_access(&written) { written.describe(Level::Precise) } else { self_out.describe(Level::Precise) };
+            let described = if has_offset_access(&written) {
+                written.describe(Level::Precise)
+            } else {
+                self_out.describe(Level::Precise)
+            };
             errors.push((
                 "selfOut.type",
                 format!(
@@ -926,7 +1214,10 @@ pub(in super::super) fn self_out(c: &mut Checker, m: &Method) {
                 format!("PHPDoc tag @phpstan-self-out for method {display}::{name}() contains unresolvable type."),
             ));
         }
-        let messages = generics::GenericMessages::at(&format!("PHPDoc tag {}", generics::escape("@phpstan-self-out")));
+        let messages = generics::GenericMessages::at(&format!(
+            "PHPDoc tag {}",
+            generics::escape("@phpstan-self-out")
+        ));
         let mut found = generics::Found::default();
         generics::generic_object_check(&self_out, &messages, &mut found);
         errors.extend(found.errors.into_iter().map(|(id, m, _)| (id, m)));

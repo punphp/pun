@@ -903,10 +903,10 @@ impl<'a> Lexer<'a> {
                 let e = self.label_end(p + 1);
                 match (self.at(e), self.at(e + 1), self.at(e + 2), self.at(e + 3)) {
                     (b'-', b'>', c, _) if is_label_start(c) && e + 2 < self.src.len() => {
-                        self.push(State::LookingForProperty)
+                        self.push(State::LookingForProperty);
                     }
                     (b'?', b'-', b'>', c) if is_label_start(c) && e + 3 < self.src.len() => {
-                        self.push(State::LookingForProperty)
+                        self.push(State::LookingForProperty);
                     }
                     (b'[', ..) => self.push(State::VarOffset),
                     _ => {}
@@ -1115,9 +1115,9 @@ fn prefixed_kind(digits: &[u8], base: u32) -> Kind {
 fn fits_i64(d: &[u8], base: u32) -> bool {
     let mut v: i64 = 0;
     for &c in d {
-        let digit = (c as char).to_digit(base).unwrap_or(0) as i64;
+        let digit = i64::from((c as char).to_digit(base).unwrap_or(0));
         match v
-            .checked_mul(base as i64)
+            .checked_mul(i64::from(base))
             .and_then(|v| v.checked_add(digit))
         {
             Some(x) => v = x,
@@ -1136,7 +1136,7 @@ mod tests {
             .iter()
             .map(|t| {
                 (
-                    t.kind.map_or("".into(), |k| k.name().to_string()),
+                    t.kind.map_or(String::new(), |k| k.name().to_string()),
                     String::from_utf8_lossy(t.text).into_owned(),
                 )
             })

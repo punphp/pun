@@ -38,7 +38,7 @@ impl Rule for NoExcessiveParameters {
             match key {
                 "threshold" => self.threshold = uint(value, u8::MAX.into())?,
                 "constructor-threshold" => {
-                    self.constructor_threshold = Some(uint(value, u8::MAX.into())?)
+                    self.constructor_threshold = Some(uint(value, u8::MAX.into())?);
                 }
                 _ => return None,
             }

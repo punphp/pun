@@ -10,7 +10,7 @@ use std::path::Path;
 
 struct PhpdocParamOrderFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocParamOrderFixer)
 }
 

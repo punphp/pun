@@ -1,4 +1,9 @@
 //! Independent full/native values and selected-scope class-constant consumers.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "the helpers print the failing case before the test asserts"
+)]
 
 use std::borrow::Cow;
 use std::collections::BTreeMap;

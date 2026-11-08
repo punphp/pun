@@ -106,14 +106,14 @@ pub(super) fn typed_expressions(program: &Program, level: u8) -> Vec<Span> {
         fn walk_in_method_partial_application(
             &mut self,
             m: &'ast MethodPartialApplication<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.receiver(m.object, &m.method, &m.argument_list);
         }
         fn walk_in_static_method_partial_application(
             &mut self,
             m: &'ast StaticMethodPartialApplication<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             if !named_class(m.class) {
                 self.receiver(m.class, &m.method, &m.argument_list);

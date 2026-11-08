@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Utils` (the parts fixers use; `sortFixers` lives in pun_format::Pipeline).
 use super::preg::Preg;
-pub use pun_config::options::natural_language_join;
+pub(crate) use pun_config::options::natural_language_join;
 use pun_tokens::Token;
 use pun_tokens::php_compat::{mb_strtolower, str_replace};
 

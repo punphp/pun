@@ -120,11 +120,11 @@ fn canonical(description: &str) -> String {
         .and_then(|s| s.strip_suffix(')'))
     {
         let mut parts: Vec<_> = inner.split('|').collect();
-        parts.sort();
+        parts.sort_unstable();
         format!("mixed~({})", parts.join("|"))
     } else {
         let mut parts: Vec<_> = description.split('|').collect();
-        parts.sort();
+        parts.sort_unstable();
         parts.join("|")
     }
 }
@@ -232,7 +232,7 @@ fn shared_mixed_subtraction_union_intersection_and_serde_match_phpstan() {
             "legacy-nonnull-union",
         ),
         (
-            intersect_union_types(&excluded, &nonnull, &codebase).unwrap(),
+            intersect_union_types(excluded, &nonnull, &codebase).unwrap(),
             "legacy-nonnull-intersect",
         ),
         (
@@ -243,7 +243,7 @@ fn shared_mixed_subtraction_union_intersection_and_serde_match_phpstan() {
         ),
         (
             combine_union_types(
-                &excluded,
+                excluded,
                 &TUnion::from_atomic(TAtomic::Mixed(TMixed::truthy())),
                 &codebase,
                 Default::default(),

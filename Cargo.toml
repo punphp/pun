@@ -79,8 +79,8 @@ tar = { version = "0.4.46", default-features = false }
 flate2 = "1"
 sha1 = "0.11"
 
-# The shared lint policy (context/AUDIT.md item 28). A crate opts in with `[lints] workspace = true`. Lints with
-# hundreds of hits that follow a convention are allowed; lints with few, real hits warn.
+# The shared lint policy; every crate opts in with `[lints] workspace = true`. Lints that fight the
+# function-by-function upstream ports are allowed; the rest warn, and CI denies warnings.
 [workspace.lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
 unreachable_pub = "warn"
@@ -102,6 +102,46 @@ cast_precision_loss = "allow"
 similar_names = "allow"
 unused_self = "allow"
 enum_glob_use = "allow"
+# Port shape: rules mirror upstream PHP function by function (switches, flags, argument lists, early returns).
+wildcard_imports = "allow"
+items_after_statements = "allow"
+match_same_arms = "allow"
+single_match_else = "allow"
+match_bool = "allow"
+if_not_else = "allow"
+option_option = "allow"
+needless_pass_by_value = "allow"
+format_push_string = "allow"
+format_collect = "allow"
+struct_excessive_bools = "allow"
+fn_params_excessive_bools = "allow"
+struct_field_names = "allow"
+type_complexity = "allow"
+too_many_arguments = "allow"
+unreadable_literal = "allow"
+match_wildcard_for_single_variants = "allow"
+large_enum_variant = "allow"
+# Style only: `Default::default()` reads fine, and method-path closures need the full `Type::method` spelling.
+default_trait_access = "allow"
+redundant_closure_for_method_calls = "allow"
+# Port shape, continued: conditions, signatures and control flow copy upstream's.
+nonminimal_bool = "allow"
+needless_continue = "allow"
+unnecessary_wraps = "allow"
+manual_let_else = "allow"
+trivially_copy_pass_by_ref = "allow"
+ref_option = "allow"
+self_only_used_in_recursion = "allow"
+map_unwrap_or = "allow"
+float_cmp = "allow"
+return_self_not_must_use = "allow"
+# PHP compares extensions byte for byte, and token kinds are PHP's decimal constants.
+case_sensitive_file_extension_comparisons = "allow"
+decimal_bitwise_operands = "allow"
+# `assert_eq!(x, [])` prints the unexpected items; `assert!(x.is_empty())` does not.
+assert_is_empty = "allow"
+# Counting bytes with a filter is fine without the bytecount crate.
+naive_bytecount = "allow"
 # Restriction lints worth having:
 undocumented_unsafe_blocks = "warn"
 allow_attributes_without_reason = "warn"
@@ -110,7 +150,6 @@ print_stdout = "warn"
 print_stderr = "warn"
 redundant_clone = "warn"
 needless_collect = "warn"
-naive_bytecount = "warn"
 
 # Tests and debug builds run Mago and the other dependencies optimized (about 1.8x on the analyse fixture suites),
 # with line tables only, so the 170 analyse test binaries stay small; Pun's own crates stay unoptimized so they

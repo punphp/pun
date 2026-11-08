@@ -182,7 +182,11 @@ fn asserted_variable<'a>(statement: &'a Statement<'a>, static_calls: bool) -> Op
     if !name.value.eq_ignore_ascii_case(b"assertInstanceOf") {
         return None;
     }
-    match arguments.arguments.get(1).map(|a| a.value()) {
+    match arguments
+        .arguments
+        .get(1)
+        .map(mago_syntax::cst::Argument::value)
+    {
         Some(Expression::Variable(Variable::Direct(v))) => Some(&v.name[1..]),
         _ => None,
     }

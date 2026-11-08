@@ -9,7 +9,7 @@ use pun_phpstan::types::{Level, Type, is_super_type_of, union};
 
 use super::super::{Checker, declared};
 
-pub const IDENTIFIERS: &[&str] = &[
+pub(super) const IDENTIFIERS: &[&str] = &[
     "throw.notThrowable",
     "clone.nonObject",
     "foreach.nonIterable",

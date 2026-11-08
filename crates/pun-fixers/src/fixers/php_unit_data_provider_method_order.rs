@@ -36,7 +36,7 @@ impl Fixer for PhpUnitDataProviderMethodOrderFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         apply_fix(tokens, |tokens, start_index, _| {
-            self.apply_class(tokens, start_index)
+            self.apply_class(tokens, start_index);
         });
     }
 }
@@ -154,7 +154,7 @@ fn orig_usage_data_provider_order_pairs(
             pairs.push((usage, provider.name.clone()));
         }
     }
-    pairs.sort_by(|a, b| (a.0.0, a.0.2).cmp(&(b.0.0, b.0.2)));
+    pairs.sort_by_key(|a| (a.0.0, a.0.2));
     pairs
         .into_iter()
         .map(|((_, name, _), provider)| (name, provider))

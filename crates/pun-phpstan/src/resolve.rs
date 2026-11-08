@@ -40,6 +40,10 @@ pub fn with_type_nodes<R>(extensions: &dyn Fn(&str, &[Type]) -> Option<Type>, f:
         }
     }
     let ptr: *const (dyn Fn(&str, &[Type]) -> Option<Type> + '_) = extensions;
+    #[expect(
+        clippy::transmute_ptr_to_ptr,
+        reason = "erases the trait object's lifetime, which `as` cannot"
+    )]
     // SAFETY: as in `symbols::with_classes()`: only the lifetime is erased, and `Restore` puts the previous
     // extensions back before this function returns, also on unwinding.
     let ptr: *const TypeNodes = unsafe { std::mem::transmute(ptr) };
@@ -285,8 +289,8 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .map(|t| Template {
                     name: t.name.clone(),
                     scope: "anonymous function".into(),
-                    bound: t.bound.as_ref().map_or_else(mixed, |b| r(b)),
-                    default: t.default.as_ref().map(|d| r(d)),
+                    bound: t.bound.as_ref().map_or_else(mixed, r),
+                    default: t.default.as_ref().map(r),
                     argument: false,
                 })
                 .collect();
@@ -455,7 +459,7 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         Type::Float => Type::Int,
         Type::Bool => Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
         Type::Null => Type::ConstString(Vec::new()),
-        Type::ConstBool(b) => Type::ConstInt(*b as i64),
+        Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         // ObjectTypeTrait, ArrayTypeTrait, ResourceType, CallableType, IterableType, VoidType: an ErrorType (a mixed)
         Type::Void
         | Type::Resource

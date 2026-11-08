@@ -76,11 +76,7 @@ impl NamespacesAnalyzer {
             index = scope_end_index + 1;
         }
         if namespaces.is_empty() && tokens.is_token_kind_found(T_OPEN_TAG) {
-            let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
-                1
-            } else {
-                0
-            };
+            let open_tag_index = usize::from(tokens[0].is_kind(T_INLINE_HTML));
             namespaces.push(NamespaceAnalysis {
                 full_name: Vec::new(),
                 short_name: Vec::new(),

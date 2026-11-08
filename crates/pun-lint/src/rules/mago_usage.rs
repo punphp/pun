@@ -58,21 +58,21 @@ impl<'arena> Usage<'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
-    fn walk_in_direct_variable(&mut self, d: &'ast DirectVariable<'arena>, _: &mut ()) {
+    fn walk_in_direct_variable(&mut self, d: &'ast DirectVariable<'arena>, (): &mut ()) {
         if !self.excluded.contains(&d.name) {
             self.reference(d.name);
         }
     }
 
-    fn walk_in_indirect_variable(&mut self, _: &'ast IndirectVariable<'arena>, _: &mut ()) {
+    fn walk_in_indirect_variable(&mut self, _: &'ast IndirectVariable<'arena>, (): &mut ()) {
         self.bailed = true;
     }
 
-    fn walk_in_nested_variable(&mut self, _: &'ast NestedVariable<'arena>, _: &mut ()) {
+    fn walk_in_nested_variable(&mut self, _: &'ast NestedVariable<'arena>, (): &mut ()) {
         self.bailed = true;
     }
 
-    fn walk_global(&mut self, g: &'ast Global<'arena>, _: &mut ()) {
+    fn walk_global(&mut self, g: &'ast Global<'arena>, (): &mut ()) {
         if g.variables
             .iter()
             .any(|v| !matches!(v, Variable::Direct(_)))
@@ -82,7 +82,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
     }
 
     fn walk_static(&mut self, s: &'ast Static<'arena>, ctx: &mut ()) {
-        for item in s.items.iter() {
+        for item in &s.items {
             if let StaticItem::Concrete(c) = item {
                 self.walk_expression(c.value, ctx);
             }
@@ -99,7 +99,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
             return;
         }
         if local.eq_ignore_ascii_case(b"compact") {
-            for arg in fc.argument_list.arguments.iter() {
+            for arg in &fc.argument_list.arguments {
                 let Expression::Literal(Literal::String(lit)) = arg.value() else {
                     continue;
                 };
@@ -120,9 +120,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
         self.walk_argument_list(&fc.argument_list, ctx);
     }
 
-    fn walk_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
+    fn walk_closure(&mut self, c: &'ast Closure<'arena>, (): &mut ()) {
         if let Some(use_clause) = &c.use_clause {
-            for cap in use_clause.variables.iter() {
+            for cap in &use_clause.variables {
                 self.reference(cap.variable.name);
             }
         }
@@ -140,7 +140,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
         let Some(arguments) = &class.argument_list else {
             return;
         };
-        for argument in arguments.arguments.iter() {
+        for argument in &arguments.arguments {
             let value = match argument {
                 PartialArgument::Positional(p) => p.value,
                 PartialArgument::Named(n) => n.value,
@@ -150,11 +150,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
         }
     }
 
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
 }
 
 /// The `global` or `static` declarations of a body, outside nested functions and classes: each declared name with its
@@ -177,33 +177,33 @@ struct Declarations<'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Declarations<'arena> {
-    fn walk_global(&mut self, g: &'ast Global<'arena>, _: &mut ()) {
+    fn walk_global(&mut self, g: &'ast Global<'arena>, (): &mut ()) {
         if self.statics {
             return;
         }
-        for v in g.variables.iter() {
+        for v in &g.variables {
             if let Variable::Direct(d) = v {
                 self.items.push((d.name, d.span));
             }
         }
     }
 
-    fn walk_static(&mut self, s: &'ast Static<'arena>, _: &mut ()) {
+    fn walk_static(&mut self, s: &'ast Static<'arena>, (): &mut ()) {
         if !self.statics {
             return;
         }
-        for item in s.items.iter() {
+        for item in &s.items {
             let var = item.variable();
             self.items.push((var.name, var.span));
         }
     }
 
-    fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
-    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
-    fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
-    fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
-    fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
-    fn walk_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {}
-    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
+    fn walk_function(&mut self, _: &'ast Function<'arena>, (): &mut ()) {}
+    fn walk_closure(&mut self, _: &'ast Closure<'arena>, (): &mut ()) {}
+    fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, (): &mut ()) {}
+    fn walk_class(&mut self, _: &'ast Class<'arena>, (): &mut ()) {}
+    fn walk_interface(&mut self, _: &'ast Interface<'arena>, (): &mut ()) {}
+    fn walk_trait(&mut self, _: &'ast Trait<'arena>, (): &mut ()) {}
+    fn walk_enum(&mut self, _: &'ast Enum<'arena>, (): &mut ()) {}
+    fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, (): &mut ()) {}
 }

@@ -32,7 +32,7 @@ struct HeaderCommentFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     // `header` is required, so the fixer has no default configuration: `configure` sets every field.
     Box::new(HeaderCommentFixer {
         header: vec![],

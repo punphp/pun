@@ -77,7 +77,7 @@ impl Rule for NoRedundantPropertyDefault {
             test_case: None,
         };
         let mut edits = Vec::new();
-        for member in members.iter() {
+        for member in members {
             let ClassLikeMember::Property(Property::Plain(property)) = member else {
                 continue;
             };
@@ -95,7 +95,7 @@ impl Rule for NoRedundantPropertyDefault {
             {
                 continue;
             }
-            for item in property.items.iter() {
+            for item in &property.items {
                 let PropertyItem::Concrete(item) = item else {
                     continue;
                 };

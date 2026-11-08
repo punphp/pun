@@ -53,7 +53,7 @@ impl Rule for AddParamTypeSplFixedArray {
         };
         let mut appended: Vec<String> = Vec::new();
         let mut replaced: Vec<(usize, String)> = Vec::new();
-        for param in params.parameters.iter() {
+        for param in &params.parameters {
             // a class name only: `?Tokens` and unions are no `TypeWithClassName`
             let Some(Hint::Identifier(id)) = &param.hint else {
                 continue;

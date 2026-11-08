@@ -31,7 +31,7 @@ fn declaring_display(c: &Checker, k: &ClassLikeMetadata, declaring: &[u8]) -> St
 }
 
 /// AccessPrivatePropertyThroughStaticRule on `static::$name`.
-pub fn property(c: &mut Checker, p: &StaticPropertyAccess) {
+pub(super) fn property(c: &mut Checker, p: &StaticPropertyAccess) {
     let Variable::Direct(v) = &p.property else {
         return;
     };
@@ -64,7 +64,7 @@ pub fn property(c: &mut Checker, p: &StaticPropertyAccess) {
 }
 
 /// CallPrivateMethodThroughStaticRule on `static::name()`.
-pub fn method(c: &mut Checker, call: &StaticMethodCall) {
+pub(super) fn method(c: &mut Checker, call: &StaticMethodCall) {
     let ClassLikeMemberSelector::Identifier(id) = &call.method else {
         return;
     };
@@ -89,7 +89,7 @@ pub fn method(c: &mut Checker, call: &StaticMethodCall) {
 }
 
 /// AccessPrivateConstantThroughStaticRule on `static::NAME`.
-pub fn constant(c: &mut Checker, a: &ClassConstantAccess) {
+pub(super) fn constant(c: &mut Checker, a: &ClassConstantAccess) {
     let ClassLikeConstantSelector::Identifier(id) = &a.constant else {
         return;
     };

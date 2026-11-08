@@ -13,7 +13,11 @@ use mago_codex::ttype::union::TUnion;
 use crate::larastan::app::App;
 use crate::larastan::macros::Macros as Registered;
 
-static META: ProviderMeta = ProviderMeta::new("pun-larastan-macros", "pun-larastan-macros", "Larastan's macros");
+static META: ProviderMeta = ProviderMeta::new(
+    "pun-larastan-macros",
+    "pun-larastan-macros",
+    "Larastan's macros",
+);
 
 pub(crate) struct Macros(pub(crate) Arc<App>, pub(crate) Arc<Registered>);
 
@@ -40,12 +44,18 @@ impl MethodReturnTypeProvider for Macros {
             return None;
         }
         let codebase = context.codebase();
-        let receiver = invocation.inner().target.get_method_context().map_or(class, |t| t.class_like_metadata.name.as_bytes());
+        let receiver = invocation
+            .inner()
+            .target
+            .get_method_context()
+            .map_or(class, |t| t.class_like_metadata.name.as_bytes());
         if codebase.method_exists(receiver, method) {
             return None;
         }
         let homes = self.1.homes(codebase, &self.0, receiver);
-        self.1.get(&homes, &String::from_utf8_lossy(method)).map(|m| m.ty.clone())
+        self.1
+            .get(&homes, &String::from_utf8_lossy(method))
+            .map(|m| m.ty.clone())
     }
 }
 
@@ -60,15 +70,21 @@ pub(crate) fn macro_method(
     if larastan.macros.is_empty() {
         return None;
     }
-    let lower = mago_word::word(&method.to_ascii_lowercase());
-    if let Some(declaring) = c.codebase.get_declaring_method_class(class.name.as_bytes(), method)
+    let lower = mago_word::word(method.to_ascii_lowercase());
+    if let Some(declaring) = c
+        .codebase
+        .get_declaring_method_class(class.name.as_bytes(), method)
         && let Some(k) = c.codebase.get_class_like(declaring.as_bytes())
         && !k.pseudo_methods.contains(&lower)
         && !k.static_pseudo_methods.contains(&lower)
     {
         return None;
     }
-    let homes = larastan.macros.homes(c.codebase, &larastan.app, class.name.as_bytes());
-    larastan.macros.get(&homes, &String::from_utf8_lossy(method)).cloned()
+    let homes = larastan
+        .macros
+        .homes(c.codebase, &larastan.app, class.name.as_bytes());
+    larastan
+        .macros
+        .get(&homes, &String::from_utf8_lossy(method))
+        .cloned()
 }
-

@@ -35,14 +35,14 @@ pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
         fn walk_in_key_value_array_element(
             &mut self,
             item: &'ast KeyValueArrayElement<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.key(item.key);
         }
         fn walk_in_variadic_array_element(
             &mut self,
             item: &'ast VariadicArrayElement<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             self.0.push(item.value.span());
         }
@@ -54,7 +54,7 @@ pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
 
 /// The arrays php-parser has as `List_` (destructuring targets), which are no LiteralArrayNode.
 #[derive(Default)]
-pub struct State {
+pub(super) struct State {
     lists: HashSet<Span>,
     /// `None` guards a local copy's source expression currently being resolved.
     constants: Mutex<HashMap<Span, Option<Type>>>,
@@ -116,7 +116,7 @@ impl Key {
 
 /// A destructuring target (`[...] = `, a `foreach` target): php-parser's `List_` nodes. `short`: a `[...]` here is one
 /// (the target's top level, or in a `[...]` list; in `list()` it is an array literal).
-pub fn destructuring(c: &mut Checker, target: &Expression, short: bool) {
+pub(super) fn destructuring(c: &mut Checker, target: &Expression, short: bool) {
     let target = unparen(target);
     let (elements, short) = match target {
         Expression::Array(a) if short => (&a.elements, true),
@@ -124,7 +124,7 @@ pub fn destructuring(c: &mut Checker, target: &Expression, short: bool) {
         _ => return,
     };
     c.arrays.lists.insert(target.span());
-    for element in elements.iter() {
+    for element in elements {
         let value = match element {
             ArrayElement::KeyValue(kv) => kv.value,
             ArrayElement::Value(v) => v.value,
@@ -135,7 +135,7 @@ pub fn destructuring(c: &mut Checker, target: &Expression, short: bool) {
 }
 
 /// DuplicateKeysInLiteralArraysRule on a `[...]` or `array(...)` literal.
-pub fn literal_array<'arena>(
+pub(super) fn literal_array<'arena>(
     c: &mut Checker<'_, 'arena>,
     span: Span,
     elements: &TokenSeparatedSequence<'arena, ArrayElement<'arena>>,
@@ -149,7 +149,7 @@ pub fn literal_array<'arena>(
     let mut auto = Auto::NotYet;
     let mut seen: Vec<Key> = Vec::new();
     let mut seen_unions: Vec<Vec<Key>> = Vec::new();
-    for element in elements.iter() {
+    for element in elements {
         let at = element.span();
         let (key, key_types) = match element {
             ArrayElement::KeyValue(kv) => {
@@ -855,7 +855,7 @@ fn initializer_order_with(
         };
         let mut order = Vec::new();
         let mut expressions = Vec::new();
-        for element in elements.iter() {
+        for element in elements {
             let ArrayElement::KeyValue(kv) = element else {
                 // Lists already retain their index order; mixed and spread literals keep the inferred
                 // fallback rather than inventing a source order for an unsupported key sequence.
@@ -865,7 +865,7 @@ fn initializer_order_with(
             let key = keys.first().filter(|_| keys.len() == 1)?;
             let key = match key {
                 Key::Int(i) => Type::ConstInt(*i),
-                Key::Str(s) => Type::ConstString(s.to_vec()),
+                Key::Str(s) => Type::ConstString(s.clone()),
             };
             let old = actual.keys.iter().position(|k| k == &key)?;
             if let Some(slot) = order.iter().position(|i| *i == old) {
@@ -910,12 +910,12 @@ fn initializer_order_with(
         expression: Option<&'ast Expression<'arena>>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
-        fn walk_in_constant_item(&mut self, item: &'ast ConstantItem<'arena>, _: &mut ()) {
+        fn walk_in_constant_item(&mut self, item: &'ast ConstantItem<'arena>, (): &mut ()) {
             if item.span() == self.at {
                 self.expression = Some(item.value);
             }
         }
-        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, (): &mut ()) {
             if call.span() == self.at {
                 self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
             }
@@ -923,7 +923,7 @@ fn initializer_order_with(
         fn walk_in_class_like_constant_item(
             &mut self,
             item: &'ast ClassLikeConstantItem<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             if item.span() == self.at {
                 self.expression = Some(item.value);
@@ -967,7 +967,7 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
         value: Option<&'ast Expression<'arena>>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
-        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, (): &mut ()) {
             if e.span() == self.at {
                 self.value = Some(e);
             }

@@ -304,8 +304,7 @@ fn type_expression_get_types() {
         let expected = c
             .get(1)
             .filter(|v| !v.is_null())
-            .map(list)
-            .unwrap_or_else(|| vec![value.clone()]);
+            .map_or_else(|| vec![value.clone()], list);
         let e = parse(&value);
         assert_eq!(
             e.get_types().iter().map(|t| lossy(t)).collect::<Vec<_>>(),

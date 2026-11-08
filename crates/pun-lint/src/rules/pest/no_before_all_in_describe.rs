@@ -53,7 +53,7 @@ impl Rule for NoBeforeAllInDescribe {
 /// `HookSemanticAnalyzer::findInvalidDescribeHooks`: each statement of the callback that is a call of `beforeAll()` or
 /// `afterAll()` gets the edit that renames it, and the callbacks of the `describe()` calls are searched too.
 fn invalid_hooks(closure: &Closure<'_>, edits: &mut Vec<Edit>) {
-    for statement in closure.body.statements.iter() {
+    for statement in &closure.body.statements {
         let Statement::Expression(statement) = statement else {
             continue;
         };

@@ -352,7 +352,10 @@ fn unmatched_entries_are_reported_in_their_config_file() {
         r#"{"packages": [{"name": "acme/pkg", "install-path": "../acme/pkg"}, {"name": "acme/own", "install-path": "../acme/own", "dist": {"type": "path"}}]}"#,
     );
     for package in ["pkg", "own"] {
-        write(&format!("vendor/acme/{package}/extension.neon"), &format!("parameters:\n\tignoreErrors:\n\t\t- identifier: {package}.id\n"));
+        write(
+            &format!("vendor/acme/{package}/extension.neon"),
+            &format!("parameters:\n\tignoreErrors:\n\t\t- identifier: {package}.id\n"),
+        );
     }
     let d = dir.to_string_lossy().into_owned();
     let entry = |fields: &[(&str, Value)]| {
@@ -365,24 +368,67 @@ fn unmatched_entries_are_reported_in_their_config_file() {
     let entries = Array::list([
         Value::str("#^A$#"),
         entry(&[("identifier", Value::str("x.y"))]),
-        entry(&[("message", Value::str("#^B$#")), ("path", Value::str(&format!("{d}/missing.php")))]),
-        entry(&[("messages", Value::Array(Array::list([Value::str("#^C$#"), Value::str("#^D$#")])))]),
+        entry(&[
+            ("message", Value::str("#^B$#")),
+            ("path", Value::str(format!("{d}/missing.php"))),
+        ]),
+        entry(&[(
+            "messages",
+            Value::Array(Array::list([Value::str("#^C$#"), Value::str("#^D$#")])),
+        )]),
         entry(&[("identifier", Value::str("pkg.id"))]),
         entry(&[("identifier", Value::str("own.id"))]),
     ]);
     let mut parameters = Array::new();
     parameters.set("currentWorkingDirectory".into(), Value::str(&d));
     parameters.set("rootDir".into(), Value::str("phar:///phpstan.phar"));
-    parameters.set("composerAutoloaderProjectPaths".into(), Value::Array(Array::list([Value::str(&d)])));
-    let files = ["phar:///phpstan.phar/conf/config.neon", "phpstan.neon", "vendor/acme/pkg/extension.neon", "vendor/acme/own/extension.neon"];
+    parameters.set(
+        "composerAutoloaderProjectPaths".into(),
+        Value::Array(Array::list([Value::str(&d)])),
+    );
+    let files = [
+        "phar:///phpstan.phar/conf/config.neon",
+        "phpstan.neon",
+        "vendor/acme/pkg/extension.neon",
+        "vendor/acme/own/extension.neon",
+    ];
     parameters.set(
         "allConfigFiles".into(),
-        Value::Array(Array::list(files.iter().map(|f| Value::str(&if f.starts_with("phar:") { f.to_string() } else { format!("{d}/{f}") })))),
+        Value::Array(Array::list(files.iter().map(|f| {
+            Value::str(&if f.starts_with("phar:") {
+                f.to_string()
+            } else {
+                format!("{d}/{f}")
+            })
+        }))),
     );
-    let p = IgnoredErrors::new(&entries, true).with_config_files(&parameters).process(Vec::new(), false, &[], false);
-    let not_matched = |s: &str| format!("Ignored error pattern {s} was not matched in reported errors.");
-    let got: Vec<_> = p.errors.iter().map(|e| (e.file.clone(), e.line, e.message.clone(), e.identifier.clone(), e.can_be_ignored)).collect();
-    let at = |file: &str, line: i64, s: &str| (format!("{d}/{file}"), Some(line), not_matched(s), Some("ignore.unmatched".to_string()), false);
+    let p = IgnoredErrors::new(&entries, true)
+        .with_config_files(&parameters)
+        .process(Vec::new(), false, &[], false);
+    let not_matched =
+        |s: &str| format!("Ignored error pattern {s} was not matched in reported errors.");
+    let got: Vec<_> = p
+        .errors
+        .iter()
+        .map(|e| {
+            (
+                e.file.clone(),
+                e.line,
+                e.message.clone(),
+                e.identifier.clone(),
+                e.can_be_ignored,
+            )
+        })
+        .collect();
+    let at = |file: &str, line: i64, s: &str| {
+        (
+            format!("{d}/{file}"),
+            Some(line),
+            not_matched(s),
+            Some("ignore.unmatched".to_string()),
+            false,
+        )
+    };
     assert_eq!(
         got,
         [

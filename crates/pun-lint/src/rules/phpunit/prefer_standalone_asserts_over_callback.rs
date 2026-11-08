@@ -206,7 +206,7 @@ fn create<'a>(ancestors: &[Node<'_, '_>], exprs: &[&'a Expression<'a>]) -> Optio
             continue;
         }
         if let Expression::Construct(Construct::Isset(isset)) = expr {
-            for value in isset.values.iter() {
+            for value in &isset.values {
                 let Expression::ArrayAccess(access) = unparenthesize(value) else {
                     // not supported yet
                     return None;
@@ -246,7 +246,7 @@ fn create<'a>(ancestors: &[Node<'_, '_>], exprs: &[&'a Expression<'a>]) -> Optio
                     if !matches!(
                         right,
                         Expression::Literal(mago_syntax::cst::Literal::Integer(i))
-                            if i.value.is_some_and(|v| v <= i64::MAX as u64)
+                            if i.value.is_some_and(|v| i64::try_from(v).is_ok())
                     ) {
                         return None;
                     }

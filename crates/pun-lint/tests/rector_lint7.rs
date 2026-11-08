@@ -243,9 +243,15 @@ fn func_get_args_to_variadic_param() {
     let path = Path::new("old.php");
     let code = "<?php function f() { $args = func_get_args(); }\n";
     let old = Linter::new(vec![Box::new(PreferVariadicParam)], 50500);
-    assert!(old.fix(path, code).unwrap().applied.is_empty());
+    assert_eq!(
+        old.fix(path, code).unwrap().applied,
+        [] as [pun_problem::Problem; 0]
+    );
     let new = Linter::new(vec![Box::new(PreferVariadicParam)], 50600);
-    assert!(!new.fix(path, code).unwrap().applied.is_empty());
+    assert_ne!(
+        new.fix(path, code).unwrap().applied,
+        [] as [pun_problem::Problem; 0]
+    );
 }
 
 #[test]

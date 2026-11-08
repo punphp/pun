@@ -60,7 +60,7 @@ fn identity(ty: &TUnion) -> Value {
             _ => None,
         })
         .collect();
-    ints.sort();
+    ints.sort_unstable();
     ints.dedup();
     strings.sort();
     strings.dedup();
@@ -205,14 +205,12 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
             .rposition(|part| part == b"$constName")
             .unwrap() as u32
     });
-    plugins.register_expression_hook(Observer(
-        Arc::clone(&observed),
-        source.clone(),
-        failed_operand,
-    ));
+    plugins.register_expression_hook(Observer(Arc::clone(&observed), source, failed_operand));
     let mut result = AnalysisResult::new(references);
-    let mut settings = Settings::default();
-    settings.track_native_types = native;
+    let settings = Settings {
+        track_native_types: native,
+        ..Default::default()
+    };
     let analysed = Analyzer::new(&arena, &file, &names, &codebase, &plugins, settings)
         .analyze_with_artifacts(program, &mut result);
     if fail_selector {
@@ -310,8 +308,8 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
             ));
         }
     }
-    actual.sort();
-    wanted.sort();
+    actual.sort_unstable();
+    wanted.sort_unstable();
     assert_eq!(
         actual, wanted,
         "complete native issues for {name}, native={native}: {:?}",

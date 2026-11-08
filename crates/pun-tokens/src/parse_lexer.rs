@@ -276,7 +276,7 @@ impl<'a> ParseLexer<'a> {
                 Some(T_CONSTANT_ENCAPSED_STRING)
                     if text[0] == b'"' || (text[0] | 0x20 == b'b' && text[1] == b'"') =>
                 {
-                    let q = (text[0] != b'"') as usize;
+                    let q = usize::from(text[0] != b'"');
                     if let Some((m, at)) = escape_error(&text[q + 1..text.len() - 1]) {
                         return self.err(m, self.lineno + at);
                     }
@@ -298,7 +298,7 @@ impl<'a> ParseLexer<'a> {
                 }
                 Some(T_ATTRIBUTE) => self.nesting.push((b'[', self.lineno)),
                 Some(T_CURLY_OPEN | T_DOLLAR_OPEN_CURLY_BRACES) => {
-                    self.nesting.push((b'{', self.lineno))
+                    self.nesting.push((b'{', self.lineno));
                 }
                 None if state == State::Scripting => match ch {
                     b'(' | b'[' | b'{' => self.nesting.push((ch, self.lineno)),

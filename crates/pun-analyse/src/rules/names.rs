@@ -22,7 +22,7 @@ pub(super) fn typed_class_constants(program: &Program, level: u8) -> Vec<Span> {
         fn walk_in_class_constant_access(
             &mut self,
             a: &'ast ClassConstantAccess<'arena>,
-            _: &mut (),
+            (): &mut (),
         ) {
             let class = super::types::flow::unparen(a.class);
             if self.level >= 2
@@ -52,7 +52,10 @@ pub(super) fn typed_class_constants(program: &Program, level: u8) -> Vec<Span> {
 
 /// ClassConstantRule::processNode(): a written constant or every finite name of a dynamic selector. Inferred
 /// expression types already reflect branch narrowing; an arbitrary string or a non-string union selects none.
-pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstantAccess<'arena>) {
+pub(super) fn class_constant<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    access: &ClassConstantAccess<'arena>,
+) {
     let mut names = Vec::new();
     if let ClassLikeConstantSelector::Identifier(id) = &access.constant {
         names.push(String::from_utf8_lossy(id.value).into_owned());
@@ -178,7 +181,7 @@ fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_
     // expression (`X::{$name}`). Selecting the same finite name does not make their expression keys equal.
     let guarded = match access.class {
         Expression::Identifier(id) => c.resolved(id),
-        _ => written.clone(),
+        _ => written,
     };
     let guarded =
         Guard::ClassConstant(format!("{}::{constant_name}", guarded.to_ascii_lowercase()));
@@ -267,9 +270,7 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
     {
         return;
     }
-    let criteria = |t: &Type| {
-        constant_capable(c, t).yes() && has_class_constant(c, t, name).yes()
-    };
+    let criteria = |t: &Type| constant_capable(c, t).yes() && has_class_constant(c, t, name).yes();
     let mut found = c.find_type_to_check(class, &criteria);
     // ConstantArrayType::getOffsetValueType() returns ErrorType for an absent sealed-shape key, not Mago's
     // null recovery value. Feed that through RuleLevelHelper as well (strict implicit mixed at level 10).
@@ -277,7 +278,10 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
         && let Some(Type::ConstArray(array)) = c.phpstan_type(a.array)
         && array.unsealed.is_none()
         && let Some(index) = c.phpstan_type(a.index)
-        && array.keys.iter().all(|key| pun_phpstan::types::is_super_type_of(key, &index).no())
+        && array
+            .keys
+            .iter()
+            .all(|key| pun_phpstan::types::is_super_type_of(key, &index).no())
     {
         found.ty = c.find_type_to_check_of(Some(Type::Error), &criteria);
     }
@@ -425,9 +429,7 @@ fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
         Type::Union(ts) | Type::Benevolent(ts) => {
             Tri::extreme_identity(ts.iter().map(|t| has_class_constant(c, t, name)))
         }
-        Type::Intersection(ts) => {
-            Tri::max_min(ts.iter().map(|t| has_class_constant(c, t, name)))
-        }
+        Type::Intersection(ts) => Tri::max_min(ts.iter().map(|t| has_class_constant(c, t, name))),
         Type::Template(t) => has_class_constant(c, &t.bound, name),
         Type::ObjectWithoutClass
         | Type::ObjectShape(_)
@@ -435,22 +437,25 @@ fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
         | Type::Callable(_)
         | Type::Iterable(..)
         | Type::Accessory(pun_phpstan::types::Accessory::HasMethod(_)) => Tri::Maybe,
-        Type::Object(n, _, _)
-        | Type::Static(n, _)
-        | Type::This(n)
-        | Type::EnumCase(n, _) => match known(c, n) {
-            Some(k) if k.constant(c, name).is_some() => Tri::Yes,
-            Some(k) if k.is_final() => Tri::No,
-            _ => Tri::Maybe,
-        },
-        Type::ConstString(n) => has_class_constant(c, &Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false), name),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
+            match known(c, n) {
+                Some(k) if k.constant(c, name).is_some() => Tri::Yes,
+                Some(k) if k.is_final() => Tri::No,
+                _ => Tri::Maybe,
+            }
+        }
+        Type::ConstString(n) => has_class_constant(
+            c,
+            &Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false),
+            name,
+        ),
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Yes,
         _ => Tri::No,
     }
 }
 
 /// ExistingClassInInstanceOfRule for `expr instanceof class`.
-pub fn instanceof<'arena>(
+pub(super) fn instanceof<'arena>(
     c: &mut Checker<'_, 'arena>,
     expr: &Expression<'arena>,
     class: &Expression<'arena>,
@@ -519,7 +524,7 @@ fn instanceof_trait<'arena>(c: &mut Checker<'_, 'arena>, expr: &Expression<'aren
 }
 
 /// CaughtExceptionExistenceRule.
-pub fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena>) {
+pub(super) fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena>) {
     let mut names = Vec::new();
     hint_classes(c, &clause.hint, None, &mut names);
     for (name, at) in names {
@@ -603,7 +608,7 @@ fn hint_classes<'arena>(
 
 /// Where a function-like's typehint errors go: PHPStan's messages name the function differently per kind.
 #[derive(Clone, Copy)]
-pub enum FunctionKind<'s> {
+pub(super) enum FunctionKind<'s> {
     Function(&'s str),
     Method(&'s str, &'s str),
     Anonymous,
@@ -612,7 +617,7 @@ pub enum FunctionKind<'s> {
 }
 
 /// The class-existence part of FunctionDefinitionCheck for native parameter and return types.
-pub fn typehints<'arena>(
+pub(super) fn typehints<'arena>(
     c: &mut Checker<'_, 'arena>,
     kind: FunctionKind,
     parameters: &FunctionLikeParameterList<'arena>,
@@ -621,7 +626,7 @@ pub fn typehints<'arena>(
     let parameter_message = format!("of {}", kind.named());
     let return_message = format!("{} has invalid return type", kind.subject());
     let anonymous = matches!(kind, FunctionKind::Anonymous);
-    for p in parameters.parameters.iter() {
+    for p in &parameters.parameters {
         let Some(hint) = &p.hint else {
             continue;
         };
@@ -732,7 +737,7 @@ fn typehint_pairs(c: &Checker, names: &[(String, Span)], at: Span, at_is_name: b
 /// reflection's return type: `forced_void` for the methods PHPStan always types void (constructors, `__destruct()`,
 /// `__set()` & co.), else the native type, else the PHPDoc type Mago read (`docblock`). An anonymous function reads
 /// only a native `void` or `never`.
-pub fn no_discard<'arena>(
+pub(super) fn no_discard<'arena>(
     c: &mut Checker<'_, 'arena>,
     kind: FunctionKind,
     at: Span,
@@ -780,7 +785,7 @@ pub fn no_discard<'arena>(
 /// ExistingClassInClassExtendsRule and ExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
 /// (interface) and ExistingClassesInEnumImplementsRule (enum): `current` is e.g. `Class Foo` or `Anonymous class`,
 /// `readonly` whether the class is declared `readonly`.
-pub fn class_hierarchy<'arena>(
+pub(super) fn class_hierarchy<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     current: &str,
@@ -790,8 +795,13 @@ pub fn class_hierarchy<'arena>(
     readonly: bool,
 ) {
     let class = current.split_once(' ').map(|(_, name)| name.to_string());
-    let pairs = |c: &Checker, ids: Option<&TokenSeparatedSequence<'arena, Identifier<'arena>>>| -> Vec<Pair> {
-        ids.into_iter().flat_map(|ids| ids.iter()).map(|id| Pair::name(c.resolved(id), id.span())).collect()
+    let pairs = |c: &Checker,
+                 ids: Option<&TokenSeparatedSequence<'arena, Identifier<'arena>>>|
+     -> Vec<Pair> {
+        ids.into_iter()
+            .flat_map(|ids| ids.iter())
+            .map(|id| Pair::name(c.resolved(id), id.span()))
+            .collect()
     };
     let extended = pairs(c, extends.map(|e| &e.types));
     let location = Location::Extends {
@@ -806,7 +816,7 @@ pub fn class_hierarchy<'arena>(
     };
     class_names::check_at(c, &implemented, Some(&location), true);
     if let Some(e) = extends {
-        for id in e.types.iter() {
+        for id in &e.types {
             let name = c.resolved(id);
             match known(c, &name) {
                 None if c.in_class_exists(&name) => {}
@@ -876,7 +886,7 @@ pub fn class_hierarchy<'arena>(
     } else {
         "classImplements"
     };
-    for id in i.types.iter() {
+    for id in &i.types {
         let name = c.resolved(id);
         match known(c, &name) {
             None if c.in_class_exists(&name) => {}
@@ -909,7 +919,7 @@ pub fn class_hierarchy<'arena>(
 
 /// ExistingClassesInPropertiesRule (native types only at level 0, `checkThisOnly`): one property declaration or
 /// promoted constructor parameter, `at` its node.
-pub fn property_type<'arena>(
+pub(super) fn property_type<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     hint: Option<&Hint<'arena>>,
@@ -931,8 +941,12 @@ pub fn property_type<'arena>(
         // ponytail: a promoted property's type from the constructor's `@param` is not read
         let mut classes = native.clone();
         if c.level >= 2 {
-            let phpdoc = super::declared::with_classes(c, || super::declared::property(c, None, at, &name[1..], class));
-            let referenced = super::generics::referenced_classes(&phpdoc).into_iter().filter(|n| !n.contains('-'));
+            let phpdoc = super::declared::with_classes(c, || {
+                super::declared::property(c, None, at, &name[1..], class)
+            });
+            let referenced = super::generics::referenced_classes(&phpdoc)
+                .into_iter()
+                .filter(|n| !n.contains('-'));
             classes.extend(referenced.map(|n| (n, at)));
         }
         for (referenced, _) in &classes {
@@ -964,7 +978,7 @@ pub fn property_type<'arena>(
 
 /// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for class names (ClassNameCheck alone, so a missing name,
 /// which may be a namespace, is no error).
-pub fn use_classes<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
+pub(super) fn use_classes<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     let text = |id: &Identifier| {
         String::from_utf8_lossy(id.value())
             .trim_start_matches('\\')
@@ -990,7 +1004,7 @@ pub fn use_classes<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
 }
 
 /// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for `use function` and `use const`.
-pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
+pub(super) fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     // (is a function, the name, the item)
     let mut used: Vec<(bool, String, Span)> = Vec::new();
     let text = |id: &Identifier| {
@@ -1001,21 +1015,29 @@ pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     let is_function = |t: &UseType| matches!(t, UseType::Function(_));
     match &u.items {
         UseItems::TypedSequence(s) => {
-            for item in s.items.iter() {
+            for item in &s.items {
                 used.push((is_function(&s.r#type), text(&item.name), item.span()));
             }
         }
         UseItems::TypedList(l) => {
             let prefix = text(&l.namespace);
-            for item in l.items.iter() {
-                used.push((is_function(&l.r#type), format!("{prefix}\\{}", text(&item.name)), item.span()));
+            for item in &l.items {
+                used.push((
+                    is_function(&l.r#type),
+                    format!("{prefix}\\{}", text(&item.name)),
+                    item.span(),
+                ));
             }
         }
         UseItems::MixedList(l) => {
             let prefix = text(&l.namespace);
-            for item in l.items.iter() {
+            for item in &l.items {
                 if let Some(t) = &item.r#type {
-                    used.push((is_function(t), format!("{prefix}\\{}", text(&item.item.name)), item.span()));
+                    used.push((
+                        is_function(t),
+                        format!("{prefix}\\{}", text(&item.item.name)),
+                        item.span(),
+                    ));
                 }
             }
         }
@@ -1023,12 +1045,21 @@ pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     }
     for (function, name, at) in used {
         let (kind, identifier, found) = if function {
-            ("function", "function.notFound", c.function(name.as_bytes()).is_some())
+            (
+                "function",
+                "function.notFound",
+                c.function(name.as_bytes()).is_some(),
+            )
         } else {
             ("constant", "constant.notFound", has_constant(c, &name))
         };
         if !found {
-            c.report(at, identifier, format!("Used {kind} {name} not found."), Some(DISCOVERING_SYMBOLS_TIP));
+            c.report(
+                at,
+                identifier,
+                format!("Used {kind} {name} not found."),
+                Some(DISCOVERING_SYMBOLS_TIP),
+            );
         }
     }
 }
@@ -1039,7 +1070,10 @@ pub(super) fn file_has_compiler_halt_statement_calls(program: &Program) -> bool 
         Statement::HaltCompiler(_) => true,
         // PhpParser leaves HaltCompiler at the root of a semicolon namespace; Mago keeps it in the body.
         Statement::Namespace(namespace) if matches!(namespace.body, NamespaceBody::Implicit(_)) => {
-            namespace.statements().iter().any(|statement| matches!(statement, Statement::HaltCompiler(_)))
+            namespace
+                .statements()
+                .iter()
+                .any(|statement| matches!(statement, Statement::HaltCompiler(_)))
         }
         _ => false,
     })
@@ -1047,12 +1081,14 @@ pub(super) fn file_has_compiler_halt_statement_calls(program: &Program) -> bool 
 
 /// ConstantRule (level 1): a constant fetch that `$scope->hasConstant()` does not know: not defined in the project or
 /// built in, at the namespaced name and then the global one for an unqualified name, nor guarded by `defined()`.
-pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
+pub(super) fn constant_fetch(c: &mut Checker, id: &Identifier) {
     if c.level < 1 {
         return;
     }
     let resolved = c.resolved_span(id.span());
-    let written = String::from_utf8_lossy(id.value()).trim_start_matches('\\').to_string();
+    let written = String::from_utf8_lossy(id.value())
+        .trim_start_matches('\\')
+        .to_string();
     // an unqualified name that no `use const` imports falls back to the global constant
     let fallback = matches!(id, Identifier::Local(l) if !c.names.is_imported(&l.span));
     let mut candidates = vec![resolved.clone()];
@@ -1065,13 +1101,20 @@ pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
         c.walk.contains(super::Walk::COMPILER_HALT)
     } else {
         candidates.iter().any(|name| {
-            ["true", "false", "null"].iter().any(|k| name.eq_ignore_ascii_case(k))
+            ["true", "false", "null"]
+                .iter()
+                .any(|k| name.eq_ignore_ascii_case(k))
                 || has_constant(c, name)
                 || c.guards.contains(&Guard::Constant(name.clone()))
         })
     };
     if !found {
-        c.report(id, "constant.notFound", format!("Constant {name} not found."), Some(DISCOVERING_SYMBOLS_TIP));
+        c.report(
+            id,
+            "constant.notFound",
+            format!("Constant {name} not found."),
+            Some(DISCOVERING_SYMBOLS_TIP),
+        );
     }
 }
 
@@ -1082,8 +1125,9 @@ fn has_constant(c: &Checker, name: &str) -> bool {
     c.codebase.get_constant(name.as_bytes()).is_some_and(|k| {
         !k.flags.is_built_in()
             && !c.codebase.class_likes.values().any(|o| {
-                o.span.file_id == k.span.file_id && o.span.start.offset <= k.span.start.offset && k.span.end.offset <= o.span.end.offset
+                o.span.file_id == k.span.file_id
+                    && o.span.start.offset <= k.span.start.offset
+                    && k.span.end.offset <= o.span.end.offset
             })
-    })
-        || c.builtins.constants.contains_key(name)
+    }) || c.builtins.constants.contains_key(name)
 }

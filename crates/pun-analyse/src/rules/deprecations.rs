@@ -16,7 +16,7 @@ use super::Checker;
 use super::members::Method;
 
 /// A `@deprecated` tag: `Some(description)` (phpdoc-parser's DeprecatedTagValueNode, `None` when empty).
-pub type Deprecation = Option<String>;
+pub(super) type Deprecation = Option<String>;
 
 /// What a PHPDoc says: `None` without one (`getResolvedPhpDoc()` is null), else its `@deprecated` and whether it has
 /// `@not-deprecated`.

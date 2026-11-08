@@ -94,7 +94,7 @@ pub(crate) enum Outcome {
 /// The arguments of `list` (a call's).
 pub(crate) fn call_args(list: &ArgumentList<'_>) -> Args {
     Args {
-        items: list.arguments.iter().map(|a| node_span(a)).collect(),
+        items: list.arguments.iter().map(node_span).collect(),
         placeholder: false,
     }
 }
@@ -141,7 +141,7 @@ pub(crate) fn inject<'ast, 'arena>(
     let mut injector = Injector::new(ctx, &class, ancestors);
     let mut rewrites: Vec<(Span, String, Option<Args>)> = Vec::new();
     let mut failed = false;
-    for member in class.members.iter() {
+    for member in class.members {
         let ClassLikeMember::Method(method) = member else {
             continue;
         };
@@ -167,8 +167,8 @@ pub(crate) fn inject<'ast, 'arena>(
         return;
     }
     let all = tokens(ctx);
-    let mut edits = rewritten(ctx.source, &all, &rewrites);
-    edits.extend(injector.finish(&all));
+    let mut edits = rewritten(ctx.source, all, &rewrites);
+    edits.extend(injector.finish(all));
     out.push(Report {
         span: node_span(&class.node),
         message: message.to_string(),
@@ -467,7 +467,7 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
                     self.failed = true;
                     return None;
                 }
-                if self.param_names().iter().any(|p| *p == name) {
+                if self.param_names().contains(&name) {
                     return None;
                 }
                 self.ctor_params.push(Added {
@@ -611,7 +611,7 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
             return Some(None);
         }
         if let Some(own) = self.own {
-            for p in own.parameter_list.parameters.iter() {
+            for p in &own.parameter_list.parameters {
                 if !p.modifiers.is_empty() && &p.variable.name[1..] == name.as_bytes() {
                     return Some(
                         self.is_autowired_attributes(&p.attribute_lists)
@@ -1096,7 +1096,7 @@ fn method_edits(
         .parameter_list
         .parameters
         .iter()
-        .map(|p| node_span(p))
+        .map(node_span)
         .collect();
     if !texts.is_empty() {
         match existing.last() {
@@ -1259,13 +1259,20 @@ fn shape_of(
         let mut interfaces: Vec<String> = meta
             .direct_parent_interfaces
             .iter()
-            .map(|w| w.to_string())
+            .map(std::string::ToString::to_string)
             .collect();
         interfaces.sort();
-        let mut methods: Vec<String> = meta.methods.iter().map(|w| w.to_string()).collect();
+        let mut methods: Vec<String> = meta
+            .methods
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect();
         methods.sort();
         return Some(Shape {
-            parent: meta.direct_parent_class.as_ref().map(|w| w.to_string()),
+            parent: meta
+                .direct_parent_class
+                .as_ref()
+                .map(std::string::ToString::to_string),
             interfaces,
             methods,
             ..Shape::default()
@@ -1338,7 +1345,7 @@ fn shape_from(
         ..Shape::default()
     };
     let mut promoted = Vec::new();
-    for member in members.iter() {
+    for member in members {
         match member {
             ClassLikeMember::TraitUse(t) => shape.traits.extend(t.trait_names.iter().map(resolve)),
             ClassLikeMember::Method(m) => {
@@ -1603,7 +1610,7 @@ fn parent_ctor(source: Arc<str>, at: usize) -> Option<ParentCtor> {
     };
     let start = node_span(method).start;
     let mut params = Vec::new();
-    for p in method.parameter_list.parameters.iter() {
+    for p in &method.parameter_list.parameters {
         if p.ellipsis.is_some() || p.hooks.is_some() {
             return None;
         }

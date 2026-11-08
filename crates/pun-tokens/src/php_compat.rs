@@ -23,7 +23,7 @@ pub fn unescape_phpdoc_string(quoted: &[u8]) -> Vec<u8> {
     static ESCAPES: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
     let escapes = ESCAPES.get_or_init(|| {
         pcre2::bytes::Regex::new(
-            r#"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})"#,
+            r"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})",
         )
         .unwrap()
     });
@@ -71,7 +71,9 @@ pub fn unescape_phpdoc_string(quoted: &[u8]) -> Vec<u8> {
                 }
             }
             octal => {
-                out.push(u32::from_str_radix(std::str::from_utf8(octal).unwrap(), 8).unwrap() as u8)
+                out.push(
+                    u32::from_str_radix(std::str::from_utf8(octal).unwrap(), 8).unwrap() as u8,
+                );
             }
         }
         from = full.end();
@@ -111,7 +113,7 @@ pub fn strcasecmp(a: &[u8], b: &[u8]) -> i32 {
     for (x, y) in a.iter().zip(b) {
         let (x, y) = (x.to_ascii_lowercase(), y.to_ascii_lowercase());
         if x != y {
-            return x as i32 - y as i32;
+            return i32::from(x) - i32::from(y);
         }
     }
     sign(a.len().cmp(&b.len()))
@@ -359,7 +361,7 @@ pub fn preg_quote(s: &[u8], delimiter: Option<u8>) -> Vec<u8> {
             0 => out.extend_from_slice(b"\\000"),
             b'.' | b'\\' | b'+' | b'*' | b'?' | b'[' | b'^' | b']' | b'$' | b'(' | b')' | b'{'
             | b'}' | b'=' | b'!' | b'>' | b'<' | b'|' | b':' | b'-' | b'#' => {
-                out.extend([b'\\', b])
+                out.extend([b'\\', b]);
             }
             _ if Some(b) == delimiter => out.extend([b'\\', b]),
             _ => out.push(b),

@@ -30,7 +30,7 @@ impl Rule for NoHashEmoji {
         out: &mut Vec<Report>,
     ) {
         let Node::Program(program) = node else { return };
-        for trivia in program.trivia.nodes.iter() {
+        for trivia in program.trivia.nodes {
             if trivia.kind != TriviaKind::HashComment || !trivia.value.starts_with(EMOJI.as_bytes())
             {
                 continue;

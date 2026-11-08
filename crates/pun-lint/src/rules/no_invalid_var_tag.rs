@@ -88,7 +88,7 @@ impl Rule for NoInvalidVarTag {
                 {
                     return;
                 }
-                let (list, index) = enclosing(source, &tokens, &chain);
+                let (list, index) = enclosing(source, tokens, &chain);
                 (list, At::Statement(index), chain.len() - 2)
             }
             // php-parser's `Nop` for the comments after a list's last statement
@@ -96,7 +96,7 @@ impl Rule for NoInvalidVarTag {
                 if !is_list_holder(node) {
                     return;
                 }
-                let list = holder_list(source, &tokens, node);
+                let list = holder_list(source, tokens, node);
                 if !list.nop {
                     return;
                 }
@@ -104,7 +104,7 @@ impl Rule for NoInvalidVarTag {
             }
         };
         let facts = facts(ctx);
-        let Some(defined) = defined_before(&facts, &chain[..holder + 1], &list, at) else {
+        let Some(defined) = defined_before(&facts, &chain[..=holder], &list, at) else {
             return;
         };
         let index = match at {
@@ -138,7 +138,7 @@ impl Rule for NoInvalidVarTag {
                 let start = node_span(list.stmts[i]).start;
                 (
                     start,
-                    previous_token_end(source, &tokens, start).max(list.inner.start),
+                    previous_token_end(source, tokens, start).max(list.inner.start),
                 )
             }
             At::Nop => (
@@ -148,7 +148,7 @@ impl Rule for NoInvalidVarTag {
                     .map_or(list.inner.start, |s| node_span(*s).end),
             ),
         };
-        if comments_between(&tokens, comments_from, start).len() != 1 {
+        if comments_between(tokens, comments_from, start).len() != 1 {
             return;
         }
         let doc_ancestors = match at {
@@ -158,10 +158,10 @@ impl Rule for NoInvalidVarTag {
         let Some(doc) = Doc::of(ctx, doc_ancestors, start) else {
             return;
         };
-        let holder_comments = holder_span(&chain[..holder + 1]).map_or(0, |span| {
+        let holder_comments = holder_span(&chain[..=holder]).map_or(0, |span| {
             comments_between(
-                &tokens,
-                previous_token_end(source, &tokens, span.start),
+                tokens,
+                previous_token_end(source, tokens, span.start),
                 span.start,
             )
             .len()
@@ -369,7 +369,7 @@ fn defined_before(
             continue;
         }
         if let Statement::Static(s) = statement {
-            for item in s.items.iter() {
+            for item in &s.items {
                 let variable = match item {
                     StaticItem::Abstract(i) => &i.variable,
                     StaticItem::Concrete(i) => &i.variable,

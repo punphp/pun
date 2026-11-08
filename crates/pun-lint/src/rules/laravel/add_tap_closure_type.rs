@@ -332,8 +332,7 @@ fn parameter_edit(
         if let Some(declared) = &declared {
             // the same text: nothing changes; another case of a type Pun does not compare: equal or not is unknown
             if text == declared
-                || (text.eq_ignore_ascii_case(declared)
-                    && members.iter().any(|m| *m == Member::Other))
+                || (text.eq_ignore_ascii_case(declared) && members.contains(&Member::Other))
             {
                 return None;
             }
@@ -413,16 +412,16 @@ fn hint_members(
         };
         out.push(match h {
             Hint::Parenthesized(p) => {
-                stack.push(&p.hint);
+                stack.push(p.hint);
                 continue;
             }
             Hint::Nullable(n) => {
-                stack.push(&n.hint);
+                stack.push(n.hint);
                 Member::Null
             }
             Hint::Union(u) => {
-                stack.push(&u.right);
-                stack.push(&u.left);
+                stack.push(u.right);
+                stack.push(u.left);
                 continue;
             }
             Hint::Intersection(_) => return None,
