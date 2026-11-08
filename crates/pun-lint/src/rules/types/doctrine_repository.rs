@@ -1,5 +1,5 @@
 //! `lint/types/add-property-type-get-repository`, `lint/phpunit/add-property-type-container-get` and
-//! `lint/types/add-doctrine-repository-return-type`, ported from Rector 2.6.1's
+//! `lint/types/add-doctrine-repository-return-type`, ported from Rector 2.8.4's
 //! `TypedPropertyFromGetRepositorySetUpRector`, `TypedPropertyFromContainerGetSetUpRector` and
 //! `ChildDoctrineRepositoryClassTypeRector` (rules/TypeDeclaration/Rector/Class_).
 //!

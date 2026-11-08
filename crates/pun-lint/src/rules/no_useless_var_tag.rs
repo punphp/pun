@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-useless-var`, ported from Rector 2.6.1's `RemoveUselessVarTagRector`
+//! `lint/phpdoc/no-useless-var`, ported from Rector 2.8.4's `RemoveUselessVarTagRector`
 //! (rules/DeadCode/Rector/Property) with `VarTagRemover::removeVarTagIfUseless()` and
 //! `DeadVarTagValueNodeAnalyzer` (rules/DeadCode/PhpDoc).
 //!

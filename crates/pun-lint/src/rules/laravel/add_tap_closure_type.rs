@@ -1,4 +1,4 @@
-//! `lint/laravel/add-tap-closure-type`, ported from rector-laravel 2.5.0's `TypeHintTappableCallRector`
+//! `lint/laravel/add-tap-closure-type`, ported from rector-laravel 2.7.3's `TypeHintTappableCallRector`
 //! (src/Rector/FuncCall).
 //!
 //! `$x->tap(function ($y) {...})` on an object using `Illuminate\Support\Traits\Tappable`, and
@@ -7,7 +7,8 @@
 //! (`StaticTypeMapper::mapPHPStanTypeToPhpParserNode(..., TypeKind::PARAM)`): classes fully qualified, `$this` and
 //! `static` as `self`, constants as their general type (`true` and `false` stay), a closure as `\Closure`. A parameter
 //! whose type PHPStan holds equal (`TypeComparator::areTypesEqual`) stays; a type with no declaration
-//! takes the parameter's type away (`null` alone). Only a `function` counts, not an arrow function.
+//! takes the parameter's type away (`never` or `void` alone, `null` alone before PHP 8.2; from 8.2 `null` is
+//! declared). Only a `function` counts, not an arrow function.
 //!
 //! The type of `new` with a class name is Rector's own (`NewTypeResolver`): the name as written, and none for
 //! `new static`. A property that PHPStan does not find (`*ERROR*`; a `@property` tag or a `@mixin` counts only for a
@@ -351,9 +352,13 @@ fn parameter_edit(
     }
 }
 
-/// The parameter declaration of a type: `Some(None)` where Rector has none (`null`, `never`, `void` alone),
-/// `None` where Pun does not know Rector's.
+/// The parameter declaration of a type: `Some(None)` where Rector has none (`never`, `void` alone, `null` alone
+/// before PHP 8.2), `None` where Pun does not know Rector's.
 fn declaration(facts: &Facts, types: Vec<&TAtomic>, php_version: u32) -> Option<Option<String>> {
+    // `NullType::toNativePhpTypeNode()`: a standalone `null` parameter from PHP 8.2.
+    if !types.is_empty() && types.iter().all(|a| matches!(a, TAtomic::Null)) && php_version >= 80200 {
+        return Some(Some("null".to_string()));
+    }
     if types
         .iter()
         .all(|a| matches!(a, TAtomic::Null | TAtomic::Never | TAtomic::Void))

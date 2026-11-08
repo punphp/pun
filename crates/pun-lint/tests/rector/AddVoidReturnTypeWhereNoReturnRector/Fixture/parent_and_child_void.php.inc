@@ -1,6 +1,6 @@
 <?php
 
-namespace Rector\Tests\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector\Fixture;
+namespace Rector\Tests\TypeDeclaration\Rector\ClassLike\AddVoidReturnTypeWhereNoReturnRector\Fixture;
 
 /**
  * Both classes have to be in the same fixture, as the one that needs to be skipped is the parent class
@@ -23,7 +23,7 @@ final class SomeChildFromVoid extends ParentAndChildvoid
 -----
 <?php
 
-namespace Rector\Tests\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector\Fixture;
+namespace Rector\Tests\TypeDeclaration\Rector\ClassLike\AddVoidReturnTypeWhereNoReturnRector\Fixture;
 
 /**
  * Both classes have to be in the same fixture, as the one that needs to be skipped is the parent class

@@ -1,11 +1,12 @@
-//! `lint/laravel/prefer-today`, ported from rector-laravel 2.5.0's `NowFuncWithStartOfDayMethodCallToTodayFuncRector`
+//! `lint/laravel/prefer-today`, ported from rector-laravel 2.7.3's `NowFuncWithStartOfDayMethodCallToTodayFuncRector`
 //! (src/Rector/FuncCall).
 //!
-//! `now()->startOfDay()` becomes `today()`. As upstream, the arguments of both calls are dropped.
+//! `now()->startOfDay()` becomes `today()`, with the arguments of `now()` (`now('UTC')->startOfDay()` becomes
+//! `today('UTC')`). As upstream, the arguments of `startOfDay()` are dropped.
 
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 
-use super::{is_name, member_name, replace};
+use super::{argument_texts, call, is_name, member_name, replace};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -25,21 +26,23 @@ impl Rule for PreferToday {
         &self,
         node: Node<'ast, 'arena>,
         _ancestors: &[Node<'ast, 'arena>],
-        _ctx: &Context<'_>,
+        ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
         let Node::MethodCall(m) = node else { return };
         if !member_name(&m.method).is_some_and(|n| is_name(n, "startOfDay")) {
             return;
         }
-        if !matches!(unparenthesize(m.object), Expression::Call(Call::Function(f)) if named(f, "now"))
-        {
+        let Expression::Call(Call::Function(now)) = unparenthesize(m.object) else {
+            return;
+        };
+        if !named(now, "now") {
             return;
         }
         out.push(replace(
             node_span(m),
             "Use `today()` instead of `now()->startOfDay()`.".to_string(),
-            "today()".to_string(),
+            call("today", &argument_texts(ctx, &now.argument_list)),
         ));
     }
 }

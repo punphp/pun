@@ -1,4 +1,4 @@
-//! `lint/arrays/prefer-array-append`, ported from Rector 2.6.1's `ChangeArrayPushToArrayAssignRector`
+//! `lint/arrays/prefer-array-append`, ported from Rector 2.8.4's `ChangeArrayPushToArrayAssignRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `array_push($items, $a, $b);` as a statement becomes `$items[] = $a;` and `$items[] = $b;`, one statement per

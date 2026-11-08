@@ -30,8 +30,8 @@ final class T extends TestCase
     public function test(?Foo $a, Foo|Bar|null $b, ?int $c, Foo $d)
     {
         $this->assertInstanceOf(\App\Foo::class, $a);
-        $this->assertNotInstanceOf(\App\Foo::class, $a, 'msg');
-        $this->assertNotInstanceOf(\App\Foo::class, $a);
+        $this->assertEmpty($a, 'msg');
+        $this->AssertNull($a);
         $this->assertNotNull($b);
         $this->assertNull($c);
         $this->assertNotNull($d);

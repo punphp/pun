@@ -1,15 +1,18 @@
-//! `lint/complexity/prefer-not-in-array`, ported from Rector 2.6.1's `RepeatedAndNotEqualToNotInArrayRector`
+//! `lint/complexity/prefer-not-in-array`, ported from Rector 2.8.4's `RepeatedAndNotEqualToNotInArrayRector`
 //! (rules/CodeQuality/Rector/BooleanAnd).
 //!
 //! Three negated comparisons or more of the same expression joined by `&&`,
 //! `$a !== 'a' && $a !== 'b' && $a !== 'c'`, become `!in_array($a, ['a', 'b', 'c'], true)`; with `!=` (or a mix of
-//! `!=` and `!==`) the call is not strict.
+//! `!=` and `!==`) the call is not strict. A chain with a value that may have side effects (a call), or one in a
+//! default or class constant value, stays.
 
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_code_quality::{Prec, equal, in_parent};
-use super::rector_stmts::{compared_values, has_binary};
+use super::rector_stmts::{
+    compared_values, has_binary, is_in_constant_expression, is_safe_to_evaluate_eagerly,
+};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -37,10 +40,14 @@ impl Rule for PreferNotInArray {
         }
         let and = |op: &BinaryOperator<'_>| matches!(op, BinaryOperator::And(_));
         let compare = |op: &BinaryOperator<'_>| op.is_negated_equality();
+        // in_array() func call is not allowed in a constant expression
+        if is_in_constant_expression(ancestors) {
+            return;
+        }
         let Some(pairs) = compared_values(binary, &and, &compare) else {
             return;
         };
-        if pairs.len() < 3 {
+        if pairs.len() < 3 || !pairs.iter().all(|(_, v)| is_safe_to_evaluate_eagerly(v)) {
             return;
         }
         // All compared expressions must be equal to the last one.

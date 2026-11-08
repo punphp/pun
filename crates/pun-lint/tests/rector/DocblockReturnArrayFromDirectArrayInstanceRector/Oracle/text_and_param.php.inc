@@ -21,7 +21,7 @@ class TextAndParam
      * Some text
      *
      * @param int $a
-     * @return array<string, int|bool>
+     * @return array<string, bool|int>
      */
     public function run($a): array
     {

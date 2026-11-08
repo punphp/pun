@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-private-method`, ported from Rector 2.6.1's `RemoveUnusedPrivateMethodRector`
+//! `lint/dead-code/no-unused-private-method`, ported from Rector 2.8.4's `RemoveUnusedPrivateMethodRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `IsClassMethodUsedAnalyzer` and `DataProviderMethodsFinder` in
 //! `class_method.rs`.
 //!

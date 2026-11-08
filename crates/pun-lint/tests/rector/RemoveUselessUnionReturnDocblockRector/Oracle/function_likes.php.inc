@@ -73,6 +73,9 @@ abstract class Base
      */
     abstract public function run(): int|string;
 
+    /**
+     * @return \stdClass|Base
+     */
     abstract public function objects(): \stdClass|self;
 
     abstract public function nullable(): ?self;

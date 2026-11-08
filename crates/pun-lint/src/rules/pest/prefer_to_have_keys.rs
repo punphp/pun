@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-have-keys`, ported from pest-plugin-rector's `UseToHaveKeysRector`: a run of
 //! `->toHaveKey('a')->toHaveKey('b')` with literal strings becomes `->toHaveKeys(['a', 'b'])`, when the checked value
-//! may be an array.
+//! is known to be an array.
 
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
@@ -34,7 +34,7 @@ impl Rule for PreferToHaveKeys {
         if !is_name(&call.method, "toHaveKey") {
             return;
         }
-        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Array) == Trinary::No) {
+        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Array) != Trinary::Yes) {
             return;
         }
         let mut keys = Vec::new();

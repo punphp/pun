@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-empty-block`, ported from Rector 2.6.1's `RemoveDeadIfForeachForRector`
+//! `lint/dead-code/no-empty-block`, ported from Rector 2.8.4's `RemoveDeadIfForeachForRector`
 //! (rules/DeadCode/Rector/For_), with `ConditionInverter` and `BinaryOpManipulator::invertCondition`.
 //!
 //! In a statement list, an `if`, `for` or `foreach` whose body has no statement (php-parser's `stmts === []`: a

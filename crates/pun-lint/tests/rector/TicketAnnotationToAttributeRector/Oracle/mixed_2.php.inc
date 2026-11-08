@@ -46,6 +46,7 @@ use PHPUnit\Framework\TestCase;
 final class SomeTest extends TestCase
 {
     /**
+     *
      * @ticket(foo)
      */
     #[\PHPUnit\Framework\Attributes\Ticket('first

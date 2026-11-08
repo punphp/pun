@@ -1,4 +1,4 @@
-//! `lint/laravel/no-app-array-access`, ported from rector-laravel 2.5.0's `CallOnAppArrayAccessToStandaloneAssignRector`
+//! `lint/laravel/no-app-array-access`, ported from rector-laravel 2.7.3's `CallOnAppArrayAccessToStandaloneAssignRector`
 //! (src/Rector/Assign).
 //!
 //! `$x = $app['validator']->method(...);`, where `$app` is an `Illuminate\Contracts\Foundation\Application` and the

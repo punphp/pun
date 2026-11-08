@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-expression`, ported from Rector 2.6.1's `RemoveDeadStmtRector`
+//! `lint/dead-code/no-unused-expression`, ported from Rector 2.8.4's `RemoveDeadStmtRector`
 //! (rules/DeadCode/Rector/Expression) and its `LivingCodeManipulator`.
 //!
 //! An expression statement whose value is thrown away goes, or keeps only the parts of it that may do something (the

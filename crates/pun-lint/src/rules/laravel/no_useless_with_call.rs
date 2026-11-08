@@ -1,4 +1,4 @@
-//! `lint/laravel/no-useless-with-call`, ported from rector-laravel 2.5.0's `RemoveRedundantWithCallsRector`
+//! `lint/laravel/no-useless-with-call`, ported from rector-laravel 2.7.3's `RemoveRedundantWithCallsRector`
 //! (src/Rector/FuncCall).
 //!
 //! `with($x)` becomes `$x`; so does `with($x, $y)` when `$y`'s type cannot be callable (`isCallable()->no()`): an

@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-contain`, ported from pest-plugin-rector's `UseToContainRector`: `expect(in_array($needle, $haystack))->toBeTrue()`
-//! becomes `expect($haystack)->toContain($needle)`, unless a third argument is `false`. The haystack's type must possibly
-//! be an array.
+//! becomes `expect($haystack)->toContain($needle)`, unless a third argument is `false`. The haystack's type must be
+//! an array.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -37,7 +37,7 @@ impl Rule for PreferToContain {
             |values| match values {
                 [needle, haystack, rest @ ..]
                     if !rest.first().is_some_and(|s| is_constant(s, "false"))
-                        && type_is(ctx, haystack, Is::Array) != Trinary::No =>
+                        && type_is(ctx, haystack, Is::Array) == Trinary::Yes =>
                 {
                     Some((*haystack, vec![*needle]))
                 }

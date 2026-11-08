@@ -1,14 +1,14 @@
-//! From a PHPStan type to the phpdoc type node Rector writes: `PHPStanStaticTypeMapper::mapToPHPStanPhpDocTypeNode()`
-//! with its type mappers (`ArrayTypeMapper`, `UnionTypeMapper`, `ObjectTypeMapper`, ...), and the steps before it
-//! that the docblock rules share: `TypeNormalizer::generalizeConstantTypes()`, `TypeFactory::uniquateTypes()`,
+//! From a PHPStan type to the phpdoc type node Rector writes: `StaticTypeMapper::mapPHPStanTypeToPHPStanPhpDocTypeNode()`
+//! (PHPStan's `Type::toPhpDocNode()` with Rector's `styleTypeNode()` on top, since Rector 2.8.4), and the steps before
+//! it that the docblock rules share: `TypeNormalizer::generalizeConstantTypes()`, `TypeFactory::uniquateTypes()`,
 //! `TypeHasher`, `ConstantArrayTypeGeneralizer` and `NodeDocblockTypeDecorator`'s checks.
 //!
-//! The types are pun-phpstan's port of PHPStan's (`TypeCombinator::union()` decides the order of a union's members,
-//! which the printed type keeps).
+//! The types are pun-phpstan's port of PHPStan's; a printed union has its members in `UnionTypeHelper::sortTypes()`'s
+//! order.
 
 use std::cell::Cell;
 
-use pun_phpstan::types::{Accessory, ConstArray, Level, ShapeBuilder, Type, intersect, mixed, to_phpdoc};
+use pun_phpstan::types::{Accessory, ConstArray, Level, ShapeBuilder, Type, intersect, mixed, sort_types, to_phpdoc, union};
 
 use super::type_node::TypeNode;
 
@@ -36,61 +36,114 @@ pub fn const_array_item_type(a: &ConstArray) -> Type {
     Type::ConstArray(Box::new(a.clone())).iterable_value_type()
 }
 
-/// `PHPStanStaticTypeMapper::mapToPHPStanPhpDocTypeNode()`.
+/// `StaticTypeMapper::mapPHPStanTypeToPHPStanPhpDocTypeNode()`: the type with its integers plain (explicit values and
+/// ranges are too detailed for a docblock), PHPStan's `toPhpDocNode()`, then Rector's docblock style.
 pub fn map_to_phpdoc(t: &Type) -> TypeNode {
-    Mapper { short_objects: false }.map(t)
+    style(Mapper { short_objects: false }.node(&plain_integers(t)))
+}
+
+/// `TypeTraverser::map()` of the integers to `IntegerType`, entering only unions and general arrays.
+fn plain_integers(t: &Type) -> Type {
+    plain_integers_changed(t).0
+}
+
+/// [`plain_integers`] and whether it replaced anything: every integer is a new `IntegerType`, and a union is only
+/// normalized again (`TypeCombinator::union()`, which merges `int[]|string[]`) when a member changed, so
+/// `list<int>|list<string>` (intersections, not entered) stays as it is.
+fn plain_integers_changed(t: &Type) -> (Type, bool) {
+    let members = |types: &[Type]| {
+        let mapped: Vec<(Type, bool)> = types.iter().map(plain_integers_changed).collect();
+        let changed = mapped.iter().any(|(_, c)| *c);
+        (changed, mapped.into_iter().map(|(t, _)| t).collect::<Vec<_>>())
+    };
+    match t {
+        Type::Int | Type::ConstInt(_) | Type::IntRange(..) => (Type::Int, true),
+        Type::Union(types) => match members(types) {
+            (true, mapped) => (union(mapped), true),
+            (false, _) => (t.clone(), false),
+        },
+        Type::Benevolent(types) => match members(types) {
+            (true, mapped) => match union(mapped) {
+                Type::Union(types) => (Type::Benevolent(types), true),
+                other => (other, true),
+            },
+            (false, _) => (t.clone(), false),
+        },
+        Type::Array(key, item) => {
+            let (key, k) = plain_integers_changed(key);
+            let (item, i) = plain_integers_changed(item);
+            if k || i { (Type::array(key, item), true) } else { (t.clone(), false) }
+        }
+        _ => (t.clone(), false),
+    }
 }
 
 struct Mapper {
-    /// Objects as `ShortenedObjectType`s, printed by their short name (`TypeNormalizer::resolveNameShortDocTypeNode`).
+    /// Objects as `ShortenedObjectType`s, printed by their short name (`RelativeNameNode`).
     short_objects: bool,
 }
 
 impl Mapper {
-    fn map(&self, t: &Type) -> TypeNode {
+    /// PHPStan's `Type::toPhpDocNode()`: a class name is a `FullyQualifiedNameNode` (`\Foo`), a union's members are in
+    /// `UnionTypeHelper::sortTypes()`'s order.
+    fn node(&self, t: &Type) -> TypeNode {
+        let implicit_mixed = |t: &Type| matches!(t, Type::Mixed { explicit: false });
         match t {
-            Type::Array(key, item) => self.array(key, item),
-            Type::Bool => TypeNode::ident("bool"),
-            Type::ConstBool(b) => TypeNode::ident(if *b { "true" } else { "false" }),
-            Type::ClassString(Some(inner)) => TypeNode::Generic {
-                base: "class-string".to_string(),
-                args: vec![match &**inner {
-                    Type::Object(name, args, _) if args.is_empty() => self.object_name(name),
-                    other => TypeNode::Raw(to_phpdoc(other)),
-                }],
+            Type::Union(types) | Type::Benevolent(types) => TypeNode::Union {
+                types: sort_types(types).iter().map(|t| self.node(t)).collect(),
+                wrapped: false,
             },
-            Type::ClassString(None) => TypeNode::ident("class-string"),
-            Type::Float => TypeNode::ident("float"),
-            Type::Int | Type::ConstInt(_) | Type::IntRange(..) => TypeNode::ident("int"),
-            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => {
-                TypeNode::ident("mixed")
-            }
-            Type::Never(_) => TypeNode::ident("never"),
-            Type::Null => TypeNode::ident("null"),
+            Type::Array(key, item) if implicit_mixed(key) && implicit_mixed(item) => TypeNode::ident("array"),
+            Type::Array(key, item) if implicit_mixed(key) => TypeNode::Generic {
+                base: "array".to_string(),
+                args: vec![self.node(item)],
+            },
+            Type::Array(key, item) => TypeNode::Generic {
+                base: "array".to_string(),
+                args: vec![self.node(key), self.node(item)],
+            },
             Type::Object(name, args, _) if args.is_empty() => self.object_name(name),
             Type::Object(name, args, _) => TypeNode::Generic {
-                base: format!("\\{name}"),
-                args: args
-                    .iter()
-                    .map(|a| TypeNode::Raw(to_phpdoc(&fully_qualified(a))))
-                    .collect(),
+                base: self.object_name(name).to_string(),
+                args: args.iter().map(|a| self.node(a)).collect(),
             },
-            Type::ObjectWithoutClass => TypeNode::ident("object"),
-            Type::String => TypeNode::ident("string"),
-            Type::Union(types) | Type::Benevolent(types) => self.union(types),
-            // `IntersectionTypeMapper` of objects: `IntersectionTypeNode`
-            Type::Intersection(types) if types.iter().all(|t| matches!(t, Type::Object(..))) => TypeNode::Raw(format!(
-                "({})",
-                types.iter().map(|t| self.map(t).to_string()).collect::<Vec<_>>().join(" & ")
-            )),
-            Type::Void => TypeNode::ident("void"),
-            Type::Intersection(_) => intersection(t),
-            other => TypeNode::Raw(to_phpdoc(other)),
+            Type::ClassString(Some(inner)) => TypeNode::Generic {
+                base: "class-string".to_string(),
+                args: vec![self.node(inner)],
+            },
+            // `list<T>`, `non-empty-list<T>`, `non-empty-array<K, T>`
+            Type::Intersection(types)
+                if let Some(Type::Array(key, item)) = types.iter().find(|t| matches!(t, Type::Array(..))) =>
+            {
+                let has = |a: Accessory| types.contains(&Type::Accessory(a));
+                let list = has(Accessory::List);
+                let non_empty = has(Accessory::NonEmptyArray);
+                if types.len() != 1 + usize::from(list) + usize::from(non_empty) {
+                    return self.fallback(t);
+                }
+                let base = match (list, non_empty) {
+                    (true, true) => "non-empty-list",
+                    (true, false) => "list",
+                    (false, true) => "non-empty-array",
+                    (false, false) => return self.fallback(t),
+                };
+                let args = if list || implicit_mixed(key) {
+                    if implicit_mixed(item) {
+                        return TypeNode::ident(base);
+                    }
+                    vec![self.node(item)]
+                } else {
+                    vec![self.node(key), self.node(item)]
+                };
+                TypeNode::Generic { base: base.to_string(), args }
+            }
+            Type::Intersection(types) if types.iter().all(|t| matches!(t, Type::Object(..))) => {
+                TypeNode::Intersection(sort_types(types).iter().map(|t| self.node(t)).collect())
+            }
+            _ => self.fallback(t),
         }
     }
 
-    /// `ObjectTypeMapper`: a plain `ObjectType` gets a leading backslash; a `ShortenedObjectType` prints its short
-    /// name.
     fn object_name(&self, name: &str) -> TypeNode {
         if self.short_objects {
             TypeNode::Identifier(name.rsplit('\\').next().unwrap_or(name).to_string())
@@ -99,157 +152,90 @@ impl Mapper {
         }
     }
 
-    /// `UnionTypeMapper::mapToPHPStanPhpDocTypeNode()`.
-    fn union(&self, types: &[Type]) -> TypeNode {
-        let mut nodes = Vec::new();
-        let mut existing: Vec<String> = Vec::new();
-        // (an array of `never` was generalized to an array of `mixed` before)
-        for t in types {
-            let mut node = self.map(t);
-            if let TypeNode::Array { inner, .. } = &mut node
-                && let TypeNode::Union { types: inner, .. } = &mut **inner
-            {
-                inner.retain(|n| {
-                    let printed = n.to_string();
-                    if existing.contains(&printed) {
-                        return false;
+    /// Any other type: PHPStan's printed node, its class names fully qualified.
+    fn fallback(&self, t: &Type) -> TypeNode {
+        let printed = to_phpdoc(&if self.short_objects { t.clone() } else { fully_qualified(t) });
+        pun_phpstan::phpdoc::parse(&printed)
+            .ok()
+            .and_then(|parsed| TypeNode::from_parsed(&parsed))
+            .unwrap_or(TypeNode::Raw(printed))
+    }
+}
+
+/// `StaticTypeMapper::styleTypeNode()`: a union's styled members flattened (repeats dropped), `array` as `mixed[]`,
+/// and an `array<A>` or `array<int, A>` of items only as `A[]` (`A[]|B[]` for a union of items).
+fn style(node: TypeNode) -> TypeNode {
+    match node {
+        TypeNode::Union { types, wrapped } => {
+            let mut styled: Vec<TypeNode> = Vec::new();
+            for t in types {
+                let members = match style(t) {
+                    TypeNode::Union { types, .. } => types,
+                    single => vec![single],
+                };
+                for member in members {
+                    let printed = member.to_string();
+                    match styled.iter_mut().find(|s| s.to_string() == printed) {
+                        Some(existing) => *existing = member,
+                        None => styled.push(member),
                     }
-                    existing.push(printed);
-                    true
-                });
-                if inner.is_empty() {
-                    continue;
                 }
             }
-            nodes.push(node);
+            TypeNode::Union { types: styled, wrapped }
         }
-        TypeNode::Union {
-            types: nodes,
-            wrapped: false,
-        }
-    }
-
-    /// `ArrayTypeMapper::mapToPHPStanPhpDocTypeNode()`.
-    fn array(&self, key: &Type, item: &Type) -> TypeNode {
-        let is_generic = is_generic_array_candidate(key, item);
-        if let Type::Union(types) | Type::Benevolent(types) = item
-            && !is_generic
-        {
-            return self.array_from_union(types);
-        }
-        if let Type::Array(inner_key, inner_item) = item
-            && is_generic_array_candidate(inner_key, inner_item)
-        {
-            return self.generic_array(key, item);
-        }
-        if is_generic {
-            return self.generic_array(key, item);
-        }
-        // (`array<int, mixed>` keeps its `int` key only when it is no maybe-list, which a general array by integer keys
-        // always is)
-        TypeNode::Array {
-            inner: Box::new(self.map(item)),
+        TypeNode::Intersection(types) => TypeNode::Intersection(types.into_iter().map(style).collect()),
+        TypeNode::Identifier(name) if name == "array" => TypeNode::Array {
+            inner: Box::new(TypeNode::ident("mixed")),
             generic_parent: false,
-        }
-    }
-
-    /// `createArrayTypeNodeFromUnionType()`: each member's node once (the members of a union print apart).
-    fn array_from_union(&self, types: &[Type]) -> TypeNode {
-        let mut nodes: Vec<TypeNode> = Vec::new();
-        for node in types.iter().map(|t| self.map(t)) {
-            if !nodes.contains(&node) {
-                nodes.push(node);
+        },
+        TypeNode::Generic { base, args } => {
+            let args: Vec<TypeNode> = args.into_iter().map(style).collect();
+            if base == "array" && is_array_of_items_only(&args) {
+                let array_of = |inner: TypeNode| TypeNode::Array {
+                    inner: Box::new(inner),
+                    generic_parent: false,
+                };
+                return match args.into_iter().last().expect("an item type") {
+                    TypeNode::Union { types, .. } => TypeNode::Union {
+                        types: types.into_iter().map(array_of).collect(),
+                        wrapped: false,
+                    },
+                    item => array_of(item),
+                };
             }
+            TypeNode::Generic { base, args }
         }
-        TypeNode::Array {
-            inner: Box::new(TypeNode::Union {
-                types: nodes,
-                wrapped: false,
-            }),
-            generic_parent: false,
-        }
-    }
-
-    /// `createGenericArrayType()` with the key (an array of class strings by a constant integer key, printed
-    /// without, is never mapped: the types are generalized first).
-    fn generic_array(&self, key: &Type, item: &Type) -> TypeNode {
-        let item_node = self.map(item);
-        let key_node = self.map(key);
-        let mut args = if matches!(item_node, TypeNode::Union { .. }) && is_pair_class_too_detailed(item) {
-            vec![key_node, self.map(&Type::ClassString(None))]
-        } else {
-            vec![key_node, item_node]
-        };
-        for arg in &mut args {
-            if let TypeNode::Array { generic_parent, .. } = arg {
-                *generic_parent = true;
-            }
-        }
-        TypeNode::Generic {
-            base: "array".to_string(),
-            args,
-        }
+        other => other,
     }
 }
 
-/// `IntersectionTypeMapper::mapToPHPStanPhpDocTypeNode()`: PHPStan's own node (`list<T>`, `non-empty-array<K, V>`),
-/// the names among the root's direct children fully qualified unless they are scalar, array or explicit `mixed`
-/// types (the traversal goes no deeper than a node that is not a name).
-fn intersection(t: &Type) -> TypeNode {
-    let printed = to_phpdoc(t);
-    let Some(mut node) = pun_phpstan::phpdoc::parse(&printed)
-        .ok()
-        .and_then(|parsed| TypeNode::from_parsed(&parsed))
-    else {
-        return TypeNode::Raw(printed);
+/// `isArrayOfItemsOnly()`: "array<A>" or "array<int, A>" can be printed as "A[]", unless that would lose the int key
+/// of nested arrays, or turn "array<A<X>|A<Y>>" into "A<X>[]|A<Y>[]".
+fn is_array_of_items_only(args: &[TypeNode]) -> bool {
+    if args.len() == 2 && args[0].to_string() != "int" {
+        return false;
+    }
+    let item = args.last().expect("an item type");
+    let items: Vec<&TypeNode> = match item {
+        TypeNode::Union { types, .. } => types.iter().collect(),
+        single => vec![single],
     };
-    if let TypeNode::Generic { args: children, .. } | TypeNode::Intersection(children) = &mut node {
-        children.iter_mut().for_each(qualify);
-    }
-    node
+    items.iter().all(|single| {
+        !(matches!(single, TypeNode::Generic { .. }) && items.len() > 1)
+            && !(args.len() == 2 && matches!(single, TypeNode::Array { .. } | TypeNode::Generic { .. }))
+    })
 }
 
-/// A name the intersection's traversal prefixes with `\`: no scalar, array or explicit `mixed` type.
-fn qualify(node: &mut TypeNode) {
-    let TypeNode::Identifier(name) = node else {
-        return;
-    };
-    let t = crate::rules::types::compare::mapper::scalar_string_to_type(name);
-    let scalar = Type::Union(vec![Type::Int, Type::Float, Type::String, Type::Bool]);
-    let kept = matches!(t, Type::Accessory(_) | Type::Mixed { explicit: true })
-        || pun_phpstan::types::is_super_type_of(&scalar, &t).yes()
-        || t.is_array().yes();
-    if !kept {
-        *name = format!("\\{}", name.trim_start_matches('\\'));
-    }
-}
-
-/// `ObjectTypeMapper`'s traversal for a generic object's arguments: classes fully qualified.
+/// Class names fully qualified, for PHPStan's printer (`FullyQualifiedNameNode`).
 fn fully_qualified(t: &Type) -> Type {
     match t {
-        Type::Object(name, args, _) if args.is_empty() => Type::Object(format!("\\{name}"), vec![], false),
+        Type::Object(name, args, generic) => {
+            Type::Object(format!("\\{name}"), args.iter().map(fully_qualified).collect(), *generic)
+        }
+        // `EnumCaseObjectType::toPhpDocNode()`: a `ConstFetchNode` of the fully qualified class (PHPStan 2.3)
+        Type::EnumCase(name, case) => Type::EnumCase(format!("\\{name}"), case.clone()),
         t => t.traverse(&fully_qualified),
     }
-}
-
-/// `ArrayTypeMapper::isGenericArrayCandidate()`.
-fn is_generic_array_candidate(key: &Type, item: &Type) -> bool {
-    if is_mixed(key) {
-        return false;
-    }
-    // (`isClassStringArrayType()` needs a constant integer key, which a generalized type never has)
-    // skip simple arrays, like "string[]", from converting to obvious "array<int, string>"
-    if key.is_integer().yes() && !item.is_array().yes() {
-        return false;
-    }
-    // a general array's keys are never a constant array
-    !matches!(key, Type::Never(_))
-}
-
-/// `isPairClassTooDetailed()`: a union of more than three generic class strings.
-fn is_pair_class_too_detailed(item: &Type) -> bool {
-    matches!(item, Type::Union(types) | Type::Benevolent(types)
-        if types.iter().all(|t| matches!(t, Type::ClassString(Some(_)))) && types.len() > 3)
 }
 
 /// `TypeNormalizer::generalizeConstantTypes()`.
@@ -326,11 +312,7 @@ fn generalize_union(types: &[Type]) -> Type {
     let mut unique = uniquate_types(&generalized);
     if unique.len() > 1 {
         let union = Type::Union(unique.clone());
-        let short = Mapper {
-            short_objects: true,
-        }
-        .map(&union)
-        .to_string();
+        let short = style(Mapper { short_objects: true }.node(&plain_integers(&union))).to_string();
         if short.len() > MAX_PRINTED_UNION_DOC_LENGTH && !avoid_printed_docblock_trimming(&union, &unique) {
             if let Some(array) = narrow_to_always_known_array_type(&unique) {
                 return array;
@@ -356,7 +338,10 @@ fn narrow_to_always_known_array_type(types: &[Type]) -> Option<Type> {
     if !types.iter().all(|t| t.is_array().yes()) {
         return None;
     }
-    Some(Type::array(shared_array_structure(types), mixed()))
+    match shared_array_structure(types) {
+        shared @ Type::Array(..) => Some(shared),
+        _ => None,
+    }
 }
 
 /// `ArrayTypeLeastCommonDenominatorResolver::sharedArrayStructure()`.
@@ -604,7 +589,8 @@ fn generalize_nested(a: &ConstArray, fresh: bool, nesting: &Cell<u32>) -> TypeNo
 
 /// `NodeDocblockTypeDecorator::createTypeNode()`: the generalized type's node, `mixed[]` for `mixed`.
 pub fn create_type_node(t: &Type) -> TypeNode {
-    let node = map_to_phpdoc(&generalize_constant_types(t));
+    // empty array default "[]" resolves to "never[]"; widen to "mixed[]" to keep the docblock useful
+    let node = map_to_phpdoc(&never_to_mixed(&generalize_constant_types(t)));
     if node == TypeNode::ident("mixed") {
         return TypeNode::Array {
             inner: Box::new(node),
@@ -614,14 +600,29 @@ pub fn create_type_node(t: &Type) -> TypeNode {
     node
 }
 
-/// `NodeDocblockTypeDecorator::isBareMixedType()`: `mixed`, or an array of nothing or of `mixed` by int keys.
+/// `TypeTraverser::map()` of each `NeverType` to `MixedType`.
+fn never_to_mixed(t: &Type) -> Type {
+    match t {
+        Type::Never(_) => Type::Mixed { explicit: false },
+        // `UnionType::traverse()` normalizes the union again only when a member changed
+        Type::Union(types) | Type::Benevolent(types)
+            if types.iter().all(|m| never_to_mixed(m) == *m) =>
+        {
+            t.clone()
+        }
+        t => t.traverse(&never_to_mixed),
+    }
+}
+
+/// `NodeDocblockTypeDecorator::isBareMixedType()`: `mixed`, or an array of nothing or of `mixed` by int or `mixed`
+/// keys.
 pub fn is_bare_mixed_type(t: &Type) -> bool {
     if is_mixed(t) {
         return true;
     }
     match generalize_constant_types(t) {
         Type::Array(key, item) => {
-            matches!(*item, Type::Never(_)) || (is_mixed(&item) && is_integer_type(&key))
+            matches!(*item, Type::Never(_)) || (is_mixed(&item) && (is_integer_type(&key) || is_mixed(&key)))
         }
         _ => false,
     }

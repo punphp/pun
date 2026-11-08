@@ -7,7 +7,7 @@ $d = (now())->startOfDay();
 -----
 <?php
 
-$a = today();
+$a = today('UTC');
 $b = today();
 $c = \now()->startOfDay;
 $d = today();

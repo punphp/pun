@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-foreach-key`, ported from Rector 2.6.1's `RemoveUnusedForeachKeyRector`
+//! `lint/dead-code/no-unused-foreach-key`, ported from Rector 2.8.4's `RemoveUnusedForeachKeyRector`
 //! (rules/DeadCode/Rector/Foreach_), with `ExprUsedInNodeAnalyzer` and `StmtsManipulator::isVariableUsedInNextStmt`.
 //!
 //! `foreach ($items as $key => $value)` becomes `foreach ($items as $value)` when neither the loop body nor the
@@ -88,7 +88,7 @@ impl Rule for NoUnusedForeachKey {
 ///
 /// Rector's doc printer, as its output shows: a tag takes the lines after it up to the next tag (phpdoc-parser reads
 /// them as its description), and goes from the end of the line before it (or from `/**` on the first line) to the
-/// end of its last text, with the empty lines between it and a next tag.
+/// end of its last text; the empty lines between it and a next tag stay (Rector 2.8.4's format-preserving printer).
 fn var_tag_edit(source: &str, tokens: &[Token], start: usize, name: &[u8]) -> Option<Edit> {
     let from = previous_token_end(source, tokens, start);
     let doc = tokens.iter().rfind(|t| {
@@ -140,11 +140,7 @@ fn var_tag_edit(source: &str, tokens: &[Token], start: usize, name: &[u8]) -> Op
         } else {
             lines[i].0 - 1
         };
-        let to = if j < n {
-            lines[j - 1].1
-        } else {
-            lines[last].2 + lines[last].3.len()
-        };
+        let to = lines[last].2 + lines[last].3.len();
         removed.push(Span::new(from, to));
         i = j;
     }

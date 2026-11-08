@@ -49,7 +49,7 @@ final class Box
 final class YieldTest extends TestCase
 {
     #[DataProvider('assignedProvider')]
-    public function testAssigned(int|\Probe\Box $given, $expected)
+    public function testAssigned(int|\Probe\Box $given, int|\Probe\Box $expected)
     {
     }
 

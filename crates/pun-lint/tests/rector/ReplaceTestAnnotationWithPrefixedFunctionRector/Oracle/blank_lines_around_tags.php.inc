@@ -44,6 +44,7 @@ final class Z2Test extends \PHPUnit\Framework\TestCase
 final class Z2Test extends \PHPUnit\Framework\TestCase
 {
     /**
+     *
      * @group fast
      */
     public function testA()

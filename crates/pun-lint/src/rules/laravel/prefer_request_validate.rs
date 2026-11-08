@@ -1,8 +1,8 @@
-//! `lint/laravel/prefer-request-validate`, ported from rector-laravel 2.5.0's `RequestStaticValidateToInjectRector`
+//! `lint/laravel/prefer-request-validate`, ported from rector-laravel 2.7.3's `RequestStaticValidateToInjectRector`
 //! (src/Rector/StaticCall).
 //!
-//! In a method of a class, a static call on the request (`Illuminate\Http\Request` or its global alias `Request`, so
-//! `Request::validate(...)`) becomes a call on the method's request parameter (`$request->validate(...)`), and so does
+//! In a method of a class, a static `validate()` call on the request (`Illuminate\Http\Request` or its global alias
+//! `Request`, so `Request::validate(...)`) becomes a call on the method's request parameter (`$request->validate(...)`), and so does
 //! the global `request()` helper: `request()` becomes `$request`, `request(...)` becomes `$request->input(...)`. The
 //! helper is replaced only in a method that implements or overrides none of an ancestor's (its prototype is its own).
 //! The parameter is the first one typed as a request; without one, `\Illuminate\Http\Request $request` is added last.
@@ -17,7 +17,7 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::member_name;
+use super::{is_name, member_name};
 use super::object_type::{is_hint_type, is_object_type};
 use super::print::kept_arguments;
 use crate::rules::rector_code_quality::named;
@@ -30,12 +30,10 @@ const REQUEST: &str = "Illuminate\\Http\\Request";
 
 pub struct PreferRequestValidate;
 
-/// A call to replace: the global `request()` helper, or a static call on the request; a static call whose method is
-/// not written as a name only makes Rector add the parameter.
+/// A call to replace: the global `request()` helper, or a static `validate()` call on the request.
 enum Found<'a> {
     Helper(&'a FunctionCall<'a>),
     Static(&'a StaticMethodCall<'a>, &'a [u8]),
-    Dynamic,
 }
 
 impl Rule for PreferRequestValidate {
@@ -77,12 +75,12 @@ impl Rule for PreferRequestValidate {
                 true
             }
             Node::StaticMethodCall(s)
-                if is_object_type(ctx, ancestors, s.class, REQUEST)
-                    || is_object_type(ctx, ancestors, s.class, "Request") =>
+                if member_name(&s.method).is_some_and(|n| is_name(n, "validate"))
+                    && (is_object_type(ctx, ancestors, s.class, REQUEST)
+                        || is_object_type(ctx, ancestors, s.class, "Request")) =>
             {
-                let name = member_name(&s.method);
-                found.push(name.map_or(Found::Dynamic, |name| Found::Static(s, name)));
-                name.is_some()
+                found.push(Found::Static(s, member_name(&s.method).unwrap()));
+                true
             }
             _ => false,
         });
@@ -128,7 +126,6 @@ impl Rule for PreferRequestValidate {
                         node_span(s).start,
                     ),
                 ),
-                Found::Dynamic => continue,
             });
         }
         if edits.is_empty() {

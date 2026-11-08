@@ -1,5 +1,5 @@
-//! Rector's own fixtures for the ported rules, copied verbatim from rector-src 2.6.1 (`.oracle/rector`,
-//! rules-tests/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector 2.6.1
+//! Rector's own fixtures for the ported rules, copied verbatim from rector-src 2.8.4 (`.oracle/rector`,
+//! rules-tests/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector 2.8.4
 //! (`.oracle/rector-bin`, the rule alone) wrote for them; Pun/ holds the cases where Pun keeps the meaning but not
 //! Rector's bytes, its expected output derived by hand. A fixture is `input -----\n expected`, or only the input when
 //! the rule must not change it (Rector's FixtureSplitter). Each one must pass as
@@ -19,7 +19,6 @@ use pun_lint::rules::NoRedundantPromotedAssign;
 use pun_lint::rules::NoUnreachableCode;
 use pun_lint::rules::PreferCompoundAssignment;
 use pun_lint::rules::PreferEarlyReturn;
-use pun_lint::rules::PreferEarlyReturnOfVariable;
 use pun_lint::rules::PreferEarlyReturnOverPreparedValue;
 use pun_lint::rules::PreferInArray;
 use pun_lint::rules::PreferNotInArray;
@@ -498,15 +497,6 @@ fn prepared_value_to_early_return() {
     run(&linter, "PreparedValueToEarlyReturnRector/Fixture");
     // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
     run(&linter, "PreparedValueToEarlyReturnRector/Oracle");
-}
-
-#[test]
-fn return_early_if_variable() {
-    // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    let linter = Linter::new(vec![Box::new(PreferEarlyReturnOfVariable)], 80400);
-    run(&linter, "ReturnEarlyIfVariableRector/Fixture");
-    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
-    run(&linter, "ReturnEarlyIfVariableRector/Oracle");
 }
 
 #[test]

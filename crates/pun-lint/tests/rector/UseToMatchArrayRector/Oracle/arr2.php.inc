@@ -5,10 +5,3 @@ test('a', function () {
     // second
     expect($a['y'])->toBe(2);
 });
------
-<?php
-
-test('a', function () {
-    // second
-    expect($a)->toMatchArray(['x' => 1, 'y' => 2]);
-});

@@ -32,7 +32,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    get_float, get_int, get_int_or_float, get_int_or_string, get_mixed_keyed_array, get_string,
+    get_float, get_int, get_int_or_float, get_int_or_string, get_mixed_keyed_array, get_object, get_string,
 };
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
@@ -41,7 +41,7 @@ use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_syntax::cst::{
-    Access, BinaryOperator, Call, ClassLikeConstantSelector, ClassLikeMemberSelector, Expression,
+    Access, BinaryOperator, Call, ClassLikeConstantSelector, Expression,
     FunctionCall, Node, Program, Sequence, Trivia, TriviaKind, UnaryPrefixOperator, Variable,
 };
 use mago_syntax::parser::parse_file;
@@ -49,14 +49,6 @@ use pun_problem::Span;
 use rayon::prelude::*;
 
 use crate::Context;
-
-/// PHP's built-in methods whose return type is only tentative, `class::method` lowercase
-/// (scripts/export-tentative-methods.php).
-static TENTATIVE: LazyLock<HashSet<&'static [u8]>> = LazyLock::new(|| {
-    (include_str!("../../../data/tentative-methods.txt").lines())
-        .map(str::as_bytes)
-        .collect()
-});
 
 /// Mago's prelude: the built-in classes, functions and constants.
 static PRELUDE: LazyLock<(CodebaseMetadata, SymbolReferences)> = LazyLock::new(|| {
@@ -118,9 +110,9 @@ pub fn project_codebase_autoloaded(
     autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Arc<ProjectCodebase> {
     let version = php_version_of(php_version);
-    let stubbed = || {
+    let stubbed = |native: bool| {
         let mut codebase = PRELUDE.0.clone();
-        stub_preg_match(&mut codebase, version);
+        stub_preg_match(&mut codebase, version, native);
         codebase
     };
     let kind = |path: &str| match is_vendor_path(path) {
@@ -129,7 +121,7 @@ pub fn project_codebase_autoloaded(
     };
     // the prelude is built while the files are scanned
     let ((mut codebase, mut documented), scans) = rayon::join(
-        || rayon::join(stubbed, stubbed),
+        || rayon::join(|| stubbed(true), || stubbed(false)),
         || {
             (files.par_iter())
                 .map(|(path, code)| Scanned::new(path, code, kind(path), version))
@@ -319,13 +311,16 @@ impl<'a> Lookup<'a> {
 
 /// `preg_match()` and `preg_match_all()` with the `$flags` and `$matches` of PHPStan's signatures
 /// (data/phpstan-preg-match.stub), whose conditional `@param-out` types `$matches` from the flags; Mago's prelude has
-/// one type for every flag. The rest stays the prelude's. Both codebases take it: PHPStan's native scope gives a
-/// by-reference argument the same out type (Rector's `isNonTypedFromParam` holds the variable typed). PHPStan's
+/// one type for every flag. The rest stays the prelude's. The `native` codebase takes
+/// data/phpstan-preg-match-native.stub instead: PHPStan 2.3's native scope gives a by-reference argument the
+/// parameter's signature-map type where that holds the out type, and `mixed` where it does not (so Rector's
+/// `isNonTypedFromParam` doubts a `$matches` written with `PREG_OFFSET_CAPTURE`). PHPStan's
 /// `PregMatchParameterOutTypeExtension` (an array shape for a pattern it parses) is not ported: the stub's type holds
 /// that shape.
-fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion) {
+fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion, native: bool) {
     const STUB: &str = include_str!("../../../data/phpstan-preg-match.stub");
-    let file = mago_file("phpstan/stubs/core.stub", STUB, FileType::Host);
+    const NATIVE: &str = include_str!("../../../data/phpstan-preg-match-native.stub");
+    let file = mago_file("phpstan/stubs/core.stub", if native { NATIVE } else { STUB }, FileType::Host);
     let arena = LocalArena::new();
     let program = parse_file(&arena, &file);
     let names = NameResolver::new(&arena).resolve(program);
@@ -454,7 +449,7 @@ impl Facts {
         out
     }
 
-    /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan 2.2.7 (as
+    /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan 2.3.5 (as
     /// Rector runs it, at the version Pinkary pins) does not know `$this`, so a value that comes from it has no type.
     pub fn native_type(&self, span: Span) -> Option<&TUnion> {
         let analysis = self.artifacts.get_or_init(|| self.analyse());
@@ -541,38 +536,6 @@ impl Facts {
                     .iter()
                     .any(|a| !matches!(a, TAtomic::Scalar(s) if s.is_float())));
         (error || wide).then_some(error)
-    }
-
-    /// Whether PHPStan's native type of calling `method` on a value of type `receiver` is `mixed` where Mago's is not:
-    /// the method is a built-in one whose return type is only tentative (`DateTime::getTimestamp()`), and the receiver
-    /// is not one built-in class, for which Rector's `getNativeType` takes the full type instead.
-    fn tentative_call(&self, receiver: &TUnion, method: &[u8]) -> bool {
-        let classes: Vec<&[u8]> = (receiver.types.iter())
-            .filter_map(|t| match t {
-                TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes()),
-                _ => None,
-            })
-            .collect();
-        if let [class] = classes[..]
-            && receiver.types.len() == 1
-            && is_builtin_class(class)
-        {
-            return false;
-        }
-        let method = method.to_ascii_lowercase();
-        classes.iter().any(|class| {
-            (self.codebase.get_class_like(class))
-                .and_then(|c| {
-                    c.declaring_method_ids
-                        .iter()
-                        .find(|(m, _)| m.as_bytes() == method)
-                })
-                .is_some_and(|(_, id)| {
-                    let declaring = id.get_class_name().as_bytes().to_ascii_lowercase();
-                    let key = [declaring.as_slice(), b"::", method.as_slice()].concat();
-                    TENTATIVE.contains(key.as_slice())
-                })
-        })
     }
 
     /// The text at `span` when it is in this file.
@@ -866,11 +829,11 @@ impl Facts {
                 })
             };
             any_node(Node::Program(program), &mut |n| {
-                let (object, span, method) = match n {
-                    Node::PropertyAccess(a) => (a.object, a.span(), None),
-                    Node::NullSafePropertyAccess(a) => (a.object, a.span(), None),
-                    Node::MethodCall(c) => (c.object, c.span(), Some(&c.method)),
-                    Node::NullSafeMethodCall(c) => (c.object, c.span(), Some(&c.method)),
+                let (object, span) = match n {
+                    Node::PropertyAccess(a) => (a.object, a.span()),
+                    Node::NullSafePropertyAccess(a) => (a.object, a.span()),
+                    Node::MethodCall(c) => (c.object, c.span()),
+                    Node::NullSafeMethodCall(c) => (c.object, c.span()),
                     _ => return,
                 };
                 // Mago types `(new X)` under the span inside the parentheses
@@ -879,11 +842,7 @@ impl Facts {
                 else {
                     return;
                 };
-                let tentative = || match method {
-                    Some(ClassLikeMemberSelector::Identifier(m)) => self.tentative_call(t, m.value),
-                    _ => false,
-                };
-                if unknown(t) || tentative() {
+                if unknown(t) {
                     untyped.insert((span.start.offset, span.end.offset));
                 }
             });
@@ -1047,6 +1006,101 @@ impl Facts {
                 } else {
                     untyped.insert(key(span));
                 }
+            }
+        }
+        // `isset($holder['key'])` specifies the holder `hasOffset('key')` in PHPStan's native scope too when the
+        // holder's full type, docblocks read, is not `mixed` (createIssetTruthyChainTypes() reads the chain's full
+        // types); Mago keeps a native `mixed` holder `mixed`. A later read of the holder that the documented analysis
+        // narrowed to an array with that key is an array.
+        let mut holders: Vec<(&[u8], mago_span::Span, Vec<u8>)> = Vec::new();
+        any_node(Node::Program(program), &mut |n| {
+            let Node::IssetConstruct(isset) = n else { return };
+            for value in isset.values.iter() {
+                let Expression::ArrayAccess(access) = crate::syntax::unparenthesize(value) else {
+                    continue;
+                };
+                let (Expression::Variable(Variable::Direct(v)), Expression::Literal(literal)) =
+                    (crate::syntax::unparenthesize(access.array), access.index)
+                else {
+                    continue;
+                };
+                let key = match literal {
+                    mago_syntax::cst::Literal::String(s) => s.value.map(<[u8]>::to_vec),
+                    mago_syntax::cst::Literal::Integer(i) => i.value.map(|i| i.to_string().into_bytes()),
+                    _ => None,
+                };
+                if let Some(key) = key {
+                    holders.push((v.name, v.span, key));
+                }
+            }
+        });
+        if let (false, Some(native), Some(documented)) =
+            (holders.is_empty(), artifacts.as_ref(), self.documented_artifacts())
+        {
+            let key = |s: mago_span::Span| (s.start.offset, s.end.offset);
+            let mixed = |t: &TUnion| t.types.iter().all(|a| matches!(a, TAtomic::Mixed(_)));
+            let has_key = |t: &TUnion, k: &[u8]| {
+                t.types.iter().any(|a| match a {
+                    TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(keyed)) => {
+                        (keyed.known_items.iter().flat_map(|i| i.iter())).any(|(name, (optional, _))| {
+                            !optional
+                                && match name {
+                                    mago_codex::ttype::atomic::array::key::ArrayKey::String(w) => w.as_bytes() == k,
+                                    mago_codex::ttype::atomic::array::key::ArrayKey::Integer(i) => {
+                                        i.to_string().as_bytes() == k
+                                    }
+                                    _ => false,
+                                }
+                        })
+                    }
+                    _ => false,
+                })
+            };
+            let within = |s: mago_span::Span| {
+                (functions.iter())
+                    .filter(|(a, b)| *a <= s.start.offset && s.end.offset <= *b)
+                    .min_by_key(|(a, b)| b - a)
+                    .copied()
+            };
+            let holders: Vec<_> = (holders.into_iter())
+                .filter(|(_, s, _)| documented.expression_types.get(&key(*s)).is_some_and(|t| !mixed(t)))
+                .collect();
+            any_node(Node::Program(program), &mut |n| {
+                let Node::DirectVariable(v) = n else { return };
+                let narrowed = holders.iter().any(|(name, s, k)| {
+                    *name == v.name
+                        && s.end.offset <= v.span.start.offset
+                        && within(*s) == within(v.span)
+                        && documented.expression_types.get(&key(v.span)).is_some_and(|t| has_key(t, k))
+                });
+                if narrowed
+                    && !declared.contains_key(&key(v.span))
+                    && native.expression_types.get(&key(v.span)).is_some_and(|t| mixed(t))
+                {
+                    declared.insert(key(v.span), get_mixed_keyed_array());
+                }
+            });
+        }
+        // `isset($holder->name)` specifies the holder `object&hasProperty(name)` in PHPStan's scope, the native one
+        // too; Mago keeps a `mixed` holder `mixed`. A read of a native-`mixed` holder where the isset holds (the
+        // statements after `if (! isset(...)) { <exit> }`, or the body of `if (isset(...))`) is an object.
+        if let Some(native) = artifacts.as_ref() {
+            let regions = isset_property_regions(program);
+            if !regions.is_empty() {
+                let key = |s: mago_span::Span| (s.start.offset, s.end.offset);
+                let mixed = |t: &TUnion| t.types.iter().all(|a| matches!(a, TAtomic::Mixed(_)));
+                any_node(Node::Program(program), &mut |n| {
+                    let Node::DirectVariable(v) = n else { return };
+                    let inside = regions.iter().any(|(name, from, to)| {
+                        *name == v.name && *from <= v.span.start.offset && v.span.end.offset <= *to
+                    });
+                    if inside
+                        && !declared.contains_key(&key(v.span))
+                        && native.expression_types.get(&key(v.span)).is_some_and(|t| mixed(t))
+                    {
+                        declared.insert(key(v.span), get_object());
+                    }
+                });
             }
         }
         Analysis {
@@ -1341,14 +1395,81 @@ pub(crate) fn is_builtin_function(function: &[u8]) -> bool {
     PRELUDE.0.get_function(function).is_some()
 }
 
-/// Whether `class::method` (a built-in class, the method's name in any case) declares only a tentative return type,
-/// which PHPStan's native reflection reads as an implicit `mixed`.
-pub(crate) fn is_tentative(class: &[u8], method: &[u8]) -> bool {
-    let key = [
-        class.to_ascii_lowercase(),
-        b"::".to_vec(),
-        method.to_ascii_lowercase(),
-    ]
-    .concat();
-    TENTATIVE.contains(key.as_slice())
+/// Where an `isset($variable->property)` holds, for each such variable: the statements of a block after an
+/// `if (! isset(...))` without `else` whose body ends in `return`, `throw`, `continue` or `break`, and the body of an
+/// `if (isset(...))` (the isset maybe one operand of `&&`). A region where the variable is assigned does not count.
+fn isset_property_regions<'a>(program: &'a Program<'a>) -> Vec<(&'a [u8], u32, u32)> {
+    use mago_syntax::cst::{Construct, IfBody, Statement};
+    fn property_holders<'a>(expr: &'a Expression<'a>, out: &mut Vec<&'a [u8]>) {
+        match crate::syntax::unparenthesize(expr) {
+            Expression::Construct(Construct::Isset(isset)) => {
+                for value in isset.values.iter() {
+                    if let Expression::Access(Access::Property(p)) = crate::syntax::unparenthesize(value)
+                        && let Expression::Variable(Variable::Direct(v)) = crate::syntax::unparenthesize(p.object)
+                    {
+                        out.push(v.name);
+                    }
+                }
+            }
+            Expression::Binary(b) if matches!(b.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)) => {
+                property_holders(b.lhs, out);
+                property_holders(b.rhs, out);
+            }
+            _ => {}
+        }
+    }
+    fn exits(statement: &Statement<'_>) -> bool {
+        match statement {
+            Statement::Block(block) => block.statements.last().is_some_and(exits),
+            Statement::Return(_) | Statement::Continue(_) | Statement::Break(_) => true,
+            Statement::Expression(e) => matches!(e.expression, Expression::Throw(_)),
+            _ => false,
+        }
+    }
+    let mut regions: Vec<(&'a [u8], u32, u32)> = Vec::new();
+    any_node(Node::Program(program), &mut |n| match n {
+        Node::If(r#if) => {
+            let IfBody::Statement(body) = &r#if.body else { return };
+            let mut holders = Vec::new();
+            property_holders(r#if.condition, &mut holders);
+            let span = body.statement.span();
+            regions.extend(holders.into_iter().map(|h| (h, span.start.offset, span.end.offset)));
+        }
+        Node::Block(block) => {
+            for (i, statement) in block.statements.iter().enumerate() {
+                let Statement::If(r#if) = statement else { continue };
+                let IfBody::Statement(body) = &r#if.body else { continue };
+                let Expression::UnaryPrefix(not) = crate::syntax::unparenthesize(r#if.condition) else {
+                    continue;
+                };
+                if !matches!(not.operator, UnaryPrefixOperator::Not(_))
+                    || !body.else_if_clauses.is_empty()
+                    || body.else_clause.is_some()
+                    || !exits(body.statement)
+                    || i + 1 == block.statements.len()
+                {
+                    continue;
+                }
+                let Expression::Construct(Construct::Isset(_)) = crate::syntax::unparenthesize(not.operand) else {
+                    continue;
+                };
+                let mut holders = Vec::new();
+                property_holders(not.operand, &mut holders);
+                let end = block.right_brace.start.offset;
+                regions.extend(holders.into_iter().map(|h| (h, r#if.span().end.offset, end)));
+            }
+        }
+        _ => {}
+    });
+    // an assignment of the variable inside its region undoes the narrowing
+    let mut assigned: Vec<(&[u8], u32)> = Vec::new();
+    any_node(Node::Program(program), &mut |n| {
+        if let Node::Assignment(a) = n
+            && let Expression::Variable(Variable::Direct(v)) = crate::syntax::unparenthesize(a.lhs)
+        {
+            assigned.push((v.name, v.span.start.offset));
+        }
+    });
+    regions.retain(|(name, from, to)| !assigned.iter().any(|(n, at)| n == name && from <= at && at < to));
+    regions
 }

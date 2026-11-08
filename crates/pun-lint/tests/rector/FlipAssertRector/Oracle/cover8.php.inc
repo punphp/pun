@@ -67,7 +67,7 @@ final class Cover8Test extends TestCase
             'message'
         );
         $expected = ['a' => 1];
-        $this->assertEquals($expected, ['a' => 1]);
+        $this->assertEquals(['a' => 1], $expected);
         $other = 'x';
         $this->assertEquals('x', $other);
         $this->assertEquals(0x7FFFFFFFFFFFFFFFFF, $a);

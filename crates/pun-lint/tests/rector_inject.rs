@@ -1,6 +1,6 @@
 //! The rules that inject a constructor dependency through Rector's `ClassDependencyManipulator`:
-//! `refactor/replace-static-with-method` (Rector 2.6.1's `StaticCallToMethodCallRector`) and
-//! `laravel/prefer-constructor-injection` (rector-laravel 2.5.0's `ArgumentFuncCallToMethodCallRector`).
+//! `refactor/replace-static-with-method` (Rector 2.8.4's `StaticCallToMethodCallRector`) and
+//! `laravel/prefer-constructor-injection` (rector-laravel 2.7.3's `ArgumentFuncCallToMethodCallRector`).
 //!
 //! Fixture/ holds the upstream fixtures verbatim (rector-src rules-tests/Transform/Rector/StaticCall/
 //! StaticCallToMethodCallRector with its Source/, rector-laravel tests/Rector/FuncCall/

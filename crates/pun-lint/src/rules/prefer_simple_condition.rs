@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-simple-condition`, ported from Rector 2.6.1's `SimplifyConditionsRector`
+//! `lint/complexity/prefer-simple-condition`, ported from Rector 2.8.4's `SimplifyConditionsRector`
 //! (rules/CodeQuality/Rector/Identical) with `AssignAndBinaryMap::getInversed` and
 //! `BinaryOpManipulator::matchFirstAndSecondConditionNode`.
 //!

@@ -1,7 +1,6 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
 mod add_csv_escape_argument;
-mod add_dynamic_properties;
 mod add_safe_strict_types;
 mod mago_helpers;
 mod mago_restricted;
@@ -35,7 +34,6 @@ mod prefer_class_name_constant;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod class_dependency;
-pub(crate) mod add_param_type_sprintf;
 mod class_method;
 mod laravel;
 mod pest;
@@ -167,7 +165,6 @@ mod no_useless_array_values;
 mod no_useless_cast;
 mod no_useless_catch;
 mod no_useless_condition;
-mod no_useless_constructor;
 mod no_useless_continue;
 mod no_useless_filter_var;
 mod no_useless_math;
@@ -199,7 +196,6 @@ mod prefer_coalesce_over_foreach;
 mod prefer_compound_assignment;
 mod prefer_early_continue;
 mod prefer_early_return;
-mod prefer_early_return_of_variable;
 mod prefer_early_return_over_prepared_value;
 mod prefer_empty_array_compare;
 mod prefer_empty_array_identical;
@@ -301,7 +297,6 @@ pub use no_always_true_if::NoAlwaysTrueIf;
 pub use no_always_true_instanceof::NoAlwaysTrueInstanceof;
 pub use no_always_true_instanceof_assert::NoAlwaysTrueInstanceofAssert;
 pub use add_datetime_property_type::AddDatetimePropertyType;
-pub use add_param_type_sprintf::AddParamTypeSprintf;
 pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
@@ -367,7 +362,6 @@ pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
 pub use no_null_tag_value::NoNullTagValue;
-pub use add_dynamic_properties::AddDynamicProperties;
 pub use add_safe_strict_types::AddSafeStrictTypes;
 pub use no_null_array_key::NoNullArrayKey;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
@@ -421,7 +415,6 @@ pub use no_useless_array_values::NoUselessArrayValues;
 pub use no_useless_cast::NoUselessCast;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
-pub use no_useless_constructor::NoUselessConstructor;
 pub use no_useless_continue::NoUselessContinue;
 pub use no_useless_filter_var::NoUselessFilterVar;
 pub use no_useless_math::NoUselessMath;
@@ -449,7 +442,6 @@ pub use prefer_coalesce_over_foreach::PreferCoalesceOverForeach;
 pub use prefer_compound_assignment::PreferCompoundAssignment;
 pub use prefer_early_continue::PreferEarlyContinue;
 pub use prefer_early_return::PreferEarlyReturn;
-pub use prefer_early_return_of_variable::PreferEarlyReturnOfVariable;
 pub use prefer_early_return_over_prepared_value::PreferEarlyReturnOverPreparedValue;
 pub use prefer_empty_array_compare::PreferEmptyArrayCompare;
 pub use prefer_empty_array_identical::PreferEmptyArrayIdentical;
@@ -551,7 +543,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoElseAfterReturn),
         Box::new(PreferEarlyReturn),
         Box::new(PreferEarlyReturnOverPreparedValue),
-        Box::new(PreferEarlyReturnOfVariable),
         Box::new(PreferInArray),
         Box::new(PreferNotInArray),
         Box::new(NoRedundantNullCheck),
@@ -602,7 +593,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoNullDebugInfo),
         Box::new(NoNullArrayKey),
         Box::new(AddSafeStrictTypes),
-        Box::new(AddDynamicProperties),
         Box::new(NoOutOfRangeChr),
         Box::new(PreferOrdFirstByte),
         Box::new(PreferArrayFirstLast),
@@ -676,12 +666,11 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireStrictFunctionCall),
         Box::new(PreferCatchNameFromType),
         Box::new(NoParentCallWithoutParent),
-        Box::new(NoUselessVariable::default()),
+        Box::new(NoUselessVariable),
         Box::new(NoNullDefaultArgument),
         Box::new(NoNullDefaultNamedArgument),
         Box::new(NoUnusedConstructorParam),
         Box::new(NoDeadCatch),
-        Box::new(AddParamTypeSprintf),
         Box::new(AddDatetimePropertyType),
         Box::new(PreferClassKeyword),
         Box::new(NoImplicitArrayCreation),
@@ -723,7 +712,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequirePhpdoc::default()),
         Box::new(NoEmptyMethod),
         Box::new(NoUnusedPrivateMethod),
-        Box::new(NoUselessConstructor),
         Box::new(NoUselessOverride),
         Box::new(NoRedundantDefaultArgument),
         Box::new(NoDynamicMethodCall),

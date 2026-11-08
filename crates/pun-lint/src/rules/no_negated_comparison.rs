@@ -1,4 +1,4 @@
-//! `lint/complexity/no-negated-comparison`, ported from Rector 2.6.1's `BooleanNotIdenticalToNotIdenticalRector`
+//! `lint/complexity/no-negated-comparison`, ported from Rector 2.8.4's `BooleanNotIdenticalToNotIdenticalRector`
 //! (rules/CodeQuality/Rector/Identical).
 //!
 //! `!($a === $b)` and `!$a === $b` become `$a !== $b` when both sides are `bool`.

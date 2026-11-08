@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-have-key`, ported from pest-plugin-rector's `UseToHaveKeyRector`: `expect(array_key_exists($other, $subject))->toBeTrue()` becomes `expect($subject)->toHaveKey($other)`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toHaveKey()`. The checked value's type must possibly be a array.
+//! `->not` before the matcher becomes `->not->toHaveKey()`. The checked value's type must be an array.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToHaveKey {
             "array_key_exists",
             "toHaveKey",
             |values| match values {
-                [other, subject] if !(type_is(ctx, subject, Is::Array) == Trinary::No) => {
+                [other, subject] if type_is(ctx, subject, Is::Array) == Trinary::Yes => {
                     Some((*subject, vec![*other]))
                 }
                 _ => None,

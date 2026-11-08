@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-sleep-facade`, ported from rector-laravel 2.5.0's `SleepFuncToSleepStaticCallRector`
+//! `lint/laravel/prefer-sleep-facade`, ported from rector-laravel 2.7.3's `SleepFuncToSleepStaticCallRector`
 //! (src/Rector/FuncCall).
 //!
 //! A `sleep(...)` or `usleep(...)` statement becomes `\Illuminate\Support\Sleep::sleep(...)` or `::usleep(...)`. A call

@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-be-empty`, ported from pest-plugin-rector's `UseToBeEmptyRector`: `->toHaveCount(0)` becomes
 //! `->toBeEmpty()`, `expect(count($x))->toBe(0)` (or `sizeof()`, or `toEqual()`) becomes `expect($x)->toBeEmpty()`,
-//! and `expect(empty($x))->toBeTrue()` becomes `expect($x)->toBeEmpty()` (`toBeFalse()` or a `->not` give
+//! and `expect(empty($x))->toBeTrue()`, when `$x` is known not to be an object, becomes `expect($x)->toBeEmpty()` (`toBeFalse()` or a `->not` give
 //! `->not->toBeEmpty()`; the new call is made on the holder, so what came between is dropped).
 
 use mago_syntax::cst::{Construct, Expression, Literal, MethodCall, Node, NodeKind};
@@ -8,7 +8,7 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::{
     func_call, has_not, identifier, is_expect_chain, is_name, matcher_subject, set_call_arguments,
-    subject_holder,
+    subject_holder, type_is, Is, Trinary,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -80,6 +80,9 @@ impl Rule for PreferToBeEmpty {
             let Expression::Construct(Construct::Empty(empty)) = unparenthesize(subject) else {
                 return;
             };
+            if type_is(ctx, empty.value, Is::Object) != Trinary::No {
+                return;
+            }
             let not = (identifier(&call.method) == Some(b"toBeFalse")) != has_not(call);
             let not = if not { "->not" } else { "" };
             let mut edits = holder.set_arguments(ctx, empty.value);

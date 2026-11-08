@@ -184,9 +184,9 @@ function f(T $t, ?T $n, int $i, string $s, bool $b, float $fl, array $a, Other $
     });
     tap($u, function (string|int $x) {
     });
-    tap(null, function ($x) {
+    tap(null, function (null $x) {
     });
-    tap(null, function ($x) {
+    tap(null, function (null $x) {
     });
     tap(new T, function (\App\T $x) {
     });

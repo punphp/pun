@@ -1,4 +1,4 @@
-//! The `types` group: rules ported from Rector 2.6.1's TypeDeclaration, TypeDeclarationDocblocks and CodeQuality type
+//! The `types` group: rules ported from Rector 2.8.4's TypeDeclaration, TypeDeclarationDocblocks and CodeQuality type
 //! rules (rules/...), each in its own file, and what they share.
 //!
 //! A rule that adds a return type writes `: type` right after the `)` of the parameters (or of a closure's `use`), where
@@ -46,7 +46,6 @@ mod add_param_type_data_provider;
 mod add_param_type_dim_fetch_key;
 mod add_param_type_iterable_method_call;
 mod add_param_type_method_call;
-mod add_param_type_parent_call;
 mod add_param_type_property;
 mod add_param_type_spl_fixed_array;
 mod add_param_type_variable_call;
@@ -137,7 +136,6 @@ pub use add_param_type_data_provider::AddParamTypeDataProvider;
 pub use add_param_type_dim_fetch_key::AddParamTypeDimFetchKey;
 pub use add_param_type_iterable_method_call::AddParamTypeIterableMethodCall;
 pub use add_param_type_method_call::AddParamTypeMethodCall;
-pub use add_param_type_parent_call::AddParamTypeParentCall;
 pub use add_param_type_property::AddParamTypeProperty;
 pub use add_param_type_spl_fixed_array::AddParamTypeSplFixedArray;
 pub use add_param_type_variable_call::AddParamTypeVariableCall;
@@ -249,7 +247,6 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddParamTypeSplFixedArray),
         Box::new(AddParamTypeDataProvider),
         Box::new(AddParamTypeMethodCall::default()),
-        Box::new(AddParamTypeParentCall),
         Box::new(AddParamTypeArrayMap),
         Box::new(AddParamTypeArrayReduce),
         Box::new(AddParamTypeArrowDimFetch),

@@ -1,4 +1,4 @@
-//! Rector 2.6.1's `SideEffectNodeDetector` and `PureFunctionDetector` (src/NodeAnalyzer, src/DeadCode) on Mago's tree.
+//! Rector 2.8.4's `SideEffectNodeDetector` and `PureFunctionDetector` (src/NodeAnalyzer, src/DeadCode) on Mago's tree.
 //! PHPStan's reflection is replaced by two lists from its reflection of PHP 8.4 (crates/pun-lint/data, written by
 //! scripts/gen-lint-data.py): the built-in functions without side effects and the built-in `Throwable` classes. A
 //! static call on a project's exception class therefore counts as a side effect here, where Rector, which reflects

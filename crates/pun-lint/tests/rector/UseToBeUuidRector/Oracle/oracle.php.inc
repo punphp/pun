@@ -34,7 +34,7 @@ test('a', function (string $s, int $i, $untyped) {
     expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $s))->toBe(true);
     expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $s))->toBe(1, 'x');
     expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $i))->toBe(1);
-    expect($untyped)->toBeUuid();
+    expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $untyped))->toBe(1);
     expect($s)->toBeUuid();
     expect($s)->toBeUuid();
     expect($s)->not->toBeUuid();

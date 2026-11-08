@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-default-argument`, ported from rector-laravel 2.5.0's `ApplyDefaultInsteadOfNullCoalesceRector`
+//! `lint/laravel/prefer-default-argument`, ported from rector-laravel 2.7.3's `ApplyDefaultInsteadOfNullCoalesceRector`
 //! (src/Rector/Coalesce) with its default list (`defaultLaravelMethods`): `config()`, `env()`, `data_get()` and
 //! `Illuminate\Support\Env::get()`.
 //!

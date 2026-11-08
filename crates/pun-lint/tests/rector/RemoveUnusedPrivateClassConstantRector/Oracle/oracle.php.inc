@@ -101,7 +101,6 @@ final class Holder extends Base
 {
     use LocalTrait;
     private const FROM_TRAIT = 2;
-    private const FROM_PARENT = 3;
     private const BY_NAME = 4;
     private const BY_THIS = 5;
     private const LOWER = 6;

@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-constructor-injection`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-constructor-injection`, ported from rector-laravel 2.7.3's
 //! `ArgumentFuncCallToMethodCallRector` (src/Rector/FuncCall): `items = [{ function = "view", class =
 //! "Illuminate\Contracts\View\Factory", method-if-args = "make", method-if-no-args = "..." }, { function = "config",
 //! class = "Illuminate\Contracts\Config\Repository", array-method = "set", non-array-method = "get" }]` (rector-laravel's

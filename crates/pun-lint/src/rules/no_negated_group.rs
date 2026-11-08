@@ -1,4 +1,4 @@
-//! `lint/complexity/no-negated-group`, ported from Rector 2.6.1's `SimplifyDeMorganBinaryRector`
+//! `lint/complexity/no-negated-group`, ported from Rector 2.8.4's `SimplifyDeMorganBinaryRector`
 //! (rules/CodeQuality/Rector/BooleanNot) with `BinaryOpManipulator::inverseBooleanOr`.
 //!
 //! `!($a > 20 || $b <= 50)` becomes `$a <= 20 && $b > 50` by de Morgan's law: each side is negated, a comparison by

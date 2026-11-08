@@ -27,12 +27,12 @@ namespace App;
 class A
 {
     /**
-     * @var callable(\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass $x):void
+     * @var callable<T of \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass>(\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass $x): void
      */
     public $d;
 
     /**
-     * @var \Closure(T):\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass
+     * @var \Closure<T of \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass>(T): \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass
      */
     public $e;
 

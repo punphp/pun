@@ -1,4 +1,4 @@
-//! `lint/types/add-method-void-return`, ported from Rector 2.6.1's `AddVoidReturnTypeWhereNoReturnRector`
+//! `lint/types/add-method-void-return`, ported from Rector 2.8.4's `AddVoidReturnTypeWhereNoReturnRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod).
 //!
 //! A method without a return type that returns no value and does not yield gets `: void`, unless a child class may

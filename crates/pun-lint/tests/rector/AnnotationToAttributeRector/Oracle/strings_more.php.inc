@@ -108,7 +108,9 @@ final class C4
 {
 }
 
-#[GenericAnnotation(x: 'a b')]
+/**
+ * @GenericAnnotation(x='a b')
+ */
 final class C5
 {
 }

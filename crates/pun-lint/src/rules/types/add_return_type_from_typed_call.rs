@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-typed-call`, ported from Rector 2.6.1's `ReturnTypeFromStrictTypedCallRector`
+//! `lint/types/add-return-type-from-typed-call`, ported from Rector 2.8.4's `ReturnTypeFromStrictTypedCallRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod, with `ReturnStrictTypeAnalyzer` and `TypeNodeUnwrapper`): a function or
 //! method whose returns are calls with a declared return type (at least one), class constants or literals gets
 //! their declared types: the one type, or, from PHP 8.0, their union.
@@ -15,7 +15,7 @@ use mago_syntax::cst::{Access, Call, Expression, Literal, Node, NodeKind};
 use super::declare::{return_declaration, text_order, union_order};
 use super::facts::{Facts, facts};
 use super::silent_void::Place;
-use super::type_factory::{Created, infer_returns, is_accessory_array};
+use super::type_factory::{Created, infer_returns};
 use super::{
     SCALAR_TYPES, add_return_type, class_scope, has_only_return_with_expr, returns_scoped, untyped,
 };
@@ -206,10 +206,6 @@ fn call_return(
                         let key = atomic_key(t);
                         order.iter().position(|o| o == key).unwrap_or(order.len())
                     });
-                }
-                // the signature resolved for the arguments is a list or a non-empty array (`array_values()`)
-                if types.iter().any(is_accessory_array) {
-                    return None;
                 }
                 (types, Vec::new())
             }

@@ -10,6 +10,7 @@ use pun_problem::Safety;
 use super::{
     AnyCall, NewArg, expr_name, is_test_case_call_named, old_args, renamed, rewrite_args, text,
 };
+use crate::rules::side_effect::any_node;
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -17,6 +18,28 @@ const RENAME: &[(&str, &str)] = &[
     ("assertFalse", "assertStringNotContainsString"),
     ("assertNotFalse", "assertStringContainsString"),
 ];
+
+/// Whether `program` has an `assertFalse(strpos($a, $b))` or `assertNotFalse(...)` call this rule rewrites, a change
+/// Rector reports.
+fn has_reported_change(program: Node<'_, '_>) -> bool {
+    any_node(program, &|n| {
+        let Some(call) = AnyCall::of(n) else {
+            return false;
+        };
+        if renamed(&call, RENAME).is_none() {
+            return false;
+        }
+        let Some(first) = call.args().first().copied() else {
+            return false;
+        };
+        let Expression::Call(Call::Function(strpos)) = unparenthesize(first.value()) else {
+            return false;
+        };
+        expr_name(unparenthesize(first.value())).is_some_and(|f| {
+            f.eq_ignore_ascii_case(b"strpos") || f.eq_ignore_ascii_case(b"stripos")
+        }) && strpos.argument_list.arguments.len() >= 2
+    })
+}
 
 pub struct PreferAssertStringContains;
 
@@ -60,7 +83,12 @@ impl Rule for PreferAssertStringContains {
             return;
         };
         let Expression::Call(Call::Function(strpos)) = value else {
-            // Upstream renames the call before it finds no function call to take the arguments from.
+            // Upstream renames the call before it finds no function call to take the arguments from, and returns
+            // null: Rector 2.8.4 prints a file only when a rule reported a change there, so the rename stays only
+            // beside a reported one (Pun counts this rule's own).
+            if !ancestors.first().is_some_and(|program| has_reported_change(*program)) {
+                return;
+            }
             out.push(Report::fixed(
                 call.span,
                 format!("Use `{name}()` instead of comparing `strpos()` with `false`."),

@@ -1,0 +1,40 @@
+<?php
+
+// preg_match() and preg_match_all() in PHPStan 2.3.5's native scope: `ArgumentsHandler` assigns a by-reference
+// argument the parameter's native type (for a built-in, its signature map entry: `string[]` for preg_match()'s
+// `&w_subpatterns=`, `array` for preg_match_all()'s, each nullable as optional) when that type holds what
+// phpstan-preg-match.stub writes back, and `mixed` otherwise.
+
+/**
+ * @template TFlags as int
+ *
+ * @param string $pattern
+ * @param string $subject
+ * @param mixed $matches
+ * @param TFlags $flags
+ * @param-out array|null $matches
+ * @return int|false
+ */
+function preg_match_all($pattern, $subject, &$matches = [], int $flags = 1, int $offset = 0) {}
+
+/**
+ * @template TFlags as int-mask<0, 256, 512>
+ *
+ * @param string $pattern
+ * @param string $subject
+ * @param mixed $matches
+ * @param TFlags $flags
+ * @param-out (
+ *             TFlags is 256
+ *             ? mixed
+ *             : (TFlags is 512
+ *                 ? mixed
+ *                 : (TFlags is 768
+ *                     ? mixed
+ *                     : array<array-key, string>|null
+ *                     )
+ *                 )
+ *             ) $matches
+ * @return 1|0|false
+ */
+function preg_match($pattern, $subject, &$matches = [], int $flags = 0, int $offset = 0) {}

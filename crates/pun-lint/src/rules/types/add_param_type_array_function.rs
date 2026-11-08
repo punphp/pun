@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-array-function`, ported from Rector 2.6.1's `AddArrayFunctionClosureParamTypeRector`
+//! `lint/types/add-param-type-array-function`, ported from Rector 2.8.4's `AddArrayFunctionClosureParamTypeRector`
 //! (rules/TypeDeclaration/Rector/FuncCall) with `NativeFuncCallPositions`: in a call of `array_walk()`,
 //! `array_map()`, `usort()` or `array_filter()` with two arguments, a closure or arrow function with one untyped
 //! parameter gets the array's item type.

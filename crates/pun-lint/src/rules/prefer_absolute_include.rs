@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-absolute-include`, ported from Rector 2.6.1's `AbsolutizeRequireAndIncludePathRector`
+//! `lint/complexity/prefer-absolute-include`, ported from Rector 2.8.4's `AbsolutizeRequireAndIncludePathRector`
 //! (rules/CodeQuality/Rector/Include_).
 //!
 //! `require 'autoload.php'` becomes `require __DIR__ . '/autoload.php'`, and `require './a.php'` becomes

@@ -13,8 +13,8 @@ test('user', function () {
 <?php
 
 test('user', function () {
-    expect($user->name)->toHaveLength(7)
-        ->and($roles)->toHaveCount(3)
+    expect(strlen($user->name))->toBe(7)
+        ->and(count($roles))->toBe(3)
         ->and(in_array('admin', $roles))->toBeTrue()
         ->and($user->id > 0)->toBeTrue()
         ->and($user->created_at instanceof DateTimeInterface)->toBeTrue();

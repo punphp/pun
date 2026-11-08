@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-method-call`, ported from Rector 2.6.1's `AddMethodCallBasedStrictParamTypeRector`
+//! `lint/types/add-param-type-method-call`, ported from Rector 2.8.4's `AddMethodCallBasedStrictParamTypeRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) with `PrivateMethodFlagger`, `LocalMethodCallFinder`,
 //! `CallTypesResolver::resolveStrictTypesFromCalls` and `ClassMethodParamTypeCompleter`: an untyped parameter of a
 //! method only its own class can call (private, or protected or final in a final class that extends and implements
@@ -296,7 +296,7 @@ fn accepts(facts: &Facts, types: &[TAtomic], default: &Expression<'_>) -> bool {
 }
 
 /// Call `f` on every node under `node`, closures and nested classes included (`BetterNodeFinder::find`).
-fn walk<'ast, 'arena>(node: Node<'ast, 'arena>, f: &mut dyn FnMut(Node<'ast, 'arena>)) {
+pub(crate) fn walk<'ast, 'arena>(node: Node<'ast, 'arena>, f: &mut dyn FnMut(Node<'ast, 'arena>)) {
     node.visit_children(|child| {
         f(child);
         walk(child, f);
@@ -320,7 +320,7 @@ fn literal_key(index: &Expression<'_>) -> Option<ArrayKey> {
 }
 
 /// Whether `expr` reads a key an array shape may lack (`$shape['dirname']` of `pathinfo()`): PHPStan's native type of
-/// it is none Rector maps (checked with Rector 2.6.1), where Mago adds `null`, unless the shape has the key.
+/// it is none Rector maps (checked with Rector 2.8.4), where Mago adds `null`, unless the shape has the key.
 fn is_optional_offset(facts: &Facts, expr: &Expression<'_>) -> bool {
     let Expression::ArrayAccess(access) = unparenthesize(expr) else {
         return false;

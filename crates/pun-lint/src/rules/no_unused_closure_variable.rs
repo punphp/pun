@@ -1,4 +1,4 @@
-//! `lint/functions/no-unused-closure-variable`, ported from Rector 2.6.1's `RemoveUnusedClosureVariableUseRector`
+//! `lint/functions/no-unused-closure-variable`, ported from Rector 2.8.4's `RemoveUnusedClosureVariableUseRector`
 //! (rules/DeadCode/Rector/Closure), with `ExprUsedInNodeAnalyzer`.
 //!
 //! A variable in a closure's `use (...)` that the closure's body never uses is removed, and the `use` clause with

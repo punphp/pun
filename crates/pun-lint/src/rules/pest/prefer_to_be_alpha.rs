@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-alpha`, ported from pest-plugin-rector's `UseToBeAlphaRector`: `expect(ctype_alpha($value))->toBeTrue()` becomes `expect($value)->toBeAlpha()`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toBeAlpha()`. The checked value's type must possibly be a string.
+//! `->not` before the matcher becomes `->not->toBeAlpha()`. The checked value's type must be a string.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToBeAlpha {
             "ctype_alpha",
             "toBeAlpha",
             |values| match values {
-                [value] if !(type_is(ctx, value, Is::String) == Trinary::No) => {
+                [value] if type_is(ctx, value, Is::String) == Trinary::Yes => {
                     Some((*value, vec![]))
                 }
                 _ => None,

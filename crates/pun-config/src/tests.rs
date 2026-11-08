@@ -313,7 +313,6 @@ fn lint_sets() {
         ("lint/control-flow/no-useless-else", Some("no_useless_else")),
         ("lint/style/prefer-early-continue", None),
         ("lint/style/prefer-early-return", None),
-        ("lint/style/prefer-early-return-of-variable", None),
         ("lint/style/prefer-early-return-over-prepared-value", None),
     ];
     assert_eq!(
@@ -323,21 +322,23 @@ fn lint_sets() {
             ..lr(id, Level::Error, true, Value::Null, fixer)
         })
     );
-    // `types` has 79 rules, four of them Laravel's: those need laravel/framework in composer.lock.
+    // `types` has 77 ported rules, four of them Laravel's: those need laravel/framework in composer.lock (and the
+    // rules Rector 2.8.4 added to it, not ported yet, are in no set).
     let types = "[lint]\nsets = [\"types\"]\n";
     let l = lint(&[("pun.toml", types)]);
-    assert_eq!((l.rules.len(), l.ecosystems.len()), (75, 0));
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (73, 0));
     assert!(!ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
+    assert!(!ids(&l.rules).contains(&"lint/types/no-phpstan-phpdoc-tag"));
     let l = lint(&[("pun.toml", types), ("composer.lock", LARAVEL_LOCK)]);
     assert_eq!(
         (l.rules.len(), l.ecosystems),
-        (79, vec![crate::Ecosystem::Laravel])
+        (77, vec![crate::Ecosystem::Laravel])
     );
     assert!(ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
     // The laravel group switched off.
     let off = format!("{types}[lint.groups]\nlaravel = \"off\"\n");
     let l = lint(&[("pun.toml", &off), ("composer.lock", LARAVEL_LOCK)]);
-    assert_eq!((l.rules.len(), l.ecosystems.len()), (75, 0));
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (73, 0));
     // `modernize` has 37 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
     // 1 php-8.6 rule are off.
     let modernize = "[lint]\nsets = [\"modernize\"]\n";
@@ -351,9 +352,9 @@ fn lint_sets() {
     )]);
     assert_eq!(l.rules.len(), 36);
     assert!(ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
-    // Two sets: the union, 6 + 75 (no rule is in both).
+    // Two sets: the union, 5 + 73 (no rule is in both).
     let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\", \"types\"]\n")]);
-    assert_eq!(l.rules.len(), 81);
+    assert_eq!(l.rules.len(), 78);
 }
 
 /// A group's level covers every rule of the group, whether a set has it or not; a rule's own line wins.
@@ -365,9 +366,9 @@ fn lint_groups() {
             .lint
     };
     let level = |l: &Lint, id: &str| l.rules.iter().find(|r| r.id == id).map(|r| r.level);
-    // 92 style rules at warn, the set's two control-flow rules at error.
+    // 91 style rules at warn, the set's two control-flow rules at error.
     let l = lint("[lint]\nsets = [\"early-return\"]\n[lint.groups]\nstyle = \"warn\"\n");
-    assert_eq!(l.rules.len(), 94);
+    assert_eq!(l.rules.len(), 93);
     assert!(
         l.rules
             .iter()
@@ -395,7 +396,7 @@ fn lint_groups() {
     let l = lint(
         "[lint]\nsets = [\"early-return\"]\n[lint.rules]\n\"control-flow/no-useless-else\" = \"off\"\n",
     );
-    assert_eq!(l.rules.len(), 5);
+    assert_eq!(l.rules.len(), 4);
     // A rule no fixer runs keeps its options as written (they are Pun's own names, not PHP-CS-Fixer's).
     let l =
         lint("[lint.rules]\n\"style/prefer-early-return\" = { level = \"warn\", max-depth = 2 }\n");

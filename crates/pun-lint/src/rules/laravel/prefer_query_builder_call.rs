@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-query-builder-call`, ported from rector-laravel 2.5.0's `EloquentMagicMethodToQueryBuilderRector`
+//! `lint/laravel/prefer-query-builder-call`, ported from rector-laravel 2.7.3's `EloquentMagicMethodToQueryBuilderRector`
 //! (src/Rector/StaticCall).
 //!
 //! A static call on an Eloquent model that `__callStatic` forwards to the query builder (`User::where(...)`) becomes a

@@ -1,4 +1,4 @@
-//! `lint/functions/no-extra-arguments`, ported from Rector 2.6.1's `RemoveExtraParametersRector`
+//! `lint/functions/no-extra-arguments`, ported from Rector 2.8.4's `RemoveExtraParametersRector`
 //! (rules/Php71/Rector/FuncCall).
 //!
 //! A call with more arguments than its function or method has parameters loses the extra ones, as php-parser's

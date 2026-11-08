@@ -1,4 +1,4 @@
-//! What the three `PrivatizeFinalClass*Rector` ports share (Rector 2.6.1, rules/Privatization): a `protected` member
+//! What the three `PrivatizeFinalClass*Rector` ports share (Rector 2.8.4, rules/Privatization): a `protected` member
 //! of a `final` class becomes `private`.
 //!
 //! Rector asks PHPStan's reflection whether a parent class, an interface or a trait declares or uses the member, and
@@ -41,7 +41,8 @@ pub fn is_protected(modifiers: &Sequence<'_, Modifier<'_>>) -> bool {
 }
 
 /// `VisibilityManipulator::makePrivate()` as php-parser prints a changed `flags`: the modifiers again in its order
-/// (`pModifiers`), each followed by a space, in place of the old ones and the blanks after them.
+/// (`pModifiers`), each followed by a space, in place of the old ones and the blanks after them. `final` goes too
+/// (only a constructor may be both, and no caller passes one).
 pub fn make_private(source: &str, modifiers: &Sequence<'_, Modifier<'_>>) -> Edit {
     let start = node_span(modifiers.first().expect("a protected member has modifiers")).start;
     let end = node_span(modifiers.last().expect("a protected member has modifiers")).end;
@@ -49,6 +50,8 @@ pub fn make_private(source: &str, modifiers: &Sequence<'_, Modifier<'_>>) -> Edi
     let next = end + (rest.len() - rest.trim_start().len());
     Edit::new(
         Span::new(start, next),
-        modifiers_text(modifiers).replacen("protected ", "private ", 1),
+        modifiers_text(modifiers)
+            .replacen("final ", "", 1)
+            .replacen("protected ", "private ", 1),
     )
 }

@@ -1,4 +1,4 @@
-//! `lint/types/add-return-phpdoc-json-array`, ported from Rector 2.6.1's `AddReturnDocblockForJsonArrayRector`
+//! `lint/types/add-return-phpdoc-json-array`, ported from Rector 2.8.4's `AddReturnDocblockForJsonArrayRector`
 //! (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a function or method whose one `return` returns
 //! `json_decode($json, true)` (or Nette's `Json::decode($json, true)`) gets `@return array<string, mixed>`.
 
@@ -59,7 +59,9 @@ impl Rule for AddReturnPhpdocJsonArray {
         if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
             return;
         }
-        change_return_type(&mut info, &Type::array(Type::String, mixed()));
+        if !change_return_type(&mut info, &Type::array(Type::String, mixed())) {
+            return;
+        }
         out.extend(doc_report(
             f.name,
             "Add the `@return array<string, mixed>` type of the decoded JSON.",

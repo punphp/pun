@@ -27,7 +27,7 @@ final class SomeClass
     private array $items = [];
 
     /**
-     * @return array<int, callable(int):mixed>
+     * @return array<int, callable(int): mixed>
      */
     public function getItems(): array
     {

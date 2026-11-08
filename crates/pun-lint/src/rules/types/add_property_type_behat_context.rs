@@ -1,4 +1,4 @@
-//! `lint/types/add-property-type-behat-context`, ported from Rector 2.6.1's `TypedStaticPropertyInBehatContextRector`
+//! `lint/types/add-property-type-behat-context`, ported from Rector 2.8.4's `TypedStaticPropertyInBehatContextRector`
 //! (rules/TypeDeclaration/Rector/Class_): in a class that extends or implements something and is a
 //! `Behat\Behat\Context\Context`, an untyped static property without a default (or with `null`) whose `@var` names a
 //! class gets that class, nullable, and a `null` default; the `@var` goes when it says no more.

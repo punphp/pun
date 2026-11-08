@@ -1,4 +1,4 @@
-//! `lint/laravel/no-negated-blank-filled`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/no-negated-blank-filled`, ported from rector-laravel 2.7.3's
 //! `NotFilledBlankFuncCallToBlankFilledFuncCallRector` (src/Rector/FuncCall).
 //!
 //! `!filled($x)` becomes `blank($x)`, and `!blank($x)` becomes `filled($x)`.

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-mirror-assignment`, ported from Rector 2.6.1's `SimplifyMirrorAssignRector`
+//! `lint/dead-code/no-mirror-assignment`, ported from Rector 2.8.4's `SimplifyMirrorAssignRector`
 //! (rules/DeadCode/Rector/Expression).
 //!
 //! A statement that assigns a variable (or any other place) to itself, `$a = $a;`, does nothing and is removed.

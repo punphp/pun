@@ -1,4 +1,4 @@
-//! `lint/php-8.5/prefer-ord-first-byte`, ported from Rector 2.6.1's `OrdSingleByteRector` (rules/Php85/Rector/FuncCall).
+//! `lint/php-8.5/prefer-ord-first-byte`, ported from Rector 2.8.4's `OrdSingleByteRector` (rules/Php85/Rector/FuncCall).
 //!
 //! PHP 8.5 deprecates passing `ord()` more than one byte. A string argument becomes `$str[0]`; an int literal of
 //! several digits becomes its first digit. Rector asks PHPStan for the argument's native type and value; Pun knows

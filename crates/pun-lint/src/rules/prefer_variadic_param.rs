@@ -1,4 +1,4 @@
-//! `lint/style/prefer-variadic-param`, ported from Rector 2.6.1's `FuncGetArgsToVariadicParamRector`
+//! `lint/style/prefer-variadic-param`, ported from Rector 2.8.4's `FuncGetArgsToVariadicParamRector`
 //! (rules/CodingStyle/Rector/ClassMethod).
 //!
 //! In a function, method or closure without parameters, a statement `$args = func_get_args();` among its own
@@ -51,7 +51,7 @@ impl Rule for PreferVariadicParam {
                 Expression::Variable(Variable::Direct(v)) => {
                     (v.name, remove(ctx, &list, &[index]))
                 }
-                // php-parser's `${'args'}`: Rector 2.6.1 fails on its null name.
+                // php-parser's `${'args'}`: Rector 2.8.4 fails on its null name.
                 Expression::Variable(_) => return,
                 _ => (
                     &b"$args"[..],

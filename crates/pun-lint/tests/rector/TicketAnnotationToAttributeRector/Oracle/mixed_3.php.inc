@@ -32,8 +32,8 @@ namespace App\Tests;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author me
  *
+ * @author me
  */
 #[\PHPUnit\Framework\Attributes\Ticket('1
 Some text.')]

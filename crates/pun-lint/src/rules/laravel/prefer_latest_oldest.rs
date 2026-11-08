@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-latest-oldest`, ported from rector-laravel 2.5.0's `EloquentOrderByToLatestOrOldestRector`
+//! `lint/laravel/prefer-latest-oldest`, ported from rector-laravel 2.7.3's `EloquentOrderByToLatestOrOldestRector`
 //! (src/Rector/MethodCall).
 //!
 //! On a query builder (`Illuminate\Contracts\Database\Query\Builder`), `orderBy($column)` and

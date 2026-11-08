@@ -6,7 +6,8 @@
 //! give, the arrays of its top-level `return [...]`, and the arrays in a variable such a `return` lists that a
 //! top-level `$x = [...]` gives) get string keys named after the test's parameters, by position: a string key is
 //! renamed, and where any string key is there a key is added to a value without one (`String_::fromString`, written
-//! double-quoted). A data set that already has every parameter name among its string keys is left alone. Rector
+//! double-quoted). A data set that already has every parameter name among its string keys, or whose string keys are
+//! all parameter names (optional parameters left out), is left alone. Rector
 //! changes the tree as it goes, so a provider shared by several tests sees the keys the tests before gave it. Tests
 //! that disagree on a shared provider's names make Rector rename the keys back and forth on every run; Pun's fix loop
 //! then stops without converging, as Rector never settles either.
@@ -105,6 +106,10 @@ impl Rule for PreferNamedDataProviderKeys {
                         })
                         .collect();
                     if names.iter().all(|n| string_keys.contains(&n)) {
+                        continue;
+                    }
+                    // Skip already named arguments - optional parameters can be left out
+                    if !string_keys.is_empty() && string_keys.iter().all(|k| names.contains(k)) {
                         continue;
                     }
                     let need_all = !string_keys.is_empty();

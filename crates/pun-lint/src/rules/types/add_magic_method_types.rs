@@ -1,4 +1,4 @@
-//! `lint/types/add-magic-method-return-type`, ported from Rector 2.6.1's `KnownMagicClassMethodTypeRector`
+//! `lint/types/add-magic-method-return-type`, ported from Rector 2.8.4's `KnownMagicClassMethodTypeRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): the parameters of `__call`, `__callStatic`, `__get`, `__set`, `__isset`
 //! and `__unset` get their known types (`string` for the name, `array` for `__call`'s arguments, `mixed` for
 //! `__set`'s value), and `__get` returns `mixed`, in a class whose parents do not declare the method.

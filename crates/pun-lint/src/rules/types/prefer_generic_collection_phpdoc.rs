@@ -1,4 +1,4 @@
-//! `lint/types/prefer-generic-collection-phpdoc`, ported from Rector 2.6.1's
+//! `lint/types/prefer-generic-collection-phpdoc`, ported from Rector 2.8.4's
 //! `NarrowArrayCollectionUnionReturnDocblockRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a
 //! `@return Item[]|Collection` (or `ArrayCollection`) becomes `@return Collection<int, Item>`.
 

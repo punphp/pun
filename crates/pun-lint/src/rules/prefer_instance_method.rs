@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-instance-method`, ported from Rector 2.6.1's `LocallyCalledStaticMethodToNonStaticRector`
+//! `lint/complexity/prefer-instance-method`, ported from Rector 2.8.4's `LocallyCalledStaticMethodToNonStaticRector`
 //! (rules/CodeQuality/Rector/ClassMethod), with `ClassMethodVisibilityGuard::isClassMethodVisibilityGuardedByParent`
 //! and `ArrayCallableMethodMatcher` (class_method.rs).
 //!

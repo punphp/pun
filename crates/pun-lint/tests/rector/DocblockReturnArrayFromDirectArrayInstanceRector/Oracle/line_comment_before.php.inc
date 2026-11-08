@@ -15,7 +15,7 @@ class LineCommentBefore
 {
     // comment
     /**
-     * @return array<string, null|int>
+     * @return array<string, int|null>
      */
     public function run(): array
     {

@@ -1,4 +1,4 @@
-//! `lint/types/add-property-type-setter-getter`, ported from Rector 2.6.1's `PropertyTypeFromStrictSetterGetterRector`
+//! `lint/types/add-property-type-setter-getter`, ported from Rector 2.8.4's `PropertyTypeFromStrictSetterGetterRector`
 //! (rules/TypeDeclaration/Rector/Class_) with `GetterTypeDeclarationPropertyTypeInferer`,
 //! `SetterTypeDeclarationPropertyTypeInferer` and `ClassMethodAndPropertyAnalyzer`: an untyped private property gets
 //! the type its getter declares and its setter takes.

@@ -1,4 +1,4 @@
-//! `lint/php-8.6/prefer-clamp`, ported from Rector 2.6.1's `MinMaxToClampRector` (rules/Php86/Rector/FuncCall).
+//! `lint/php-8.6/prefer-clamp`, ported from Rector 2.8.4's `MinMaxToClampRector` (rules/Php86/Rector/FuncCall).
 //!
 //! `max($min, min($max, $value))`, `min($max, max($min, $value))` and their argument orders become
 //! `clamp($value, $min, $max)`. The inner call must have one known bound and one value; Rector asks PHPStan whether a

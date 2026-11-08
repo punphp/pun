@@ -60,9 +60,9 @@ class BaseType {}
 
 final class GetterUnionBoundaries extends BaseType
 {
-    private ?false $nullableFalse = null;
-    private $objectAndClass;
-    private $objectAndParent;
+    private ?bool $nullableFalse = null;
+    private object $objectAndClass;
+    private object $objectAndParent;
     private $callable;
 
     public function getNullableFalse(): false|null

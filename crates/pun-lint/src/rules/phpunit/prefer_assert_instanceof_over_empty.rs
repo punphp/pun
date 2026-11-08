@@ -2,8 +2,8 @@
 //! `AssertEmptyNullableObjectToAssertInstanceofRector` (rules/CodeQuality/Rector/MethodCall).
 //!
 //! In a test class, `assertNotEmpty($x)` and `assertNotNull($x)` on a nullable object (a union of one class and
-//! `null`) become `assertInstanceOf(\X::class, $x)`; `assertEmpty` and `assertNull` become `assertNotInstanceOf`. A
-//! message argument is kept after the object.
+//! `null`) become `assertInstanceOf(\X::class, $x)`. A message argument is kept after the object. An anonymous
+//! class has no name to write, so it stays.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -15,12 +15,7 @@ use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
-const NAMES: &[&str] = &[
-    "assertNotEmpty",
-    "assertEmpty",
-    "assertNull",
-    "assertNotNull",
-];
+const NAMES: &[&str] = &["assertNotEmpty", "assertNotNull"];
 
 pub struct PreferAssertInstanceofOverEmpty;
 
@@ -63,19 +58,19 @@ impl Rule for PreferAssertInstanceofOverEmpty {
             .filter(|a| !matches!(a, TAtomic::Null))
             .collect();
         let class = match rest[..] {
+            // Mago names an anonymous class `{anonymous-class:...}`.
             [TAtomic::Object(TObject::Named(named))]
-                if named.intersection_types.is_none() && !named.is_this && !named.is_static =>
+                if named.intersection_types.is_none()
+                    && !named.is_this
+                    && !named.is_static
+                    && !named.name.as_bytes().starts_with(b"{anonymous-class:") =>
             {
                 named.name.to_string()
             }
             [TAtomic::Object(TObject::Enum(e))] => e.name.to_string(),
             _ => return,
         };
-        let name = if call.is_name(&["assertEmpty", "assertNull"]) {
-            "assertNotInstanceOf"
-        } else {
-            "assertInstanceOf"
-        };
+        let name = "assertInstanceOf";
         let mut new = vec![
             NewArg::New(format!("\\{class}::class")),
             NewArg::New(expr_text(ctx, value).to_string()),

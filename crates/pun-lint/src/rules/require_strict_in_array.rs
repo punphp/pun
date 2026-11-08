@@ -1,4 +1,4 @@
-//! `lint/functions/require-strict-in-array`, ported from Rector 2.6.1's `StrictInArrayRector`
+//! `lint/functions/require-strict-in-array`, ported from Rector 2.8.4's `StrictInArrayRector`
 //! (rules/CodingStyle/Rector/FuncCall).
 //!
 //! `in_array($needle, $haystack)` with exactly two arguments gets `true` as its third when the haystack's native type

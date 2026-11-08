@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-collected-by-attribute`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-collected-by-attribute`, ported from rector-laravel 2.7.3's
 //! `CollectedByPropertyToCollectedByAttributeRector` (src/Rector/Class_).
 //!
 //! A model (or anonymous model) without `#[CollectedBy]` whose `newCollection()` method has one statement,

@@ -1,7 +1,7 @@
 //! rector-laravel's own fixtures for the `laravel` rules that read types, copied verbatim from driftingly/rector-laravel
-//! 2.5.0 (its source at 2bd499d, tests/Rector/...) into tests/rector/<Rector class>/Fixture, with rector-laravel's
+//! 2.7.3 (its source at 699f25b, tests/Rector/...) into tests/rector/<Rector class>/Fixture, with rector-laravel's
 //! stubs/ (tests/rector-laravel-stubs, copied verbatim; its test suite autoloads them as a classmap) known beside each
-//! class's Source/. Oracle/ holds extra inputs with what Rector 2.6.1 and rector-laravel 2.5.0
+//! class's Source/. Oracle/ holds extra inputs with what Rector 2.8.4 and rector-laravel 2.7.3
 //! (`.oracle/rector-ecosystem`, the rule alone, `phpVersion(80400)`, the stubs and Source/ on `withAutoloadPaths`)
 //! wrote for them; Pun/ holds the cases where Pun keeps the code valid or the meaning where Rector does not, its
 //! expected output derived by hand. A fixture is `input -----\n expected`, or only the input when the rule must not
@@ -11,7 +11,7 @@
 #[allow(dead_code)]
 mod lint_c;
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use lint_c::{run_class_paths, run_dirs};
 use pun_lint::Rule;
@@ -366,66 +366,20 @@ fn call_on_app_array_access_to_standalone_assign() {
     );
 }
 
-/// rector-laravel's stubs without `Illuminate\Foundation\Application`: the directories that hold the other stubs.
-fn stubs_without_application() -> Vec<PathBuf> {
-    fn walk(dir: &Path, skip: &Path, out: &mut Vec<PathBuf>) {
-        for entry in std::fs::read_dir(dir).unwrap() {
-            let path = entry.unwrap().path();
-            if skip.starts_with(&path) && path != skip {
-                walk(&path, skip, out);
-            } else if path.is_dir() {
-                out.push(path);
-            } else {
-                assert_eq!(path, skip, "a stub file beside Application.php");
-            }
-        }
-    }
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
-    let mut dirs = Vec::new();
-    walk(
-        &root,
-        &root.join("Illuminate/Foundation/Application.php"),
-        &mut dirs,
-    );
-    dirs
-}
-
-/// Each suite with the stubs' `Application` at the Laravel version rector-laravel's test sets
-/// (`InteractsWithLaravelVersion`): OldGenerics at 11.14.0, NewGenerics at 12.3.0; Laravel12/ with the stubs' own
-/// 12.0.0, and NoApplication/ without the class.
+/// rector-laravel 2.7.3's test of the rule (`AddGenericReturnTypeToRelationsRectorTest`, Fixture/NewGenerics); the
+/// rule no longer reads Laravel's version, so every suite runs with the stubs as they are. Fixture/OldGenerics and
+/// Fixture/NewGenericsNoPivot are the tests of `AddLegacyGenericReturnTypeToRelationsRector` and
+/// `AddNewGenericReturnTypeToRelationsRector`, which Pun has not ported.
 #[test]
 fn add_generic_return_type_to_relations() {
-    let class = "AddGenericReturnTypeToRelationsRector";
-    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/rector")
-        .join(class);
-    let without = stubs_without_application();
-    let with = |version: &str| -> Vec<PathBuf> {
-        let mut dirs = without.clone();
-        dirs.push(root.join(format!("Laravel-{version}")));
-        dirs
-    };
-    let run = |subs: &[&str], stubs: &[PathBuf]| {
-        let stubs: Vec<&Path> = stubs.iter().map(PathBuf::as_path).collect();
-        run_dirs(
-            vec![Box::new(AddRelationGenerics)],
-            class,
-            subs,
-            80400,
-            &stubs,
-        );
-    };
-    run(
-        &["Fixture/OldGenerics", "Oracle/OldGenerics"],
-        &with("11.14.0"),
-    );
-    run(
-        &["Fixture/NewGenerics", "Oracle/NewGenerics"],
-        &with("12.3.0"),
-    );
     let stubs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
-    run(&["Oracle/Laravel12", "Pun/Laravel12"], &[stubs]);
-    run(&["Pun/NoApplication"], &without);
+    run_dirs(
+        vec![Box::new(AddRelationGenerics)],
+        "AddGenericReturnTypeToRelationsRector",
+        &["Fixture/NewGenerics", "Oracle/NewGenerics", "Oracle/Laravel12", "Pun/Laravel12"],
+        80400,
+        &[stubs.as_path()],
+    );
 }
 
 #[test]

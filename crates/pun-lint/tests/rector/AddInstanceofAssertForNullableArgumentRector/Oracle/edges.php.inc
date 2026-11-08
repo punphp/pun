@@ -63,7 +63,6 @@ final class EdgesTest extends TestCase
         $a = $repo->find();
         $$n = $repo->find();
         $repo->take($$n);
-        $this->assertInstanceOf(\Pun\Ia\Item::class, $a);
         $repo->take($a);
     }
 }

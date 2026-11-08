@@ -1,6 +1,6 @@
-//! Rector's own fixtures for the ported `types` rules, copied verbatim from rector-src 2.6.1 (`.oracle/rector`,
+//! Rector's own fixtures for the ported `types` rules, copied verbatim from rector-src 2.8.4 (`.oracle/rector`,
 //! rules-tests/...) into tests/rector/<Rector class>/Fixture, with the classes they use in Source/. Oracle/ holds extra
-//! inputs with what Rector 2.6.1 (`.oracle/rector-bin`, the rule alone, `phpVersion(80400)`) wrote for them; Pun/
+//! inputs with what Rector 2.8.4 (`.oracle/rector-bin`, the rule alone, `phpVersion(80400)`) wrote for them; Pun/
 //! holds the cases where Pun keeps the meaning but not Rector's bytes, its expected output derived by hand. Each one
 //! must pass as `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text edits
 //! must give the expected bytes before format too.
@@ -22,6 +22,15 @@
 //!
 //! AddReturnTypeDeclarationBasedOnParentClassMethodRector/Pun/parent_cycle.php.inc: two classes that extend each
 //! other, which Rector stops on ("Circular reference to class"); Pun leaves both alone.
+//!
+//! ReturnTypeFromReturnDirectArrayRector/Pun/byref_dynamic.php.inc: `$matches` of a `preg_match()` whose pattern is not
+//! a constant string, natively `array<string>|null` (the signature map's type), so `b()` stays as Rector leaves it.
+//! After `array_shift($keys)` PHPStan 2.3's native scope types it `*ERROR*` and Rector leaves `getExplicitKeys()` alone
+//! too; Pun's native scope has `array` there and writes `: array` as for the constant pattern of `c()`.
+//!
+//! ClosureReturnTypeRector/Pun/iterable_member.php.inc: a `\Countable` returned under `is_iterable()`. PHPStan types it
+//! `Countable&iterable` and Rector 2.8.4 writes `: \Countable` (`NativePhpTypeNodeHelper::intersection()` drops the
+//! `iterable`); Mago narrows it to `never`, so Pun leaves the closure alone.
 
 mod lint_c;
 
@@ -260,6 +269,9 @@ fn return_type_from_strict_native_call() {
     );
 }
 
+/// ReturnTypeFromStrictTypedCallRectorPhp80/Pun/redundant_object: a function returning a class's call or an
+/// `object` one; Rector 2.8.4 joins the two declarations into `\Item|object`, which PHP rejects (a class beside
+/// `object` is redundant), and Pun leaves the function alone (lint.md: meaning over bytes).
 #[test]
 fn return_type_from_strict_typed_call() {
     for (dir, version) in [
@@ -278,7 +290,7 @@ fn return_type_from_strict_typed_call() {
 
 #[test]
 fn return_type_from_strict_typed_call_never_is_not_propagated() {
-    // Rector 2.6.1's NeverTypeMapper returns no declaration, even at PHP versions that support `never`.
+    // Rector 2.8.4's NeverTypeMapper returns no declaration, even at PHP versions that support `never`.
     // Fresh captures at 7.4, 8.0, 8.1 and 8.4 are identical: only the int-returning control changes.
     let fixture =
         include_str!("rector/ReturnTypeFromStrictTypedCallRector/Oracle/contract_never.php.inc");

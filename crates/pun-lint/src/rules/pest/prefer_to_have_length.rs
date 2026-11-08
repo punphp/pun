@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-have-length`, ported from pest-plugin-rector's `UseToHaveLengthRector`:
 //! `expect(strlen($string))->toBe(5)` (or `mb_strlen()`, or `toEqual()`) becomes `expect($string)->toHaveLength(5)`
-//! when `$string` may be a string.
+//! when `$string` is known to be a string.
 
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
@@ -51,7 +51,7 @@ impl Rule for PreferToHaveLength {
         let Some(string) = first_value(&function.argument_list) else {
             return;
         };
-        if type_is(ctx, string, Is::String) == Trinary::No {
+        if type_is(ctx, string, Is::String) != Trinary::Yes {
             return;
         }
         let mut edits = set_first_argument(ctx, holder.arguments, string);

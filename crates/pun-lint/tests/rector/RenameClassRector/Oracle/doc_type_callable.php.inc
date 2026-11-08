@@ -21,7 +21,7 @@ namespace App\Types;
 final class Holder
 {
     /**
-     * @param callable(\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass):\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass $c
+     * @param callable(\Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass): \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass $c
      */
     public function run($c)
     {

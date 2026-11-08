@@ -18,7 +18,7 @@ final class SomeClass
 final class SomeClass
 {
     /**
-     * @var \ArrayObject[]|\ArrayIterator[]|\SplStack[]|\SplQueue[]|\SplObjectStorage[]|\SplFixedArray[]
+     * @var \ArrayIterator[]|\ArrayObject[]|\SplFixedArray[]|\SplObjectStorage[]|\SplQueue[]|\SplStack[]
      */
     private array $items = [];
 

@@ -23,7 +23,7 @@ use Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass;
 final class Holder
 {
     /**
-     * @param callable(NewClass):NewClass $c
+     * @param callable(NewClass): NewClass $c
      */
     public function run($c)
     {

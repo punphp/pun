@@ -1,4 +1,4 @@
-//! `lint/types/add-array-return-type`, ported from Rector 2.6.1's `ReturnTypeFromReturnDirectArrayRector`
+//! `lint/types/add-array-return-type`, ported from Rector 2.8.4's `ReturnTypeFromReturnDirectArrayRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a function or method with a top-level `return [...]` whose every
 //! `return` returns a value natively typed `array`, and whose end cannot be reached, returns `array`.
 

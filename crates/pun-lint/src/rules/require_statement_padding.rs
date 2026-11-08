@@ -1,4 +1,4 @@
-//! `lint/style/require-statement-padding`, ported from Rector 2.6.1's `NewlineAfterStatementRector`
+//! `lint/style/require-statement-padding`, ported from Rector 2.8.4's `NewlineAfterStatementRector`
 //! (rules/CodingStyle/Rector/Stmt).
 //!
 //! A function, class, trait, interface, `if`, `foreach`, `for`, `while`, `do` or `try` statement, or a `switch`, gets

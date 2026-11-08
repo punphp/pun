@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-always-true-instanceof`, ported from Rector 2.6.1's `RemoveDeadInstanceOfRector`
+//! `lint/dead-code/no-always-true-instanceof`, ported from Rector 2.8.4's `RemoveDeadInstanceOfRector`
 //! (rules/DeadCode/Rector/If_).
 //!
 //! An `if` without `elseif` or `else` whose condition is `$value instanceof SomeClass` where the value's native type

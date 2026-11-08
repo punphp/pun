@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-mixed-overruled-by-native`, ported from Rector 2.6.1's `RemoveMixedDocblockOverruledByNativeTypeRector`
+//! `lint/phpdoc/no-mixed-overruled-by-native`, ported from Rector 2.8.4's `RemoveMixedDocblockOverruledByNativeTypeRector`
 //! (rules/DeadCode/Rector/ClassMethod).
 //!
 //! A `@param mixed $x` without a description, on a parameter with a native type, and a `@return mixed` without one,

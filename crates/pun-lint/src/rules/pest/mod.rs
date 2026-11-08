@@ -1,4 +1,4 @@
-//! The `pest` group: rules ported from pestphp/pest-plugin-rector at 1a4b6b7 (src/Rules/...), each in its own file,
+//! The `pest` group: rules ported from pestphp/pest-plugin-rector at 8c1b780 (src/Rules/...), each in its own file,
 //! and what they share: `AbstractRector`'s chain helpers, the `ExpectChainValidation` trait, `PestFunctionDetector`
 //! and `PestChainAnalyzer`.
 //!
@@ -125,7 +125,10 @@ pub use prefer_to_throw::PreferToThrow;
 pub use prefer_type_matchers::PreferTypeMatchers;
 pub use require_type_matcher_first::RequireTypeMatcherFirst;
 
+use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{
     Access, Argument, ArgumentList, ArrowFunction, Call, ClassLikeMemberSelector, Closure,
@@ -568,12 +571,12 @@ pub(crate) fn type_is(ctx: &Context<'_>, expr: &Expression<'_>, kind: Is) -> Tri
     let Some(union) = facts.full_type(node_span(unparenthesize(expr))) else {
         return Trinary::Maybe;
     };
-    (union.types.iter().map(|t| atomic_is(t, kind)))
+    (union.types.iter().map(|t| atomic_is(&facts.codebase, t, kind)))
         .reduce(|a, b| if a == b { a } else { Trinary::Maybe })
         .unwrap_or(Trinary::Maybe)
 }
 
-fn atomic_is(atomic: &TAtomic, kind: Is) -> Trinary {
+fn atomic_is(codebase: &CodebaseMetadata, atomic: &TAtomic, kind: Is) -> Trinary {
     use Trinary::{Maybe, No, Yes};
     match (atomic, kind) {
         (TAtomic::Mixed(_), _) => Maybe,
@@ -591,6 +594,18 @@ fn atomic_is(atomic: &TAtomic, kind: Is) -> Trinary {
         (TAtomic::Iterable(_), Is::Iterable) => Yes,
         (TAtomic::Iterable(_), Is::Array | Is::Object) => Maybe,
         (TAtomic::Object(_), Is::Object) => Yes,
+        // ObjectType::isIterable(): `isInstanceOf(Traversable::class)`, maybe for an unknown class or an interface
+        (TAtomic::Object(TObject::Named(named)), Is::Iterable) => match codebase.get_class_like(named.name.as_bytes()) {
+            None => Maybe,
+            Some(class)
+                if class.name.as_bytes().eq_ignore_ascii_case(b"Traversable")
+                    || class.all_parent_interfaces.iter().any(|i| i.as_bytes().eq_ignore_ascii_case(b"Traversable")) =>
+            {
+                Yes
+            }
+            Some(class) if class.kind == SymbolKind::Interface => Maybe,
+            Some(_) => No,
+        },
         (TAtomic::Object(_), Is::Iterable) => Maybe,
         (TAtomic::Callable(_), Is::String | Is::Array | Is::Object) => Maybe,
         (TAtomic::Null | TAtomic::Void | TAtomic::Never | TAtomic::Resource(_), _) => No,

@@ -1,4 +1,4 @@
-//! `lint/classes/no-redundant-readonly-property`, ported from Rector 2.6.1's
+//! `lint/classes/no-redundant-readonly-property`, ported from Rector 2.8.4's
 //! `RemoveReadonlyPropertyVisibilityOnReadonlyClassRector` (rules/CodeQuality/Rector/Class_) with
 //! `VisibilityManipulator::removeReadonly`.
 //!

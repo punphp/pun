@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-class`, ported from Rector 2.6.1's `RenameClassRector` (rules/Renaming/Rector/Name) with its
+//! `lint/refactor/rename-class`, ported from Rector 2.8.4's `RenameClassRector` (rules/Renaming/Rector/Name) with its
 //! `ClassRenamer`, `DocBlockClassRenamer` (`ClassRenamePhpDocNodeVisitor`) and `PhpDocClassRenamer`, then the post
 //! rectors Rector runs on the file (`rector_names::post`).
 //!

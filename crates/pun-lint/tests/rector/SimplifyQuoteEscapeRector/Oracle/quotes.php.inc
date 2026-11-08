@@ -22,6 +22,6 @@ $e = 'has $dollar\'s';
 $f = "it's";
 $g = 'it\'s \\ back';
 $h = "tab\t\"x\"";
-$i = 'é\'s';
+$i = "é's";
 $j = "x {$y} \"z\"";
 $k = ["key's" => 'v"al'];

@@ -10,14 +10,6 @@ $callableMember = function (\Countable $x) {
     throw new \Exception();
 };
 
-$iterableMember = function (\Countable $x) {
-    if (is_iterable($x)) {
-        return $x;
-    }
-
-    throw new \Exception();
-};
-
 /**
  * @template T of object
  * @param T $x
@@ -37,16 +29,8 @@ function templated(object $x)
 
 namespace App;
 
-$callableMember = function (\Countable $x) {
+$callableMember = function (\Countable $x): \Countable {
     if (is_callable($x)) {
-        return $x;
-    }
-
-    throw new \Exception();
-};
-
-$iterableMember = function (\Countable $x) {
-    if (is_iterable($x)) {
         return $x;
     }
 

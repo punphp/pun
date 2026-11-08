@@ -7,7 +7,7 @@ use stdClass;
 
 class ArrayUnionGenericSameType
 {
-    protected array $dependencies = [
+    private array $dependencies = [
         stdClass::class,
         DateTime::class,
     ];
@@ -25,9 +25,9 @@ use stdClass;
 class ArrayUnionGenericSameType
 {
     /**
-     * @var array<int, class-string<\stdClass>|class-string<\DateTime>>
+     * @var array<class-string<\DateTime>|class-string<\stdClass>>
      */
-    protected array $dependencies = [
+    private array $dependencies = [
         stdClass::class,
         DateTime::class,
     ];

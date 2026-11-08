@@ -1,6 +1,7 @@
 //! `lint/pest/no-expect-exception`, ported from pest-plugin-rector's `ConvertExpectExceptionToThrowRector`:
 //! `$this->expectException(E::class);` (with `expectExceptionMessage()`, or `expectExceptionObject()`) and the
-//! statement after it become `expect(fn() => action())->toThrow(E::class, 'message');`.
+//! statement after it become `expect(fn() => action())->toThrow(E::class, 'message');`, unless that statement is an
+//! assignment.
 
 use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind, Statement, Variable};
 use pun_problem::{Safety, Span};
@@ -142,6 +143,10 @@ fn collect_conversion<'a>(stmts: &[&'a Statement<'a>], start: usize) -> Option<C
     if method_call(action)
         .is_some_and(|a| expectation_method(a, &ALL_EXPECT_EXCEPTION_METHODS).is_some())
     {
+        return None;
+    }
+    // `Assign`, `AssignRef` and `AssignOp` are all one `Assignment` here.
+    if matches!(unparenthesize(action), Expression::Assignment(_)) {
         return None;
     }
     Some(Conversion {

@@ -16,7 +16,7 @@ abstract class SomeClass
 abstract class SomeClass
 {
     /**
-     * @return int[]|'a'[]
+     * @return 'a'[]|int[]
      */
     public function run($flag)
     {

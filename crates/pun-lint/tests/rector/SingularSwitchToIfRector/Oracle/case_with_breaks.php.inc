@@ -29,13 +29,16 @@ function a($value)
 function a($value)
 {
     foreach ($value as $v) {
-        if ($v === 'a') {
-            // first
-            echo 1;
-            if ($v) {
-                break;
-            }
-            break;
+        // before the switch
+        switch ($v) {
+            case 'a':
+                // first
+                echo 1;
+                if ($v) {
+                    break;
+                }
+                break 2;
+            // last
         }
         if ($v === $v + 1) {
             echo 2;

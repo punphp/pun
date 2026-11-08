@@ -1,8 +1,9 @@
-//! `lint/dead-code/no-dead-catch`, ported from Rector 2.6.1's `RemoveDeadCatchRector` (rules/DeadCode/Rector/TryCatch).
+//! `lint/dead-code/no-dead-catch`, ported from Rector 2.8.4's `RemoveDeadCatchRector` (rules/DeadCode/Rector/TryCatch).
 //!
 //! In a `try` with several catches, a catch of one class that only rethrows its exception goes, unless a later catch
-//! of a parent class (or of several classes) does something else with it. A `try` whose every catch would go is left
-//! alone. A class is a parent when the names are the same or the codebase knows the inheritance.
+//! of a related class (or of several classes) does something else with it. A `try` whose every catch would go is left
+//! alone. A later catch is related unless the codebase knows both classes and neither inheritance links them; a later
+//! catch of `Throwable` or `Exception` is always related.
 
 use mago_syntax::cst::{Expression, Hint, Node, NodeKind, Statement, TryCatchClause, Variable};
 use pun_problem::{Edit, Fix, Safety, Span};
@@ -51,7 +52,12 @@ impl Rule for NoDeadCatch {
             // `shouldSkipNextCatchClassParentWithSpecialTreatment`.
             let skip = catches[key + 1..].iter().any(|next| match class(next) {
                 None => true,
-                Some(next_class) => is_a(ctx, &own, &[&next_class]) && !just_rethrows(next),
+                Some(next_class) => {
+                    let catches_anything = ["Throwable", "Exception"]
+                        .contains(&next_class.trim_start_matches('\\'));
+                    (catches_anything || !is_provably_unrelated(ctx, &own, &next_class))
+                        && !just_rethrows(next)
+                }
             });
             if !skip {
                 removed[key] = true;
@@ -80,6 +86,13 @@ impl Rule for NoDeadCatch {
             }),
         });
     }
+}
+
+/// `isProvablyUnrelated`: the codebase knows both classes and `current` is not a `next`.
+fn is_provably_unrelated(ctx: &Context<'_>, current: &str, next: &str) -> bool {
+    let facts = super::types::facts::facts(ctx);
+    let known = |name: &str| facts.codebase.get_class_like(name.as_bytes()).is_some();
+    known(current) && known(next) && !is_a(ctx, current, &[next])
 }
 
 /// `isJustThrownSameVariable`: the catch's first statement throws the caught variable, and it catches one class.

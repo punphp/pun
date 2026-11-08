@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-implode-ternary`, ported from Rector 2.6.1's `TernaryImplodeToImplodeRector`
+//! `lint/dead-code/no-implode-ternary`, ported from Rector 2.8.4's `TernaryImplodeToImplodeRector`
 //! (rules/CodeQuality/Rector/Ternary).
 //!
 //! `$values === [] ? '' : implode(',', $values)` becomes `implode(',', $values)`: joining an empty array gives the

@@ -1,6 +1,6 @@
 //! pest-plugin-rector's own fixtures for the ported `pest` rules, copied verbatim from pestphp/pest-plugin-rector at
-//! 1a4b6b7 (tests/Rules/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector
-//! 2.6.1 and the plugin at that commit (`.oracle/rector-ecosystem`, the rule alone, `withPhpVersion(80400)`) wrote for
+//! 8c1b780 (tests/Rules/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector
+//! 2.8.4 and the plugin at that commit (`.oracle/rector-ecosystem`, the rule alone, `withPhpVersion(80400)`) wrote for
 //! them. Pun/ holds the inputs where Rector's one pass over the file leaves code that the same rule changes again (a
 //! double negation is undone one `!` at a time, a type matcher becomes redundant once the one before it goes, a value
 //! check before two type checks moves one statement a pass); Pun's fix rounds go on until the rule has nothing left, so
@@ -739,7 +739,8 @@ fn pest_rules_ignore_nodes_outside_their_targets() {
 /// one node in that order: two `expect()` calls UseToMatchArrayRector folds into one `toMatchArray()` are not chained
 /// first. Pun's rules keep their registry order where their fixes start at the same statement. The expected code is
 /// Rector's with UseToMatchArrayRector, UseSequenceMatcherRector and ChainExpectCallsRector in the set's order
-/// (`.oracle/rector-ecosystem`).
+/// (`.oracle/rector-ecosystem`). The array is a literal: UseToMatchArrayRector wants `isArray()->yes()`, which PHPStan
+/// also gives a constant `json_decode()`, but Mago does not.
 #[test]
 fn chaining_comes_after_the_matchers() {
     let ids = [
@@ -753,7 +754,7 @@ fn chaining_comes_after_the_matchers() {
     let input = "<?php
 
 it('reads each key', function (): void {
-    $fresh = json_decode('{\"count\":0,\"as_of\":\"now\"}', true);
+    $fresh = ['count' => 0, 'as_of' => 'now'];
     expect($fresh['count'])->toBe(0);
     expect($fresh['as_of'])->toBe('now');
 });
@@ -766,7 +767,7 @@ it('chains what it does not match', function (): void {
     let expected = "<?php
 
 it('reads each key', function (): void {
-    $fresh = json_decode('{\"count\":0,\"as_of\":\"now\"}', true);
+    $fresh = ['count' => 0, 'as_of' => 'now'];
     expect($fresh)->toMatchArray(['count' => 0, 'as_of' => 'now']);
 });
 

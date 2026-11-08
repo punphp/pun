@@ -1,4 +1,4 @@
-//! `lint/complexity/no-single-item-in-array`, ported from Rector 2.6.1's `SingleInArrayToCompareRector`
+//! `lint/complexity/no-single-item-in-array`, ported from Rector 2.8.4's `SingleInArrayToCompareRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `in_array($value, ['one'])` becomes `$value == 'one'`, or `$value === 'one'` when the call passes a third

@@ -7,7 +7,7 @@ pagination: false
 
 Upgrade to PHP 8.6: code a newer PHP removes, deprecates or does better.
 
-Across commands: format: 0, lint: 1, analyse: 0.
+Across commands: format: 0, lint: 2, analyse: 0.
 
 <CardGroup cols={2}>
 <Card title="lint/php-8.6/prefer-clamp">
@@ -17,6 +17,15 @@ Across commands: format: 0, lint: 1, analyse: 0.
 Convert nested min()/max() calls to clamp()
 
 Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: safe (keeps behaviour). Gated by php-8.6.
+
+</Card>
+<Card title="lint/php-8.6/prefer-readonly-property-default">
+
+[`lint/php-8.6/prefer-readonly-property-default`](/docs/rules/lint/php-8.6/prefer-readonly-property-default)
+
+Move a constant constructor assignment of a readonly property to a property default value
+
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Gated by php-8.6. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 </CardGroup>

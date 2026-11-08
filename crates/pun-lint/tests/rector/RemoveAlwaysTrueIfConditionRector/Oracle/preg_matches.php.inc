@@ -136,7 +136,7 @@ function run(string $pattern, string $subject, int $flags)
     }
     preg_match($pattern, $subject, $one, PREG_OFFSET_CAPTURE);
     foreach ($one as $v) {
-        if ($subject !== '') {
+        if ($v !== null && $subject !== '') {
             echo 2;
         }
     }
@@ -148,7 +148,7 @@ function run(string $pattern, string $subject, int $flags)
     }
     preg_match($pattern, $subject, $one, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
     foreach ($one as $v) {
-        if ($subject !== '') {
+        if ($v !== null && $subject !== '') {
             echo 4;
         }
     }
@@ -161,7 +161,7 @@ function run(string $pattern, string $subject, int $flags)
     preg_match_all($pattern, $subject, $all);
     foreach ($all as $group) {
         foreach ($group as $v) {
-            if ($subject !== '') {
+            if ($v !== null && $subject !== '') {
                 echo 6;
             }
         }
@@ -169,7 +169,7 @@ function run(string $pattern, string $subject, int $flags)
     preg_match_all($pattern, $subject, $all, PREG_SET_ORDER);
     foreach ($all as $group) {
         foreach ($group as $v) {
-            if ($subject !== '') {
+            if ($v !== null && $subject !== '') {
                 echo 7;
             }
         }
@@ -177,7 +177,7 @@ function run(string $pattern, string $subject, int $flags)
     preg_match_all($pattern, $subject, $all, PREG_PATTERN_ORDER | PREG_OFFSET_CAPTURE);
     foreach ($all as $group) {
         foreach ($group as $v) {
-            if ($subject !== '') {
+            if ($v !== null && $subject !== '') {
                 echo 8;
             }
         }
@@ -185,7 +185,7 @@ function run(string $pattern, string $subject, int $flags)
     preg_match_all($pattern, $subject, $all, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     foreach ($all as $group) {
         foreach ($group as $v) {
-            if ($subject !== '') {
+            if ($v !== null && $subject !== '') {
                 echo 9;
             }
         }
@@ -209,7 +209,7 @@ function run(string $pattern, string $subject, int $flags)
     preg_match_all($pattern, $subject, $all, PREG_SET_ORDER | PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
     foreach ($all as $group) {
         foreach ($group as $v) {
-            if ($subject !== '') {
+            if ($v !== null && $subject !== '') {
                 echo 12;
             }
         }

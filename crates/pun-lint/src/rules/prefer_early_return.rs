@@ -1,4 +1,4 @@
-//! `lint/style/prefer-early-return`, ported from Rector 2.6.1's `ChangeIfElseValueAssignToEarlyReturnRector`
+//! `lint/style/prefer-early-return`, ported from Rector 2.8.4's `ChangeIfElseValueAssignToEarlyReturnRector`
 //! (rules/EarlyReturn/Rector/If_), with `IfManipulator::isIfAndElseWithSameVariableAssignAsLastStmts` and
 //! `StmtsManipulator::getUnwrappedLastStmt`. Mago's `prefer-early-return`, which also maps here, joins it later.
 //!

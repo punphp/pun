@@ -289,7 +289,7 @@ final class CoverTest extends TestCase
         $this->assertFalse($a < $b);
         $this->assertTrue($a <=> $b);
         $this->assertContains($a, $b);
-        $this->assertTrue(is_string($a));
+        $this->assertIsString($a);
         $this->assertNotEmpty($a);
         $this->assertTrue(strpos($a, 'x') !== false);
         $this->assertFalse(stripos($a, 'x'));

@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-be-uuid`, ported from pest-plugin-rector's `UseToBeUuidRector`:
 //! `expect(preg_match('/^[0-9a-f]{8}-...$/i', $value))->toBe(1)` (one of `UUID_REGEX_PATTERNS`; or `toEqual(1)`, or
-//! `toBeGreaterThan(0)`) becomes `expect($value)->toBeUuid()` when `$value` may be a string.
+//! `toBeGreaterThan(0)`) becomes `expect($value)->toBeUuid()` when `$value` is known to be a string.
 
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::Safety;
@@ -58,7 +58,7 @@ impl Rule for PreferToBeUuid {
             return;
         }
         let value = value.value();
-        if type_is(ctx, value, Is::String) == Trinary::No {
+        if type_is(ctx, value, Is::String) != Trinary::Yes {
             return;
         }
         let [expected] = call.argument_list.arguments.as_slice() else {

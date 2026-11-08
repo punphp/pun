@@ -3,8 +3,9 @@
 //!
 //! A file without a top-level `declare(strict_types=...)` (`DeclareStrictTypeFinder`, which compares the key's case)
 //! whose first named class (`BetterNodeFinder::findFirstNonAnonymousClass`, depth first) is a test class gets
-//! `declare(strict_types=1);` and an empty statement ahead of its statements. A file with inline HTML is left alone
-//! (`HTMLAverseRectorInterface`).
+//! `declare(strict_types=1);` and an empty statement ahead of its statements. A file with inline HTML is left alone:
+//! rector-phpunit dropped its `HTMLAverseRectorInterface` guard, and Rector 2.8.4 then prints the declaration as text
+//! before the HTML, which is no longer PHP (the deleted upstream fixture skip_html_php_mix.php.inc, run by hand).
 //!
 //! php-parser's format-preserving printer writes the two statements at the first statement's comments, followed by
 //! a blank line. A file of one statement falls back to printing the file anew: `<?php`, a blank line, the
@@ -141,22 +142,16 @@ fn closing_nop(
         .map(|tag| tag.end)
 }
 
-/// Whether the first class declaration (depth first, not an anonymous class) under `program` is a test class. A
-/// class declared inside a function has no class reflection in Rector's scope, so it is not one.
+/// Whether the first class declaration (depth first, not an anonymous class) under `program` is a test class; one
+/// declared inside a function counts too (PHPStan 2.3 gives it a class reflection).
 fn first_class_is_test(ctx: &Context<'_>, program: Node<'_, '_>) -> bool {
     let mut stack = vec![(program, 0usize)];
     let mut path: Vec<Node> = Vec::new();
     while let Some((node, depth)) = stack.pop() {
         path.truncate(depth);
         if matches!(node, Node::Class(_)) {
-            let in_function = path.iter().any(|a| {
-                matches!(
-                    a,
-                    Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
-                )
-            });
             path.push(node);
-            return !in_function && is_in_test_class(ctx, &path, None);
+            return is_in_test_class(ctx, &path, None);
         }
         path.push(node);
         let mut children = Vec::new();

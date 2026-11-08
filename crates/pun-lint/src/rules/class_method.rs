@@ -1,11 +1,11 @@
-//! What Rector 2.6.1 asks about the methods of a class, shared by `no-empty-method` and `no-unused-private-method`:
+//! What Rector 2.8.4 asks about the methods of a class, shared by `no-empty-method` and `no-unused-private-method`:
 //! `IsClassMethodUsedAnalyzer` and `CallCollectionAnalyzer` (rules/DeadCode/NodeAnalyzer), `ArrayCallableMethodMatcher`
 //! (src/NodeCollector/NodeAnalyzer), `ClassMethodManipulator` (src/NodeManipulator) and
 //! `ControllerClassMethodManipulator` (rules/DeadCode/NodeManipulator), ported function by function.
 //!
 //! PHPStan's types come from Mago's analysis of the file (`getType()`: the type with docblocks read, else the native
 //! one). Every `mixed` receiver counts as implicit, without asking Mago's explicit-mixed flag: the receivers that reach
-//! the fluent fallback are calls, and Rector 2.6.1 on PHPStan 2.2.7 types an ordinary call whose return is `mixed`
+//! the fluent fallback are calls, and Rector 2.8.4 on PHPStan 2.3.5 types an ordinary call whose return is `mixed`
 //! (declared natively or in a docblock) as implicit `mixed`. An explicit `mixed` variable, a call whose docblock names
 //! another class, and a nullsafe link at the root are no fluent chain on `$this`, so the method goes
 //! (tests/rector/RemoveUnusedPrivateMethodRector/Oracle/mixed_receivers.php.inc). PHPStan's `ArrayMapArgVisitor` stores
@@ -332,18 +332,30 @@ pub(crate) fn walk<'ast, 'arena>(
 }
 
 /// The class-like of a node at `path` (whose first node is `class.node`): its name as PHPStan's types give it and
-/// the class it extends. An anonymous class inside is its own scope; a named class declared in a method body is not
-/// (the oracle resolves `self::class` there to the outer class).
+/// the class it extends. An anonymous class inside is its own scope, and so is a named class declared in a method
+/// body (Rector 2.8.4 resolves `self::class` there to the inner class).
 fn scope_of(
     facts: &Facts,
     ancestors: &[Node<'_, '_>],
     class: &ClassInfo<'_, '_>,
     path: &[Node<'_, '_>],
 ) -> (String, Option<String>) {
-    let inner = path.iter().skip(1).rev().find_map(|n| match n {
-        Node::AnonymousClass(c) => Some(*c),
+    let inner = path.iter().enumerate().skip(1).rev().find_map(|(i, n)| match n {
+        Node::AnonymousClass(c) => Some(Ok(*c)),
+        Node::Class(c) => Some(Err((i, *c))),
         _ => None,
     });
+    let inner = match inner {
+        Some(Err((i, c))) => {
+            let around = [ancestors, &path[..i]].concat();
+            return (
+                qualified(&around, c.name.value),
+                c.extends.as_ref().and_then(|e| e.types.first()).map(|id| resolve_class_name(&around, id)),
+            );
+        }
+        Some(Ok(c)) => Some(c),
+        None => None,
+    };
     match inner {
         Some(c) => (
             facts.anonymous_class_name(mago_span::HasSpan::span(c)),
@@ -1040,6 +1052,7 @@ pub(crate) fn mapped_type_text(t: &TUnion) -> Option<String> {
             TAtomic::Callable(_) => "callable".to_string(),
             TAtomic::Mixed(_) => "mixed".to_string(),
             TAtomic::Void => "void".to_string(),
+            TAtomic::Never => "never".to_string(),
             TAtomic::Object(TObject::Any) => "object".to_string(),
             TAtomic::Object(TObject::Named(n)) if n.is_static => "static".to_string(),
             TAtomic::Object(TObject::Named(n)) => {

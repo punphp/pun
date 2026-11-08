@@ -1,4 +1,4 @@
-//! `lint/classes/prefer-serialize-method`, ported from Rector 2.6.1's `SleepToSerializeRector`
+//! `lint/classes/prefer-serialize-method`, ported from Rector 2.8.4's `SleepToSerializeRector`
 //! (rules/Php85/Rector/Class_).
 //!
 //! PHP 8.5 deprecates `__sleep()`. In a class without `__serialize()`, a `__sleep()` whose every return gives an array

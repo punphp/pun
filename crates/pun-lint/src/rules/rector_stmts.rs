@@ -775,35 +775,6 @@ fn by_ref_use(clause: &ClosureUseClause<'_>, name: &[u8]) -> bool {
         .any(|v| v.ampersand.is_some() && &v.variable.name[1..] == name)
 }
 
-/// Whether the doc comment Rector reads for a statement (the last `/** */` among the comments before it) has a `@var`
-/// tag with a type: `PhpDocInfo::getVarTagValueNode()`.
-pub fn has_var_tag(source: &str, comments_start: usize, statement_start: usize) -> bool {
-    let Some(doc) = tokens(source, comments_start, statement_start)
-        .into_iter()
-        .rfind(|t| t.kind == TokenKind::DocBlockComment)
-    else {
-        return false;
-    };
-    source[doc.start..doc.end].lines().any(|line| {
-        let line = line
-            .trim_start()
-            .trim_start_matches("/**")
-            .trim_start_matches('*')
-            .trim_start()
-            .trim_end_matches("*/");
-        let Some(rest) = line.strip_prefix("@var") else {
-            return false;
-        };
-        let Some(first) = rest.chars().next() else {
-            return false;
-        };
-        let value = rest.trim_start();
-        first.is_whitespace()
-            && !value.is_empty()
-            && (!value.starts_with('$') || value.starts_with("$this"))
-    })
-}
-
 /// Whether `node` or a node under it is a binary operation `op` matches (`BetterNodeFinder::findInstanceOf`).
 pub fn has_binary(node: Node<'_, '_>, op: &dyn Fn(&BinaryOperator<'_>) -> bool) -> bool {
     if let Node::Binary(b) = node
@@ -814,6 +785,30 @@ pub fn has_binary(node: Node<'_, '_>, op: &dyn Fn(&BinaryOperator<'_>) -> bool) 
     let mut found = false;
     node.visit_children(|child| found = found || has_binary(child, op));
     found
+}
+
+/// `isInConstantExpression` of `RepeatedOrEqualToInArrayRector` and `RepeatedAndNotEqualToNotInArrayRector`
+/// (`DefaultValueNodeVisitor`'s attributes): the node lies in a parameter's default, a property's default or a class
+/// constant's value, where a call such as `in_array()` is not allowed.
+pub fn is_in_constant_expression(ancestors: &[Node<'_, '_>]) -> bool {
+    ancestors.iter().any(|a| {
+        matches!(
+            a,
+            Node::FunctionLikeParameterDefaultValue(_)
+                | Node::PropertyConcreteItem(_)
+                | Node::ClassLikeConstantItem(_)
+        )
+    })
+}
+
+/// `InArrayFromRepeatedCompareFactory::isSafeToEvaluateEagerly`: the array literal evaluates every value up front,
+/// while the `&&`/`||` chain stops early, so each value must be a plain variable (not `$$name`) or no dynamic
+/// expression (`ExprAnalyzer::isDynamicExpr`).
+pub fn is_safe_to_evaluate_eagerly(expr: &Expression<'_>) -> bool {
+    match crate::syntax::unparenthesize(expr) {
+        Expression::Variable(v) => matches!(v, Variable::Direct(_)),
+        e => !super::php_parser::is_dynamic_expr(e),
+    }
 }
 
 /// `matchComparedAndDesiredValues` of `RepeatedOrEqualToInArrayRector` and `RepeatedAndNotEqualToNotInArrayRector`:

@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-coalesce-over-empty-ternary`, ported from Rector 2.6.1's
+//! `lint/complexity/prefer-coalesce-over-empty-ternary`, ported from Rector 2.8.4's
 //! `TernaryEmptyArrayArrayDimFetchToCoalesceRector` (rules/CodeQuality/Rector/Ternary).
 //!
 //! `! empty($items) ? $items[0] : 'default'` becomes `$items[0] ?? 'default'` when `$items` is an array (PHPStan's

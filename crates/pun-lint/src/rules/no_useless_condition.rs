@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-condition`, ported from Rector 2.6.1's `RemoveDeadConditionAboveReturnRector`
+//! `lint/dead-code/no-useless-condition`, ported from Rector 2.8.4's `RemoveDeadConditionAboveReturnRector`
 //! (rules/DeadCode/Rector/Return_).
 //!
 //! An `if` without `elseif` or `else`, right before a `return`, whose body is empty or returns the same thing, does

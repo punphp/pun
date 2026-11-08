@@ -23,8 +23,10 @@ final class SingleLineText
      */
     private array $names = [];
 
-    /** Gives the names.
-     * @return string[] */
+    /**
+     * Gives the names.
+     * @return string[]
+     */
     public function getNames(): array
     {
         return $this->names;

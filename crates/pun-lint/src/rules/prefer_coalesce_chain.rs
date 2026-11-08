@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-coalesce-chain`, ported from Rector 2.6.1's
+//! `lint/complexity/prefer-coalesce-chain`, ported from Rector 2.8.4's
 //! `ConsecutiveNullCompareReturnsToNullCoalesceQueueRector` (rules/CodeQuality/Rector/If_), with
 //! `IfManipulator::matchIfNotNullReturnValue`.
 //!

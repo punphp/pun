@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-array-any-all` and `lint/types/prefer-narrow-param-type`, ported from Rector 2.6.1's
+//! `lint/types/add-param-type-array-any-all` and `lint/types/prefer-narrow-param-type`, ported from Rector 2.8.4's
 //! `AddArrayAnyAllClosureParamTypeRector` and `NarrowArrayAnyAllNullableParamTypeRector` (rules/TypeDeclaration/
 //! Rector/FuncCall): the first parameter of the closure or arrow function passed to `array_any()`/`array_all()` gets
 //! the array's item type when it has none; with `array_find()`/`array_find_key()` too, a nullable one (`?T`) is

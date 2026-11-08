@@ -1,4 +1,4 @@
-//! What Rector 2.6.1's docblock type rules (rules/TypeDeclarationDocblocks and the docblock rules of
+//! What Rector 2.8.4's docblock type rules (rules/TypeDeclarationDocblocks and the docblock rules of
 //! rules/TypeDeclaration) share: a function or method as a `ClassMethod|Function_`, `ReturnNodeFinder`, and the
 //! report whose fix writes the changed doc comment through [`crate::rules::phpdoc_writer`].
 

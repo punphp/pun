@@ -1,6 +1,6 @@
-//! rector-laravel's own fixtures for the ported `laravel` rules, copied verbatim from driftingly/rector-laravel 2.5.0
-//! (its source at 2bd499d, tests/Rector/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with
-//! what Rector 2.6.1 and rector-laravel 2.5.0 (`.oracle/rector-ecosystem`, the rule alone, `phpVersion(80400)`) wrote
+//! rector-laravel's own fixtures for the ported `laravel` rules, copied verbatim from driftingly/rector-laravel 2.7.3
+//! (its source at 699f25b, tests/Rector/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with
+//! what Rector 2.8.4 and rector-laravel 2.7.3 (`.oracle/rector-ecosystem`, the rule alone, `phpVersion(80400)`) wrote
 //! for them; Pun/ holds the cases where Pun keeps the code valid or the meaning where Rector does not, its expected
 //! output derived by hand. A fixture is `input -----\n expected`, or only the input when the rule must not change it.
 //! Each one must pass as `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text

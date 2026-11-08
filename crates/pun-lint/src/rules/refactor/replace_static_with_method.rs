@@ -1,4 +1,4 @@
-//! `lint/refactor/replace-static-with-method`, ported from Rector 2.6.1's `StaticCallToMethodCallRector`
+//! `lint/refactor/replace-static-with-method`, ported from Rector 2.8.4's `StaticCallToMethodCallRector`
 //! (rules/Transform/Rector/StaticCall): `items = [{ static-class = "Nette\Utils\FileSystem", static-method = "write",
 //! class-type = "App\SmartFileSystem", method-name = "dumpFile" }]`, `*` for any method (the call's own name).
 //!

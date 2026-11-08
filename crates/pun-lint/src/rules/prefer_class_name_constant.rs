@@ -1,4 +1,4 @@
-//! `lint/style/prefer-class-name-constant`, ported from Rector 2.6.1's `StringClassNameToClassConstantRector`
+//! `lint/style/prefer-class-name-constant`, ported from Rector 2.8.4's `StringClassNameToClassConstantRector`
 //! (rules/Php55/Rector/String_).
 //!
 //! A string whose value (without leading `\`) names a known class, interface, trait or enum with a namespace, and

@@ -1,4 +1,4 @@
-//! `lint/php-8.5/no-finfo-buffer-context`, ported from Rector 2.6.1's `RemoveFinfoBufferContextArgRector`
+//! `lint/php-8.5/no-finfo-buffer-context`, ported from Rector 2.8.4's `RemoveFinfoBufferContextArgRector`
 //! (rules/Php85/Rector/FuncCall).
 //!
 //! PHP 8.5 deprecates the unused `$context` argument of `finfo_buffer()` and `finfo::buffer()`, so it goes: the

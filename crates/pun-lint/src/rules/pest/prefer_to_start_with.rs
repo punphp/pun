@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-start-with`, ported from pest-plugin-rector's `UseToStartWithRector`: `expect(str_starts_with($subject, $other))->toBeTrue()` becomes `expect($subject)->toStartWith($other)`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toStartWith()`. The checked value's type must possibly be a string.
+//! `->not` before the matcher becomes `->not->toStartWith()`. The checked value's type must be a string.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToStartWith {
             "str_starts_with",
             "toStartWith",
             |values| match values {
-                [subject, other] if !(type_is(ctx, subject, Is::String) == Trinary::No) => {
+                [subject, other] if type_is(ctx, subject, Is::String) == Trinary::Yes => {
                     Some((*subject, vec![*other]))
                 }
                 _ => None,

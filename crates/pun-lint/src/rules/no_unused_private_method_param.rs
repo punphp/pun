@@ -1,10 +1,11 @@
-//! `lint/dead-code/no-unused-private-method-param`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-unused-private-method-param`, ported from Rector 2.8.4's
 //! `RemoveUnusedPrivateMethodParameterRector` (rules/DeadCode/Rector/ClassMethod), with `UnusedParameterResolver`
 //! and `PrivateMethodParamRemover`.
 //!
 //! A private method's unused parameters go, with their `@param` tags and the matching arguments of the calls to it
 //! from the class (`$this->name()`, `self::name()`, `static::name()`). A call that unpacks its arguments, passes a
-//! named argument for a parameter that stays, or takes the method as a first-class callable keeps everything.
+//! named argument for a parameter that stays, or takes the method as a first-class callable keeps everything; a
+//! `self::name(...)` or `static::name(...)` callable is no caller (PHPStan 2.3 gives its class name no scope).
 //!
 //! Rector finds the callers by their type. Pun reads it from the syntax: `$this`, `self`, `static` and the class's
 //! own name are the class, `parent` and other class names are not. A call on another receiver (`$other->name()`) or
@@ -219,6 +220,9 @@ fn find_references<'a>(
         }
         Node::StaticMethodPartialApplication(call) if named(&call.method) != Some(false) => {
             match receiver(class, call.class) {
+                // PHPStan 2.3 gives the `self`/`static` of `self::name(...)` no scope (only the virtual
+                // `StaticMethodCallableNode` gets one), so `isObjectType()` fails and Rector finds no caller there.
+                _ if matches!(call.class, Expression::Self_(_) | Expression::Static(_)) => {}
                 Some(false) => {}
                 Some(true) => out.push(Reference::Callable),
                 None => out.push(Reference::Unknown(None)),

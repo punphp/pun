@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-resolve-helper`, ported from rector-laravel 2.5.0's `AppToResolveRector` (src/Rector/FuncCall).
+//! `lint/laravel/prefer-resolve-helper`, ported from rector-laravel 2.7.3's `AppToResolveRector` (src/Rector/FuncCall).
 //!
 //! `app('foo')` becomes `resolve('foo')`. A call without the `abstract` argument, or with one that is null, is left
 //! alone: `app()` returns the container.

@@ -57,7 +57,7 @@ impl Rule for PreferToBeJson {
         let Some(string) = first_value(&decode.argument_list) else {
             return;
         };
-        if type_is(ctx, string, Is::String) == Trinary::No {
+        if type_is(ctx, string, Is::String) != Trinary::Yes {
             return;
         }
         let valid = (not_identical == (method == b"toBeTrue")) != has_not(call);

@@ -208,7 +208,7 @@ fn lint_survives_a_deep_expression() {
     assert_eq!(code, Some(1));
 }
 
-/// The types rules see classes in the project's other files, also when only one file is named: Rector 2.6.1's
+/// The types rules see classes in the project's other files, also when only one file is named: Rector 2.8.4's
 /// StringReturnTypeFromStrictScalarReturnsRector adds `: string` to `Child::prefix()` once it knows `Base` (in another
 /// file) has no `prefix()` to stay compatible with. A class outside the project stays unknown:
 /// AddArrowFunctionReturnTypeRector leaves `fn () => Job::go()->job` alone (Rector run on these files), where Mago
@@ -299,7 +299,7 @@ fn types_rules_see_the_project_classes() {
     assert_eq!(code, Some(1));
 }
 
-/// Every rule that reads facts sees the project's other files, not only the `types` rules: Rector 2.6.1's
+/// Every rule that reads facts sees the project's other files, not only the `types` rules: Rector 2.8.4's
 /// MakeInheritedMethodVisibilitySameAsParentRector (run on these two files) makes `Child::run()` protected like the
 /// `Base::run()` it overrides, from another file.
 #[test]
@@ -555,7 +555,7 @@ fn dirty_narrows_to_the_lint_files() {
     assert_eq!(code, Some(1));
 }
 
-/// Rector 2.6.1 with PHPStan 2.2.7, all five class-method rules, PHP 8.4. Only Child.php is selected for editing;
+/// Rector 2.8.4 with PHPStan 2.3.5, all four class-method rules, PHP 8.4. Only Child.php is selected for editing;
 /// the parent and trait in External.php must still protect required and used methods and resolve defaults.
 #[test]
 fn class_method_rules_see_project_declarations() {
@@ -614,6 +614,11 @@ final class Child extends Base
 {
     use CallsKept;
 
+    public function __construct(int $n = 1)
+    {
+        parent::__construct($n);
+    }
+
     public function required()
     {
     }
@@ -635,7 +640,6 @@ preset = "empty"
 "dead-code/no-empty-method" = "error"
 "dead-code/no-redundant-default-argument" = "error"
 "dead-code/no-unused-private-method" = "error"
-"dead-code/no-useless-constructor" = "error"
 "dead-code/no-useless-override" = "error"
 "#;
     let d = project(

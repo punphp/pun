@@ -1,4 +1,4 @@
-//! `lint/functions/no-required-after-optional`, ported from Rector 2.6.1's `OptionalParametersAfterRequiredRector`
+//! `lint/functions/no-required-after-optional`, ported from Rector 2.8.4's `OptionalParametersAfterRequiredRector`
 //! (rules/CodeQuality/Rector/ClassMethod).
 //!
 //! PHP deprecates a required parameter after an optional one. Each such parameter of a method, function or closure

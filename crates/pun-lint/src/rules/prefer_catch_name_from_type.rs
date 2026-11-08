@@ -1,4 +1,4 @@
-//! `lint/style/prefer-catch-name-from-type`, ported from Rector 2.6.1's `CatchExceptionNameMatchingTypeRector`
+//! `lint/style/prefer-catch-name-from-type`, ported from Rector 2.8.4's `CatchExceptionNameMatchingTypeRector`
 //! (rules/CodingStyle/Rector/Catch_) and `PropertyNaming::fqnToVariableName` (rules/Naming/Naming).
 //!
 //! A `try` among the statements of a function, method, closure, namespace or a file without one, with one `catch`

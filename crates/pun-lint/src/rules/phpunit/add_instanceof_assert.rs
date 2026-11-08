@@ -8,7 +8,9 @@
 //! first statement that uses such an `$x` whose type there is `X|null` (exactly two types), as the receiver of a
 //! method call (`add-instanceof-assert`, every such variable of the statement) or as an argument of a method call
 //! whose parameter there is a class (`add-instanceof-assert-for-argument`, the first such call, assert calls aside),
-//! goes `$this->assertInstanceOf(\X::class, $x);`, once for each collected assignment.
+//! goes `$this->assertInstanceOf(\X::class, $x);`, once for each collected assignment; a statement that already
+//! asserts a variable that way drops it. After a `$$name = ...`, every variable but `$this` takes the value's classes
+//! too (`assignDynamicVariable`).
 //!
 //! Mago does not type a call that returns a class no file declares as that class, as PHPStan does, so Pun collects
 //! no such assignment (tests/rector/AddInstanceofAssertForNullableInstanceRector/Pun/unknown_class).
@@ -53,7 +55,7 @@ impl Rule for AddInstanceofAssert {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        run(node, ancestors, ctx, out, &|stmt, collection| {
+        run(node, ancestors, ctx, out, true, &|stmt, collection, _| {
             matched_receivers(ctx, stmt, collection)
         });
     }
@@ -77,8 +79,8 @@ impl Rule for AddInstanceofAssertForArgument {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        run(node, ancestors, ctx, out, &|stmt, collection| {
-            matched_argument(ctx, stmt, collection)
+        run(node, ancestors, ctx, out, false, &|stmt, collection, dynamic| {
+            matched_argument(ctx, stmt, collection, dynamic)
                 .into_iter()
                 .collect()
         });
@@ -88,13 +90,15 @@ impl Rule for AddInstanceofAssertForArgument {
 /// A collected assignment: the variable's name and its class (`VariableNameToType`).
 type Collected = (Vec<u8>, String);
 
-/// `refactor()`: `matched` gives the indices in the collection of the variables a statement asserts.
+/// `refactor()`: `matched` gives the indices in the collection of the variables a statement asserts; `static_calls`
+/// lets `self::assertInstanceOf()` count as an assert already there.
 fn run(
     node: Node<'_, '_>,
     ancestors: &[Node<'_, '_>],
     ctx: &Context<'_>,
     out: &mut Vec<Report>,
-    matched: &dyn Fn(&Statement<'_>, &[Collected]) -> Vec<usize>,
+    static_calls: bool,
+    matched: &dyn Fn(&Statement<'_>, &[Collected], &[String]) -> Vec<usize>,
 ) {
     let list = match node {
         Node::Method(method) => {
@@ -126,9 +130,24 @@ fn run(
         return;
     }
     let mut collection = collect(ctx, &list);
+    // `dynamic`: the class names a `$$name = ...` before the statement adds to every variable (PHPStan's
+    // `assignDynamicVariable`).
+    let mut dynamic: Vec<Vec<String>> = Vec::new();
+    let mut widened: Vec<String> = Vec::new();
+    for statement in &list.stmts {
+        dynamic.push(widened.clone());
+        dynamic_assign_classes(ctx, statement, &mut widened);
+    }
     let mut edits = Vec::new();
     for (i, statement) in list.stmts.iter().enumerate() {
-        let mut found = matched(statement, &collection);
+        // already asserted, e.g. in trait, where $this is not known as TestCase so the type is not narrowed
+        if let Some(name) = asserted_variable(statement, static_calls) {
+            if let Some(index) = match_by_name(&collection, name) {
+                collection.remove(index);
+            }
+            continue;
+        }
+        let mut found = matched(statement, &collection, &dynamic[i]);
         if found.is_empty() {
             continue;
         }
@@ -144,6 +163,49 @@ fn run(
         return;
     };
     out.push(Report::fixed(first, MESSAGE, Safety::Safe, edits));
+}
+
+/// `matchAssertInstanceOfVariableName()`: the variable a statement `$x->assertInstanceOf($class, $variable)` (or,
+/// with `static_calls`, `X::assertInstanceOf(...)`) asserts.
+fn asserted_variable<'a>(statement: &'a Statement<'a>, static_calls: bool) -> Option<&'a [u8]> {
+    let Statement::Expression(e) = statement else {
+        return None;
+    };
+    let (method, arguments) = match e.expression {
+        Expression::Call(Call::Method(call)) => (&call.method, &call.argument_list),
+        Expression::Call(Call::StaticMethod(call)) if static_calls => (&call.method, &call.argument_list),
+        _ => return None,
+    };
+    let ClassLikeMemberSelector::Identifier(name) = method else {
+        return None;
+    };
+    if !name.value.eq_ignore_ascii_case(b"assertInstanceOf") {
+        return None;
+    }
+    match arguments.arguments.get(1).map(|a| a.value()) {
+        Some(Expression::Variable(Variable::Direct(v))) => Some(&v.name[1..]),
+        _ => None,
+    }
+}
+
+/// The class names of the value of a `$$name = ...` statement whose name is not a literal string, added to `out`.
+fn dynamic_assign_classes(ctx: &Context<'_>, statement: &Statement<'_>, out: &mut Vec<String>) {
+    let Some(assignment) = expression(statement).and_then(assign) else {
+        return;
+    };
+    match unparenthesize(assignment.lhs) {
+        Expression::Variable(Variable::Indirect(v))
+            if !matches!(
+                unparenthesize(v.expression),
+                Expression::Literal(mago_syntax::cst::Literal::String(_))
+            ) => {}
+        Expression::Variable(Variable::Nested(_)) => {}
+        _ => return,
+    }
+    let facts = facts(ctx);
+    for atomic in facts.full_type(node_span(assignment.rhs)).iter().flat_map(|t| t.types.iter()) {
+        object_class_names(atomic, out);
+    }
 }
 
 /// `NullableObjectAssignCollector::collect()`: nothing when a statement is not an expression statement (php-parser's
@@ -258,6 +320,7 @@ fn matched_argument(
     ctx: &Context<'_>,
     statement: &Statement<'_>,
     collection: &[Collected],
+    dynamic: &[String],
 ) -> Option<usize> {
     let mut matched = None;
     traverse(statement, &mut |node| {
@@ -268,7 +331,7 @@ fn matched_argument(
         if is_assert_method_call(&call.method) {
             return false;
         }
-        let parameter_types = parameter_types(ctx, call);
+        let parameter_types = parameter_types(ctx, call, dynamic);
         for (position, arg) in call.argument_list.arguments.iter().enumerate() {
             let value = arg.value();
             let Expression::Variable(variable) = value else {
@@ -314,6 +377,7 @@ fn is_assert_method_call(method: &ClassLikeMemberSelector<'_>) -> bool {
 fn parameter_types(
     ctx: &Context<'_>,
     call: &mago_syntax::cst::MethodCall<'_>,
+    dynamic: &[String],
 ) -> Option<Vec<Option<TUnion>>> {
     if call.argument_list.arguments.is_empty() {
         return None;
@@ -325,6 +389,14 @@ fn parameter_types(
     let mut classes: Vec<String> = Vec::new();
     for atomic in facts.full_type(node_span(call.object))?.types.iter() {
         object_class_names(atomic, &mut classes);
+    }
+    // a variable other than `$this` takes the type of a `$$name = ...` before
+    if matches!(call.object, Expression::Variable(Variable::Direct(v)) if v.name != b"$this") {
+        for class in dynamic {
+            if !classes.contains(class) {
+                classes.push(class.clone());
+            }
+        }
     }
     let [class] = &classes[..] else {
         return None;

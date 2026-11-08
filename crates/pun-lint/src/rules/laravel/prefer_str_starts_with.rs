@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-str-starts-with`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-str-starts-with`, ported from rector-laravel 2.7.3's
 //! `SubStrToStartsWithOrEndsWithStaticMethodCallRector` (src/Rector/Expr).
 //!
 //! `substr($a, 0) === $b` becomes `\Illuminate\Support\Str::startsWith($a, $b)`, and `substr($a, -3) == $b` becomes

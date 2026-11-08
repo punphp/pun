@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-date-facade`, ported from rector-laravel 2.5.0's `CarbonToDateFacadeRector`
+//! `lint/laravel/prefer-date-facade`, ported from rector-laravel 2.7.3's `CarbonToDateFacadeRector`
 //! (src/Rector/StaticCall).
 //!
 //! A static call on `Carbon\Carbon` or `Illuminate\Support\Carbon` (or a class the codebase knows extends one) becomes

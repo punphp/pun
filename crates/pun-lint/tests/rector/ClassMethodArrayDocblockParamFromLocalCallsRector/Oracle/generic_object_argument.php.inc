@@ -22,7 +22,7 @@ class SomeClass
     }
 
     /**
-     * @param \ArrayIterator<int, int>[] $items
+     * @param array<int, \ArrayIterator<int, int>> $items
      */
     private function run(array $items): void
     {

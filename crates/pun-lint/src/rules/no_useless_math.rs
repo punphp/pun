@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-math`, ported from Rector 2.6.1's `RemoveDeadZeroAndOneOperationRector`
+//! `lint/dead-code/no-useless-math`, ported from Rector 2.8.4's `RemoveDeadZeroAndOneOperationRector`
 //! (rules/DeadCode/Rector/Plus).
 //!
 //! An operation that cannot change a number goes, when its operands' native types are each all integers or all

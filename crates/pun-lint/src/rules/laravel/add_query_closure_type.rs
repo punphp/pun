@@ -1,4 +1,4 @@
-//! `lint/laravel/add-query-closure-type`, ported from rector-laravel 2.5.0's `EloquentWhereTypeHintClosureParameterRector`
+//! `lint/laravel/add-query-closure-type`, ported from rector-laravel 2.7.3's `EloquentWhereTypeHintClosureParameterRector`
 //! (src/Rector/MethodCall).
 //!
 //! A query builder's `where()` or `orWhere()` (a method call on an `Illuminate\Contracts\Database\Query\Builder`, or a

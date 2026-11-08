@@ -64,7 +64,7 @@ final class A implements \Countable
     {
     }
 
-    protected static function createComponentFoo()
+    private static function createComponentFoo()
     {
     }
 

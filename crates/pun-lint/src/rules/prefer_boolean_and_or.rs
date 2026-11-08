@@ -1,4 +1,4 @@
-//! `lint/operators/prefer-boolean-and-or`, ported from Rector 2.6.1's `LogicalToBooleanRector`
+//! `lint/operators/prefer-boolean-and-or`, ported from Rector 2.8.4's `LogicalToBooleanRector`
 //! (rules/CodeQuality/Rector/LogicalAnd).
 //!
 //! `and` and `or` become `&&` and `||`, in the whole chain of `and`/`or` operations the outermost one heads. The new

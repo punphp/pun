@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-property-exists`, ported from Rector 2.6.1's `IssetOnPropertyObjectToPropertyExistsRector`
+//! `lint/complexity/prefer-property-exists`, ported from Rector 2.8.4's `IssetOnPropertyObjectToPropertyExistsRector`
 //! (rules/CodeQuality/Rector/Isset_).
 //!
 //! Each property fetch in an `isset()` (or a `!isset()`) whose object is of exactly one class becomes a null check:
@@ -147,6 +147,12 @@ fn check(
         return None;
     }
     let metadata = facts.codebase.get_class_like(class.as_bytes())?;
+    // XML elements resolve properties from the XML document itself
+    if class.eq_ignore_ascii_case("SimpleXMLElement")
+        || facts.codebase.is_instance_of(class.as_bytes(), b"SimpleXMLElement")
+    {
+        return None;
+    }
     let property = format!("${name}");
     if skips_for_native_type(facts, class, &property, metadata.kind.is_enum()) {
         return None;

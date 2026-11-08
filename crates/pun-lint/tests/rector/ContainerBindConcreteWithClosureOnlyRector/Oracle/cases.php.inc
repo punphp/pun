@@ -124,7 +124,7 @@ $app->bind(function (): \App\Contract {
 $app->singleton(function ($app) use ($x): \App\Contract {
     return new Impl();
 });
-$app->bindIf(static function (): \App\Contract {
+$app->bindIf(Contract::class, static function (): Impl {
     return new Impl();
 });
 $app->SINGLETONIF(Contract::class, function () {
@@ -135,7 +135,7 @@ $app->bind(Open::class, function () {
 });
 $app->bind(function (): \App\Contract {
     return new FinalImpl();
-}, true);
+}, shared: true);
 $app->bind(function (): \App\Contract {
     if (rand()) {
         return new Impl();
@@ -175,7 +175,7 @@ $abstract = Contract::class;
 $app->bind($abstract, function () {
     return new Impl();
 });
-$app->bind(concrete: function (): \App\Contract {
+$app->bind(function (): \App\Contract {
     return new Impl();
 });
 $app->bind((function (): \App\Contract {

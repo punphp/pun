@@ -260,7 +260,7 @@ final class CoverTest extends TestCase
         parent::assertSame(1, $a);
         static::assertSame(1, $a);
         self::assertSame(expected: 1, actual: $a);
-        $this->assertSame(expected: 1, actual: $a);
+        $this->assertSame(actual: $a, expected: 1);
         $this->assertTrue(!$a, 'message', 'extra');
         $this->assertFalse(!$a);
         $this->assertTrue(isset($a));

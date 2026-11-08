@@ -18,7 +18,7 @@ final class SomeClass
 final class SomeClass
 {
     /**
-     * @var array<string, mixed>|int[]
+     * @var array<int|string, mixed>
      */
     private array $items = [];
 

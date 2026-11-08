@@ -1,21 +1,22 @@
-//! `lint/types/add-param-phpdoc-from-local-calls`, ported from Rector 2.6.1's
+//! `lint/types/add-param-phpdoc-from-local-calls`, ported from Rector 2.8.4's
 //! `ClassMethodArrayDocblockParamFromLocalCallsRector` (rules/TypeDeclarationDocblocks/Rector/Class_): a method
 //! parameter declared `array` gets `@param` from the types of the arguments the class's own calls of the method pass
-//! (`LocalMethodCallFinder`, `CallTypesResolver::resolveTypesFromCalls()`).
+//! (`LocalMethodCallFinder`, `CallTypesResolver::resolveTypesFromCalls()`). Only a private method counts, a type with
+//! a nested array is left alone, and a parameter's default value is united with the type.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{
     Argument, ArgumentList, Call, ClassLikeMemberSelector, Expression, Node, NodeKind, PartialApplication,
 };
-use pun_phpstan::types::{Type, mixed};
+use pun_phpstan::types::{Type, mixed, union};
 
 use super::docblock::{class_name, docs_report, is_array_hint, is_this, methods};
 use super::facts::facts;
 use super::names::resolve_class_name;
 use crate::rules::phpdoc_writer::type_mapper::{
     create_mixed_passed_or_union_type,
-    const_array_item_type, const_array_key_type, is_mixed, is_mixed_array, is_useful_array_tag,
+    const_array_item_type, const_array_key_type, is_mixed, is_useful_array_tag,
 };
 use crate::rules::phpdoc_writer::{DocTarget, decorate_param, expr_type};
 use crate::syntax::node_span;
@@ -51,12 +52,16 @@ impl Rule for AddParamPhpdocFromLocalCalls {
             if params.is_empty() {
                 continue;
             }
+            // only private methods have a closed set of local callers; public/protected can be called from outside
+            // with a wider type we cannot see here
+            if !method.modifiers.iter().any(|m| m.is_private()) {
+                continue;
+            }
             let target = DocTarget::of(ctx, node_span(method).start);
             let mut info = target.info(ctx.source);
             let name = String::from_utf8_lossy(method.name.value);
             let calls = local_method_calls(ctx, &scope, class, &class_name, &name);
             let types = resolve_types_from_calls(ctx, &scope, &calls);
-            let is_public = !method.modifiers.iter().any(|m| m.is_private() || m.is_protected());
             let mut changed = false;
             for (position, param) in params.iter().enumerate() {
                 if !param.hint.as_ref().is_some_and(is_array_hint) {
@@ -68,10 +73,6 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                 if is_useful_array_tag(tag.map(|t| &t.ty)) {
                     continue;
                 }
-                // on public method, skip if there is mixed[], as caller can be anything
-                if is_public && tag.is_some_and(|t| is_mixed_array(&t.ty)) {
-                    continue;
-                }
                 let resolved = types
                     .iter()
                     .find(|(key, _)| *key == Key::Position(position))
@@ -80,7 +81,16 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                     continue;
                 };
                 // in case of array type declaration, null cannot be passed or is already casted
-                let resolved = resolved.clone().remove_null();
+                let mut resolved = resolved.clone().remove_null();
+                // the generalization of a nested array (an array of arrays) is imprecise and can diverge from the type
+                // PHPStan itself infers at the call site
+                if has_nested_array(&resolved) {
+                    continue;
+                }
+                // the param default value must always be accepted: unite with the default type
+                if let Some(default) = &param.default_value {
+                    resolved = union(vec![resolved, expr_type(ctx, &scope, default.value).unwrap_or_else(mixed)]);
+                }
                 changed |= decorate_param(&mut info, &resolved, &param_name, param.ellipsis.is_some());
             }
             if changed {
@@ -95,6 +105,19 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                 &changes,
             ));
         }
+    }
+}
+
+/// `hasNestedArray()`: an `ArrayType` (or a union member that is one) whose item type is an `ArrayType`, or a union
+/// with one.
+fn has_nested_array(t: &Type) -> bool {
+    match t {
+        Type::Union(types) => types.iter().any(has_nested_array),
+        Type::Array(_, item) => match item.as_ref() {
+            Type::Union(items) => items.iter().any(|i| matches!(i, Type::Array(..))),
+            item => matches!(item, Type::Array(..)),
+        },
+        _ => false,
     }
 }
 
@@ -117,9 +140,10 @@ fn local_method_calls<'ast, 'arena>(
                 Node::Call(Call::Method(c)) => (Caller::Object(c.object), &c.method, Some(&c.argument_list)),
                 Node::Call(Call::StaticMethod(c)) => (Caller::Class(c.class), &c.method, Some(&c.argument_list)),
                 Node::PartialApplication(PartialApplication::Method(c)) => (Caller::Object(c.object), &c.method, None),
-                Node::PartialApplication(PartialApplication::StaticMethod(c)) => {
-                    (Caller::Class(c.class), &c.method, None)
-                }
+                // `self::run(...)`: PHPStan 2.3 gives the class of a static method callable no type, so the call's
+                // class is no class name and it is not a local call (as for `self::run(...)` in
+                // no_unused_test_method_param)
+                Node::PartialApplication(PartialApplication::StaticMethod(_)) => return,
                 _ => return,
             };
             let ClassLikeMemberSelector::Identifier(id) = selector else {

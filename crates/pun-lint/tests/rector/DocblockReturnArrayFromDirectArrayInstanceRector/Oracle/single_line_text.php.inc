@@ -13,8 +13,10 @@ class SingleLineText
 
 class SingleLineText
 {
-    /** Some text
-     * @return array<int, int> */
+    /**
+     * Some text
+     * @return array<int, int>
+     */
     public function run(): array
     {
         return [1, 2];

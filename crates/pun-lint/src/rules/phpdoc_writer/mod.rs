@@ -1,13 +1,13 @@
 //! Rector's phpdoc writer, shared by the rules that add or change `@param`, `@var` and `@return` tags, ported from
-//! Rector 2.6.1 (src/BetterPhpDocParser, src/PHPStanStaticTypeMapper, src/Comments) on PHPStan 2.2.7:
+//! Rector 2.8.4 (src/BetterPhpDocParser, src/PHPStanStaticTypeMapper, src/Comments) on PHPStan 2.3.5:
 //!
 //! - [`DocTarget`]: a node's comments as php-parser assigns them, its [`PhpDocInfo`]
 //!   (`PhpDocInfoFactory::createFromNodeOrEmpty()`), and the edit that writes a changed doc back as php-parser's
 //!   format-preserving printer does (`DocBlockUpdater`, then `pComments()` at the node's indentation).
 //! - [`doc_info`]: `PhpDocInfo` (`getReturnTagValue()`, `getParamTagValueByName()`, `getVarTagValueNode()`, the
 //!   `PhpDocTypeChanger` setters) and `PhpDocInfoPrinter`.
-//! - [`type_mapper`]: `PHPStanStaticTypeMapper::mapToPHPStanPhpDocTypeNode()` with `ArrayTypeMapper` and
-//!   `UnionTypeMapper`, `TypeNormalizer::generalizeConstantTypes()`, `ConstantArrayTypeGeneralizer` and
+//! - [`type_mapper`]: `StaticTypeMapper::mapPHPStanTypeToPHPStanPhpDocTypeNode()` (`toPhpDocNode()` and
+//!   `styleTypeNode()`), `TypeNormalizer::generalizeConstantTypes()`, `ConstantArrayTypeGeneralizer` and
 //!   `NodeDocblockTypeDecorator`'s checks.
 //! - [`type_node`]: the type nodes, printed as Rector prints them.
 //! - [`phpstan_type`] and [`expr_type`]: PHPStan's type of an expression (`getType()`, `getNativeType()`) from
@@ -455,6 +455,12 @@ fn array_type<'a>(
     Some(b.get())
 }
 
+/// `$typeNode instanceof IdentifierTypeNode`: a keyword (`int`, `array`, `static`); a class name is PHPStan 2.3's
+/// `FullyQualifiedNameNode` (`\Foo`) and `$this` a `ThisTypeNode`, neither an identifier node.
+fn is_identifier_node(node: &TypeNode) -> bool {
+    matches!(node, TypeNode::Identifier(name) if !name.starts_with('\\') && name != "$this")
+}
+
 /// `NodeDocblockTypeDecorator::decorateGenericIterableReturnType()` of a PHPStan type.
 pub fn decorate_return(info: &mut PhpDocInfo, t: &Type) -> bool {
     decorate_return_node(info, type_mapper::create_type_node(t), t)
@@ -463,7 +469,7 @@ pub fn decorate_return(info: &mut PhpDocInfo, t: &Type) -> bool {
 /// `decorateGenericIterableReturnType()` of a type node; `t` is its PHPStan type. Not for bare `mixed`, nor for a
 /// node with no value iterable type.
 pub fn decorate_return_node(info: &mut PhpDocInfo, node: TypeNode, t: &Type) -> bool {
-    if type_mapper::is_bare_mixed_type(t) || matches!(node, TypeNode::Identifier(_)) {
+    if type_mapper::is_bare_mixed_type(t) || is_identifier_node(&node) {
         return false;
     }
     info.set_return_type(node);
@@ -473,7 +479,7 @@ pub fn decorate_return_node(info: &mut PhpDocInfo, node: TypeNode, t: &Type) -> 
 /// `decorateGenericIterableVarType()`.
 pub fn decorate_var(info: &mut PhpDocInfo, t: &Type) -> bool {
     let node = type_mapper::create_type_node(t);
-    if type_mapper::is_bare_mixed_type(t) || matches!(node, TypeNode::Identifier(_)) {
+    if type_mapper::is_bare_mixed_type(t) || is_identifier_node(&node) {
         return false;
     }
     info.set_var_type(node);
@@ -486,7 +492,7 @@ pub fn decorate_param(info: &mut PhpDocInfo, t: &Type, name: &str, is_variadic: 
         return false;
     }
     let node = type_mapper::create_type_node(t);
-    if matches!(node, TypeNode::Identifier(_)) {
+    if is_identifier_node(&node) {
         return false;
     }
     if info.param_tag(name).is_some_and(|tag| tag.ty.to_string() == node.to_string()) {
@@ -496,18 +502,25 @@ pub fn decorate_param(info: &mut PhpDocInfo, t: &Type, name: &str, is_variadic: 
     true
 }
 
-/// `PhpDocTypeChanger::changeReturnType()` of an `array<K, V>` type over a missing or not useful `@return` tag.
-/// Its guards never refuse such a change: `hasInvalidTag()` is never true, as Rector's `DoctrineAnnotationDecorator`
-/// turns every invalid tag into a generic one; the type is not a union (`isLegal()`); and it is not the tag's type
-/// (`areTypesEqual()`), which would be useful.
-pub fn change_return_type(info: &mut PhpDocInfo, t: &Type) {
+/// `PhpDocTypeChanger::changeReturnType()` of an `array<K, V>` type over a missing or not useful `@return` tag: `false`
+/// (no change) when the doc has an invalid `@return` (`hasInvalidTag()`). Its other guards never refuse such a change:
+/// the type is not a union (`isLegal()`), and it is not the tag's type (`areTypesEqual()`), which would be useful.
+pub fn change_return_type(info: &mut PhpDocInfo, t: &Type) -> bool {
+    if info.has_invalid_tag("@return") {
+        return false;
+    }
     info.set_return_type(type_mapper::map_to_phpdoc(t));
+    true
 }
 
 /// `PhpDocTypeChanger::changeParamType()` of an `array<K, V>` type over a parameter without a `@param` tag (see
 /// [`change_return_type`] for its guards).
-pub fn change_param_type(info: &mut PhpDocInfo, t: &Type, name: &str, is_variadic: bool) {
+pub fn change_param_type(info: &mut PhpDocInfo, t: &Type, name: &str, is_variadic: bool) -> bool {
+    if info.has_invalid_tag("@param") {
+        return false;
+    }
     info.set_param_type(name, is_variadic, type_mapper::map_to_phpdoc(t));
+    true
 }
 
 /// `NodeTypeResolver::getNativeType()` of `expr`: a literal from the syntax, anything else Mago's native type.

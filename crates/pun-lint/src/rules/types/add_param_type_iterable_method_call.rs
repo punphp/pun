@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-iterable-method-call`, ported from Rector 2.6.1's
+//! `lint/types/add-param-type-iterable-method-call`, ported from Rector 2.8.4's
 //! `AddClosureParamTypeFromIterableMethodCallRector` (rules/TypeDeclaration/Rector/FunctionLike) with
 //! `TypeUnwrapper`: a closure passed to a method of an iterable object whose docblock gives it key and value types
 //! (`Collection<int, string>` of a class that declares no templates, PHPStan's `Collection&iterable<int, string>`)
@@ -76,7 +76,7 @@ impl Rule for AddParamTypeIterableMethodCall {
             return;
         }
         let mut edits: Vec<Edit> = Vec::new();
-        // `getArgs()` is a list, so a named argument too takes the parameter at its position (checked with Rector 2.6.1)
+        // `getArgs()` is a list, so a named argument too takes the parameter at its position (checked with Rector 2.8.4)
         for (index, arg) in args.iter().enumerate() {
             let Expression::Closure(closure) = unparenthesize(arg) else {
                 continue;

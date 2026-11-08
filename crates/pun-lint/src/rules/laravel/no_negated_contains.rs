@@ -1,4 +1,4 @@
-//! `lint/laravel/no-negated-contains`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/no-negated-contains`, ported from rector-laravel 2.7.3's
 //! `AvoidNegatedCollectionContainsOrDoesntContainRector` (src/Rector/BooleanNot).
 //!
 //! `!$collection->contains(...)` becomes `$collection->doesntContain(...)`, and `!$collection->doesntContain(...)`

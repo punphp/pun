@@ -1,4 +1,4 @@
-//! `lint/complexity/no-redundant-null-check`, ported from Rector 2.6.1's `SimplifyIfNotNullReturnRector`
+//! `lint/complexity/no-redundant-null-check`, ported from Rector 2.8.4's `SimplifyIfNotNullReturnRector`
 //! (rules/CodeQuality/Rector/If_) with `IfManipulator::matchIfNotNullReturnValue`.
 //!
 //! ```php

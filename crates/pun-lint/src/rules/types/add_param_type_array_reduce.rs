@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-array-reduce`, ported from Rector 2.6.1's `AddClosureParamTypeForArrayReduceRector`
+//! `lint/types/add-param-type-array-reduce`, ported from Rector 2.8.4's `AddClosureParamTypeForArrayReduceRector`
 //! (rules/TypeDeclaration/Rector/FunctionLike): the closure passed to the native `array_reduce()` gets the array's
 //! item type on its second (value) parameter, and on its first (carry) parameter the closure's return type, united
 //! with the initial value's type when one is passed.
@@ -9,7 +9,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    AssignmentOperator, Closure, Expression, FunctionLikeParameter, Identifier, Node, NodeKind,
+    AssignmentOperator, BinaryOperator, Closure, Expression, FunctionLikeParameter, Identifier, Node, NodeKind,
 };
 use pun_problem::{Edit, Safety};
 
@@ -32,6 +32,13 @@ impl Rule for AddParamTypeArrayReduce {
     fn id(&self) -> &'static str {
         "lint/types/add-param-type-array-reduce"
     }
+
+    /// Rector types the closure in one pass: once the value parameter has its type, a second pass would type the carry
+    /// of `$carry + $item` without an initial value (`float|int`), which the first pass leaves alone.
+    fn once(&self) -> bool {
+        true
+    }
+
 
     fn targets(&self) -> Option<&'static [NodeKind]> {
         Some(&[NodeKind::FunctionCall])
@@ -57,13 +64,21 @@ impl Rule for AddParamTypeArrayReduce {
             return;
         };
         let Some(returned) = closure_return(&facts, value(args[1])) else { return };
+        let value_type = array_shape_of(&facts, ancestors, value(args[0])).as_ref().and_then(item_type);
         let mut carry: Option<Vec<TAtomic>> = Some(returned.types.to_vec());
-        if returns_untyped_param(closure) {
+        if returns_untyped_param(closure, value_type.is_some())
+            || (args.get(2).is_none() && returns_param_sum(closure))
+        {
             carry = None;
         } else if let Some(initial) = args.get(2) {
             carry = type_of(&facts, value(initial)).and_then(|initial| combine(initial, returned));
+        } else if value_type.as_ref().is_some_and(is_general_int) && returns_carry_math_on_item(closure)
+            && let Some(types) = carry.as_mut()
+        {
+            // resolveCommonMath(): `TypeCombinator::union($leftNumberType, $rightNumberType)` of `mixed`'s
+            // `int|float` with the item's `int`, where the repeated `int` takes the later place: `float|int`
+            types.sort_by_key(|a| !matches!(a, TAtomic::Scalar(TScalar::Float(_))));
         }
-        let value_type = array_shape_of(&facts, ancestors, value(args[0])).as_ref().and_then(item_type);
         let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
         let mut edits: Vec<Edit> = Vec::new();
         if let (Some(param), Some(t)) = (params.get(1), value_type) {
@@ -102,13 +117,16 @@ fn closure_return<'f>(facts: &'f Facts, closure: &Expression<'_>) -> Option<&'f 
 
 /// Whether the closure returns one of its untyped parameters, never reassigned: PHPStan's return type is then `mixed`
 /// (the parameter is `mixed`, and writing an offset keeps it so), where Mago types the parameter from
-/// `array_reduce()`'s template.
-fn returns_untyped_param(closure: &Closure<'_>) -> bool {
+/// `array_reduce()`'s template. PHPStan types the value parameter from the array's item type too (`TValue`), so with
+/// `value_known` only the carry counts.
+fn returns_untyped_param(closure: &Closure<'_>, value_known: bool) -> bool {
     let untyped: Vec<&[u8]> = closure
         .parameter_list
         .parameters
         .iter()
-        .filter(|p| p.hint.is_none())
+        .enumerate()
+        .filter(|(i, p)| p.hint.is_none() && !(value_known && *i == 1))
+        .map(|(_, p)| p)
         .map(|p| p.variable.name)
         .collect();
     let mut returned: Vec<&[u8]> = Vec::new();
@@ -126,6 +144,62 @@ fn returns_untyped_param(closure: &Closure<'_>) -> bool {
         Flow::Continue
     });
     returned.iter().any(|name| !reassigned.contains(name))
+}
+
+/// Whether the closure returns the sum of two of its untyped parameters (`$carry + $item`). Without an initial value,
+/// PHPStan types the carry from the closure's return with its parameters `mixed`, which `mixed + mixed` makes
+/// `(array|float|int)` (getPlusType()), then types the return again with the carry `array|float|int|null`, and
+/// `array + int` is an error: `mixed` to Rector, which leaves the carry alone.
+fn returns_param_sum(closure: &Closure<'_>) -> bool {
+    let untyped: Vec<&[u8]> = closure
+        .parameter_list
+        .parameters
+        .iter()
+        .filter(|p| p.hint.is_none())
+        .map(|p| p.variable.name)
+        .collect();
+    let is_param = |e: &Expression<'_>| untyped.iter().any(|name| is_variable(unparenthesize(e), name));
+    let mut found = false;
+    traverse(Node::Block(&closure.body), &mut |node| {
+        if let Node::Return(r) = node
+            && let Some(Expression::Binary(b)) = r.value.map(unparenthesize)
+            && matches!(b.operator, BinaryOperator::Addition(_))
+            && is_param(b.lhs)
+            && is_param(b.rhs)
+        {
+            found = true;
+        }
+        Flow::Continue
+    });
+    found
+}
+
+/// Whether the item type is PHPStan's plain `IntegerType`.
+fn is_general_int(t: &TUnion) -> bool {
+    matches!(t.types.as_ref(), [TAtomic::Scalar(TScalar::Integer(i))] if i.is_unspecified())
+}
+
+/// Whether the closure returns `$carry - $item` or `$carry * $item` of its untyped parameters: PHPStan's
+/// getMinusType()/getMulType() of the `mixed` carry and the item go through resolveCommonMath().
+fn returns_carry_math_on_item(closure: &Closure<'_>) -> bool {
+    let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
+    let [carry, item, ..] = params.as_slice() else { return false };
+    if carry.hint.is_some() || item.hint.is_some() {
+        return false;
+    }
+    let mut found = false;
+    traverse(Node::Block(&closure.body), &mut |node| {
+        if let Node::Return(r) = node
+            && let Some(Expression::Binary(b)) = r.value.map(unparenthesize)
+            && matches!(b.operator, BinaryOperator::Subtraction(_) | BinaryOperator::Multiplication(_))
+            && is_variable(unparenthesize(b.lhs), carry.variable.name)
+            && is_variable(unparenthesize(b.rhs), item.variable.name)
+        {
+            found = true;
+        }
+        Flow::Continue
+    });
+    found
 }
 
 /// `resolveFunctionLikeReflectionFromCall() instanceof NativeFunctionReflection`: `array_reduce` is PHP's own, not a

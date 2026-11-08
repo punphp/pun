@@ -7,16 +7,3 @@ final class UnknownType
         $items[] = unknown_function();
     }
 }
------
-<?php
-
-final class UnknownType
-{
-    /**
-     * @param mixed[] $items
-     */
-    public function run(array &$items)
-    {
-        $items[] = unknown_function();
-    }
-}

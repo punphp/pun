@@ -1,5 +1,5 @@
 //! `lint/dead-code/no-null-default-argument` and `lint/dead-code/no-null-default-named-argument`, ported from Rector
-//! 2.6.1's `RemoveNullArgOnNullDefaultParamRector` and `RemoveNullNamedArgOnNullDefaultParamRector`
+//! 2.8.4's `RemoveNullArgOnNullDefaultParamRector` and `RemoveNullNamedArgOnNullDefaultParamRector`
 //! (rules/DeadCode/Rector/MethodCall) with their `CallLikeParamDefaultResolver` (rules/DeadCode/NodeAnalyzer).
 //!
 //! A `null` argument for a parameter whose default is `null` goes: the trailing positional ones (the first rule, on

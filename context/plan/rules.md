@@ -184,8 +184,8 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
   `options` says how upstream options carry over.
 - **`variant`** on PHPStan-family entries keeps the original identifier when one Pun rule replaces several, so `-v`
   output can print it and migrated `ignoreErrors` keep their narrow scope.
-- **Pinned upstream versions** in `[meta] upstream`: PHP-CS-Fixer 3.95.25, Rector 2.6.1 (with rector-phpunit
-  dev-main@e68085d bundled), rector-laravel 2.5.0, pest-plugin-rector 5.x-dev@1a4b6b7, PHPStan 2.3.1, strict-rules
+- **Pinned upstream versions** in `[meta] upstream`: PHP-CS-Fixer 3.95.25, Rector 2.8.4 (with rector-phpunit
+  dev-main@22c6dae bundled), rector-laravel 2.7.3, pest-plugin-rector 5.x-dev@8c1b780, PHPStan 2.3.1, strict-rules
   2.0.12, deprecation-rules 2.0.5, Larastan 3.10.0, Mago 1.57.0. reference/oracle.md says how to fetch each.
 
 **What Step 1 changes in the data** (config.md Build 1-3): rule keys become `<group>/<name>` under `[rules.<command>]`
@@ -213,10 +213,10 @@ so every new rule needs a decision.
 | PHP-CS-Fixer 3.95.25 | 300 | 167 | 115 | - | 18 (deprecated → successor) | - |
 | Pint's own fixers | 2 | 1 | 1 | - | - | - |
 | Pun `Pun/*` (Mago ports) | 17 | - | 17 | - | - | - |
-| Rector core 2.6.1 | 513 | 11 | 264 | - | 2 | 236 |
-| rector-laravel 2.5.0 | 123 | - | 80 | - | - | 43 |
-| pest-plugin-rector 5.x-dev@1a4b6b7 | 61 | - | 59 | - | - | 2 |
-| rector-phpunit (bundled) | 113 | - | 79 | - | - | 34 |
+| Rector core 2.8.4 | 523 | 13 | 266 | - | 2 | 242 |
+| rector-laravel 2.7.3 | 141 | - | 94 | - | - | 47 |
+| pest-plugin-rector 5.x-dev@8c1b780 | 61 | - | 59 | - | - | 2 |
+| rector-phpunit (bundled) | 116 | - | 81 | - | - | 35 |
 | rector-symfony / doctrine / downgrade-php | 267 | - | - | - | - | 267 |
 | PHPStan-family `Rule` classes | 432 | 2 | 17 | 385 | - | 28 |
 | PHPStan 2.3.1 core identifiers | 632 | 2 | - | 608 | 7 | 15 |

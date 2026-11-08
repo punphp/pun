@@ -1,4 +1,4 @@
-//! `lint/complexity/no-sole-value-sprintf`, ported from Rector 2.6.1's `RemoveSoleValueSprintfRector`
+//! `lint/complexity/no-sole-value-sprintf`, ported from Rector 2.8.4's `RemoveSoleValueSprintfRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `sprintf('%s', $value)` with a string `$value` is `$value`. Rector asks PHPStan whether the value is a string;

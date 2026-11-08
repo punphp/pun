@@ -90,6 +90,6 @@ final class SomeTest extends TestCase
     /** @var \PHPUnit\Framework\MockObject\Stub $i comment */
     private Stub $i;
 
-    /** @var \PHPUnit\Framework\MockObject\Stub|Foo   */
+    /** @var   \PHPUnit\Framework\MockObject\Stub|Foo   */
     private Stub $j;
 }

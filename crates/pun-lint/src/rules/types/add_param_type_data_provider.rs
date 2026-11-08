@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-data-provider`, ported from Rector 2.6.1's `AddParamTypeBasedOnPHPUnitDataProviderRector`
+//! `lint/types/add-param-type-data-provider`, ported from Rector 2.8.4's `AddParamTypeBasedOnPHPUnitDataProviderRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) with `ParameterTypeFromDataProviderResolver`: in a PHPUnit test class,
 //! an untyped parameter of a public test method gets the type of the values its data providers give at its position,
 //! read from the provider's first returned array literal or from its yielded arrays.
@@ -12,11 +12,10 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     ArrayElement, ClassLikeMember, Expression, Method, MethodBody, Modifier, Node, NodeKind,
-    UnaryPrefixOperator, Variable,
+    UnaryPrefixOperator,
 };
 use pun_problem::Safety;
 
-use super::add_param_type_array_dim_fetch::is_variable;
 use super::add_param_type_method_call::push_unique;
 use super::class_scope;
 use super::facts::{Facts, facts};
@@ -213,13 +212,8 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
         }
         // resolveYieldStaticArrayTypeByParameterPosition
         for value in yields {
-            // PHPStan types the yielded array in the scope before it, where a variable one item assigns
-            // (`[$c = collect(), $c]`) is not defined yet in a later one: that item is `mixed`
-            if let Some(Expression::Array(array)) = value.map(unparenthesize)
-                && reads_assigned_item(array.elements.iter().collect(), position)
-            {
-                return None;
-            }
+            // (PHPStan 2.3 types a yielded array's items in order: `[$c = collect(), $c]` has `$c` defined in the
+            // second)
             let t = type_of(facts, value?)?;
             for atomic in t.types.iter() {
                 let values = constant_array_values(atomic)?;
@@ -239,20 +233,6 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
         }
     }
     (!out.is_empty()).then_some(out)
-}
-
-/// Whether the item at `position` is a variable that an earlier item assigns.
-fn reads_assigned_item(elements: Vec<&ArrayElement<'_>>, position: usize) -> bool {
-    let Some(ArrayElement::Value(item)) = elements.get(position) else {
-        return false;
-    };
-    let Expression::Variable(Variable::Direct(read)) = unparenthesize(item.value) else {
-        return false;
-    };
-    elements[..position].iter().any(|e| {
-        matches!(e, ArrayElement::Value(v) if matches!(unparenthesize(v.value),
-            Expression::Assignment(a) if is_variable(a.lhs, read.name)))
-    })
 }
 
 /// `ConstantArrayType::getValueTypes()` of a constant array (an array shape), in order; `None` for other types.

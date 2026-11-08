@@ -1,4 +1,4 @@
-//! `lint/laravel/no-negated-when`, ported from rector-laravel 2.5.0's `ReverseConditionableMethodCallRector`
+//! `lint/laravel/no-negated-when`, ported from rector-laravel 2.7.3's `ReverseConditionableMethodCallRector`
 //! (src/Rector/MethodCall).
 //!
 //! On an object that uses `Illuminate\Support\Traits\Conditionable`, `when(!$x, ...)` becomes `unless($x, ...)` and

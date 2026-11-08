@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-inline-array-return`, ported from Rector 2.6.1's `InlineArrayReturnAssignRector`
+//! `lint/complexity/prefer-inline-array-return`, ported from Rector 2.8.4's `InlineArrayReturnAssignRector`
 //! (rules/CodeQuality/Rector/ClassMethod), with `VariableDimFetchAssignResolver`.
 //!
 //! A statement list of three or more statements that only fills an array variable (`$a = [];`, then `$a['k'] = v;`,

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-always-false-condition`, ported from Rector 2.6.1's `ReduceAlwaysFalseIfOrRector`
+//! `lint/dead-code/no-always-false-condition`, ported from Rector 2.8.4's `ReduceAlwaysFalseIfOrRector`
 //! (rules/DeadCode/Rector/If_), with `SafeLeftTypeBooleanAndOrAnalyzer` (rules/DeadCode/NodeAnalyzer).
 //!
 //! An `if (a || b)` whose left side PHPStan types as `false` keeps only `b` as its condition. The left side must hold

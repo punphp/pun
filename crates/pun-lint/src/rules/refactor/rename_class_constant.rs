@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-class-constant`, ported from Rector 2.6.1's `RenameClassConstFetchRector`
+//! `lint/refactor/rename-class-constant`, ported from Rector 2.8.4's `RenameClassConstFetchRector`
 //! (rules/Renaming/Rector/ClassConstFetch).
 //!
 //! Options: `items = [{ old-class = "A", old-constant = "OLD", new-constant = "NEW" }]` (`RenameClassConstFetch`), or

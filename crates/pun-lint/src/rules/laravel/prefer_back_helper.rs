@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-back-helper`, ported from rector-laravel 2.5.0's `RedirectBackToBackHelperRector`
+//! `lint/laravel/prefer-back-helper`, ported from rector-laravel 2.7.3's `RedirectBackToBackHelperRector`
 //! (src/Rector/MethodCall).
 //!
 //! `redirect()->back(...)` and `Redirect::back(...)` (the facade) become `back(...)`.

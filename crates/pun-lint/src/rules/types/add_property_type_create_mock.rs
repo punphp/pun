@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-property-type-create-mock`, ported from Rector 2.6.1's `TypedPropertyFromCreateMockAssignRector`
+//! `lint/phpunit/add-property-type-create-mock`, ported from Rector 2.8.4's `TypedPropertyFromCreateMockAssignRector`
 //! (rules/TypeDeclaration/Rector/Class_): in a PHPUnit test case, a property with one item whose assigned types
 //! (`AssignToPropertyTypeInferer`) declare as `MockObject`, or a class or interface that extends it, gets that
 //! declaration, replacing any other type it has. A property already typed `MockObject` (or a subtype) or with an

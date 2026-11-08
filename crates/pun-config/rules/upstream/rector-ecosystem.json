@@ -12,7 +12,24 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/ArrayToArrGetRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/container-array-access-to-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\ContainerArrayAccessToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-arrayaccess-to-method-call"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/ContainerArrayAccessToMethodCallRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -29,7 +46,24 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/EnvVariableToEnvHelperRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/repository-array-access-to-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\RepositoryArrayAccessToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-arrayaccess-to-method-call"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/RepositoryArrayAccessToMethodCallRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -46,7 +80,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/RequestVariablesToRequestFacadeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -63,7 +97,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/ServerVariableToRequestFacadeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -80,7 +114,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/SessionVariableToSessionFacadeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -97,7 +131,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Assign/CallOnAppArrayAccessToStandaloneAssignRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -114,7 +148,7 @@
    "laravel-collection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/BooleanNot/AvoidNegatedCollectionContainsOrDoesntContainRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -136,7 +170,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Cast/DatabaseExpressionCastsToMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -160,7 +194,24 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddArgumentDefaultValueRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-generic-builder-to-scopes-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddGenericBuilderToScopesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddGenericBuilderToScopesRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -177,7 +228,41 @@
    "laravel-type-declarations"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddGenericReturnTypeToRelationsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-legacy-generic-return-type-to-relations-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddLegacyGenericReturnTypeToRelationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddLegacyGenericReturnTypeToRelationsRector.php",
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-new-generic-return-type-to-relations-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddNewGenericReturnTypeToRelationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddNewGenericReturnTypeToRelationsRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -205,7 +290,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddParentBootToModelClassMethodRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -229,7 +314,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddParentRegisterToEventServiceProviderRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -246,7 +331,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/MakeModelAttributesAndScopesProtectedRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -269,7 +354,24 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/MigrateToSimplifiedAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/relation-table-string-to-pivot-class-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\RelationTableStringToPivotClassRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/RelationTableStringToPivotClassRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -289,7 +391,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/ScopeNamedClassMethodToScopeAttributedClassMethodRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -313,7 +415,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddExtendsAnnotationToModelFactoriesRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -330,7 +432,7 @@
    "laravel-factories"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddHasFactoryToModelsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -358,7 +460,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddMockConsoleOutputFalseToConsoleTestsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -377,7 +479,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AliasesPropertyToAliasesAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -394,7 +496,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AnonymousMigrationsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -413,7 +515,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AppendsPropertyToAppendsAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -432,7 +534,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/BackoffPropertyToBackoffAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -451,7 +553,7 @@
    "up-to-cashier-14"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CashierStripeOptionsToStripeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -470,7 +572,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CollectedByPropertyToCollectedByAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -489,7 +591,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CollectsPropertyToCollectsAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -508,7 +610,22 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CommandHiddenPropertyToHiddenAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/command-property-to-as-command-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\CommandPropertyToAsCommandAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CommandPropertyToAsCommandAttributeRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -527,7 +644,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ConnectionPropertyToConnectionAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -546,7 +663,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DateFormatPropertyToDateFormatAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -565,7 +682,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DelayPropertyToDelayAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -584,7 +701,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DeleteWhenMissingModelsPropertyToDeleteWhenMissingModelsAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -603,7 +720,26 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DescriptionPropertyToDescriptionAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/empty-guarded-property-to-unguarded-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\EmptyGuardedPropertyToUnguardedAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/EmptyGuardedPropertyToUnguardedAttributeRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -622,7 +758,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ErrorBagPropertyToErrorBagAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -641,7 +777,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/FailOnTimeoutPropertyToFailOnTimeoutAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -660,7 +796,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/FillablePropertyToFillableAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -679,7 +815,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/GuardedPropertyToGuardedAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -698,7 +834,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/HelpPropertyToHelpAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -717,7 +853,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/HiddenPropertyToHiddenAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -736,7 +872,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/JobConnectionPropertyToJobConnectionAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -754,7 +890,7 @@
    "up-to-livewire-30"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/LivewireComponentComputedMethodToComputedAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -772,7 +908,7 @@
    "up-to-livewire-30"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/LivewireComponentQueryStringToUrlAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -791,7 +927,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/MaxExceptionsPropertyToMaxExceptionsAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -812,7 +948,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ModelCastsPropertyToCastsMethodRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -831,7 +967,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/PreserveKeysPropertyToPreserveKeysAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -858,7 +994,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/PropertyDeferToDeferrableProviderToRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -877,7 +1013,24 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/QueuePropertyToQueueAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-default-authorize-true-from-form-request-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\RemoveDefaultAuthorizeTrueFromFormRequestRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/RemoveDefaultAuthorizeTrueFromFormRequestRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -892,7 +1045,39 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/RemoveModelPropertyFromFactoriesRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-trait-use-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\RemoveTraitUseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-53",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/RemoveTraitUseRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -914,7 +1099,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ReplaceExpectsMethodsInTestsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -935,7 +1120,26 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ReplaceQueueTraitsWithQueueableRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/route-key-method-to-route-key-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\RouteKeyMethodToRouteKeyAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/RouteKeyMethodToRouteKeyAttributeRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -954,7 +1158,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/SignaturePropertyToSignatureAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -973,7 +1177,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/StopOnFirstFailurePropertyToStopOnFirstFailureAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -992,7 +1196,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TablePropertyToTableAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1011,7 +1215,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TimeoutPropertyToTimeoutAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1030,7 +1234,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TouchesPropertyToTouchesAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1049,7 +1253,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TriesPropertyToTriesAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1071,7 +1275,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UnifyModelDatesWithCastsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1090,7 +1294,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UniqueForPropertyToUniqueForAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1105,7 +1309,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UseForwardsCallsTraitRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1124,7 +1328,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/VisiblePropertyToVisibleAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1143,7 +1347,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/WithoutIncrementingPropertyToWithoutIncrementingAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1162,7 +1366,7 @@
    "up-to-laravel-130"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/WithoutTimestampsPropertyToWithoutTimestampsAttributeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1179,7 +1383,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Coalesce/ApplyDefaultInsteadOfNullCoalesceRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1194,7 +1398,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Empty_/EmptyToBlankAndFilledFuncRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1211,7 +1415,24 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Expr/AppEnvironmentComparisonToParameterRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/collection-count-comparison-to-is-empty-rector",
+  "fqcn": "RectorLaravel\\Rector\\Expr\\CollectionCountComparisonToIsEmptyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-collection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Expr/CollectionCountComparisonToIsEmptyRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1228,7 +1449,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Expr/SubStrToStartsWithOrEndsWithStaticMethodCallRector/SubStrToStartsWithOrEndsWithStaticMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1245,7 +1466,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/AppToResolveRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1262,7 +1483,7 @@
    "laravel-static-to-injection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ArgumentFuncCallToMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1277,7 +1498,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ConfigToTypedConfigMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1299,7 +1520,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/DispatchNonShouldQueueToDispatchSyncRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1316,7 +1537,53 @@
    "laravel-legacy-factories-to-classes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/FactoryFuncCallToStaticCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/func-call-to-new-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\FuncCallToNewRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/FuncCallToNewRector.php",
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/func-call-to-static-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\FuncCallToStaticCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-58",
+   "laravel-array-str-functions-to-static-call",
+   "laravel-static-to-injection",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/FuncCallToStaticCallRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1333,7 +1600,7 @@
    "laravel-static-to-injection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/HelperFuncCallToFacadeClassRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1350,7 +1617,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/NotFilledBlankFuncCallToBlankFilledFuncCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1367,7 +1634,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/NowFuncWithStartOfDayMethodCallToTodayFuncRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1382,7 +1649,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveDumpDataDeadCodeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1399,7 +1666,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveRedundantValueCallsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1416,7 +1683,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveRedundantWithCallsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1433,7 +1700,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/SleepFuncToSleepStaticCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1450,7 +1717,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ThrowIfAndThrowUnlessExceptionsToUseClassStringRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1467,7 +1734,24 @@
    "laravel-type-declarations"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/TypeHintTappableCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/unlink-func-call-to-file-facade-delete-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\UnlinkFuncCallToFileFacadeDeleteRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/UnlinkFuncCallToFileFacadeDeleteRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1484,7 +1768,7 @@
    "laravel-if-helpers"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/If_/AbortIfRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1501,7 +1785,7 @@
    "laravel-if-helpers"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/If_/ReportIfRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1518,7 +1802,7 @@
    "laravel-if-helpers"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/If_/ThrowIfRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1539,7 +1823,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AssertSeeToAssertSeeHtmlRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1556,7 +1840,7 @@
    "laravel-testing"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AssertStatusToAssertMethodRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1573,7 +1857,7 @@
    "laravel-collection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AvoidNegatedCollectionFilterOrRejectRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1601,7 +1885,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ChangeQueryWhereDateValueWithCarbonRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1621,7 +1905,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ContainerBindConcreteWithClosureOnlyRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1638,7 +1922,7 @@
    "laravel-collection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ConvertEnumerableToArrayToAllRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1660,7 +1944,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/DatabaseExpressionToStringToMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1675,7 +1959,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/DateWhereClauseToShorthandRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1692,7 +1976,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentOrderByToLatestOrOldestRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1709,7 +1993,7 @@
    "laravel-type-declarations"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentWhereRelationTypeHintingParameterRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1726,7 +2010,7 @@
    "laravel-type-declarations"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentWhereTypeHintClosureParameterRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1743,7 +2027,7 @@
    "laravel-legacy-factories-to-classes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/FactoryApplyingStatesRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1760,7 +2044,7 @@
    "laravel-testing"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/JsonCallToExplicitJsonCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1777,7 +2061,7 @@
    "lumen"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/LumenRoutesStringActionToUsesArrayRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1794,7 +2078,7 @@
    "lumen"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/LumenRoutesStringMiddlewareToArrayRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1811,7 +2095,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RedirectBackToBackHelperRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1828,7 +2112,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RedirectRouteToToRouteHelperRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1849,7 +2133,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RefactorBlueprintGeometryColumnsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1866,7 +2150,7 @@
    "laravel-container-string-to-fully-qualified-name"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReplaceServiceContainerCallArgRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1888,7 +2172,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReplaceWithoutJobsEventsAndNotificationsWithFacadeFakeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1903,7 +2187,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ResponseHelperCallToJsonResponseRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1920,7 +2204,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReverseConditionableMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1937,7 +2221,7 @@
    "laravel-collection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/UnaliasCollectionMethodsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1952,7 +2236,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/UseComponentPropertyWithinCommandsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1969,7 +2253,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ValidationRuleArrayStringValueToArrayRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1984,7 +2268,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/WhereNullComparisonToWhereNullRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -1999,7 +2283,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/WhereToWhereLikeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2016,7 +2300,7 @@
    "laravel-legacy-factories-to-classes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/Namespace_/FactoryDefinitionRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2044,7 +2328,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/New_/AddGuardToLoginEventRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2061,7 +2345,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/OptionalToNullsafeOperatorRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2084,7 +2368,7 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/ReplaceFakerInstanceWithHelperRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2101,7 +2385,7 @@
    "faker-10"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/ReplaceFakerPropertyFetchWithMethodCallRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2118,7 +2402,7 @@
    "laravel-testing"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/AssertWithClassStringToTypeHintedClosureRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2135,7 +2419,7 @@
    "laravel-testing"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/CarbonSetTestNowToTravelToRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2152,7 +2436,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/CarbonToDateFacadeRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2169,7 +2453,7 @@
    "laravel-code-quality"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/DispatchToHelperFunctionsRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2186,7 +2470,41 @@
    "laravel-eloquent-magic-method-to-query-builder"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/EloquentMagicMethodToQueryBuilderRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/event-string-to-class-constant-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\EventStringToClassConstantRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-52",
+   "laravel-54",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-52",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/EventStringToClassConstantRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2201,7 +2519,7 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/MinutesToSecondsInCacheRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2229,7 +2547,33 @@
    "up-to-laravel-90"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/Redirect301ToPermanentRedirectRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/rename-static-method-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\RenameStaticMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-60",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/RenameStaticMethodRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2251,7 +2595,7 @@
    "up-to-laravel-130-without-attributes"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/ReplaceAssertTimesSendWithAssertSentTimesRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2268,7 +2612,7 @@
    "laravel-static-to-injection"
   ],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/RequestStaticValidateToInjectRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2283,7 +2627,24 @@
   "package": "driftingly/rector-laravel",
   "sets": [],
   "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/RouteActionCallableRector.php",
-  "version": "2.5.0"
+  "version": "2.7.3"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/static-facade-to-service-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\StaticFacadeToServiceMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/StaticFacadeToServiceMethodCallRector.php",
+  "version": "2.7.3"
  },
  {
   "deprecated": false,
@@ -2300,7 +2661,22 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ChainExpectCallsRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Pest\\Rector\\Rules\\ConvertAndToExpectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertAndToExpectRector.php",
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2317,7 +2693,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertAssertToExpectRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2334,7 +2710,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertBeforeAllInDescribeRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2351,7 +2727,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertExpectExceptionToThrowRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2368,7 +2744,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/EnsureTypeChecksFirstRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2385,7 +2761,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/FixInvalidRepeatValueRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2402,7 +2778,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/TapToDeferRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2419,7 +2795,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/ToHaveMethodOnClassRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2436,7 +2812,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/UsesToExtendRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2453,7 +2829,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveDebugExpectationsRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2470,7 +2846,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveOnlyRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2487,7 +2863,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveRedundantLiteralTypeExpectationRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2504,7 +2880,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveRedundantPestUsesRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2521,7 +2897,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveStaticTestClosureRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2538,7 +2914,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyComparisonExpectationsRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2555,7 +2931,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyExpectNotRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2572,7 +2948,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyFilesystemMatchersRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2589,7 +2965,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyToBeTruthyFalsyRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2606,7 +2982,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyToLiteralBooleanRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2623,7 +2999,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ToBeTrueNotFalseRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2640,7 +3016,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseEachModifierRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2657,7 +3033,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseInstanceOfMatcherRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2674,7 +3050,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseSequenceMatcherRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2691,7 +3067,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseStrictEqualityMatchersRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2708,7 +3084,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeAlphaNumericRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2725,7 +3101,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeAlphaRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2742,7 +3118,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeBetweenRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2759,7 +3135,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeDigitsRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2776,7 +3152,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeDirectoryRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2793,7 +3169,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeEmptyRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2810,7 +3186,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeFileRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2827,7 +3203,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeInRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2844,7 +3220,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeInfiniteRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2861,7 +3237,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeJsonRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2878,7 +3254,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeListRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2895,7 +3271,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeLowercaseRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2912,7 +3288,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeNanRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": true,
@@ -2927,7 +3303,7 @@
   "package": "pestphp/pest-plugin-rector",
   "sets": [],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeReadableWritableRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2944,7 +3320,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUppercaseRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2961,7 +3337,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUrlRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2978,7 +3354,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUuidRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -2995,7 +3371,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainEqualRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3012,7 +3388,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainOnlyInstancesOfRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3029,7 +3405,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3046,7 +3422,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEndWithRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3063,7 +3439,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEqualCanonicalizingRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3080,7 +3456,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEqualWithDeltaRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3097,7 +3473,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveCountRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3114,7 +3490,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveKeyRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3131,7 +3507,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveKeysRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3148,7 +3524,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveLengthRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3165,7 +3541,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHavePropertiesRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3182,7 +3558,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHavePropertyRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3199,7 +3575,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveSameSizeRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3216,7 +3592,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchArrayRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3233,7 +3609,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchObjectRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3250,7 +3626,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3267,7 +3643,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToStartWithRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3284,7 +3660,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToThrowRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3301,7 +3677,7 @@
    "pest-coding-style"
   ],
   "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseTypeMatchersRector.php",
-  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+  "version": "5.x-dev@8c1b780c5e551cb78150ee91ceb73d34cd029946"
  },
  {
   "deprecated": false,
@@ -3333,7 +3709,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3361,7 +3737,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3393,39 +3769,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Removing\\Rector\\Class_\\RemoveTraitUseRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": false,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": "laravel upgrade set below laravel-12",
-  "package": "rector/rector",
-  "sets": [
-   "laravel-53",
-   "up-to-laravel-100",
-   "up-to-laravel-110",
-   "up-to-laravel-120",
-   "up-to-laravel-130",
-   "up-to-laravel-130-without-attributes",
-   "up-to-laravel-53",
-   "up-to-laravel-54",
-   "up-to-laravel-55",
-   "up-to-laravel-56",
-   "up-to-laravel-57",
-   "up-to-laravel-58",
-   "up-to-laravel-60",
-   "up-to-laravel-70",
-   "up-to-laravel-80",
-   "up-to-laravel-90"
-  ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3443,7 +3787,7 @@
    "livewire-30",
    "up-to-livewire-30"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3465,7 +3809,7 @@
    "up-to-laravel-130",
    "up-to-laravel-130-without-attributes"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3474,15 +3818,16 @@
   "fqcn": "Rector\\Renaming\\Rector\\MethodCall\\RenameMethodRector",
   "gated_by": null,
   "identifiers": [],
-  "in_scope": false,
+  "in_scope": true,
   "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set; laravel-120 tries to configure it (Request::get -> input) via a discarded RectorConfig::configure() builder (vendor/driftingly/rector-laravel/config/sets/laravel120.php:21), so laravel-120 does not register it; list-rules confirms",
-  "out_of_scope_reason": "laravel upgrade set below laravel-12; package upgrade set below the current major (cashier-13); package upgrade set below the current major (cashier-14)",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
   "package": "rector/rector",
   "sets": [
    "cashier-13",
    "cashier-14",
    "laravel-100",
+   "laravel-120",
    "laravel-50",
    "laravel-53",
    "laravel-54",
@@ -3512,7 +3857,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3558,7 +3903,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3591,96 +3936,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Renaming\\Rector\\StaticCall\\RenameStaticMethodRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": false,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": "laravel upgrade set below laravel-12",
-  "package": "rector/rector",
-  "sets": [
-   "laravel-60",
-   "up-to-laravel-100",
-   "up-to-laravel-110",
-   "up-to-laravel-120",
-   "up-to-laravel-130",
-   "up-to-laravel-130-without-attributes",
-   "up-to-laravel-60",
-   "up-to-laravel-70",
-   "up-to-laravel-80",
-   "up-to-laravel-90"
-  ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Transform\\Rector\\ArrayDimFetch\\ArrayDimFetchToMethodCallRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": true,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": null,
-  "package": "rector/rector",
-  "sets": [
-   "laravel-arrayaccess-to-method-call"
-  ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Transform\\Rector\\FuncCall\\FuncCallToNewRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": true,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": null,
-  "package": "rector/rector",
-  "sets": [
-   "laravel-static-to-injection"
-  ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": true,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": null,
-  "package": "rector/rector",
-  "sets": [
-   "laravel-58",
-   "laravel-array-str-functions-to-static-call",
-   "laravel-static-to-injection",
-   "up-to-laravel-100",
-   "up-to-laravel-110",
-   "up-to-laravel-120",
-   "up-to-laravel-130",
-   "up-to-laravel-130-without-attributes",
-   "up-to-laravel-58",
-   "up-to-laravel-60",
-   "up-to-laravel-70",
-   "up-to-laravel-80",
-   "up-to-laravel-90"
-  ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3712,58 +3968,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Transform\\Rector\\StaticCall\\StaticCallToMethodCallRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": true,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": null,
-  "package": "rector/rector",
-  "sets": [
-   "laravel-static-to-injection"
-  ],
-  "version": "2.6.1"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": null,
-  "fqcn": "Rector\\Transform\\Rector\\String_\\StringToClassConstantRector",
-  "gated_by": null,
-  "identifiers": [],
-  "in_scope": false,
-  "kind": "rector-rule",
-  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
-  "out_of_scope_reason": "laravel upgrade set below laravel-12",
-  "package": "rector/rector",
-  "sets": [
-   "laravel-52",
-   "laravel-54",
-   "up-to-laravel-100",
-   "up-to-laravel-110",
-   "up-to-laravel-120",
-   "up-to-laravel-130",
-   "up-to-laravel-130-without-attributes",
-   "up-to-laravel-52",
-   "up-to-laravel-53",
-   "up-to-laravel-54",
-   "up-to-laravel-55",
-   "up-to-laravel-56",
-   "up-to-laravel-57",
-   "up-to-laravel-58",
-   "up-to-laravel-60",
-   "up-to-laravel-70",
-   "up-to-laravel-80",
-   "up-to-laravel-90"
-  ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3788,7 +3993,7 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
@@ -3815,13 +4020,13 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
   "docs_url": null,
-  "fqcn": "Rector\\Visibility\\Rector\\ClassMethod\\ChangeMethodVisibilityRector",
+  "fqcn": "Rector\\Visibility\\Rector\\Class_\\ChangeMethodVisibilityRector",
   "gated_by": null,
   "identifiers": [],
   "in_scope": false,
@@ -3847,6 +4052,6 @@
    "up-to-laravel-80",
    "up-to-laravel-90"
   ],
-  "version": "2.6.1"
+  "version": "2.8.4"
  }
 ]

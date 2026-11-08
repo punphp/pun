@@ -1,4 +1,4 @@
-//! `lint/laravel/no-collection-aliases`, ported from rector-laravel 2.5.0's `UnaliasCollectionMethodsRector`
+//! `lint/laravel/no-collection-aliases`, ported from rector-laravel 2.7.3's `UnaliasCollectionMethodsRector`
 //! (src/Rector/MethodCall).
 //!
 //! On an `Illuminate\Support\Enumerable`, `some()` becomes `contains()`, `average()` `avg()`, `unlessEmpty()`

@@ -226,7 +226,7 @@ class ChildTest extends BaseTest
         return [$a, $b, $c];
     }
 
-    private function callable($a)
+    private function callable()
     {
         $a = 1;
         return self::callable(...);

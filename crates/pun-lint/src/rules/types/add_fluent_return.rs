@@ -1,4 +1,4 @@
-//! `lint/types/add-fluent-return-type`, ported from Rector 2.6.1's `ReturnTypeFromStrictFluentReturnRector`
+//! `lint/types/add-fluent-return-type`, ported from Rector 2.8.4's `ReturnTypeFromStrictFluentReturnRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a method that always returns `$this` (or `new static`) returns
 //! `static`, or `self` in a final or anonymous class, an enum, or before PHP 8.0; one that always returns `new self`
 //! returns `self`.

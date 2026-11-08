@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-request-facade`, ported from rector-laravel 2.5.0's `RequestVariablesToRequestFacadeRector`
+//! `lint/laravel/prefer-request-facade`, ported from rector-laravel 2.7.3's `RequestVariablesToRequestFacadeRector`
 //! (src/Rector/ArrayDimFetch).
 //!
 //! Reading `$_GET['a']['b']`, `$_POST['a']` or `$_REQUEST['a']` becomes `\Illuminate\Support\Facades\Request::query('a.b')`,
@@ -13,7 +13,7 @@ use mago_syntax::cst::{
     ArrayAccess, Expression, Literal, LiteralStringKind, Node, NodeKind, Variable,
 };
 
-use super::{in_string, in_superglobal_assign, is_written, parent, replace};
+use super::{in_string, in_superglobal_assign, is_by_ref_argument, is_written, parent, replace};
 use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::rector_code_quality::{Prec, in_parent};
 use crate::syntax::{node_span, unparenthesize};
@@ -40,11 +40,15 @@ impl Rule for PreferRequestFacade {
         &self,
         node: Node<'ast, 'arena>,
         ancestors: &[Node<'ast, 'arena>],
-        _ctx: &Context<'_>,
+        ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
         let span = node_span(&node);
-        if in_superglobal_assign(ancestors) || is_written(span, ancestors) || in_string(ancestors) {
+        if in_superglobal_assign(ancestors)
+            || is_written(span, ancestors)
+            || is_by_ref_argument(ctx, span, ancestors)
+            || in_string(ancestors)
+        {
             return;
         }
         let (method, code) = match node {

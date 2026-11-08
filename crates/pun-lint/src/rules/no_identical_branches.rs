@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-identical-branches`, ported from Rector 2.6.1's `SimplifyIfElseWithSameContentRector`
+//! `lint/dead-code/no-identical-branches`, ported from Rector 2.8.4's `SimplifyIfElseWithSameContentRector`
 //! (rules/DeadCode/Rector/If_).
 //!
 //! An `if` with an `else` whose branches all hold the same code (comments included) runs that code whatever the

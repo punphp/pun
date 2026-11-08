@@ -1,4 +1,4 @@
-//! `lint/style/prefer-early-return-over-prepared-value`, ported from Rector 2.6.1's
+//! `lint/style/prefer-early-return-over-prepared-value`, ported from Rector 2.8.4's
 //! `PreparedValueToEarlyReturnRector` (rules/EarlyReturn/Rector/Return_), with `IfManipulator::isIfWithoutElseAndElseIfs`
 //! and the `BareSingleAssignIf` value object.
 //!

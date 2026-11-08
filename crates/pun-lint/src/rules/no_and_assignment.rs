@@ -1,4 +1,4 @@
-//! `lint/complexity/no-and-assignment`, ported from Rector 2.6.1's `AndAssignsToSeparateLinesRector`
+//! `lint/complexity/no-and-assignment`, ported from Rector 2.8.4's `AndAssignsToSeparateLinesRector`
 //! (rules/CodeQuality/Rector/LogicalAnd).
 //!
 //! `$token = 4 and $tokens[] = $token;` becomes two statements, `$token = 4;` and `$tokens[] = $token;`, on lines of

@@ -35,9 +35,9 @@ test('a', function (array $good, string $bad, iterable $it, $untyped) {
     expect(in_array('x', $it))->toBeTrue();
     expect(in_array('x', $untyped))->toBeFalse();
     expect(in_array('x', $untyped, true))->not->toBeFalse();
-    expect($untyped)->toContainEqual('x');
-    expect($untyped)->not->toContainEqual('x');
-    expect($untyped)->toContainEqual('x');
+    expect(in_array('x', $untyped, false))->toBeTrue();
+    expect(in_array('x', $untyped, FALSE))->toBeFalse();
+    expect(in_array('x', $untyped, \false))->toBeTrue();
     expect(in_array('x', $untyped, 0))->toBeTrue();
     expect(in_array('x', $untyped, $strict))->toBeTrue();
     expect(in_array('x', $untyped, true, 4))->toBeTrue();
@@ -52,6 +52,6 @@ test('a', function (array $good, string $bad, iterable $it, $untyped) {
 test('b', function (array $good, string $bad, iterable $it) {
     expect($good)->toContainEqual('x');
     expect(in_array('x', $bad, false))->toBeTrue();
-    expect($it)->toContainEqual('x');
-    expect($untyped)->toContainEqual('x');
+    expect(in_array('x', $it, false))->toBeTrue();
+    expect(in_array('x', $untyped, false))->not->toBeFalse();
 });

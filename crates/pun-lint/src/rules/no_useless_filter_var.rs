@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-filter-var`, ported from Rector 2.6.1's `RemoveFilterVarOnExactTypeRector`
+//! `lint/dead-code/no-useless-filter-var`, ported from Rector 2.8.4's `RemoveFilterVarOnExactTypeRector`
 //! (rules/DeadCode/Rector/FuncCall).
 //!
 //! `filter_var($value, FILTER_VALIDATE_INT)` with exactly two arguments becomes `$value` when the value's native type

@@ -1,4 +1,4 @@
-//! `lint/control-flow/prefer-returned-condition`, ported from Rector 2.6.1's `SimplifyIfReturnBoolRector`
+//! `lint/control-flow/prefer-returned-condition`, ported from Rector 2.8.4's `SimplifyIfReturnBoolRector`
 //! (rules/CodeQuality/Rector/If_).
 //!
 //! An `if` without `elseif` or `else` whose one statement is `return true;` or `return false;`, followed by a

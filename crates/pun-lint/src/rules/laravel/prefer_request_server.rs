@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-request-server`, ported from rector-laravel 2.5.0's `ServerVariableToRequestFacadeRector`
+//! `lint/laravel/prefer-request-server`, ported from rector-laravel 2.7.3's `ServerVariableToRequestFacadeRector`
 //! (src/Rector/ArrayDimFetch).
 //!
 //! Reading `$_SERVER['NAME']` becomes `\Illuminate\Support\Facades\Request::server('NAME')`. Items inside an
@@ -7,7 +7,9 @@
 
 use mago_syntax::cst::{Node, NodeKind};
 
-use super::{in_string, in_superglobal_assign, is_variable, is_written, replace};
+use super::{
+    in_string, in_superglobal_assign, is_by_ref_argument, is_variable, is_written, replace,
+};
 use crate::rules::rector_code_quality::text;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -37,7 +39,7 @@ impl Rule for PreferRequestServer {
             return;
         }
         let span = node_span(access);
-        if is_written(span, ancestors) || in_string(ancestors) {
+        if is_written(span, ancestors) || is_by_ref_argument(ctx, span, ancestors) || in_string(ancestors) {
             return;
         }
         out.push(replace(

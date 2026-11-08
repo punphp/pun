@@ -1,4 +1,4 @@
-//! `lint/strings/prefer-empty-string-identical`, ported from Rector 2.6.1's `StrlenZeroToIdenticalEmptyStringRector`
+//! `lint/strings/prefer-empty-string-identical`, ported from Rector 2.8.4's `StrlenZeroToIdenticalEmptyStringRector`
 //! (rules/CodeQuality/Rector/Identical).
 //!
 //! `strlen($s) === 0` is `$s === ''`, and `strlen($s) > 0` (or `0 < strlen($s)`) is `$s !== ''`. A value that is not

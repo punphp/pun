@@ -38,30 +38,32 @@ test('a', function (string $good, int $bad, $untyped) {
 test('a', function (string $good, int $bad, $untyped) {
     expect($good)->toEndWith('x');
     expect(str_ends_with($bad, 'x'))->toBeTrue();
-    expect($untyped)->not->toEndWith('x');
-    expect($undefined)->toEndWith('x');
-    expect($untyped)->toEndWith('x');
-    expect($untyped)->not->toEndWith('x');
-    expect($a)->toBeInt()->and($untyped)->toEndWith('x');
-    expect($a)->toBeInt()->and($untyped)->toEndWith('x')->and($b)->toBe(1);
-    expect($untyped)->toEndWith('x')->toBeBool();
-    expect($untyped)->toEndWith('x');
-    expect($untyped)->toEndWith('x');
-    expect($untyped, 'extra')->toEndWith('x');
-    \expect($untyped)->toEndWith('x');
+    expect(str_ends_with($untyped, 'x'))->toBeFalse();
+    expect(str_ends_with($undefined, 'x'))->not->toBeFalse();
+    expect(str_ends_with($untyped, 'x'))
+        ->toBeTrue();
+    expect(str_ends_with($untyped, 'x')) // why
+        ->not->toBeTrue();
+    expect($a)->toBeInt()->and(str_ends_with($untyped, 'x'))->toBeTrue();
+    expect($a)->toBeInt()->and(str_ends_with($untyped, 'x'))->toBeTrue()->and($b)->toBe(1);
+    expect(str_ends_with($untyped, 'x'))->toBeTrue()->toBeBool();
+    expect(str_ends_with($untyped, 'x'))->toBeTrue('message');
+    expect(value: str_ends_with($untyped, 'x'))->toBeTrue();
+    expect(str_ends_with($untyped, 'x'), 'extra')->toBeTrue();
+    \expect(\str_ends_with($untyped, 'x'))->toBeTrue();
     EXPECT(str_ends_with($untyped, 'x'))->ToBeTrue();
     expect(STR_ENDS_WITH($untyped, 'x'))->toBeTrue();
-    expect($untyped)->toEndWith('x');
+    expect((str_ends_with(($untyped), 'x')))->toBeTrue();
     expect(str_ends_with($untyped, 'x'))->toBeTruthy();
     expect(str_ends_with($untyped, 'x'))->each->toBeTrue();
     $x->expect(str_ends_with($untyped, 'x'))->toBeTrue();
     expect(str_ends_with($untyped, 'x'))?->toBeTrue();
     expect('abc')->toEndWith('x');
     expect(str_ends_with([1], 'x'))->toBeTrue();
-    expect($this->value)->toEndWith('x');
+    expect(str_ends_with($this->value, 'x'))->toBeTrue();
     expect(strtolower($untyped))->toEndWith('x');
     expect(str_ends_with())->toBeTrue();
     expect(str_ends_with($a, $b, $c))->toBeTrue();
-    expect($untyped)->toEndWith($n);
-    expect($untyped)->toEndWith($n);
+    expect(str_ends_with($untyped, needle: $n))->toBeTrue();
+    expect(str_ends_with($untyped, ...$n))->toBeTrue();
 });

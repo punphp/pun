@@ -1232,6 +1232,37 @@ pub(crate) fn join(items: &[ArrayItem]) -> String {
 #[derive(Debug)]
 pub(crate) struct Unparsable;
 
+/// Whether an annotation's content holds a single-quoted string as a value: Rector 2.8.4 reads the arguments with
+/// phpdoc-parser's Doctrine parser (rector-src 9a6fdb061a), whose `parseDoctrineArgumentValue()` refuses one, and the
+/// tag stays as it is (tests/rector/AnnotationToAttributeRector/Fixture/skip_single_quoted_*). `parseDoctrineArrayKey()`
+/// takes one as the key of a `{...}` item, so `{'a'=1}` is read.
+pub(crate) fn has_single_quoted(content: &str) -> bool {
+    let toks: Vec<Tok> = tokenize(content)
+        .into_iter()
+        .filter(|tok| !matches!(tok.ty, t::HORIZONTAL_WS | t::PHPDOC_EOL))
+        .collect();
+    let mut open = Vec::new();
+    for (i, tok) in toks.iter().enumerate() {
+        match tok.ty {
+            t::OPEN_PARENTHESES | t::OPEN_CURLY_BRACKET | t::OPEN_SQUARE_BRACKET => open.push(tok.ty),
+            t::CLOSE_PARENTHESES | t::CLOSE_CURLY_BRACKET | t::CLOSE_SQUARE_BRACKET => {
+                open.pop();
+            }
+            t::SINGLE_QUOTED_STRING => {
+                let key = open.last() == Some(&t::OPEN_CURLY_BRACKET)
+                    && i > 0
+                    && matches!(toks[i - 1].ty, t::OPEN_CURLY_BRACKET | t::COMMA)
+                    && toks.get(i + 1).is_some_and(|next| matches!(next.ty, t::EQUAL | t::COLON));
+                if !key {
+                    return true;
+                }
+            }
+            _ => {}
+        }
+    }
+    false
+}
+
 /// Rector's `StaticDoctrineAnnotationParser` on the annotation content `content`; `resolve_tag` is
 /// `ClassAnnotationMatcher::resolveTagFullyQualifiedName()`, for the nested annotations.
 pub(crate) fn annotation_values(

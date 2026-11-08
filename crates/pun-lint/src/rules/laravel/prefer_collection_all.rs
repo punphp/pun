@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-collection-all`, ported from rector-laravel 2.5.0's `ConvertEnumerableToArrayToAllRector`
+//! `lint/laravel/prefer-collection-all`, ported from rector-laravel 2.7.3's `ConvertEnumerableToArrayToAllRector`
 //! (src/Rector/MethodCall).
 //!
 //! `toArray()` (or `?->toArray()`) on an `Illuminate\Support\Enumerable` becomes `all()` when the collection's values

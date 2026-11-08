@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-null-tag-value`, ported from Rector 2.6.1's `RemoveNullTagValueNodeRector`
+//! `lint/dead-code/no-null-tag-value`, ported from Rector 2.8.4's `RemoveNullTagValueNodeRector`
 //! (rules/DeadCode/Rector/ClassMethod).
 //!
 //! A doc comment's `@param null $name` (of a parameter the function or method has), `@return null` and `@var null`

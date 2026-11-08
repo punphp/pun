@@ -32,7 +32,7 @@ class SomeClass
     }
 
     /**
-     * @param Suit::Hearts[] $items
+     * @param \Suit::Hearts[] $items
      */
     private function run(array $items): void
     {

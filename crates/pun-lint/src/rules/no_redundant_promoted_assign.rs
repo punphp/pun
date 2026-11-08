@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-redundant-promoted-assign`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-redundant-promoted-assign`, ported from Rector 2.8.4's
 //! `RemoveUselessAssignFromPropertyPromotionRector` (rules/DeadCode/Rector/ClassMethod).
 //!
 //! A constructor whose body only assigns promoted parameters to their own properties (`$this->std = $std;`) does

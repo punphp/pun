@@ -31,7 +31,7 @@ test('a', function (array $list, string $s, $untyped, object $o) {
 test('a', function (array $list, string $s, $untyped, object $o) {
     expect($list)->toHaveKeys(['a', 'b']);
     expect($s)->toHaveKey('a')->toHaveKey('b');
-    expect($untyped)->toHaveKeys(['a', 'b']);
+    expect($untyped)->toHaveKey('a')->toHaveKey('b');
     expect($o)->toHaveKey('a')->toHaveKey('b');
     expect($list)->toHaveKey('a');
     expect($list)->toHaveKey('a')->toHaveKey($b);

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-empty-loop`, ported from Rector 2.6.1's `RemoveDeadLoopRector` (rules/DeadCode/Rector/For_).
+//! `lint/dead-code/no-empty-loop`, ported from Rector 2.8.4's `RemoveDeadLoopRector` (rules/DeadCode/Rector/For_).
 //!
 //! A `do`, `for`, `foreach` or `while` loop with no statements goes, unless one of its expressions (the right side,
 //! for a plain assignment) has a side effect.

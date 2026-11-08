@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-to-route-helper`, ported from rector-laravel 2.5.0's `RedirectRouteToToRouteHelperRector`
+//! `lint/laravel/prefer-to-route-helper`, ported from rector-laravel 2.7.3's `RedirectRouteToToRouteHelperRector`
 //! (src/Rector/MethodCall).
 //!
 //! `redirect()->route(...)` and `Redirect::route(...)` (the facade) become `to_route(...)`.

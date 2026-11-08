@@ -1,4 +1,4 @@
-//! `lint/types/add-return-phpdoc-scalar-array`, ported from Rector 2.6.1's
+//! `lint/types/add-return-phpdoc-scalar-array`, ported from Rector 2.8.4's
 //! `AddReturnDocblockForScalarArrayFromAssignsRector` (rules/TypeDeclaration/Rector/ClassMethod): a function or method
 //! that returns variables it starts as `[]` and only appends scalars of one type to gets `@return T[]`.
 
@@ -78,7 +78,9 @@ impl Rule for AddReturnPhpdocScalarArray {
         if types.iter().any(|t| *t != types[0]) {
             return;
         }
-        change_return_type(&mut info, &Type::array(mixed(), types[0].clone()));
+        if !change_return_type(&mut info, &Type::array(mixed(), types[0].clone())) {
+            return;
+        }
         out.extend(doc_report(
             f.name,
             "Add the `@return` array type of the scalars appended to the returned variable.",

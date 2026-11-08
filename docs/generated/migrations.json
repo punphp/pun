@@ -6129,7 +6129,7 @@
       {
         "name": "AddOverrideAttributeToOverriddenMethods",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/add-override-attribute-to-overridden-methods-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
         "unsupported": true
@@ -6211,12 +6211,10 @@
       {
         "name": "AddParamStringTypeFromSprintfUse",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/add-param-string-type-from-sprintf-use-rector",
-        "rules": [
-          "lint/types/add-param-type-sprintf"
-        ],
-        "note": "Same.",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "AddParamTypeBasedOnPHPUnitDataProvider",
@@ -6267,7 +6265,7 @@
       {
         "name": "AddPropertyTypeDeclaration",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/add-property-type-declaration-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -6440,9 +6438,11 @@
         "name": "AlternativeIfToBracket",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/alternative-if-to-bracket-rector",
-        "rules": [],
-        "note": "only in sets outside the eight prepared sets: if",
-        "unsupported": true
+        "rules": [
+          "format/control-flow/no-alternative-syntax"
+        ],
+        "note": "Same.",
+        "unsupported": false
       },
       {
         "name": "AndAssignsToSeparateLines",
@@ -6483,20 +6483,20 @@
       {
         "name": "ArrayDimFetchToMethodCall",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/array-dim-fetch-to-method-call-rector",
-        "rules": [
-          "lint/refactor/replace-array-access"
-        ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "ArrayExplicitBoolCompare",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/array-explicit-bool-compare-rector",
-        "rules": [],
-        "note": "only in sets outside the eight prepared sets: if",
-        "unsupported": true
+        "rules": [
+          "lint/complexity/prefer-explicit-array-comparison"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "ArrayFirstLast",
@@ -6540,6 +6540,14 @@
         "name": "ArrayKeyFirstLast",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/array-key-first-last-rector",
+        "rules": [],
+        "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
+        "unsupported": true
+      },
+      {
+        "name": "ArrayKeysToArrayKeyFirstLast",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/array-keys-to-array-key-first-last-rector",
         "rules": [],
         "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
         "unsupported": true
@@ -6613,7 +6621,7 @@
       {
         "name": "BinaryOpNullableToInstanceof",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/binary-op-nullable-to-instanceof-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "only in sets outside the eight prepared sets: instanceof",
         "unsupported": true
@@ -6625,6 +6633,16 @@
         "rules": [],
         "note": "deprecated upstream (2.6.1, 2.7.0, main)",
         "unsupported": true
+      },
+      {
+        "name": "BoolReturnTypeFromBooleanConstAndStrictReturns",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/bool-return-type-from-boolean-const-and-strict-returns-rector",
+        "rules": [
+          "lint/types/add-bool-return-type-from-mixed-returns"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "BoolReturnTypeFromBooleanConstReturns",
@@ -6723,7 +6741,7 @@
       {
         "name": "ChangeConstantVisibility",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/change-constant-visibility-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -6969,20 +6987,20 @@
       {
         "name": "CompleteDynamicProperties",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/complete-dynamic-properties-rector",
-        "rules": [
-          "lint/classes/add-dynamic-properties"
-        ],
-        "note": "Same.",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "CompleteMissingIfElseBracket",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/complete-missing-if-else-bracket-rector",
-        "rules": [],
-        "note": "only in sets outside the eight prepared sets: if",
-        "unsupported": true
+        "rules": [
+          "format/control-flow/braces"
+        ],
+        "note": "Same.",
+        "unsupported": false
       },
       {
         "name": "ConsecutiveNullCompareReturnsToNullCoalesceQueue",
@@ -7013,10 +7031,20 @@
       {
         "name": "ConstFetchToClassConstFetch",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/const-fetch-to-class-const-fetch-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
+      },
+      {
+        "name": "ConstructorReadonlyAssignToDefault",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/constructor-readonly-assign-to-default-rector",
+        "rules": [
+          "lint/php-8.6/prefer-readonly-property-default"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "ContinueToBreakInSwitch",
@@ -7112,9 +7140,11 @@
         "name": "DirnameDirConcatStringToDirectStringPath",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/dirname-dir-concat-string-to-direct-string-path-rector",
-        "rules": [],
-        "note": "in no set",
-        "unsupported": true
+        "rules": [
+          "lint/complexity/no-dirname-dir-concat"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "DisallowedEmptyRuleFixer",
@@ -7263,6 +7293,16 @@
         "unsupported": true
       },
       {
+        "name": "ExplicitNullableObjectInstance",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/explicit-nullable-object-instance-rector",
+        "rules": [
+          "lint/types/prefer-explicit-null-instanceof"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "ExplicitNullableParamType",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/explicit-nullable-param-type-rector",
@@ -7346,9 +7386,11 @@
         "name": "FlipNegatedTernaryInstanceof",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/flip-negated-ternary-instanceof-rector",
-        "rules": [],
-        "note": "only in sets outside the eight prepared sets: instanceof",
-        "unsupported": true
+        "rules": [
+          "lint/complexity/no-negated-instanceof-ternary"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "FlipTypeControlToUseExclusiveType",
@@ -7454,21 +7496,17 @@
         "name": "FuncCallToNew",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/func-call-to-new-rector",
-        "rules": [
-          "lint/refactor/replace-function-with-new"
-        ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
-        "unsupported": false
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "FuncCallToStaticCall",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/func-call-to-static-call-rector",
-        "rules": [
-          "lint/refactor/replace-function-with-static"
-        ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
-        "unsupported": false
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "FuncGetArgsToVariadicParam",
@@ -7483,7 +7521,7 @@
       {
         "name": "FunctionArgumentDefaultValueReplacer",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/function-argument-default-value-replacer-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
         "unsupported": true
@@ -7529,6 +7567,14 @@
         "unsupported": true
       },
       {
+        "name": "GetHeadersArgumentFormat",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/get-headers-argument-format-rector",
+        "rules": [],
+        "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
+        "unsupported": true
+      },
+      {
         "name": "HebrevcToNl2brHebrev",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/hebrevc-to-nl2br-hebrev-rector",
@@ -7540,6 +7586,14 @@
         "name": "IfIssetToCoalescing",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/if-isset-to-coalescing-rector",
+        "rules": [],
+        "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
+        "unsupported": true
+      },
+      {
+        "name": "IfToNullCoalescingAssign",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/if-to-null-coalescing-assign-rector",
         "rules": [],
         "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
         "unsupported": true
@@ -7576,9 +7630,11 @@
         "name": "InlineIfToExplicitIf",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/inline-if-to-explicit-if-rector",
-        "rules": [],
-        "note": "only in sets outside the eight prepared sets: if",
-        "unsupported": true
+        "rules": [
+          "lint/complexity/prefer-if-statement"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "InlineIsAInstanceOf",
@@ -7767,7 +7823,7 @@
       {
         "name": "MergeInterfaces",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/merge-interfaces-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -7776,14 +7832,16 @@
         "name": "MergePhpstanDocTagIntoNative",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/merge-phpstan-doc-tag-into-native-rector",
-        "rules": [],
-        "note": "in no set",
-        "unsupported": true
+        "rules": [
+          "lint/types/no-phpstan-phpdoc-tag"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "MethodCallToFuncCall",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/method-call-to-func-call-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -7791,7 +7849,7 @@
       {
         "name": "MethodCallToStaticCall",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/method-call-to-static-call-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -7894,9 +7952,11 @@
         "name": "NarrowBoolDocblockReturnType",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/narrow-bool-docblock-return-type-rector",
-        "rules": [],
-        "note": "in no set",
-        "unsupported": true
+        "rules": [
+          "lint/types/prefer-literal-bool-phpdoc"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "NarrowObjectReturnType",
@@ -7993,7 +8053,7 @@
       {
         "name": "NewToStaticCall",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/new-to-static-call-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -8157,12 +8217,10 @@
       {
         "name": "ParamTypeByParentCallType",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/param-type-by-parent-call-type-rector",
-        "rules": [
-          "lint/types/add-param-type-parent-call"
-        ],
-        "note": "Same.",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "ParenthesizeNestedTernary",
@@ -8691,7 +8749,7 @@
       {
         "name": "RemoveMethodCallParam",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/remove-method-call-param-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -8767,6 +8825,16 @@
         "unsupported": false
       },
       {
+        "name": "RemoveOverriddenAssignBeforeIfElse",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/remove-overridden-assign-before-if-else-rector",
+        "rules": [
+          "lint/dead-code/no-overridden-assign-before-if"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "RemoveParentCallWithoutParent",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/remove-parent-call-without-parent-rector",
@@ -8789,12 +8857,10 @@
       {
         "name": "RemoveParentDelegatingConstructor",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/remove-parent-delegating-constructor-rector",
-        "rules": [
-          "lint/dead-code/no-useless-constructor"
-        ],
-        "note": "Same.",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "RemovePhpVersionIdCheck",
@@ -8814,6 +8880,16 @@
           "lint/classes/no-redundant-readonly-property"
         ],
         "note": "Same.",
+        "unsupported": false
+      },
+      {
+        "name": "RemoveRedundantTypeCheck",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/remove-redundant-type-check-rector",
+        "rules": [
+          "lint/dead-code/no-redundant-type-check"
+        ],
+        "note": "Same. Planned: not ported yet.",
         "unsupported": false
       },
       {
@@ -9151,7 +9227,7 @@
       {
         "name": "RenameAnnotation",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/rename-annotation-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "only in PHPUnit upgrade sets below phpunit110 (below the Laravel 12 / PHPUnit 11 floor)",
         "unsupported": true
@@ -9335,7 +9411,7 @@
       {
         "name": "ReplaceArgumentDefaultValue",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/replace-argument-default-value-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -9413,12 +9489,10 @@
       {
         "name": "ReturnEarlyIfVariable",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/return-early-if-variable-rector",
-        "rules": [
-          "lint/style/prefer-early-return-of-variable"
-        ],
-        "note": "Same.",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "ReturnIteratorInDataProvider",
@@ -9921,7 +9995,7 @@
         "rules": [
           "lint/dead-code/no-useless-variable"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10047,12 +10121,10 @@
       {
         "name": "StaticCallToMethodCall",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/static-call-to-method-call-rector",
-        "rules": [
-          "lint/refactor/replace-static-with-method"
-        ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
-        "unsupported": false
+        "url": "https://getrector.com/find-rule",
+        "rules": [],
+        "note": "deprecated upstream (2.8.4, main)",
+        "unsupported": true
       },
       {
         "name": "StaticCallToNew",
@@ -10173,7 +10245,7 @@
       {
         "name": "StringToClassConstant",
         "tool": "rector",
-        "url": "https://getrector.com/rule-detail/string-to-class-constant-rector",
+        "url": "https://getrector.com/find-rule",
         "rules": [],
         "note": "in no set",
         "unsupported": true
@@ -10304,6 +10376,14 @@
         "name": "TernaryToNullCoalescing",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/ternary-to-null-coalescing-rector",
+        "rules": [],
+        "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
+        "unsupported": true
+      },
+      {
+        "name": "TernaryToNullsafeCoalesce",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/ternary-to-nullsafe-coalesce-rector",
         "rules": [],
         "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
         "unsupported": true
@@ -10549,6 +10629,14 @@
         "unsupported": true
       },
       {
+        "name": "VersionCompareFuncCallArgument",
+        "tool": "rector",
+        "url": "https://getrector.com/rule-detail/version-compare-func-call-argument-rector",
+        "rules": [],
+        "note": "only in php52..php83 upgrade sets (below the PHP 8.4 floor)",
+        "unsupported": true
+      },
+      {
         "name": "VersionCompareFuncCallToConstant",
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/version-compare-func-call-to-constant-rector",
@@ -10637,6 +10725,16 @@
         "unsupported": false
       },
       {
+        "name": "AddGenericBuilderToScopes",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/add-generic-builder-to-scopes-rector",
+        "rules": [
+          "lint/laravel/add-scope-builder-generics"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "AddGenericReturnTypeToRelations",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/add-generic-return-type-to-relations-rector",
@@ -10665,12 +10763,32 @@
         "unsupported": false
       },
       {
+        "name": "AddLegacyGenericReturnTypeToRelations",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/add-legacy-generic-return-type-to-relations-rector",
+        "rules": [
+          "lint/laravel/add-legacy-relation-generics"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "AddMockConsoleOutputFalseToConsoleTests",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/add-mock-console-output-false-to-console-tests-rector",
         "rules": [],
         "note": "laravel upgrade set below laravel-12",
         "unsupported": true
+      },
+      {
+        "name": "AddNewGenericReturnTypeToRelations",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/add-new-generic-return-type-to-relations-rector",
+        "rules": [
+          "lint/laravel/add-new-relation-generics"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "AddParentBootToModelClassMethod",
@@ -10881,6 +10999,16 @@
         "unsupported": false
       },
       {
+        "name": "CollectionCountComparisonToIsEmpty",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/collection-count-comparison-to-is-empty-rector",
+        "rules": [
+          "lint/laravel/prefer-collection-is-empty"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "CollectsPropertyToCollectsAttribute",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/collects-property-to-collects-attribute-rector",
@@ -10901,6 +11029,14 @@
         "unsupported": false
       },
       {
+        "name": "CommandPropertyToAsCommandAttribute",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/command-property-to-as-command-attribute-rector",
+        "rules": [],
+        "note": "in no rector-laravel/Pest set",
+        "unsupported": true
+      },
+      {
         "name": "ConfigToTypedConfigMethodCall",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/config-to-typed-config-method-call-rector",
@@ -10916,6 +11052,16 @@
           "lint/laravel/prefer-connection-attribute"
         ],
         "note": "Same.",
+        "unsupported": false
+      },
+      {
+        "name": "ContainerArrayAccessToMethodCall",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/container-array-access-to-method-call-rector",
+        "rules": [
+          "lint/laravel/prefer-container-method-call"
+        ],
+        "note": "Same. Planned: not ported yet.",
         "unsupported": false
       },
       {
@@ -11061,6 +11207,16 @@
         "unsupported": false
       },
       {
+        "name": "EmptyGuardedPropertyToUnguardedAttribute",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/empty-guarded-property-to-unguarded-attribute-rector",
+        "rules": [
+          "lint/laravel/prefer-unguarded-attribute"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "EmptyToBlankAndFilledFunc",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/empty-to-blank-and-filled-func-rector",
@@ -11087,6 +11243,14 @@
         ],
         "note": "Same.",
         "unsupported": false
+      },
+      {
+        "name": "EventStringToClassConstant",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/event-string-to-class-constant-rector",
+        "rules": [],
+        "note": "laravel upgrade set below laravel-12",
+        "unsupported": true
       },
       {
         "name": "FactoryApplyingStates",
@@ -11130,6 +11294,26 @@
           "lint/laravel/prefer-fillable-attribute"
         ],
         "note": "Same.",
+        "unsupported": false
+      },
+      {
+        "name": "FuncCallToNew",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/func-call-to-new-rector",
+        "rules": [
+          "lint/refactor/replace-function-with-new"
+        ],
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
+        "unsupported": false
+      },
+      {
+        "name": "FuncCallToStaticCall",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/func-call-to-static-call-rector",
+        "rules": [
+          "lint/refactor/replace-function-with-static"
+        ],
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11363,6 +11547,26 @@
         "unsupported": true
       },
       {
+        "name": "RelationTableStringToPivotClass",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/relation-table-string-to-pivot-class-rector",
+        "rules": [
+          "lint/laravel/prefer-pivot-class"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
+        "name": "RemoveDefaultAuthorizeTrueFromFormRequest",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/remove-default-authorize-true-from-form-request-rector",
+        "rules": [
+          "lint/laravel/no-default-authorize"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "RemoveDumpDataDeadCode",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/remove-dump-data-dead-code-rector",
@@ -11397,6 +11601,22 @@
         ],
         "note": "Same.",
         "unsupported": false
+      },
+      {
+        "name": "RemoveTraitUse",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/remove-trait-use-rector",
+        "rules": [],
+        "note": "laravel upgrade set below laravel-12",
+        "unsupported": true
+      },
+      {
+        "name": "RenameStaticMethod",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/rename-static-method-rector",
+        "rules": [],
+        "note": "laravel upgrade set below laravel-12",
+        "unsupported": true
       },
       {
         "name": "ReplaceAssertTimesSendWithAssertSentTimes",
@@ -11467,6 +11687,16 @@
         "unsupported": false
       },
       {
+        "name": "RepositoryArrayAccessToMethodCall",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/repository-array-access-to-method-call-rector",
+        "rules": [
+          "lint/laravel/prefer-repository-method-call"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "RequestStaticValidateToInject",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/request-static-validate-to-inject-rector",
@@ -11511,6 +11741,16 @@
         "rules": [],
         "note": "in no rector-laravel/Pest set",
         "unsupported": true
+      },
+      {
+        "name": "RouteKeyMethodToRouteKeyAttribute",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/route-key-method-to-route-key-attribute-rector",
+        "rules": [
+          "lint/laravel/prefer-route-key-attribute"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
       },
       {
         "name": "ScopeNamedClassMethodToScopeAttributedClassMethod",
@@ -11560,6 +11800,16 @@
           "lint/laravel/prefer-sleep-facade"
         ],
         "note": "Same.",
+        "unsupported": false
+      },
+      {
+        "name": "StaticFacadeToServiceMethodCall",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/static-facade-to-service-method-call-rector",
+        "rules": [
+          "lint/refactor/replace-static-with-method"
+        ],
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11681,6 +11931,16 @@
         "unsupported": false
       },
       {
+        "name": "UnlinkFuncCallToFileFacadeDelete",
+        "tool": "rector-laravel",
+        "url": "https://getrector.com/rule-detail/unlink-func-call-to-file-facade-delete-rector",
+        "rules": [
+          "lint/laravel/prefer-file-facade-delete"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "UseComponentPropertyWithinCommands",
         "tool": "rector-laravel",
         "url": "https://getrector.com/rule-detail/use-component-property-within-commands-rector",
@@ -11767,7 +12027,7 @@
         "tool": "pest-plugin-rector",
         "url": "https://getrector.com/find-rule",
         "rules": [],
-        "note": "not in pest-plugin-rector at the pinned commit 1a4b6b7 (removed upstream)",
+        "note": "in no Pest set",
         "unsupported": true
       },
       {
@@ -12499,6 +12759,16 @@
         "unsupported": false
       },
       {
+        "name": "AnyMatcherToNewAnyInvokedCount",
+        "tool": "rector-phpunit",
+        "url": "https://getrector.com/rule-detail/any-matcher-to-new-any-invoked-count-rector",
+        "rules": [
+          "lint/phpunit/no-any-matcher"
+        ],
+        "note": "Same. Planned: not ported yet.",
+        "unsupported": false
+      },
+      {
         "name": "AssertArrayCastedObjectToAssertSame",
         "tool": "rector-phpunit",
         "url": "https://getrector.com/rule-detail/assert-array-casted-object-to-assert-same-rector",
@@ -13217,6 +13487,14 @@
         "unsupported": false
       },
       {
+        "name": "ScenarioToTestAnnotation",
+        "tool": "rector-phpunit",
+        "url": "https://getrector.com/rule-detail/scenario-to-test-annotation-rector",
+        "rules": [],
+        "note": "only in PHPUnit upgrade sets below phpunit110 (below the Laravel 12 / PHPUnit 11 floor)",
+        "unsupported": true
+      },
+      {
         "name": "SimplerWithIsInstanceOf",
         "tool": "rector-phpunit",
         "url": "https://getrector.com/rule-detail/simpler-with-is-instance-of-rector",
@@ -13382,6 +13660,16 @@
           "lint/phpunit/prefer-will-return-callback"
         ],
         "note": "Same.",
+        "unsupported": false
+      },
+      {
+        "name": "WillReturnCallbackFallbackToReturnFalse",
+        "tool": "rector-phpunit",
+        "url": "https://getrector.com/rule-detail/will-return-callback-fallback-to-return-false-rector",
+        "rules": [
+          "lint/phpunit/add-will-return-callback-false-fallback"
+        ],
+        "note": "Same. Planned: not ported yet.",
         "unsupported": false
       },
       {

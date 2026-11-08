@@ -13,8 +13,10 @@ final class SingleLineDoc
 
 final class SingleLineDoc
 {
-    /** @deprecated
-     * @param array<int, mixed> $data */
+    /**
+     * @deprecated
+     * @param array<int, mixed> $data
+     */
     public function process(array $data): void
     {
         echo $data[1];

@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-empty-array-compare`, ported from Rector 2.6.1's `SimplifyEmptyArrayCheckRector`
+//! `lint/complexity/prefer-empty-array-compare`, ported from Rector 2.8.4's `SimplifyEmptyArrayCheckRector`
 //! (rules/CodeQuality/Rector/BooleanAnd) with `BinaryOpManipulator::matchFirstAndSecondConditionNode`.
 //!
 //! `is_array($values) && empty($values)`, in either order, becomes `$values === []`.

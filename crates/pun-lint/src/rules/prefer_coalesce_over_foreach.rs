@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-coalesce-over-foreach`, ported from Rector 2.6.1's `SimplifyForeachToCoalescingRector`
+//! `lint/complexity/prefer-coalesce-over-foreach`, ported from Rector 2.8.4's `SimplifyForeachToCoalescingRector`
 //! (rules/CodeQuality/Rector/Foreach_).
 //!
 //! A `foreach ($array as $key => $value)` over an array whose only statement is `if ($key === $x)` with one

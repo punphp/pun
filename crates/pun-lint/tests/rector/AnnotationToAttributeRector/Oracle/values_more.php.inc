@@ -10,14 +10,3 @@ use Rector\Tests\Php80\Rector\Class_\AnnotationToAttributeRector\Source\GenericA
 final class ValuesMore
 {
 }
------
-<?php
-
-namespace App;
-
-use Rector\Tests\Php80\Rector\Class_\AnnotationToAttributeRector\Source\GenericAnnotation;
-
-#[GenericAnnotation(tiny: 1.0E-5, huge: 1.0E+20, third: 0.30000000000000004, quote: 'it')]
-final class ValuesMore
-{
-}

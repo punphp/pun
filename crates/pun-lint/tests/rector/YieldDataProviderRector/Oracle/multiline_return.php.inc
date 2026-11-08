@@ -165,7 +165,7 @@ final class MultilineTest extends TestCase
     }
 
     /**
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator<int|string, mixed>
      * more description
      */
     public static function nextLine(): \Iterator
@@ -174,7 +174,7 @@ final class MultilineTest extends TestCase
     }
 
     /**
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator<int|string, mixed>
      *   more
      */
     public static function trailingSpace(): \Iterator
@@ -193,7 +193,7 @@ final class MultilineTest extends TestCase
     }
 
     /**
-     * @return \Iterator<(int | string), mixed> desc
+     * @return \Iterator<int|string, mixed> desc
      * more
      */
     public static function sameAndNext(): \Iterator
@@ -202,7 +202,7 @@ final class MultilineTest extends TestCase
     }
 
     /**
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator<int|string, mixed>
      *
      * text after a blank line
      */

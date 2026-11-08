@@ -1,11 +1,11 @@
-//! `lint/complexity/no-constant-condition`, ported from Rector 2.6.1's `RemoveDeadIfBlockRector`
+//! `lint/complexity/no-constant-condition`, ported from Rector 2.8.4's `RemoveDeadIfBlockRector`
 //! (rules/DeadCode/Rector/If_), with `ConditionInverter` and `SideEffectNodeDetector`.
 //!
 //! Branches of an `if` that do nothing go: an `else` with no statement, and each `elseif` with no statement whose
 //! condition has no side effect. When the `if` body itself has no statement, no comment before the `if` and a
 //! condition without side effects, the `if` merges into what is left: the first `elseif` becomes
-//! `if (!<condition> && <elseif condition>)`, an `else` becomes `if (!<condition>)`, and with neither the statement
-//! goes.
+//! `if (!<condition> && <elseif condition>)` (unless an `else` follows), an `else` becomes `if (!<condition>)`, and
+//! with neither the statement goes.
 //!
 //! php-parser's printer decides the bytes. A removed `else` takes the whitespace and comments before it, a removed
 //! `elseif` the text from the end of the branch before it (the first one: up to the next kept branch). An `if` whose
@@ -67,7 +67,9 @@ impl Rule for NoConstantCondition {
         let dead = view.stmts.is_empty()
             && !commented
             && !has_side_effect(ancestors, view.condition);
-        let edits = if !dead {
+        // A trailing else would run when the negated if condition is true, which the original empty if body never
+        // did, so an `if` with a kept `elseif` and an `else` keeps its condition
+        let edits = if !dead || (!kept.is_empty() && else_.is_some()) {
             if !empty_else && !elseifs_changed {
                 return;
             }

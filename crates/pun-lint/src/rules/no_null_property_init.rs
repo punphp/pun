@@ -1,4 +1,4 @@
-//! `lint/classes/no-null-property-init`, ported from Rector 2.6.1's `RemoveNullPropertyInitializationRector`
+//! `lint/classes/no-null-property-init`, ported from Rector 2.8.4's `RemoveNullPropertyInitializationRector`
 //! (rules/DeadCode/Rector/PropertyProperty).
 //!
 //! `private $a = null;` becomes `private $a;`: an untyped property is `null` until it is set. A typed property

@@ -99,7 +99,7 @@ final class MultiTest extends TestCase
 {
     private int $a, $b;
     private static int $s;
-    /** @var (\PHPUnit\Framework\MockObject\MockObject & \DateTime) */
+    /** @var \PHPUnit\Framework\MockObject\MockObject&\DateTime */
     private \PHPUnit\Framework\MockObject\MockObject $mock;
     /** @var \PHPUnit\Framework\MockObject\MockObject */
     private \PHPUnit\Framework\MockObject\MockObject $mock2;
@@ -108,7 +108,7 @@ final class MultiTest extends TestCase
     /**
      * Some text.
      *
-     * @var (\PHPUnit\Framework\MockObject\MockObject & \App\Helper)
+     * @var \PHPUnit\Framework\MockObject\MockObject&\App\Helper
      */
     private \PHPUnit\Framework\MockObject\MockObject $mock4;
     private \PHPUnit\Framework\MockObject\MockObject $mock5;

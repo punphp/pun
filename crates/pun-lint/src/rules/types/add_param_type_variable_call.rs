@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-variable-call`, ported from Rector 2.6.1's `AddClosureParamTypeFromVariableCallRector`
+//! `lint/types/add-param-type-variable-call`, ported from Rector 2.8.4's `AddClosureParamTypeFromVariableCallRector`
 //! (rules/TypeDeclaration/Rector/FunctionLike): a closure assigned to a variable (`$print = function ($item) {...}`)
 //! that the same body calls (`$print(new Item())`) gets, for each untyped parameter, the class of the objects every
 //! call passes at its position.

@@ -1,20 +1,16 @@
 //! rector-phpunit's own fixtures for the ported `phpunit` rules, copied verbatim from rectorphp/rector-phpunit at
-//! e68085d (rules-tests/...) into tests/rector/<Rector class>/Fixture (and its Source/). Oracle/ holds extra inputs
-//! with what Rector 2.6.1 and that rector-phpunit (`.oracle/rector-ecosystem`, the rule alone, `phpVersion(80400)`)
+//! 22c6dae (rules-tests/...) into tests/rector/<Rector class>/Fixture (and its Source/). Oracle/ holds extra inputs
+//! with what Rector 2.8.4 and that rector-phpunit (`.oracle/rector-ecosystem`, the rule alone, `phpVersion(80400)`)
 //! wrote for them; Pun/ holds the documented cases where Pun differs. A fixture is `input -----\n expected`, or only
 //! the input when the rule must not change it.
 //!
 //! rector-phpunit runs its fixtures with phpunit/phpunit 13.2 installed, so every fixture here sees the PHPUnit
 //! classes of tests/phpunit-stubs (PHPUnit 13.2.6's files with empty method bodies, scripts/export-phpunit-stub.php)
 //! beside its Source/ classes, and the Symfony and Behat classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
-//! verbatim at e68085d).
+//! verbatim at 22c6dae).
 //!
 //! Pun/noargs: a call that lacks the arguments a rule reads (`$this->assertSame()`, `is_a($a)`) makes Rector fail on the
 //! file; Pun leaves the call alone.
-//!
-//! Pun/case_mismatch: a renaming rule's method name written in other letter case (`$this->AssertTrue(...)`) makes
-//! Rector fail on the file (`IdentifierManipulator::renameNodeWithMap` looks the name up in its map as written and
-//! builds an `Identifier` of `null`); Pun leaves the call alone.
 //!
 //! Pun/declined (the annotation-to-attribute rules): Pun leaves a doc alone that has another comment before it
 //! (php-parser reprints those with the doc), a tag Pun's doc reader does not follow (`@\...`, `@_...`), or a tab in the
@@ -549,6 +545,8 @@ fn annotation_with_value_to_attribute() {
           "value-map": [], "is-on-class-level": false },
         { "annotation-name": "uses", "attribute-class": "PHPUnit\\Framework\\Attributes\\UsesClass",
           "value-map": [], "is-on-class-level": true },
+        { "annotation-name": "testdox", "attribute-class": "PHPUnit\\Framework\\Attributes\\TestDox",
+          "value-map": [], "is-on-class-level": false },
         { "annotation-name": "backupStaticAttributes",
           "attribute-class": "PHPUnit\\Framework\\Attributes\\BackupStaticProperties",
           "value-map": { "enabled": 1, "disabled": 2.5, "maybe": "yes" } },
@@ -568,13 +566,13 @@ fn test_with_to_data_provider() {
 
 #[test]
 fn finalize_test_case_class() {
-    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    // Fixture/ verbatim from rector-src 2.8.4 (rules-tests/...), a Rector core rule of the phpunit sets.
     check(RequireFinalTestCase, "FinalizeTestCaseClassRector");
 }
 
 #[test]
 fn add_tests_void_return_type_where_no_return() {
-    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    // Fixture/ verbatim from rector-src 2.8.4 (rules-tests/...), a Rector core rule of the phpunit sets.
     check(
         AddTestVoidReturn,
         "AddTestsVoidReturnTypeWhereNoReturnRector",
@@ -583,7 +581,7 @@ fn add_tests_void_return_type_where_no_return() {
 
 #[test]
 fn return_iterator_in_data_provider() {
-    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    // Fixture/ verbatim from rector-src 2.8.4 (rules-tests/...), a Rector core rule of the phpunit sets.
     check(
         AddDataProviderIteratorReturnType,
         "ReturnIteratorInDataProviderRector",
@@ -592,7 +590,7 @@ fn return_iterator_in_data_provider() {
 
 #[test]
 fn return_type_from_mock_object() {
-    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    // Fixture/ verbatim from rector-src 2.8.4 (rules-tests/...), a Rector core rule of the phpunit sets.
     check(
         AddReturnTypeFromMockObject,
         "ReturnTypeFromMockObjectRector",

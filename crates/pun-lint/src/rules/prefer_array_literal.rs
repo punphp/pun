@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-array-literal`, ported from Rector 2.6.1's `ArrayMergeOfNonArraysToSimpleArrayRector`
+//! `lint/complexity/prefer-array-literal`, ported from Rector 2.8.4's `ArrayMergeOfNonArraysToSimpleArrayRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `array_merge([$a], [$b])` becomes `[$a, $b]`: when every argument is an array literal, their items make one

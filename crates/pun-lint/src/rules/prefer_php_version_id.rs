@@ -1,4 +1,4 @@
-//! `lint/style/prefer-php-version-id`, ported from Rector 2.6.1's `VersionCompareFuncCallToConstantRector`
+//! `lint/style/prefer-php-version-id`, ported from Rector 2.8.4's `VersionCompareFuncCallToConstantRector`
 //! (rules/CodingStyle/Rector/FuncCall).
 //!
 //! `version_compare(PHP_VERSION, '8.1', '>=')` becomes `PHP_VERSION_ID >= 80100`: `PHP_VERSION` turns into

@@ -1,11 +1,11 @@
-//! `lint/classes/no-protected-constant-in-final`, ported from Rector 2.6.1's `PrivatizeFinalClassConstantRector`
+//! `lint/classes/no-protected-constant-in-final`, ported from Rector 2.8.4's `PrivatizeFinalClassConstantRector`
 //! (rules/Privatization/Rector/ClassConst).
 //!
-//! A `protected` constant of a `final` class becomes `private`, one declared alone (`const A = 1, B = 2;` stays) and
-//! not `final` (PHP rejects a `final private` constant, which Rector writes).
+//! A `protected` constant of a `final` class becomes `private`, one declared alone (`const A = 1, B = 2;` stays);
+//! a `final` modifier goes with it.
 //! See `lint_b_privatize` for the classes Pun knows enough about.
 
-use mago_syntax::cst::{ClassLikeMember, Modifier, Node, NodeKind};
+use mago_syntax::cst::{ClassLikeMember, Node, NodeKind};
 use pun_problem::{Fix, Safety};
 
 use super::lint_b_privatize::{final_class, is_protected, make_private};
@@ -37,12 +37,7 @@ impl Rule for NoProtectedConstantInFinal {
             let ClassLikeMember::Constant(constant) = member else {
                 continue;
             };
-            // Rector also changes a `final` constant, and `final private const` is a compile error.
-            let is_final = constant
-                .modifiers
-                .iter()
-                .any(|m| matches!(m, Modifier::Final(_)));
-            if constant.items.len() != 1 || !is_protected(&constant.modifiers) || is_final {
+            if constant.items.len() != 1 || !is_protected(&constant.modifiers) {
                 continue;
             }
             out.push(Report {

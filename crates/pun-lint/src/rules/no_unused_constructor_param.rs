@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-constructor-param`, ported from Rector 2.6.1's `RemoveUnusedConstructorParamRector`
+//! `lint/dead-code/no-unused-constructor-param`, ported from Rector 2.8.4's `RemoveUnusedConstructorParamRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `ClassMethodParamRemover` and `ComplexNodeRemover::
 //! processRemoveParamWithKeys`.
 //!

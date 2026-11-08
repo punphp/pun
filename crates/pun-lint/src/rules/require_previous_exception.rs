@@ -1,11 +1,12 @@
-//! `lint/complexity/require-previous-exception`, ported from Rector 2.6.1's `ThrowWithPreviousExceptionRector`
+//! `lint/complexity/require-previous-exception`, ported from Rector 2.8.4's `ThrowWithPreviousExceptionRector`
 //! (rules/CodeQuality/Rector/Catch_).
 //!
 //! In a `catch` with a variable, each `throw new <Name>(...)` below it (at any depth) passes the caught exception on:
 //! the message (`$e->getMessage()`) when there is no argument, the code (`$e->getCode()`) when the constructor has a
 //! `$code` parameter, and the exception at the constructor's first parameter that takes a `Throwable`. The constructor
 //! comes from the class's reflection, docblock types read: an unknown class, or one without a constructor, takes the
-//! exception third.
+//! exception third. Rector 2.8.4 runs the rule until nothing changes and php-parser prints the exception after the last
+//! argument, so a positional exception is repeated until it reaches the constructor's position.
 //!
 //! Rector drops the `new`'s original node, so php-parser prints it anew (`pExpr_New`): `new`, the class as written,
 //! and the arguments as written joined with `, ` (`pMaybeMultiline`: a line each, one level deeper, when one has
@@ -129,14 +130,8 @@ fn refactor(
         .as_ref()
         .map(|l| l.arguments.iter().collect())
         .unwrap_or_default();
-    // exception is bundled; Pun also stops when a positional argument is the caught exception, which Rector passes
-    // again where the constructor takes it after the arguments (`new \ErrorException('m', 1, $e)`), so that its fix
-    // rounds settle
-    if written.len() > position
-        || written
-            .iter()
-            .any(|a| matches!(a, Argument::Positional(p) if is_variable(p.value, variable)))
-    {
+    // exception is bundled
+    if written.len() > position {
         return None;
     }
     let mut args: Vec<Arg> = written
@@ -199,7 +194,13 @@ fn refactor(
             return None;
         }
     } else if has_parameter("previous") && !has_argument(&args, "previous") {
-        args.push(new_arg(named.then(|| "previous".to_string()), var));
+        // Rector sets `args[$position]`, which php-parser prints after the last argument; Rector 2.8.4 reprints and
+        // runs the rule again until nothing changes, so a positional exception goes in until it reaches its position
+        // (`new \ErrorException('m', 1)` gets `$e` four times).
+        let count = if named { 1 } else { (position + 1).saturating_sub(args.len()).max(1) };
+        for _ in 0..count {
+            args.push(new_arg(named.then(|| "previous".to_string()), var.clone()));
+        }
     } else if !changed {
         return None;
     }
@@ -291,7 +292,7 @@ fn takes_throwable(codebase: &CodebaseMetadata, t: Option<&TUnion>) -> bool {
     let mut classes: Vec<String> = t.types.iter().filter_map(class_name).collect();
     classes.dedup();
     if let [class] = &classes[..] {
-        // Rector 2.6.1 on PHPStan 2.2.7: a lone class is a maybe unless it is final or a trait; in a union with
+        // Rector 2.8.4 on PHPStan 2.3.5: a lone class is a maybe unless it is final or a trait; in a union with
         // other types (`?Foo` too), only a `Throwable` class stops it
         if t.types.len() == 1 {
             return throwable_of(codebase, class) != Some(false);

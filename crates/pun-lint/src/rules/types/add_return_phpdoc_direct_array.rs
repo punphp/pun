@@ -1,7 +1,8 @@
-//! `lint/types/add-return-phpdoc-direct-array`, ported from Rector 2.6.1's
+//! `lint/types/add-return-phpdoc-direct-array`, ported from Rector 2.8.4's
 //! `DocblockReturnArrayFromDirectArrayInstanceRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a function
 //! or method whose one `return` returns an array literal gets `@return array<key, item>`, the literal's type
-//! generalized (`ConstantArrayTypeGeneralizer`).
+//! generalized (`ConstantArrayTypeGeneralizer`). An empty literal is left alone, except that a bare `@return array`
+//! becomes `@return mixed[]`.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::Type;
@@ -68,8 +69,22 @@ impl Rule for AddReturnPhpdocDirectArray {
             Expression::LegacyArray(a) => a.elements.is_empty(),
             _ => return,
         };
-        // `shouldSkipReturnMixedAndEmptyArray()`: `T[]` is better than `array{}`
-        if empty && matches!(info.return_tag().map(|t| &t.ty), Some(TypeNode::Array { .. })) {
+        // `shouldSkipEmptyArray()`: `@return array{}` is too narrow, but a bare `@return array` becomes `mixed[]`
+        if empty {
+            if !matches!(info.return_tag().map(|t| &t.ty), Some(TypeNode::Identifier(name)) if name == "array") {
+                return;
+            }
+            info.set_return_type(TypeNode::Array {
+                inner: Box::new(TypeNode::ident("mixed")),
+                generic_parent: false,
+            });
+            out.extend(doc_report(
+                f.name,
+                "Add the `@return` array type of the returned array.",
+                ctx.source,
+                &target,
+                &info,
+            ));
             return;
         }
         let Some(Type::ConstArray(returned)) = expr_type(ctx, ancestors, value) else {

@@ -34,8 +34,8 @@ pub(crate) fn resolve_doc_string_name(ancestors: &[Node<'_, '_>], written: &str)
 
 /// Rector's `ObjectTypeSpecifier::narrowToFullyQualifiedOrAliasedObjectType` for a class name `written` in a doc comment
 /// at the node `ancestors` lead to: the name the type compares by. An alias, then the last part of a `use` without
-/// one, must match exactly; then the name itself if it is a class (`exists`, `ReflectionProvider::hasClass`), else
-/// the name in the namespace.
+/// one, must match exactly; then an unqualified name in the namespace if that is a class, then the name itself if it is
+/// a class (`exists`, `ReflectionProvider::hasClass`), else the name in the namespace.
 pub(crate) fn resolve_doc_class_name(
     ancestors: &[Node<'_, '_>],
     written: &str,
@@ -73,6 +73,15 @@ pub(crate) fn resolve_doc_class_name(
             if connected != written {
                 return connected;
             }
+        }
+    }
+    // a class in the current namespace wins over a global class with the same short name
+    if let Some(ns) = scope(ancestors).0
+        && !written.contains('\\')
+    {
+        let full = format!("{}\\{written}", String::from_utf8_lossy(ns));
+        if exists(&full) {
+            return full;
         }
     }
     if exists(written) {

@@ -1,4 +1,4 @@
-//! `lint/php-8.5/no-out-of-range-chr`, ported from Rector 2.6.1's `ChrArgModuloRector` (rules/Php85/Rector/FuncCall).
+//! `lint/php-8.5/no-out-of-range-chr`, ported from Rector 2.8.4's `ChrArgModuloRector` (rules/Php85/Rector/FuncCall).
 //!
 //! PHP 8.5 deprecates passing `chr()` an integer outside 0-255, so such an argument becomes `$x % 256`. Rector asks
 //! PHPStan for the argument's value; Pun knows it where the syntax does (see `lint_b_helpers::constant`).

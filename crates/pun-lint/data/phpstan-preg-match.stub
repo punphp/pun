@@ -1,6 +1,6 @@
 <?php
 
-// preg_match() and preg_match_all() as PHPStan 2.2.7 declares them (phpstan.phar stubs/core.stub, copied verbatim):
+// preg_match() and preg_match_all() as PHPStan 2.3.5 declares them (phpstan.phar stubs/core.stub, copied verbatim):
 // the type of $matches follows the flags.
 
 /**

@@ -1,10 +1,11 @@
-//! `lint/laravel/prefer-dispatch-helper`, ported from rector-laravel 2.5.0's `DispatchToHelperFunctionsRector`
+//! `lint/laravel/prefer-dispatch-helper`, ported from rector-laravel 2.7.3's `DispatchToHelperFunctionsRector`
 //! (src/Rector/StaticCall).
 //!
 //! `Job::dispatch(...)` and `Job::dispatchSync(...)` on a class that uses `Illuminate\Foundation\Bus\Dispatchable`
 //! become `dispatch(new \Job(...))` and `dispatch_sync(new \Job(...))`; `Event::dispatch(...)` on a class that uses
-//! `Illuminate\Foundation\Events\Dispatchable` becomes `event(new \Event(...))`. The class must be one the codebase
-//! knows; `self`, `static` and `parent` stay as they are written.
+//! `Illuminate\Foundation\Events\Dispatchable` becomes `event(new \Event(...))`, and `Event::broadcast(...)`
+//! becomes `broadcast(new \Event(...))`. The class must be one the codebase knows; `self`, `static` and `parent`
+//! become `static`.
 
 use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
 
@@ -44,7 +45,8 @@ impl Rule for PreferDispatchHelper {
         };
         let name = method.value;
         let sync = is_name(name, "dispatchSync");
-        if !sync && !is_name(name, "dispatch") {
+        let broadcast = is_name(name, "broadcast");
+        if !sync && !broadcast && !is_name(name, "dispatch") {
             return;
         }
         let (class, written) = match call.class {
@@ -54,7 +56,8 @@ impl Rule for PreferDispatchHelper {
             ),
             special @ (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) => (
                 special_class(ancestors, special),
-                ctx.source[node_span(special).start..node_span(special).end].to_string(),
+                // Forwarding calls: the trait's `new static()` makes the called class, so `static` it stays.
+                "static".to_string(),
             ),
             _ => return,
         };
@@ -66,7 +69,12 @@ impl Rule for PreferDispatchHelper {
         let uses = |t: &str| {
             (metadata.used_traits.iter()).any(|u| u.as_bytes().eq_ignore_ascii_case(t.as_bytes()))
         };
-        let helper = if uses("Illuminate\\Foundation\\Bus\\Dispatchable") {
+        let helper = if broadcast {
+            if !uses("Illuminate\\Foundation\\Events\\Dispatchable") {
+                return;
+            }
+            "broadcast"
+        } else if uses("Illuminate\\Foundation\\Bus\\Dispatchable") {
             if sync { "dispatch_sync" } else { "dispatch" }
         } else if uses("Illuminate\\Foundation\\Events\\Dispatchable") {
             "event"
@@ -77,7 +85,7 @@ impl Rule for PreferDispatchHelper {
             kept_arguments(ctx.source, &call.argument_list, node_span(call).start).join(", ");
         out.push(replace(
             node_span(call),
-            format!("Use the `{helper}()` helper instead of the static `dispatch` method."),
+            format!("Use the `{helper}()` helper instead of the static `{}` method.", String::from_utf8_lossy(name)),
             format!("{helper}(new {written}({args}))"),
         ));
     }

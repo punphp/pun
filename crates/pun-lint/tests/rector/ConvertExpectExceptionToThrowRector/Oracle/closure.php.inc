@@ -82,7 +82,8 @@ test('c', static   function()use($a):void{
 describe('d', function () {
     test('e', function () {
         expect(fn() => doSomething())->toThrow(RuntimeException::class);
-        expect(fn() => $x = 1)->toThrow(LogicException::class);
+        $this->expectException(LogicException::class);
+        $x = 1;
     });
 });
 

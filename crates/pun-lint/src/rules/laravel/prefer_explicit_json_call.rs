@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-explicit-json-call`, ported from rector-laravel 2.5.0's `JsonCallToExplicitJsonCallRector`
+//! `lint/laravel/prefer-explicit-json-call`, ported from rector-laravel 2.7.3's `JsonCallToExplicitJsonCallRector`
 //! (src/Rector/MethodCall).
 //!
 //! On an object using `Illuminate\Foundation\Testing\Concerns\MakesHttpRequests`, `->json('post', $uri, ...)` becomes

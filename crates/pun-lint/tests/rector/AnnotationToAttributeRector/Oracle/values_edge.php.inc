@@ -96,7 +96,9 @@ namespace App;
 use Doctrine\ORM\Mapping as ORM;
 use Rector\Tests\Php80\Rector\Class_\AnnotationToAttributeRector\Source\GenericAnnotation;
 
-#[GenericAnnotation(some: "a\\'b")]
+/**
+ * @GenericAnnotation(some='a\'b')
+ */
 final class C1
 {
 }

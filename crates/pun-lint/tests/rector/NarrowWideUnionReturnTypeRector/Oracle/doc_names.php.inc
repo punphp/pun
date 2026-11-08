@@ -58,7 +58,7 @@ final class DocNames
     }
 
     /**
-     * @return Moment|DateTimeImmutable
+     * @return DateTimeImmutable|Moment
      */
     public function union(bool $flag): \DateTime|\DateTimeImmutable
     {

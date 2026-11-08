@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-useless-param`, ported from Rector 2.6.1's `RemoveUselessParamTagRector`
+//! `lint/phpdoc/no-useless-param`, ported from Rector 2.8.4's `RemoveUselessParamTagRector`
 //! (rules/DeadCode/Rector/ClassMethod) with `ParamTagRemover` and `DeadParamTagValueNodeAnalyzer`
 //! (rules/DeadCode/PhpDoc).
 //!

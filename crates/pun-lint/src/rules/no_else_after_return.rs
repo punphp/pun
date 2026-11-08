@@ -1,4 +1,4 @@
-//! `lint/control-flow/no-else-after-return`, ported from Rector 2.6.1's `RemoveAlwaysElseRector`
+//! `lint/control-flow/no-else-after-return`, ported from Rector 2.8.4's `RemoveAlwaysElseRector`
 //! (rules/EarlyReturn/Rector/If_).
 //!
 //! When a branch of an `if` ends the flow (`return`, `throw`, `continue`, `exit`), the branch after it needs no

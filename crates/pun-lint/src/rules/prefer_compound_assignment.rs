@@ -1,4 +1,4 @@
-//! `lint/style/prefer-compound-assignment`, ported from Rector 2.6.1's `CombinedAssignRector`
+//! `lint/style/prefer-compound-assignment`, ported from Rector 2.8.4's `CombinedAssignRector`
 //! (rules/CodeQuality/Rector/Assign) and `AssignAndBinaryMap`.
 //!
 //! `$value = $value + 5;` becomes `$value += 5;` when the assigned expression and the binary operation's left side are

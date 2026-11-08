@@ -26,7 +26,6 @@ function scalar()
     }
     return $found;
 }
-
 -----
 <?php
 
@@ -50,4 +49,3 @@ function scalar()
     }
     return $found;
 }
-

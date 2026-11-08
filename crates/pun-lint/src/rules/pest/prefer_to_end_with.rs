@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-end-with`, ported from pest-plugin-rector's `UseToEndWithRector`: `expect(str_ends_with($subject, $other))->toBeTrue()` becomes `expect($subject)->toEndWith($other)`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toEndWith()`. The checked value's type must possibly be a string.
+//! `->not` before the matcher becomes `->not->toEndWith()`. The checked value's type must be a string.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToEndWith {
             "str_ends_with",
             "toEndWith",
             |values| match values {
-                [subject, other] if !(type_is(ctx, subject, Is::String) == Trinary::No) => {
+                [subject, other] if type_is(ctx, subject, Is::String) == Trinary::Yes => {
                     Some((*subject, vec![*other]))
                 }
                 _ => None,

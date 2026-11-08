@@ -1,4 +1,4 @@
-//! `lint/complexity/require-named-argument-order`, ported from Rector 2.6.1's `SortCallLikeNamedArgsRector`
+//! `lint/complexity/require-named-argument-order`, ported from Rector 2.8.4's `SortCallLikeNamedArgsRector`
 //! (rules/CodeQuality/Rector/FuncCall) and its `NamedArgsSorter` (rules/CodeQuality/NodeManipulator).
 //!
 //! The named arguments of a function, method, static method or constructor call move into the order of the

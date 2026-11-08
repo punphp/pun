@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-array-dim-fetch`, ported from Rector 2.6.1's `StrictArrayParamDimFetchRector`
+//! `lint/types/add-param-type-array-dim-fetch`, ported from Rector 2.8.4's `StrictArrayParamDimFetchRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): an untyped parameter of a method, function or closure that its body
 //! reads with a key (`$param['key']`) gets the `array` type, unless the body first uses it in a way an array would
 //! not allow, or its type may be a string, a union or an `ArrayAccess` object.
@@ -22,6 +22,7 @@ use mago_syntax::cst::{
 
 use super::class_scope;
 use super::facts::{Facts, facts};
+use super::add_param_type_method_call::walk;
 use super::has_parent_class_method;
 use super::param::{Flow, add_hint, traverse};
 use crate::rules::class_method::type_of;
@@ -120,7 +121,10 @@ impl Rule for AddParamTypeArrayDimFetch {
                         && words.iter().any(|w| w.as_bytes() == param.variable.name)
                 })
             });
-            if is_accessed_array_dim_fetch(&facts, body, param.variable.name, tagged || passed) {
+            if is_accessed_array_dim_fetch(&facts, body, param.variable.name, tagged || passed)
+                && !matches!(node, Node::Method(m) if m.modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))
+                    && is_called_with_array_access_arg(&facts, ancestors, m.name.value, index))
+            {
                 edits.push(add_hint(param, "array"));
             }
         }
@@ -474,6 +478,36 @@ fn constant_arrays_are_union(arrays: &[&TArray]) -> bool {
         }
     }
     kinds.len() > 1
+}
+
+/// `isCalledWithArrayAccessArg()`: a method or static call in the class of the private method, named like it, passes
+/// an `ArrayAccess` object at `position` (all callers of a private method are in its class).
+fn is_called_with_array_access_arg(facts: &Facts, ancestors: &[Node<'_, '_>], method: &[u8], position: usize) -> bool {
+    // `findClassOfMethod()`: the `Class_` (named or anonymous) whose methods hold it, not a trait or an enum
+    let Some(class) = ancestors.iter().rev().find(|a| {
+        matches!(a, Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_))
+    }) else {
+        return false;
+    };
+    if !matches!(class, Node::Class(_) | Node::AnonymousClass(_)) {
+        return false;
+    }
+    let mut found = false;
+    walk(*class, &mut |node| {
+        let (selector, list) = match node {
+            Node::MethodCall(call) => (&call.method, &call.argument_list),
+            Node::StaticMethodCall(call) => (&call.method, &call.argument_list),
+            _ => return,
+        };
+        if let ClassLikeMemberSelector::Identifier(id) = selector
+            && id.value.eq_ignore_ascii_case(method)
+            && let Some(arg) = list.arguments.get(position)
+            && type_of(facts, value(arg)).is_some_and(|t| is_array_access(facts, t))
+        {
+            found = true;
+        }
+    });
+    found
 }
 
 /// `isArrayAccess()`: an object of a class that is `ArrayAccess` or implements it.

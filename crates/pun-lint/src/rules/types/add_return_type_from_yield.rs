@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-yield`, ported from Rector 2.6.1's `AddReturnTypeDeclarationFromYieldsRector`
+//! `lint/types/add-return-type-from-yield`, ported from Rector 2.8.4's `AddReturnTypeDeclarationFromYieldsRector`
 //! (rules/TypeDeclaration/Rector/FunctionLike, with `YieldNodeFinder` and `YieldTypeResolver`): a function or method
 //! whose body is only expression statements, at least one of them yielding, returns a `\Generator`. A declared
 //! `Iterator`, `Generator`, `Traversable` or `iterable` stays; another declared type is replaced (a class name by

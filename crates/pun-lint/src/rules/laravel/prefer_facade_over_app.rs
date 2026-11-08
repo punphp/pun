@@ -1,4 +1,4 @@
-//! `HelperFuncCallToFacadeClassRector` from rector-laravel 2.5.0.
+//! `HelperFuncCallToFacadeClassRector` from rector-laravel 2.7.3.
 
 use mago_syntax::cst::{Access, Call, Expression, Identifier, Node, NodeKind, Variable};
 

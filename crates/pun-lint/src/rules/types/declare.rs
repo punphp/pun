@@ -65,10 +65,6 @@ pub(crate) fn return_declaration<'a>(
     }
     let union = names.len() > 1 || nullable;
     for name in &mut names {
-        // `UnionTypeMapper` maps each member as `TypeKind::UNION`, where `StaticTypeMapper` writes `self`
-        if union && name == "static" {
-            *name = "self".to_string();
-        }
         let standalone = php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE;
         if (name == "true" && !standalone) || (name == "false" && !standalone && !union) {
             *name = "bool".to_string();
@@ -86,10 +82,7 @@ pub(crate) fn return_declaration<'a>(
     }
     names.sort_by_key(|n| {
         let key = order_key(n);
-        // a `self` written for a declared `static` keeps its place
-        order
-            .iter()
-            .position(|o| *o == key || (key == "self" && o == "static"))
+        order.iter().position(|o| *o == key)
             .unwrap_or(order.len())
     });
     // a DNF type (PHP 8.2) wraps each intersection of a union in parentheses
@@ -197,18 +190,25 @@ pub(crate) fn atomic_declaration(
             };
             match &named.intersection_types {
                 None => name,
-                Some(_) if php_version < INTERSECTION_TYPES => return None,
                 Some(others) => {
+                    // `NativePhpTypeNodeHelper::intersection()` (PHPStan 2.3): only class names are intersected,
+                    // other members (`callable`, `iterable`, `HasMethodType`) are dropped, a repeat once
                     let mut all = vec![name];
                     for other in others.iter() {
-                        all.push(match other {
+                        let member = match other {
                             TAtomic::Object(TObject::Named(o)) => class(codebase, &o.name),
                             // a class Mago does not know
                             TAtomic::Reference(TReference::Symbol { name, .. }) => {
                                 class(codebase, name)
                             }
-                            _ => return None,
-                        });
+                            _ => continue,
+                        };
+                        if !all.iter().any(|a| a.eq_ignore_ascii_case(&member)) {
+                            all.push(member);
+                        }
+                    }
+                    if all.len() > 1 && php_version < INTERSECTION_TYPES {
+                        return None;
                     }
                     all.join("&")
                 }
@@ -218,7 +218,7 @@ pub(crate) fn atomic_declaration(
     })
 }
 
-/// PHPStan 2.2.7's `TernaryHandler::resolveType` unions the truthy arm before the falsey arm.
+/// PHPStan 2.3.5's `TernaryHandler::resolveType` unions the truthy arm before the falsey arm.
 /// Recover that encounter order before `TypeCombinator::union` groups constant kinds. Keep Mago's
 /// normalized members, not the arms' unmerged types, and leave written receiver types in their own order.
 /// `type_of` retains the caller's native (`getNativeType`) or docblock-aware (`getType`) scope.
@@ -310,15 +310,9 @@ pub(crate) fn union_declaration(
                 "true".to_string()
             }
             TAtomic::Void | TAtomic::Mixed(_) | TAtomic::Null => return None,
-            _ if super::type_factory::is_accessory_array(t) => return None,
             _ => atomic_declaration(t, codebase, php_version)?,
         };
-        // `StaticTypeMapper` writes `self` for a member of a union (`TypeKind::UNION`)
-        let name = if name == "static" {
-            "self".to_string()
-        } else {
-            name
-        };
+        // (PHPStan 2.3's `StaticType::toNativePhpTypeNode()` writes `static` in a union too)
         // `IntersectionTypeMapper`: an intersection inside a union needs DNF types
         if name.contains('&') && php_version < DNF_TYPES {
             return None;
@@ -342,20 +336,32 @@ pub(crate) fn union_declaration(
             if php_version < PHP_80 {
                 return None;
             }
+            // `NativePhpTypeNodeHelper::union()`: PHP rejects redundant members, so `object` takes in the class names
+            // and intersections beside it, and `iterable` an `array`
             let object = many.iter().any(|n| n == "object");
-            let class = many
+            let iterable = many.iter().any(|n| n == "iterable");
+            let mut kept: Vec<&String> = many
                 .iter()
-                .any(|n| n.starts_with('\\') || n == "self" || n == "static");
-            if object && class {
-                return None;
+                .filter(|n| {
+                    !(object && (n.starts_with('\\') || n.contains('&') || *n == "self" || *n == "static"))
+                        && !(iterable && *n == "array")
+                })
+                .collect();
+            // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
+            let plain: Vec<String> = kept.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
+            kept.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            // the other members in order, `null` last
+            kept.sort_by_key(|n| *n == "null");
+            if let [one] = kept.as_slice() {
+                return Some((*one).clone());
             }
             Some(
-                many.iter()
+                kept.iter()
                     .map(|n| {
                         if n.contains('&') {
                             format!("({n})")
                         } else {
-                            n.clone()
+                            (*n).clone()
                         }
                     })
                     .collect::<Vec<_>>()

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-cast`, ported from Rector 2.6.1's `RecastingRemovalRector` (rules/DeadCode/Rector/Cast).
+//! `lint/dead-code/no-useless-cast`, ported from Rector 2.8.4's `RecastingRemovalRector` (rules/DeadCode/Rector/Cast).
 //!
 //! A cast to the type its value already has goes: `(string)`, `(bool)`, `(int)`, `(float)`, `(object)` or `(array)`
 //! of a value whose native type is that type (PHPStan's `StringType`, `BooleanType`, `IntegerType`, `FloatType`,

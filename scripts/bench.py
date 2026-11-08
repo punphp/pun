@@ -160,7 +160,7 @@ def bench_format() -> None:
 
 SCRATCH = Path(os.environ.get("BENCH_SCRATCH", ROOT / "target-bench"))
 PHPSTAN = ROOT / ".oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar"
-RECTOR = ROOT / ".oracle/rector-ecosystem/vendor/bin/rector"  # rector 2.6.1 with rector-laravel and Pest's plugin
+RECTOR = ROOT / ".oracle/rector-ecosystem/vendor/bin/rector"  # rector 2.8.4 with rector-laravel and Pest's plugin
 # project -> (PHPStan includes, paths, extra parameter lines): the project's own config at level 0, without its
 # ignoreErrors and baseline (scripts/analyse-corpus.py's configs, plus laravel-pint).
 ANALYSE = {
@@ -284,7 +284,6 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str], pun
 # with that configuration (Rector's own defaults), as Pun runs its rule without options.
 CONFIGURED = {
     "Pest\\Rector\\Rules\\ChainExpectCallsRector": "['merge_different_variables' => true]",
-    "Rector\\CodeQuality\\Rector\\FunctionLike\\SimplifyUselessVariableRector": "['only_direct_assign' => false]",
     "Rector\\Php55\\Rector\\String_\\StringClassNameToClassConstantRector": "[]",
     "Rector\\TypeDeclaration\\Rector\\Property\\TypedPropertyFromAssignsRector": "['inline_public' => false]",
     "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector": "[]",

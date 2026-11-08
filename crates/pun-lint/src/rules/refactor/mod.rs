@@ -1,4 +1,4 @@
-//! The `refactor` group's configurable codemods, ported from Rector 2.6.1 (rules/Renaming, rules/Removing,
+//! The `refactor` group's configurable codemods, ported from Rector 2.8.4 (rules/Renaming, rules/Removing,
 //! rules/Transform), each in its own file, and what they share.
 //!
 //! `add-override-attribute` takes no options. Every other codemod does nothing until pun.toml gives it options. The options are the Rector rule's configuration as
@@ -17,7 +17,6 @@ mod rename_class_constant;
 mod rename_constant;
 mod rename_function;
 mod rename_method;
-mod replace_array_access;
 mod replace_function;
 mod replace_static_with_method;
 
@@ -31,7 +30,6 @@ pub use rename_class_constant::RenameClassConstant;
 pub use rename_constant::RenameConstant;
 pub use rename_function::RenameFunction;
 pub use rename_method::{MethodRename, RenameMethod};
-pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use replace_function::{
     ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -58,7 +56,6 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddOverrideAttribute),
         Box::new(AnnotationToAttribute::default()),
         Box::new(RemoveFunctionArgument::default()),
-        Box::new(ReplaceArrayAccess::default()),
         Box::new(RemoveFunctionCall::default()),
         Box::new(RenameCast::default()),
         Box::new(RenameClass::default()),

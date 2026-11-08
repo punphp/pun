@@ -12,7 +12,9 @@
 //!
 //! Its first `@return` tag goes when its type is not an array (with the other `@return`, `@phpstan-return` and
 //! `@psalm-return` tags), and becomes `\Iterator<key, value>` when it is one, the key and the value as PHPStan reads
-//! them from the array type and Rector's type mapper prints them. Pun follows the types it reads the same way: names,
+//! them from the array type and Rector prints them (PHPStan's `toPhpDocNode()`, then `StaticTypeMapper::styleTypeNode()`:
+//! `A[]` for an array of `A` with no key or an `int` key, unions without parentheses), the blanks around the type as
+//! written. Pun follows the types it reads the same way: names,
 //! the keywords PHPStan knows, `array`, `list`, `non-empty-array`, `non-empty-list` and `iterable` with their generic
 //! forms, `class-string<X>`, `T[]`, `?T` and unions of them that PHPStan prints without merging members. It leaves a
 //! provider alone whose `@return` type is any other (a shape, a callable, an integer range, a literal, an
@@ -474,7 +476,10 @@ fn new_doc(
         return if returns.is_empty() { Some(None) } else { None };
     };
     let text = doc.text(index).trim_end();
-    let value = text["@return".len()..].trim_start_matches([' ', '\t']);
+    let after = &text["@return".len()..];
+    let value = after.trim_start_matches([' ', '\t']);
+    // the blanks around the type stay as written
+    let before = &after[..after.len() - value.len()];
     let reader = Reader {
         scope,
         class,
@@ -494,13 +499,14 @@ fn new_doc(
             Some(Some(doc.print(&removed)))
         }
         Top::Change(key, value) => {
-            // the tag printed anew: its type, then a description on its line after a space
+            // the tag with its new type, the blanks and the description as written; a description on the next line
+            // follows the type directly
             let blank = if description.starts_with(['\r', '\n']) {
                 ""
             } else {
-                " "
+                &rest[..rest.len() - description.len()]
             };
-            let tag = format!("@return \\Iterator<{key}, {value}>{blank}{description}");
+            let tag = format!("@return{before}\\Iterator<{key}, {value}>{blank}{description}");
             let all = doc.text_all();
             let from = text.as_ptr() as usize - all.as_ptr() as usize;
             Some(Some(format!(
@@ -725,15 +731,15 @@ impl Reader<'_, '_, '_> {
         let array = |key: &str, value: String| Some(Top::Change(key.to_string(), value));
         match ty {
             Syn::Name(name) => match name.to_ascii_lowercase().as_str() {
-                "array" => array("(int | string)", "mixed".into()),
+                "array" => array("int|string", "mixed".into()),
                 "list" => array("int<0, max>", "mixed".into()),
                 "non-empty-array" => array("mixed", "mixed".into()),
                 _ => self.is_other(ty).then_some(Top::Remove),
             },
-            Syn::List(inner) => array("(int | string)", self.value(inner)?.text),
+            Syn::List(inner) => array("int|string", self.value(inner)?.text),
             Syn::Generic(name, args) => match (name.to_ascii_lowercase().as_str(), &args[..]) {
                 ("array" | "non-empty-array", [value]) => {
-                    array("(int | string)", self.value(value)?.text)
+                    array("int|string", self.value(value)?.text)
                 }
                 ("array" | "non-empty-array", [key, value]) => {
                     array(&top_key(key)?, self.value(value)?.text)
@@ -774,7 +780,7 @@ impl Reader<'_, '_, '_> {
                 "string" => Some("string".into()),
                 _ => None,
             },
-            Syn::Union(_) => top_key(ty).filter(|k| k == "(int | string)"),
+            Syn::Union(_) => top_key(ty).filter(|k| k == "int|string"),
             _ => None,
         }
     }
@@ -791,7 +797,9 @@ impl Reader<'_, '_, '_> {
 
     /// A type inside the `\Iterator<...>`, printed.
     fn value(&self, ty: &Syn<'_>) -> Option<Printed> {
-        let one = |text: String, member: Member| Some(Printed { text, member });
+        let one = |text: String, member: Member| Some(Printed::new(text, member, Shape::Other));
+        let generic =
+            |text: String, member: Member| Some(Printed::new(text, member, Shape::Generic));
         match ty {
             Syn::Name(name) => {
                 let lower = name.to_ascii_lowercase();
@@ -805,8 +813,8 @@ impl Reader<'_, '_, '_> {
                     "null" => keyword("null", Member::Null),
                     "mixed" => keyword("mixed", Member::Solo),
                     "void" | "never" => keyword(&lower, Member::Solo),
-                    "array-key" => keyword("(int | string)", Member::Solo),
-                    "scalar" => keyword("(bool | float | int | string)", Member::Solo),
+                    "array-key" => Some(keywords(&["int", "string"])),
+                    "scalar" => Some(keywords(&["bool", "float", "int", "string"])),
                     "positive-int" => keyword("int<1, max>", Member::Solo),
                     "negative-int" => keyword("int<min, -1>", Member::Solo),
                     "non-negative-int" => keyword("int<0, max>", Member::Solo),
@@ -815,7 +823,8 @@ impl Reader<'_, '_, '_> {
                         keyword(&lower, Member::Alone)
                     }
                     "list" | "non-empty-list" => keyword(&lower, Member::Array),
-                    "array" | "non-empty-array" => one(format!("{lower}<mixed>"), Member::Array),
+                    "array" => Some(style_array(None, Printed::new("mixed".into(), Member::Solo, Shape::Other))),
+                    "non-empty-array" => keyword(&lower, Member::Array),
                     "self" => {
                         if self.class.is_anonymous {
                             return None;
@@ -836,41 +845,49 @@ impl Reader<'_, '_, '_> {
                     }
                 }
             }
-            Syn::List(inner) => one(format!("array<{}>", self.value(inner)?.text), Member::Array),
+            Syn::List(inner) => Some(style_array(None, self.value(inner)?)),
             Syn::Generic(name, args) => {
                 let lower = name.to_ascii_lowercase();
                 match (lower.as_str(), &args[..]) {
-                    ("array" | "non-empty-array", [value]) => one(
+                    ("array", [value]) => Some(style_array(None, self.value(value)?)),
+                    ("array", [key, value]) => {
+                        let value = self.value(value)?;
+                        Some(style_array(self.nested_key(key)?.as_deref(), value))
+                    }
+                    ("non-empty-array", [value]) => generic(
                         format!("{lower}<{}>", self.value(value)?.text),
                         Member::Array,
                     ),
-                    ("array" | "non-empty-array", [key, value]) => {
+                    ("non-empty-array", [key, value]) => {
                         let value = self.value(value)?.text;
                         match self.nested_key(key)? {
-                            Some(key) => one(format!("{lower}<{key}, {value}>"), Member::Array),
-                            None => one(format!("{lower}<{value}>"), Member::Array),
+                            Some(key) => generic(format!("{lower}<{key}, {value}>"), Member::Array),
+                            None => generic(format!("{lower}<{value}>"), Member::Array),
                         }
                     }
-                    ("list" | "non-empty-list", [value]) => one(
+                    ("list" | "non-empty-list", [value]) => generic(
                         format!("{lower}<{}>", self.value(value)?.text),
                         Member::Array,
                     ),
-                    ("iterable", [value]) => one(
+                    ("iterable", [value]) => generic(
                         format!("iterable<{}>", self.value(value)?.text),
                         Member::Alone,
                     ),
                     ("iterable", [key, value]) => {
-                        let key = self.key(key).filter(|k| k != "(int | string)")?;
-                        one(
+                        let key = self.key(key).filter(|k| k != "int|string")?;
+                        generic(
                             format!("iterable<{key}, {}>", self.value(value)?.text),
                             Member::Alone,
                         )
                     }
                     ("class-string", [Syn::Name(class)]) => {
                         let class = self.value(&Syn::Name(class))?;
-                        (class.member == Member::Class).then(|| Printed {
-                            text: format!("class-string<{}>", class.text),
-                            member: Member::Alone,
+                        (class.member == Member::Class).then(|| {
+                            Printed::new(
+                                format!("class-string<{}>", class.text),
+                                Member::Alone,
+                                Shape::Generic,
+                            )
                         })
                     }
                     _ => None,
@@ -880,7 +897,9 @@ impl Reader<'_, '_, '_> {
         }
     }
 
-    /// A union PHPStan prints as written but ordered: `(a | b)`.
+    /// A union as `UnionType::toPhpDocNode()` prints it: its members in `UnionTypeHelper::sortTypes()`'s order, then
+    /// `StaticTypeMapper::styleTypeNode()`'s, which merges the members of a styled array of a union (`A[]|B[]`) in
+    /// and drops repeats.
     fn union(&self, members: &[Syn<'_>]) -> Option<Printed> {
         let mut printed: Vec<Printed> = Vec::new();
         for member in members {
@@ -913,13 +932,56 @@ impl Reader<'_, '_, '_> {
         printed.sort_by(|a, b| {
             rank(a)
                 .cmp(&rank(b))
-                .then_with(|| compare_strings(&a.text, &b.text))
+                .then_with(|| compare_strings(&a.sort, &b.sort))
         });
-        let texts: Vec<&str> = printed.iter().map(|p| p.text.as_str()).collect();
-        Some(Printed {
-            text: format!("({})", texts.join(" | ")),
-            member: Member::Solo,
-        })
+        let mut flat: Vec<Printed> = Vec::new();
+        for p in printed {
+            for p in p.into_members() {
+                if !flat.iter().any(|q| q.text == p.text) {
+                    flat.push(p);
+                }
+            }
+        }
+        Some(Printed::union(flat, Member::Solo))
+    }
+}
+
+/// A union PHPStan merges with any other type in a union (`array-key`, `scalar`), of the keywords `names`.
+fn keywords(names: &[&str]) -> Printed {
+    let members = names
+        .iter()
+        .map(|n| Printed::new(n.to_string(), Member::Scalar, Shape::Other))
+        .collect();
+    Printed::union(members, Member::Solo)
+}
+
+/// `styleTypeNode()` of PHPStan's `array<value>` (`key` `None`) or `array<key, value>`: `value[]`, or `A[]|B[]` for a
+/// union of values, when `isArrayOfItemsOnly()` holds; the generic as it is otherwise.
+fn style_array(key: Option<&str>, value: Printed) -> Printed {
+    let generic = match key {
+        Some(key) => format!("array<{key}, {}>", value.text),
+        None => format!("array<{}>", value.text),
+    };
+    let items = match &value.shape {
+        Shape::Union(members) => members.iter().collect(),
+        _ => vec![&value],
+    };
+    // "array<int, A>" can be printed as "A[]", unless that loses the int key of nested arrays, or turns
+    // "array<A<X>|A<Y>>" into "A<X>[]|A<Y>[]"
+    let items_only = key.is_none_or(|k| k == "int")
+        && items.iter().all(|item| {
+            !(item.shape == Shape::Generic && items.len() > 1)
+                && !(key.is_some() && matches!(item.shape, Shape::Generic | Shape::ArrayOf))
+        });
+    if !items_only {
+        return Printed::new(generic, Member::Array, Shape::Generic).sorted("array");
+    }
+    let of = |item: &Printed| Printed::new(format!("{}[]", item.text), Member::Array, Shape::ArrayOf);
+    match &value.shape {
+        Shape::Union(members) => {
+            Printed::union(members.iter().map(of).collect(), Member::Array).sorted("array")
+        }
+        _ => of(&value).sorted("array"),
     }
 }
 
@@ -945,13 +1007,13 @@ fn top_key(ty: &Syn<'_>) -> Option<String> {
         Syn::Union(members) => {
             let mut names: Vec<String> = members.iter().map(name).collect::<Option<_>>()?;
             names.sort();
-            (names == ["int", "string"]).then(|| "(int | string)".into())
+            (names == ["int", "string"]).then(|| "int|string".into())
         }
         _ => Some(
             match name(ty)?.as_str() {
                 "int" | "integer" => "int",
                 "string" => "string",
-                "array-key" => "(int | string)",
+                "array-key" => "int|string",
                 "non-empty-string" => "non-empty-string",
                 "class-string" => "class-string",
                 "positive-int" => "int<1, max>",
@@ -966,6 +1028,64 @@ fn top_key(ty: &Syn<'_>) -> Option<String> {
 struct Printed {
     text: String,
     member: Member,
+    /// `describe(VerbosityLevel::typeOnly())`, which `UnionTypeHelper::sortTypes()` compares.
+    sort: String,
+    shape: Shape,
+}
+
+/// The phpdoc-parser node a printed type is, for `styleTypeNode()`.
+#[derive(PartialEq)]
+enum Shape {
+    Other,
+    /// `GenericTypeNode`
+    Generic,
+    /// `ArrayTypeNode`, `T[]`
+    ArrayOf,
+    /// `UnionTypeNode`
+    Union(Vec<Printed>),
+}
+
+impl PartialEq for Printed {
+    fn eq(&self, other: &Self) -> bool {
+        self.text == other.text
+    }
+}
+
+impl Printed {
+    /// The sort key is the text without a leading `\` and the generic part (`list<int>` sorts as `list`).
+    fn new(text: String, member: Member, shape: Shape) -> Self {
+        let sort = text.trim_start_matches('\\');
+        let sort = sort[..sort.find('<').unwrap_or(sort.len())].to_string();
+        Printed {
+            text,
+            member,
+            sort,
+            shape,
+        }
+    }
+
+    fn union(members: Vec<Printed>, member: Member) -> Self {
+        let text = members.iter().map(|m| m.text.as_str()).collect::<Vec<_>>().join("|");
+        Printed {
+            sort: text.clone(),
+            text,
+            member,
+            shape: Shape::Union(members),
+        }
+    }
+
+    fn sorted(mut self, sort: &str) -> Self {
+        self.sort = sort.to_string();
+        self
+    }
+
+    /// A union's members, or the type itself.
+    fn into_members(self) -> Vec<Printed> {
+        match self.shape {
+            Shape::Union(members) => members,
+            _ => vec![self],
+        }
+    }
 }
 
 /// `UnionTypeHelper::compareStrings`: `strcasecmp`, then the bytes.

@@ -101,7 +101,7 @@ final class NativeSignatures
         return base64_encode($s);
     }
 
-    public function values(array $a)
+    public function values(array $a): array
     {
         return array_values($a);
     }

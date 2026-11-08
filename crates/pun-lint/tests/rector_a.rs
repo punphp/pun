@@ -1,6 +1,6 @@
 //! Rector's own fixtures for lint-a's rules (dead-code, complexity, control-flow, operators, strings, arrays,
 //! statements, comments, tags and refactor groups), laid out as in tests/rector.rs: Fixture/ verbatim from rector-src
-//! 2.6.1, Oracle/ with what Rector 2.6.1 (`.oracle/rector-bin`, the rule alone) wrote, Pun/ derived by hand where Pun
+//! 2.8.4, Oracle/ with what Rector 2.8.4 (`.oracle/rector-bin`, the rule alone) wrote, Pun/ derived by hand where Pun
 //! keeps the meaning but not Rector's bytes. Each must pass as `format(pun lint --fix) == format(expected)`.
 
 use std::path::{Path, PathBuf};
@@ -246,11 +246,21 @@ fn remove_default_value_from_assigned_property() {
 
 #[test]
 fn inline_constructor_default_to_property() {
-    // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::PreferPropertyDefault, 80400),
-        "InlineConstructorDefaultToPropertyRector/Fixture",
-    );
+    // config/configured_rule.php: the rule alone, Rector's default PHP version. The fixtures' parent classes are in
+    // Source/, which Rector's test autoloads.
+    let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector/InlineConstructorDefaultToPropertyRector/Source");
+    let sources = ["AbstractParentWithFilledProperty.php", "ValidatedBase.php"].map(|f| {
+        let path = source.join(f);
+        let text = std::fs::read_to_string(&path).unwrap();
+        (path.display().to_string(), text)
+    });
+    rules::facts::with_sources(sources.to_vec(), || {
+        run(
+            &only(rules::PreferPropertyDefault, 80400),
+            "InlineConstructorDefaultToPropertyRector/Fixture",
+        )
+    });
     // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
     run(
         &only(rules::PreferPropertyDefault, 80400),

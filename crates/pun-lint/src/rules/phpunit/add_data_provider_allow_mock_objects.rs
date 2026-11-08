@@ -3,9 +3,11 @@
 //! `MockObjectExprDetector::hasMethodCallWithoutExpects()`.
 //!
 //! A test class with a test method that has a `#[DataProvider]` attribute and calls `->method()` (outside closures)
-//! on anything but a method call gets `#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]`, when
+//! on anything but a method call or a value that is only a stub (`createStub()`) gets `#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]`, when
 //! that attribute class exists and the class has no such attribute yet.
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{ClassLikeMember, Expression, MethodBody, Node, NodeKind};
 
 use super::add_allow_mock_objects_attribute::{ATTRIBUTES, add_attribute, should_add};
@@ -14,6 +16,8 @@ use super::no_bare_mock_assign::scoped;
 use super::{AnyCall, class_body, is_public};
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_batch5::has_attribute;
+use crate::rules::laravel::is_a;
+use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -81,6 +85,7 @@ impl Rule for AddDataProviderAllowMockObjects {
                         unparenthesize(call.object),
                         Expression::Call(mago_syntax::cst::Call::Method(_))
                     )
+                    && !is_stub_only(ctx, call.object)
                 {
                     without_expects = true;
                 }
@@ -91,4 +96,34 @@ impl Rule for AddDataProviderAllowMockObjects {
             add_attribute(ctx, ancestors, node, out);
         }
     }
+}
+
+/// `PHPUnitClassName::STUB` and `PHPUnitClassName::MOCK_OBJECT`.
+const STUB: &str = "PHPUnit\\Framework\\MockObject\\Stub";
+const MOCK_OBJECT: &str = "PHPUnit\\Framework\\MockObject\\MockObject";
+
+/// `MockObjectExprDetector::isStubOnly`: the value is surely a `Stub` (a `createStub()` result) and not surely a
+/// `MockObject`; such a stub needs no expectations. Each type of a union must be one, through any part of an
+/// intersection.
+fn is_stub_only(ctx: &Context<'_>, expr: &Expression<'_>) -> bool {
+    let facts = facts(ctx);
+    let Some(t) = facts.full_type(node_span(unparenthesize(expr))) else {
+        return false;
+    };
+    let surely = |class: &str| {
+        !t.types.is_empty()
+            && t.types.iter().all(|atomic| match atomic {
+                TAtomic::Object(TObject::Named(named)) => {
+                    is_a(ctx, &named.name.to_string(), &[class])
+                        || (named.intersection_types.iter().flat_map(|ts| ts.iter())).any(|part| match part {
+                            TAtomic::Object(TObject::Named(p)) => {
+                                is_a(ctx, &p.name.to_string(), &[class])
+                            }
+                            _ => false,
+                        })
+                }
+                _ => false,
+            })
+    };
+    surely(STUB) && !surely(MOCK_OBJECT)
 }

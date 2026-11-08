@@ -1,4 +1,4 @@
-//! Rector 2.6.1's `SilentVoidResolver::hasSilentVoid` (rules/TypeDeclaration/TypeInferer): whether the end of a
+//! Rector 2.8.4's `SilentVoidResolver::hasSilentVoid` (rules/TypeDeclaration/TypeInferer): whether the end of a
 //! function-like's body can be reached, so that it returns nothing there.
 
 use mago_syntax::cst::{

@@ -1,4 +1,4 @@
-//! What Rector 2.6.1's property type rules share (rules/TypeDeclaration/Rector/Property and Class_): PHPStan's types as
+//! What Rector 2.8.4's property type rules share (rules/TypeDeclaration/Rector/Property and Class_): PHPStan's types as
 //! these rules combine them (`TypeFactory`, `TypeCombinator::union`, `TypeHasher`, `TypeComparator`), read from Mago's
 //! (see [`super::facts`]); `StaticTypeMapper` for a property (`TypeKind::PROPERTY`); `PropertyTypeChangeGuard` and
 //! `PropertyTypeOverrideGuard`; `AssignToPropertyTypeInferer`; and the `@var` edits (`PhpDocTypeChanger::changeVarType`,
@@ -624,8 +624,7 @@ fn union_declaration(
     for t in types {
         let name = match t {
             Ty::Null if php_version >= NULLABLE_TYPE => "null".into(),
-            Ty::Bool(Some(false)) => "false".into(),
-            Ty::Bool(Some(true)) if php_version >= PHP_82 => "true".into(),
+            // Rector 2.8.4's policy: `true` and `false` are too narrow for a property, so they widen to `bool`
             Ty::Bool(_) => "bool".into(),
             // `PropertyAnalyzer::isForbiddenType`
             Ty::Callable => return None,
@@ -643,21 +642,32 @@ fn union_declaration(
             if other.contains('&') {
                 return (php_version >= PHP_82).then(|| format!("({other})|null"));
             }
-            if other == "false" && php_version < PHP_82 {
-                return Some("?bool".into());
-            }
             Some(format!("?{other}"))
         }
         many => {
             if php_version < UNION_TYPES {
                 return None;
             }
+            // `NativePhpTypeNodeHelper::union()` (PHPStan 2.3, Rector 2.8.4): the other members in order, `null` last
+            let mut many = many.to_vec();
+            many.sort_by_key(|n| n == "null");
+            // `NativePhpTypeNodeHelper::union()`: PHP rejects redundant members, so `object` takes in the class names
+            // and intersections beside it, and `iterable` an `array`
             let object = many.iter().any(|n| n == "object");
-            let class = many
-                .iter()
-                .any(|n| n.starts_with('\\') || matches!(n.as_str(), "self" | "parent"));
-            if object && class {
-                return None;
+            let iterable = many.iter().any(|n| n == "iterable");
+            many.retain(|n| {
+                !(object && (n.starts_with('\\') || matches!(n.as_str(), "self" | "parent") || n.contains('&'))) && !(iterable && n == "array")
+            });
+            // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
+            let plain: Vec<String> = many.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
+            many.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            match many.as_slice() {
+                [one] => return Some(one.clone()),
+                [a, b] if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') => {
+                    let other = if a == "null" { b } else { a };
+                    return Some(format!("?{other}"));
+                }
+                _ => {}
             }
             if many.iter().any(|n| n.contains('&')) && php_version < PHP_82 {
                 return None;
@@ -880,6 +890,48 @@ fn parent_classes(facts: &Facts, view: &ClassView<'_, '_>) -> Vec<String> {
     out
 }
 
+/// `PropertyTypeChangeGuard::isSafeProtectedProperty`, which `PropertyTypeOverrideGuard` asks for a protected property
+/// (it passes `inline_public` false for one): a child class may redeclare it untyped, so only a final class's protected
+/// property passes, and `ParentPropertyLookupGuard` must allow it: no trait the class uses reads it, it is no reserved
+/// Symfony command property, and no parent class (all of them known) declares it or reads it in a method.
+pub(crate) fn is_safe_protected_property(facts: &Facts, view: &ClassView<'_, '_>, name: &[u8]) -> bool {
+    let Node::Class(class) = view.node else {
+        return false;
+    };
+    if !class.modifiers.iter().any(|m| matches!(m, Modifier::Final(_))) {
+        return false;
+    }
+    let traits = view.members.iter().filter_map(|m| match m {
+        ClassLikeMember::TraitUse(u) => Some(u),
+        _ => None,
+    });
+    let trait_names: Vec<String> = traits
+        .flat_map(|u| u.trait_names.iter().map(|id| resolve_class_name(&view.path, id)))
+        .collect();
+    let source_of = |class: &str| {
+        let c = facts.codebase.get_class_like(class.as_bytes())?;
+        let source = facts.source_of(c.span.file_id)?;
+        source.get(c.span.start.offset as usize..c.span.end.offset as usize).map(str::to_string)
+    };
+    if trait_names.iter().any(|t| source_of(t).is_some_and(|text| fetches(&text, name, None, false))) {
+        return false;
+    }
+    if matches!(name, b"defaultName" | b"defaultDescription")
+        && facts.codebase.is_instance_of(view.name.as_bytes(), b"Symfony\\Component\\Console\\Command\\Command")
+    {
+        return false;
+    }
+    let parents = parent_classes(facts, view);
+    // parent class not autoloaded
+    if parents.iter().any(|p| facts.codebase.get_class_like(p.as_bytes()).is_none()) {
+        return false;
+    }
+    !parents.iter().any(|parent| {
+        facts.codebase.get_declaring_property(parent.as_bytes(), &dollar(name)).is_some()
+            || source_of(parent).is_some_and(|text| fetches(&text, name, Some(&view.name), false))
+    })
+}
+
 /// `PropertyManipulator::hasTraitWithSamePropertyOrWritten`: a trait the class uses has the property, or writes it.
 fn has_trait_with_same_property_or_written(
     facts: &Facts,
@@ -927,6 +979,12 @@ fn has_trait_with_same_property_or_written(
 /// or `static::$name` that is assigned, assigned by reference, changed by an operator, unset, incremented or
 /// decremented, or under an array offset.
 fn trait_writes(trait_text: &str, name: &[u8]) -> bool {
+    fetches(trait_text, name, None, true)
+}
+
+/// A `$this->name`, `self::$name` or `static::$name` (or `class::$name`) in a class-like's source text; with
+/// `written`, only one that is written.
+fn fetches(trait_text: &str, name: &[u8], class: Option<&str>, written_only: bool) -> bool {
     let code = format!("<?php {trait_text}");
     let arena = mago_allocator::LocalArena::new();
     let file = mago_database::file::File::ephemeral(
@@ -964,7 +1022,13 @@ fn trait_writes(trait_text: &str, name: &[u8]) -> bool {
             Node::ArrayAppend(a) => vec![a.array],
             _ => Vec::new(),
         };
-        if written.iter().any(|e| is_trait_local_fetch(e, name)) {
+        if written.iter().any(|e| is_trait_local_fetch(e, name, class)) {
+            found = true;
+        }
+        if !written_only
+            && let Node::Expression(e) = node
+            && is_trait_local_fetch(e, name, class)
+        {
             found = true;
         }
         node.visit_children(|child| stack.push(child));
@@ -973,14 +1037,16 @@ fn trait_writes(trait_text: &str, name: &[u8]) -> bool {
 }
 
 /// `$this->name`, `self::$name` or `static::$name`.
-fn is_trait_local_fetch(expr: &Expression<'_>, name: &[u8]) -> bool {
+fn is_trait_local_fetch(expr: &Expression<'_>, name: &[u8], class: Option<&str>) -> bool {
     match unparenthesize(expr) {
         Expression::Access(Access::Property(p)) => {
             matches!(unparenthesize(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
                 && matches!(&p.property, ClassLikeMemberSelector::Identifier(id) if id.value == name)
         }
         Expression::Access(Access::StaticProperty(p)) => {
-            matches!(p.class, Expression::Self_(_) | Expression::Static(_))
+            (matches!(p.class, Expression::Self_(_) | Expression::Static(_))
+                || class.is_some_and(|c| matches!(p.class, Expression::Identifier(id)
+                    if c.rsplit('\\').next().is_some_and(|short| id.value().rsplit(|b| *b == b'\\').next() == Some(short.as_bytes())))))
                 && matches!(&p.property, Variable::Direct(v) if &v.name[1..] == name)
         }
         _ => false,
@@ -1671,6 +1737,9 @@ fn are_different_scalars(a: &Ty, b: &Ty) -> bool {
 pub(crate) fn doc_text(t: &Ty, codebase: &CodebaseMetadata) -> Option<String> {
     Some(match t {
         Ty::Union(types) => {
+            // `UnionType::toPhpDocNode()` prints the members in `UnionTypeHelper::sortTypes()`'s order (Rector 2.8.4)
+            let mut types: Vec<&Ty> = types.iter().collect();
+            types.sort_by(|a, b| sort_order(a, b));
             let mut parts: Vec<String> = Vec::new();
             for m in types {
                 let p = doc_text(m, codebase)?;
@@ -1709,6 +1778,47 @@ pub(crate) fn doc_text(t: &Ty, codebase: &CodebaseMetadata) -> Option<String> {
         Ty::ObjectAny => "object".into(),
         Ty::Iterable => "iterable".into(),
         _ => return None,
+    })
+}
+
+/// `UnionTypeHelper::sortTypes()`'s comparison, for the members `doc_text()` prints: `null` last, constant booleans
+/// before it, constant scalars first (floats by value, strings by value), the rest by their `describe()` name,
+/// case-insensitively. Integers are general here (`IntegerTypeMapper`).
+fn sort_order(a: &Ty, b: &Ty) -> std::cmp::Ordering {
+    use std::cmp::Ordering;
+    let rank = |t: &Ty| match t {
+        Ty::Null => 3,
+        Ty::Bool(Some(_)) => 2,
+        Ty::Float(Scalar::Literal(_)) | Ty::Str(Scalar::Literal(_)) => 0,
+        _ => 1,
+    };
+    let name = |t: &Ty| -> String {
+        match t {
+            Ty::Bool(_) => "bool".into(),
+            Ty::Int(_) => "int".into(),
+            Ty::Float(_) => "float".into(),
+            Ty::Str(_) => "string".into(),
+            Ty::Object(name) => name.trim_start_matches('\\').to_string(),
+            Ty::Parent(_) => "static".into(),
+            Ty::Closure => "Closure".into(),
+            Ty::ObjectAny => "object".into(),
+            Ty::Iterable => "iterable".into(),
+            _ => String::new(),
+        }
+    };
+    let compare_strings = |x: &[u8], y: &[u8]| {
+        x.to_ascii_lowercase()
+            .cmp(&y.to_ascii_lowercase())
+            .then_with(|| x.cmp(y))
+    };
+    rank(a).cmp(&rank(b)).then_with(|| match (a, b) {
+        (Ty::Float(Scalar::Literal(x)), Ty::Float(Scalar::Literal(y))) => {
+            let (x, y) = (x.parse::<f64>().unwrap_or(0.0), y.parse::<f64>().unwrap_or(0.0));
+            x.partial_cmp(&y).unwrap_or(Ordering::Equal)
+        }
+        (Ty::Str(Scalar::Literal(x)), Ty::Str(Scalar::Literal(y))) => compare_strings(x, y),
+        (Ty::Null, Ty::Null) | (Ty::Bool(Some(_)), Ty::Bool(Some(_))) => Ordering::Equal,
+        _ => compare_strings(name(a).as_bytes(), name(b).as_bytes()),
     })
 }
 

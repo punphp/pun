@@ -22,7 +22,7 @@ namespace Rector\Tests\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictNe
 final class LoopAppendUnion
 {
     /**
-     * @return int[]|'none'[]
+     * @return 'none'[]|int[]
      */
     public function run(array $items): array
     {

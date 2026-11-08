@@ -55,10 +55,12 @@ test('b', function () {
 });
 
 test('c', function () {
-    expect($u)->toMatchObject(['a' => 1, 'b' => [
+    expect($u)->toBe($u)->toHaveProperty('a', 1);
+    expect($u)->toHaveProperty('b', [
         'x' => 1,
-    ]]);
+    ]);
     $x = 1;
-    expect($u)->toMatchObject(['a' => 1, 'b' => $c]);
+    expect($u)->toHaveProperty('a', 1);
+    expect($u)->TOHAVEPROPERTY('b', ...$c);
     expect($u)->toHaveProperty('c');
 });

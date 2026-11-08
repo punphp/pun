@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-return-type`, ported from Rector 2.6.1's `NarrowWideUnionReturnTypeRector`
+//! `lint/dead-code/no-unused-return-type`, ported from Rector 2.8.4's `NarrowWideUnionReturnTypeRector`
 //! (rules/DeadCode/Rector/FunctionLike), from PHP 8.0 (union types), with what it calls:
 //! `StaticTypeMapper::mapPHPStanTypeToPhpParserNode($type, TypeKind::RETURN)` of the narrowed union
 //! (`UnionTypeMapper::mapToPhpParserNode()`), PHPStan's `TypeCombinator::remove()` (with `UnionType::tryRemove()`
@@ -16,7 +16,7 @@ use std::path::{Path, PathBuf};
 use mago_syntax::cst::{
     Block, Expression, FunctionLikeReturnTypeHint, Hint, Modifier, Node, NodeKind,
 };
-use pun_phpstan::types::{Tri, Type, to_phpdoc};
+use pun_phpstan::types::{Tri, Type, sort_types, to_phpdoc};
 use pun_problem::{Edit, Fix, Safety};
 
 use super::phpdoc_writer::type_mapper::map_to_phpdoc;
@@ -562,10 +562,31 @@ fn phpdoc_node(t: &RType) -> TypeNode {
     match t {
         RType::Object(Object::Shortened { short, .. }) => TypeNode::Identifier(short.clone()),
         RType::Object(Object::Aliased { alias, .. }) => TypeNode::Identifier(alias.clone()),
-        RType::Union(types) => TypeNode::Union {
-            types: types.iter().map(phpdoc_node).collect(),
-            wrapped: false,
-        },
+        RType::Union(types) => {
+            // `UnionType::toPhpDocNode()`: the members in `sortTypes()`'s order, a shortened or aliased class by the
+            // name it holds
+            let keys: Vec<Type> = (types.iter())
+                .map(|t| match t {
+                    RType::Object(Object::Shortened { short: name, .. } | Object::Aliased { alias: name, .. }) => {
+                        Type::Object(name.clone(), Vec::new(), false)
+                    }
+                    other => other.to_sub(),
+                })
+                .collect();
+            let mut used = vec![false; keys.len()];
+            let mut sorted = Vec::new();
+            for key in sort_types(&keys) {
+                if let Some(i) = (0..keys.len()).find(|&i| !used[i] && keys[i] == key) {
+                    used[i] = true;
+                    sorted.push(phpdoc_node(&types[i]));
+                }
+            }
+            sorted.extend((0..keys.len()).filter(|&i| !used[i]).map(|i| phpdoc_node(&types[i])));
+            TypeNode::Union {
+                types: sorted,
+                wrapped: false,
+            }
+        }
         other => map_to_phpdoc(&other.to_sub()),
     }
 }

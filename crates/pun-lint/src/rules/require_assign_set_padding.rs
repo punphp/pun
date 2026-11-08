@@ -1,9 +1,10 @@
-//! `lint/style/require-assign-set-padding`, ported from Rector 2.6.1's `NewlineBeforeNewAssignSetRector`
+//! `lint/style/require-assign-set-padding`, ported from Rector 2.8.4's `NewlineBeforeNewAssignSetRector`
 //! (rules/CodingStyle/Rector/ClassMethod).
 //!
 //! In the body of a function, method or closure, after two statements that set or call on the same variable, a
 //! statement on another variable gets a blank line before it, unless the statement before it starts two or more lines
-//! above. A set is an assignment or a method call; `$this->a->b` counts as `a`, `$a->b->c` as `a`. Rector skips a file
+//! above. A set is an assignment or a method call; `$this->a->b` counts as `this->a` (not the variable `$a`), `$a->b->c` as
+//! `a`. Rector skips a file
 //! with inline HTML.
 
 use mago_syntax::cst::{
@@ -107,8 +108,9 @@ fn subject(stmt: &Statement<'_>) -> Option<String> {
             previous = node;
             node = p.object;
         }
+        // `$this->property`, namespaced so it does not collide with a local variable of the same name.
         if is_this(node) {
-            node = previous;
+            return name(previous).map(|n| format!("this->{n}"));
         }
     }
     name(node)

@@ -1,4 +1,4 @@
-//! `lint/types/add-getter-return-phpdoc`, ported from Rector 2.6.1's
+//! `lint/types/add-getter-return-phpdoc`, ported from Rector 2.8.4's
 //! `DocblockGetterReturnArrayFromPropertyDocblockVarRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a
 //! getter declared `: array` that returns `$this->property` gets the property's `@var` array type as `@return`.
 

@@ -173,7 +173,7 @@ final class A
         return $used;
     }
 
-    private function j($used, $unused)
+    private function j($used)
     {
         return $used;
     }

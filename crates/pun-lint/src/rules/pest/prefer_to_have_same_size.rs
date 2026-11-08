@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-have-same-size`, ported from pest-plugin-rector's `UseToHaveSameSizeRector`:
 //! `expect(count($a))->toBe(count($b))` (or `sizeof()`, or `toEqual()`) becomes `expect($a)->toHaveSameSize($b)`, and
-//! `->toHaveCount(count($b))` becomes `->toHaveSameSize($b)`, when the checked value may be an array or iterable.
+//! `->toHaveCount(count($b))` becomes `->toHaveSameSize($b)`, when the checked value is known to be an array or iterable.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_problem::Safety;
@@ -44,8 +44,8 @@ impl Rule for PreferToHaveSameSize {
                 .map(|f| first_value(&f.argument_list))
         }
         let countable = |e: &Expression<'_>| {
-            type_is(ctx, e, Is::Array) != Trinary::No
-                || type_is(ctx, e, Is::Iterable) != Trinary::No
+            type_is(ctx, e, Is::Array) == Trinary::Yes
+                || type_is(ctx, e, Is::Iterable) == Trinary::Yes
         };
         let message = "Use `toHaveSameSize()` instead of comparing counts.".to_string();
         let [argument] = call.argument_list.arguments.as_slice() else {

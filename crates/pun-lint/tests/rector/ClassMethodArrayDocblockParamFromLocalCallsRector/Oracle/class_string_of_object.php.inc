@@ -22,7 +22,7 @@ class SomeClass
     }
 
     /**
-     * @param class-string<\SomeClass>[] $items
+     * @param array<int, class-string<\SomeClass>> $items
      */
     private function run(array $items): void
     {

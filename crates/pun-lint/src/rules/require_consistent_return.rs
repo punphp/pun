@@ -1,4 +1,4 @@
-//! `lint/complexity/require-consistent-return`, ported from Rector 2.6.1's `ExplicitReturnNullRector`
+//! `lint/complexity/require-consistent-return`, ported from Rector 2.8.4's `ExplicitReturnNullRector`
 //! (rules/CodeQuality/Rector/ClassMethod).
 //!
 //! A function or method (not a constructor) without a return type whose returns PHPStan infers as a union with `void`
@@ -9,9 +9,10 @@
 //!
 //! Rector prints the `@return` type anew (`PhpDocTypeChanger`): keywords in lower case, `boolean` as `bool`,
 //! `true|false` as `bool` (none of them beside a `bool`), a repeat once, a class as its fully qualified name without
-//! the leading `\` (an imported or partly qualified name as written, `self` as the class-like), and no blanks around a
-//! `|`. Only the first `@return` tag counts. Pun leaves a function alone whose `@return` union with `void` holds
-//! another kind of type (generics, shapes, `static`, `parent`), which Rector's type mapper rewrites.
+//! the leading `\` (an imported or partly qualified name as written, `self` as the class-like with it), the members
+//! in `UnionTypeHelper::sortTypes()`'s order, and no blanks around a `|`. Only the first `@return` tag counts. Pun
+//! leaves a function alone whose `@return` union with `void` holds another kind of type (generics, shapes, `static`,
+//! `parent`), which Rector's type mapper rewrites.
 
 use mago_syntax::cst::{Block, MethodBody, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
@@ -208,8 +209,9 @@ fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, 
                     };
                     Some(Some(qualified(&ancestors[..i], name)))
                 });
+                // PHPStan's `ObjectType`, a `FullyQualifiedNameNode`
                 match class {
-                    Some(class) => class?,
+                    Some(class) => format!("\\{}", class?),
                     None => return Some(None),
                 }
             }
@@ -247,6 +249,22 @@ fn doc_edit(ctx: &crate::Context<'_>, node: Node<'_, '_>, ancestors: &[Node<'_, 
             unique.push(p);
         }
     }
+    // `UnionType::toPhpDocNode()` prints the members in `UnionTypeHelper::sortTypes()`'s order: `null` last, `true`
+    // and `false` before it, the rest by their name (`describe()`, a class without the leading `\`), case-insensitively
+    let key = |p: &String| -> (u8, String, String) {
+        let rank = match p.as_str() {
+            "null" => 2,
+            "true" | "false" => 1,
+            _ => 0,
+        };
+        let name = if is_class_name(p) && !matches!(p.as_str(), "int" | "float" | "string" | "bool" | "array") {
+            resolve_written(ancestors, p).0
+        } else {
+            p.clone()
+        };
+        (rank, name.to_ascii_lowercase(), name)
+    };
+    unique.sort_by_key(key);
     if unique.len() < 2 {
         return Some(None);
     }

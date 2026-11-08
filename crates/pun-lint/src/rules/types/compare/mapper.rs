@@ -1,4 +1,4 @@
-//! Rector 2.6.1's `StaticTypeMapper` (src/StaticTypeMapper): `mapPhpParserNodePHPStanType()` of a native type
+//! Rector 2.8.4's `StaticTypeMapper` (src/StaticTypeMapper): `mapPhpParserNodePHPStanType()` of a native type
 //! declaration (`PhpParserNodeMapper` with its `FullyQualifiedNodeMapper`, `NameNodeMapper`, `IdentifierNodeMapper`,
 //! `NullableTypeNodeMapper`, `UnionTypeNodeMapper` and `IntersectionTypeNodeMapper`), and
 //! `mapPHPStanPhpDocTypeNodeToPHPStanType()` of a PHPDoc type (`PhpDocTypeMapper` with the identifier, intersection,
@@ -140,6 +140,12 @@ impl<'s, 'a, 'ast, 'arena> TypeScope<'s, 'a, 'ast, 'arena> {
             Hint::Union(_) => {
                 let mut members = Vec::new();
                 flatten(hint, true, &mut members);
+                // Rector 2.8.4: a `self`, `static` or `parent` name inside a union has no scope, so
+                // `NameNodeMapper::createClassReferenceType()` finds no class and maps it to `mixed`, which makes the
+                // union `mixed` (checked on the oracle: `?self` still maps, `\stdClass|self` does not)
+                if members.iter().any(|h| matches!(h, Hint::Self_(_) | Hint::Static(_) | Hint::Parent(_))) {
+                    return RType::mixed();
+                }
                 create_union(
                     members.into_iter().map(|h| self.map_hint(h)).collect(),
                     true,
@@ -307,11 +313,23 @@ impl<'s, 'a, 'ast, 'arena> TypeScope<'s, 'a, 'ast, 'arena> {
                 return shortened;
             }
         }
+        // a class in the current namespace wins over a global class with the same short name
+        let unqualified = !with_preslash && !class_name.contains('\\');
+        if let Some(ns) = &self.namespace
+            && unqualified
+        {
+            let name = format!("{ns}\\{class_name}");
+            if self.has_class(&name) {
+                return RType::Object(Object::FullyQualified(name));
+            }
+        }
         if self.has_class(class_name) {
             return RType::Object(Object::FullyQualified(class_name.to_string()));
         }
         // probably in same namespace
-        if let Some(ns) = &self.namespace {
+        if let Some(ns) = &self.namespace
+            && !unqualified
+        {
             let name = format!("{ns}\\{class_name}");
             if self.has_class(&name) {
                 return RType::Object(Object::FullyQualified(name));

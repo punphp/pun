@@ -1,22 +1,17 @@
-//! Rector's own fixtures for the ported dead-code class-method rules, copied verbatim from rector-src 2.6.1
-//! (`.oracle/rector`, rules-tests/DeadCode/Rector/ClassMethod/...) into tests/rector/<Rector class>/Fixture, with the
-//! classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`, the rule
+//! Rector's own fixtures for the ported dead-code class-method rules, copied verbatim from rector-src 2.8.4
+//! (`.oracle/rector`, rules-tests/DeadCode/Rector/{Class_,ClassMethod}/...) into tests/rector/<Rector class>/Fixture, with the
+//! classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.8.4 (`.oracle/rector-ecosystem`, the rule
 //! alone, `phpVersion(80400)`) wrote for them; Pun/ holds the cases where Pun cannot see what PHPStan sees, its
 //! expected output derived by hand, each with its reason. Each one must pass as
 //! `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text edits must give the
 //! expected bytes before format too.
-//!
-//! `RemoveParentDelegatingConstructorRector/Source/vendor/String_.php` is not upstream: it declares the constructor of
-//! nikic/php-parser 5's `PhpParser\Node\Scalar\String_`, which the fixtures extend and Rector's run loads from its own
-//! vendor directory.
 
 mod lint_c;
 
 use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoEmptyMethod, NoRedundantDefaultArgument, NoUnusedPrivateMethod, NoUselessConstructor,
-    NoUselessOverride,
+    NoEmptyMethod, NoRedundantDefaultArgument, NoUnusedPrivateMethod, NoUselessOverride,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -53,7 +48,7 @@ final class FacadeFixRounds
     private function unused(): void {}
 }
 ";
-    // Rector 2.6.1, PHP 8.4: RemoveUnusedPrivateMethodRector alone, then with
+    // Rector 2.8.4, PHP 8.4: RemoveUnusedPrivateMethodRector alone, then with
     // HelperFuncCallToFacadeClassRector. Nested helpers force another fix round.
     let expected = "<?php
 
@@ -86,14 +81,6 @@ final class FacadeFixRounds
     let expected = expected.replace("app(", "\\Illuminate\\Support\\Facades\\App::make(");
     assert_eq!(combined.source, expected);
     assert!(combined.remaining.is_empty());
-}
-
-#[test]
-fn remove_parent_delegating_constructor() {
-    check(
-        NoUselessConstructor,
-        "RemoveParentDelegatingConstructorRector",
-    );
 }
 
 #[test]

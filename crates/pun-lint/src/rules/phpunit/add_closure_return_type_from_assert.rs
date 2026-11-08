@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-closure-return-type-from-assert`, ported from Rector 2.6.1's
+//! `lint/phpunit/add-closure-return-type-from-assert`, ported from Rector 2.8.4's
 //! `ClosureReturnTypeFromAssertInstanceOfRector` (rules/TypeDeclaration/Rector/Closure).
 //!
 //! A closure without a return type, in a test class, that calls `assertInstanceOf()` anywhere in its body gets the

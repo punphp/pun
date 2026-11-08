@@ -92,7 +92,7 @@ final class Cron
             $groups[$carry][] = $value + $offset;
         }
 
-        return array_map(function ($group) {
+        return array_map(function (array $group) {
             sort($group);
 
             return $group;
@@ -110,7 +110,7 @@ final class Cron
             $groups[$key][] = $value;
         }
 
-        return array_map(function ($group) {
+        return array_map(function (array $group) {
             return $group;
         }, $groups);
     }

@@ -1,10 +1,12 @@
 //! `lint/pest/prefer-chained-expect`, ported from pest-plugin-rector's `ChainExpectCallsRector`: consecutive
 //! `expect()` statements become one chain, the matchers of the same value added to it on lines of their own and
-//! another value joined with `->and($value)` (unless `merge-different-variables` is off).
+//! another value joined with `->and($value)` (unless `merge-different-variables` is off). A value that may have side
+//! effects (a call, say) is joined with `->and()` instead, one statement at a time, and so is the value of a chain
+//! with a method that changes the subject (`and`, `json`, `each`, `match`, `sequence`, `unless`, `when`).
 
 use mago_syntax::cst::{
     Access, ArgumentList, ArrayElement, Call, ClassLikeConstantSelector, ClassLikeMemberSelector,
-    Expression, Literal, MethodCall, Node, NodeKind, PropertyAccess, TokenSeparatedSequence,
+    CompositeString, Expression, StringPart, Literal, MethodCall, Node, NodeKind, PropertyAccess, TokenSeparatedSequence,
 };
 use pun_problem::{Safety, Span};
 
@@ -21,6 +23,10 @@ use crate::{Context, Report, Rule};
 pub struct PreferChainedExpect {
     separate_variables: bool,
 }
+
+/// `SUBJECT_TRANSFORMING_METHODS`: a chain with one of these is joined to the next statement with `->and()`.
+const SUBJECT_TRANSFORMING_METHODS: [&[u8]; 7] =
+    [b"and", b"json", b"each", b"match", b"sequence", b"unless", b"when"];
 
 /// An expression of the chain being built: an old method call kept whole, or a node Rector makes.
 #[derive(Clone)]
@@ -134,11 +140,16 @@ impl Rule for PreferChainedExpect {
                     continue;
                 }
                 if same_expression(ctx.source, first, next_arg) {
-                    let has_and = names(current).iter().any(|n| *n == Some(&b"and"[..]));
-                    if has_and && !merge {
+                    let transforms_subject = names(current)
+                        .iter()
+                        .any(|n| n.is_some_and(|n| SUBJECT_TRANSFORMING_METHODS.contains(&n)));
+                    if transforms_subject && !merge {
                         continue;
                     }
-                    if !has_and {
+                    if !transforms_subject && !is_side_effect_free(first) && !merge {
+                        continue;
+                    }
+                    if !transforms_subject && is_side_effect_free(first) {
                         // mergeSameVariable
                         let second = stmts.remove(key + 1).unwrap();
                         order.remove(key + 1);
@@ -210,8 +221,12 @@ fn merge_different<'a>(
     commented: &dyn Fn(&Stmt<'_>) -> bool,
 ) {
     let target = expect_argument(stmts[key + 1].as_ref().unwrap().call).unwrap();
+    let target_is_side_effect_free = is_side_effect_free(target);
     let mut methods = Vec::new();
     while let Some(Some(current)) = stmts.get(key + 1) {
+        if !methods.is_empty() && !target_is_side_effect_free {
+            break;
+        }
         if commented(current) || !is_expect_chain(current.call) {
             break;
         }
@@ -232,6 +247,44 @@ fn merge_different<'a>(
     let mut chain = rebuild(and, &methods);
     newlines(&mut chain);
     current.chain = Some(chain);
+}
+
+/// `isSideEffectFree`: a value php-parser reads as a variable, a scalar (an interpolated string of such values), a
+/// constant, a class constant or a static property, a property or array read on such a value, or an array of them.
+fn is_side_effect_free(expr: &Expression<'_>) -> bool {
+    let parts_free = |parts: &[StringPart<'_>]| {
+        parts.iter().all(|part| match part {
+            StringPart::Literal(_) => true,
+            StringPart::Expression(e) => is_side_effect_free(e),
+            StringPart::BracedExpression(b) => is_side_effect_free(b.expression),
+        })
+    };
+    match unparenthesize(expr) {
+        Expression::CompositeString(CompositeString::Interpolated(s)) => parts_free(s.parts.as_slice()),
+        Expression::CompositeString(CompositeString::Document(d)) => parts_free(d.parts.as_slice()),
+        Expression::Variable(_)
+        | Expression::Literal(_)
+        | Expression::MagicConstant(_)
+        | Expression::ConstantAccess(_)
+        | Expression::Access(Access::ClassConstant(_) | Access::StaticProperty(_)) => true,
+        Expression::Access(Access::Property(p)) => is_side_effect_free(p.object),
+        Expression::Access(Access::NullSafeProperty(p)) => is_side_effect_free(p.object),
+        Expression::ArrayAccess(a) => is_side_effect_free(a.array) && is_side_effect_free(a.index),
+        Expression::ArrayAppend(a) => is_side_effect_free(a.array),
+        Expression::Array(a) => elements_free(&a.elements),
+        Expression::LegacyArray(a) => elements_free(&a.elements),
+        _ => false,
+    }
+}
+
+/// The values of an array literal's items, the keys left out as `isSideEffectFree` does.
+fn elements_free(elements: &TokenSeparatedSequence<'_, ArrayElement<'_>>) -> bool {
+    elements.iter().all(|element| match element {
+        ArrayElement::KeyValue(e) => is_side_effect_free(e.value),
+        ArrayElement::Value(e) => is_side_effect_free(e.value),
+        ArrayElement::Variadic(e) => is_side_effect_free(e.value),
+        ArrayElement::Missing(_) => true,
+    })
 }
 
 /// `rebuildMethodChain`: `methods` written again on `base`.

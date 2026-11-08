@@ -1,4 +1,4 @@
-//! `lint/complexity/no-constant-via-variable`, ported from Rector 2.6.1's `VariableConstFetchToClassConstFetchRector`
+//! `lint/complexity/no-constant-via-variable`, ported from Rector 2.8.4's `VariableConstFetchToClassConstFetchRector`
 //! (rules/CodeQuality/Rector/ClassConstFetch).
 //!
 //! `$value::NAME`, where the native type of `$value` is one known class that has the constant, becomes

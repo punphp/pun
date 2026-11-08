@@ -1,11 +1,12 @@
-//! `lint/dead-code/no-unused-private-constant`, ported from Rector 2.6.1's `RemoveUnusedPrivateClassConstantRector`
+//! `lint/dead-code/no-unused-private-constant`, ported from Rector 2.8.4's `RemoveUnusedPrivateClassConstantRector`
 //! (rules/DeadCode/Rector/ClassConst) and `ClassConstManipulator::hasClassConstFetch` (src/NodeManipulator).
 //!
 //! A private constant declared alone (`private const A = 1;`) in a class, an anonymous class or an enum is removed
-//! when no `self::A`, `static::A`, `ClassName::A` or fetch on an object of the class reads it in the class or its
-//! ancestors. Pun reads the ancestors declared in the same file; a class that uses a trait declared elsewhere is
-//! skipped, as the trait may read the constant. A parent class can never read a private constant of its child, so
-//! one declared elsewhere changes nothing. A class whose parent's name ends in `Enum` is skipped (`hasParentClassOfEnumSuffix`).
+//! when no `self::A`, `static::A`, `ClassName::A` or fetch on an object of the class reads it in the class or, when
+//! the class uses a trait, in the traits of the class, of those traits and of its parents (`getTraits(true)`). A
+//! parent class itself is not read. Pun reads the traits and parents declared in the same file; a class that uses a
+//! trait and has a trait or parent declared elsewhere is skipped, as that trait may read the constant. A class whose
+//! parent's name ends in `Enum` is skipped (`hasParentClassOfEnumSuffix`).
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -68,28 +69,45 @@ impl Rule for NoUnusedPrivateConstant {
         if parent.as_ref().is_some_and(|p| p.ends_with("Enum")) {
             return;
         }
-        // `getAncestors()`: the class, its parents and the traits it uses, as far as this file declares them.
+        // The class, and when it uses a trait, `getTraits(true)`: the traits of the class, of those traits and of
+        // its parents, as far as this file declares them.
         let mut scopes = vec![node];
-        let mut next = parent;
-        while let Some(name) = next.take() {
-            let Some(Node::Class(c)) = declared(ancestors[0], &name) else {
-                break;
-            };
-            next = c
-                .extends
-                .as_ref()
-                .and_then(|e| e.types.first())
-                .map(|id| resolve_class_name(ancestors, id));
-            scopes.push(Node::Class(c));
-        }
-        for member in members.iter() {
-            let ClassLikeMember::TraitUse(r#use) = member else {
-                continue;
-            };
-            for name in r#use.trait_names.iter() {
-                match declared(ancestors[0], &resolve_class_name(ancestors, name)) {
-                    Some(t) => scopes.push(t),
-                    None => return,
+        if members
+            .iter()
+            .any(|m| matches!(m, ClassLikeMember::TraitUse(_)))
+        {
+            let mut holders = vec![members];
+            let mut next = parent;
+            while let Some(name) = next.take() {
+                let Some(Node::Class(c)) = declared(ancestors[0], &name) else {
+                    // A parent declared elsewhere may use a trait that reads the constant.
+                    return;
+                };
+                next = c
+                    .extends
+                    .as_ref()
+                    .and_then(|e| e.types.first())
+                    .map(|id| resolve_class_name(ancestors, id));
+                holders.push(&c.members);
+            }
+            let mut seen: Vec<String> = Vec::new();
+            while let Some(holder) = holders.pop() {
+                for member in holder.iter() {
+                    let ClassLikeMember::TraitUse(r#use) = member else {
+                        continue;
+                    };
+                    for name in r#use.trait_names.iter() {
+                        let name = resolve_class_name(ancestors, name);
+                        if seen.iter().any(|s| s.eq_ignore_ascii_case(&name)) {
+                            continue;
+                        }
+                        let Some(t @ Node::Trait(r#trait)) = declared(ancestors[0], &name) else {
+                            return;
+                        };
+                        seen.push(name);
+                        scopes.push(t);
+                        holders.push(&r#trait.members);
+                    }
                 }
             }
         }

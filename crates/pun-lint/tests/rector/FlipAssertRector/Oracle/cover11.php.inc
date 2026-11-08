@@ -133,7 +133,7 @@ final class Cover11Test extends TestCase
         );
         $f = ['a' => 1];
         $e = $f;
-        $this->assertEquals($e, ['a' => 1]);
+        $this->assertEquals(['a' => 1], $e);
         $this->assertStringContainsString('a', $a + 1);
         $const = $this->createMock(\stdClass::FOO);
         new \ArrayObject($const);

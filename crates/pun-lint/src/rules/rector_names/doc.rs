@@ -892,11 +892,15 @@ fn walk(node: &mut Node, parent_template: bool, f: &mut dyn FnMut(&mut String, b
             f(base, false);
             args.iter_mut().for_each(|t| walk(t, false, f));
         }
-        // Rector's `SpacingAwareCallableTypeNode` keeps no templates
         Node::Callable {
-            ident, params, ret, ..
+            ident, templates, params, ret,
         } => {
             f(ident, false);
+            for t in templates.iter_mut() {
+                for node in [&mut t.bound, &mut t.lower, &mut t.default].into_iter().flatten() {
+                    walk(node, true, f);
+                }
+            }
             params.iter_mut().for_each(|p| walk(&mut p.ty, false, f));
             walk(ret, false, f);
         }
@@ -1395,6 +1399,9 @@ fn process_doctrine(
     let Some(class) = narrow(name) else {
         return Some(());
     };
+    if parser::has_single_quoted(&values) {
+        return Some(());
+    }
     let mut values = values;
     if !values.is_empty() {
         values = star_comment(&values);

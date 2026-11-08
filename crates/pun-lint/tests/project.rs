@@ -73,7 +73,7 @@ fn a_deferred_scan_runs_when_a_rule_reads_facts() {
 
 /// A fix round lints a file changed after the project's codebase was scanned, so Mago's analysis gives `$this` no
 /// type there. PHPStan types it as the class (`ThisType`), so the private method `$this` calls stays used. Expected:
-/// the file unchanged, as Rector 2.6.1 (`RemoveUnusedPrivateMethodRector` and `AppToFacadeRector`) keeps
+/// the file unchanged, as Rector 2.8.4 (`RemoveUnusedPrivateMethodRector` and `AppToFacadeRector`) keeps
 /// `getRecentlyViewed()` in Pinkary's app/Jobs/IncrementViews.php after rewriting its `app()` call.
 #[test]
 fn a_changed_file_keeps_its_methods_called_on_this() {
@@ -96,7 +96,7 @@ fn a_changed_file_keeps_its_methods_called_on_this() {
 }
 
 /// Classes Composer autoloads are scanned on demand, and `ClassMethodReturnTypeOverrideGuard` lets a method override
-/// a parent's untyped method only when both are in vendor/ or neither is. Expected: Rector 2.6.1
+/// a parent's untyped method only when both are in vendor/ or neither is. Expected: Rector 2.8.4
 /// (`ReturnTypeFromStrictConstantReturnRector` alone, PHP 8.4, `--autoload-file vendor/autoload.php` of a project
 /// whose psr-4 maps `Acme\` to vendor/acme/pkg/src/) types only the method whose parent is the project's.
 #[test]

@@ -1,11 +1,13 @@
-//! `lint/dead-code/no-always-true-if`, ported from Rector 2.6.1's `RemoveAlwaysTrueIfConditionRector`
+//! `lint/dead-code/no-always-true-if`, ported from Rector 2.8.4's `RemoveAlwaysTrueIfConditionRector`
 //! (rules/DeadCode/Rector/If_).
 //!
-//! An `if (a && b)` whose left side PHPStan types as `true` keeps only `b` as its condition (with the checks of
-//! [`super::no_always_false_condition`]). An `if` without `elseif` or `else` whose condition's native type is `true`
+//! Nothing changes in an `if` with `elseif` or `else`, nor in a file with inline HTML. An `if (a && b)` whose left side
+//! PHPStan types as `true` keeps only `b` as its condition (with the checks of
+//! [`super::no_always_false_condition`]). An `if` whose condition's native type is `true`
 //! makes way for its statements, the `if`'s comments before the first; with no statement it goes. The condition must
 //! hold no property, array item, method or static call, assignment, call of a function that asks the runtime
-//! (`class_exists()`, `function_exists()`, `defined()`, ...), or variable that `isNonTypedFromParam` doubts; nothing
+//! (`class_exists()`, `function_exists()`, `defined()`, ...), or variable that may be undefined or that
+//! `isNonTypedFromParam` doubts; nothing
 //! changes in a trait.
 //!
 //! php-parser's printer decides the bytes: see [`super::stmt_splice`].
@@ -87,6 +89,21 @@ fn change(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>])
     let Node::Statement(Statement::If(r#if)) = chain[chain.len() - 1] else {
         return None;
     };
+    let parts = if_parts(tokens, r#if);
+    if parts.has_else || parts.has_elseifs {
+        return None;
+    }
+    // `File::containsHTML()`: the file has inline HTML (php-parser's `?>` takes the line break after it)
+    if any_node(chain[0], &|n| match n {
+        Node::Inline(inline) | Node::Statement(Statement::Inline(inline)) => {
+            let value = inline.value;
+            let value = value.strip_prefix(b"\r\n".as_slice()).or_else(|| value.strip_prefix(b"\n".as_slice())).unwrap_or(value);
+            !value.is_empty()
+        }
+        _ => false,
+    }) {
+        return None;
+    }
     let cond = unparenthesize(r#if.condition);
     if let Expression::Binary(and) = cond
         && matches!(and.operator, BinaryOperator::And(_))
@@ -100,10 +117,6 @@ fn change(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>])
         let right = node_span(unparenthesize(and.rhs));
         let edit = Edit::new(node_span(cond), &source[right.start..right.end]);
         return Some(Change::Edits(vec![edit]));
-    }
-    let parts = if_parts(tokens, r#if);
-    if parts.has_else || parts.has_elseifs {
-        return None;
     }
     if !facts.native_type(node_span(cond)).is_some_and(is_true)
         || should_skip_expr(chain, cond)
@@ -162,10 +175,12 @@ fn should_skip_expr(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
 /// none of the refined arrays PHPStan's native scope gives (`non-empty-array`, `non-empty-array&hasOffset('k')`,
 /// `list`) is one by then.
 fn should_skip_from_variable(facts: &Facts, expr: &Expression<'_>) -> bool {
-    any_node(
-        Node::Expression(expr),
-        &|n| matches!(n, Node::Expression(e @ Expression::Variable(_)) if is_non_typed_from_param(facts, e)),
-    )
+    any_node(Node::Expression(expr), &|n| {
+        matches!(n, Node::Expression(e @ Expression::Variable(_))
+            // a variable that may be undefined (`! $scope->hasVariableType()->yes()`)
+            if is_non_typed_from_param(facts, e)
+                || facts.native_type(node_span(e)).is_some_and(|t| t.possibly_undefined()))
+    })
 }
 
 /// Whether the function-like around the `if` (before `at`) assigns a variable variable (`${$name} = ...`): PHPStan

@@ -148,7 +148,6 @@ trait T
         return request('x');
     }
 }
-
 -----
 <?php
 
@@ -178,9 +177,9 @@ class Controller extends Base implements HasStore
         return $request->validate(['a' => 'required']);
     }
 
-    public function b(int $id, \Illuminate\Http\Request $request)
+    public function b(int $id)
     {
-        return $request->all();
+        return Request::all();
     }
 
     public function c(
@@ -198,7 +197,7 @@ class Controller extends Base implements HasStore
 
     public function e(FormRequest $req)
     {
-        return [$req->input('x'), $req, $req->input('y')];
+        return [$req->input('x'), $req, Request::input('y')];
     }
 
     public function f(?Request $r)
@@ -206,9 +205,9 @@ class Controller extends Base implements HasStore
         return $r;
     }
 
-    public function h(\Illuminate\Http\Request $request)
+    public function h()
     {
-        return fn () => $request->get('x');
+        return fn () => Request::get('x');
     }
 
     public function store()
@@ -236,9 +235,9 @@ class Controller extends Base implements HasStore
         return RequestFacade::input('x');
     }
 
-    public function j(\Illuminate\Http\Request $request)
+    public function j()
     {
-        return $request->input('x');
+        return \Request::input('x');
     }
 
     public function k(\Illuminate\Http\Request $request)
@@ -256,14 +255,14 @@ class Controller extends Base implements HasStore
         return $request->validate(['a' => 'required'], ['a.required' => 'msg']);
     }
 
-    public function o(\Illuminate\Http\Request $request)
+    public function o()
     {
-        return $request->capture();
+        return FormRequest::capture();
     }
 
     public function u(\Illuminate\Http\Request $request)
     {
-        return $request->input($request->input('x'));
+        return Request::input($request->input('x'));
     }
 
     public function v(\Illuminate\Http\Request $request)
@@ -274,12 +273,12 @@ class Controller extends Base implements HasStore
 
     public function w(self $s, Request|FormRequest $req)
     {
-        return $req->all();
+        return Request::all();
     }
 
-    public function x(int $a = 1, \Illuminate\Http\Request $request)
+    public function x(int $a = 1)
     {
-        return $request->all();
+        return Request::all();
     }
 
     public function __construct(\Illuminate\Http\Request $request)
@@ -298,4 +297,3 @@ trait T
         return request('x');
     }
 }
-

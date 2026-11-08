@@ -378,8 +378,9 @@ function q()
 
 function r()
 {
+    $x = 1;
     /** @var mixed $x */
-    return 1;
+    return $x;
 }
 
 function s()
@@ -395,7 +396,8 @@ function t($a)
 
 function u($a, $b)
 {
-    return $x - ($a - $b);
+    $x -= $a - $b;
+    return $x;
 }
 
 function v($a, $b)
@@ -464,34 +466,44 @@ function dd()
 function ops($a)
 {
     $f = function () use ($a) {
-        return $b * $a;
+        $b *= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b / $a;
+        $b /= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b % $a;
+        $b %= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b & $a;
+        $b &= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b | $a;
+        $b |= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b ^ $a;
+        $b ^= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b << $a;
+        $b <<= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b >> $a;
+        $b >>= $a;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b ** ($a + 1);
+        $b **= $a + 1;
+        return $b;
     };
     $f = function () use ($a) {
-        return $b + $a;
+        $b += $a;
+        return $b;
     };
     $g = fn () => function () {
         return 1;

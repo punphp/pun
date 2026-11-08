@@ -1,4 +1,4 @@
-//! The `laravel` group: rules ported from rector-laravel 2.5.0 (driftingly/rector-laravel, src/Rector/...), each in
+//! The `laravel` group: rules ported from rector-laravel 2.7.3 (driftingly/rector-laravel, src/Rector/...), each in
 //! its own file, and what they share.
 //!
 //! rector-laravel builds new nodes with Rector's `NodeFactory` and prints them with php-parser's printer: a new call is
@@ -353,6 +353,60 @@ pub(crate) fn is_written(span: Span, ancestors: &[Node<'_, '_>]) -> bool {
             _ => return false,
         }
     }
+}
+
+/// `ArrayDimFetchContextNodeVisitor::markByRefArgs`: the expression at `span` (or the item read from it, as in
+/// `$a['x']['y']`) is an argument of a call to a known function whose parameter takes it by reference (a named
+/// argument by its name, past the end the last parameter when it is variadic).
+pub(crate) fn is_by_ref_argument(ctx: &Context<'_>, span: Span, ancestors: &[Node<'_, '_>]) -> bool {
+    let mut at = span;
+    let mut index = ancestors.len();
+    while let Some((i, Node::ArrayAccess(access))) = parent(at, &ancestors[..index]) {
+        if node_span(access.array) != at {
+            break;
+        }
+        at = node_span(*access);
+        index = i;
+    }
+    let Some(call) = ancestors[..index].iter().rev().find_map(|a| match a {
+        Node::FunctionCall(call) => Some(*call),
+        _ => None,
+    }) else {
+        return false;
+    };
+    let Some((position, argument)) = (call.argument_list.arguments.iter().enumerate())
+        .find(|(_, a)| node_span(unparenthesize(a.value())) == at)
+    else {
+        return false;
+    };
+    let Some(name) = crate::rules::rector_batch5::called_function_name(ancestors, call.function)
+    else {
+        return false;
+    };
+    // `ReflectionProvider::hasFunction()`: the namespaced name, then the global one.
+    let facts = crate::rules::types::facts::facts(ctx);
+    let local = matches!(
+        call.function,
+        Expression::Identifier(mago_syntax::cst::Identifier::Local(_))
+    );
+    let namespaced = (crate::rules::types::names::class_imports(ancestors).0)
+        .filter(|_| local && !name.contains('\\'));
+    let Some(function) = namespaced
+        .and_then(|ns| facts.codebase.get_function(format!("{ns}\\{name}").as_bytes()))
+        .or_else(|| facts.codebase.get_function(name.as_bytes()))
+    else {
+        return false;
+    };
+    let parameters = &function.parameters;
+    let parameter = match argument {
+        Argument::Named(named) => parameters
+            .iter()
+            .find(|p| p.name.0.as_bytes().get(1..) == Some(named.name.value)),
+        Argument::Positional(_) => parameters
+            .get(position)
+            .or_else(|| parameters.last().filter(|p| p.flags.is_variadic())),
+    };
+    parameter.is_some_and(|p| p.flags.is_by_reference())
 }
 
 /// Whether the node at `span` lies in a string (`"{$a['x']}"`, a heredoc or a backtick command), as php-parser's

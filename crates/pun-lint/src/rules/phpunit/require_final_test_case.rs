@@ -1,4 +1,4 @@
-//! `lint/phpunit/require-final-test-case`, ported from Rector 2.6.1's `FinalizeTestCaseClassRector`
+//! `lint/phpunit/require-final-test-case`, ported from Rector 2.8.4's `FinalizeTestCaseClassRector`
 //! (rules/Privatization/Rector/Class_).
 //!
 //! A class that is neither abstract nor final, whose name ends in `Test` (not `TestCase`) and that is a

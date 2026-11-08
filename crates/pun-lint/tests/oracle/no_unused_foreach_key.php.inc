@@ -143,6 +143,7 @@ function c($items) {
     foreach ($items as $v) { echo $v; }
     foreach ($items as $v) { echo $v; }
     /**
+     *
      * @var int $v
      */
     foreach ($items as $v) { echo $v; }

@@ -1,4 +1,4 @@
-//! Constructor injection as Rector 2.6.1 writes it, shared by `lint/refactor/replace-static-with-method`
+//! Constructor injection as Rector 2.8.4 writes it, shared by `lint/refactor/replace-static-with-method`
 //! (`StaticCallToMethodCallRector`) and `lint/laravel/prefer-constructor-injection` (rector-laravel's
 //! `ArgumentFuncCallToMethodCallRector`). Both visit a class (named or anonymous), walk each of its methods in order
 //! ([`inject`]) and ask [`Injector::provide`] (`FuncCallStaticCallToMethodCallAnalyzer::matchTypeProvidingExpr`) for

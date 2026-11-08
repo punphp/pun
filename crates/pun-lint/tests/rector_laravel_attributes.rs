@@ -1,13 +1,13 @@
 //! rector-laravel's own fixtures for its property-to-attribute rules (src/Rector/Class_/*PropertyTo*AttributeRector) and
-//! `ScopeNamedClassMethodToScopeAttributedClassMethodRector`, copied verbatim from driftingly/rector-laravel 2.5.0 (its
-//! source at 2bd499d, tests/Rector/...) into tests/rector/<Rector class>/Fixture, laid out as in rector_laravel.rs:
-//! Oracle/ holds extra inputs with what Rector 2.6.1 and rector-laravel 2.5.0 (`.oracle/rector-ecosystem`, the rule
+//! `ScopeNamedClassMethodToScopeAttributedClassMethodRector`, copied verbatim from driftingly/rector-laravel 2.7.3 (its
+//! source at 699f25b, tests/Rector/...) into tests/rector/<Rector class>/Fixture, laid out as in rector_laravel.rs:
+//! Oracle/ holds extra inputs with what Rector 2.8.4 and rector-laravel 2.7.3 (`.oracle/rector-ecosystem`, the rule
 //! alone, `phpVersion(80400)`, rector-laravel's stubs/ autoloaded) wrote for them; Pun/ holds the documented cases
 //! where Pun differs, their expected output derived by hand.
 //!
 //! These rules ask PHPStan's reflection whether the class extends a framework class, so rector-laravel runs its
 //! fixtures with its stubs/ on the class map. Every fixture here sees those classes: tests/rector-laravel-stubs holds
-//! rector-laravel's stubs/Illuminate, verbatim at 2bd499d.
+//! rector-laravel's stubs/Illuminate, verbatim at 699f25b.
 //!
 //! Pun/tabbed (`FillablePropertyToFillableAttributeRector`, `CollectedByPropertyToCollectedByAttributeRector`,
 //! `TablePropertyToTableAttributeRector`, `ScopeNamedClassMethodToScopeAttributedClassMethodRector`):

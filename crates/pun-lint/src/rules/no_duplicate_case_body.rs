@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-duplicate-case-body`, ported from Rector 2.6.1's `RemoveDuplicatedCaseInSwitchRector`
+//! `lint/dead-code/no-duplicate-case-body`, ported from Rector 2.8.4's `RemoveDuplicatedCaseInSwitchRector`
 //! (rules/DeadCode/Rector/Switch_).
 //!
 //! Cases of a `switch` whose bodies are the same code ending the case (a `break` or `return` among its statements)

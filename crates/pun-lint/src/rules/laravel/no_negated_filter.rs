@@ -1,4 +1,4 @@
-//! `lint/laravel/no-negated-filter`, ported from rector-laravel 2.5.0's `AvoidNegatedCollectionFilterOrRejectRector`
+//! `lint/laravel/no-negated-filter`, ported from rector-laravel 2.7.3's `AvoidNegatedCollectionFilterOrRejectRector`
 //! (src/Rector/MethodCall).
 //!
 //! On an `Illuminate\Support\Enumerable`, `filter(fn (...) => !$x)` becomes `reject(fn (...): bool => (bool) $x)`, and

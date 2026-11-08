@@ -62,9 +62,6 @@ pub(crate) fn param_declaration_in(
     php_version: u32,
     order: &[String],
 ) -> Option<String> {
-    if has_array_intersection(t) {
-        return None;
-    }
     let expanded = expand(&t.types)?;
     declaration_of(normalize_bool(union_order(&expanded)), codebase, php_version, order)
 }
@@ -129,12 +126,30 @@ fn declaration_of(
             if php_version < UNION_TYPES {
                 return None;
             }
+            // `NativePhpTypeNodeHelper::union()` (PHPStan 2.3, Rector 2.8.4): the other members in order, `null` last
+            let mut many: Vec<String> = many.iter().filter(|n| *n != "null").cloned().collect();
+            if many.len() < names.len() {
+                many.push("null".to_string());
+            }
+            // `NativePhpTypeNodeHelper::union()`: PHP rejects redundant members, so `object` takes in the class names
+            // and intersections beside it, and `iterable` an `array`
             let object = many.iter().any(|n| n == "object");
-            let class = many
-                .iter()
-                .any(|n| n.starts_with('\\') || n == "self" || n == "static");
-            if object && class {
-                return None;
+            let iterable = many.iter().any(|n| n == "iterable");
+            many.retain(|n| {
+                !(object && (n.starts_with('\\') || n == "self" || n == "static" || n.contains('&'))) && !(iterable && n == "array")
+            });
+            // `A|(A&B)` is `A`: an intersection with a part that is a member of its own goes
+            let plain: Vec<String> = many.iter().filter(|n| !n.contains('&')).map(|n| n.to_ascii_lowercase()).collect();
+            many.retain(|n| !n.contains('&') || !n.split('&').any(|part| plain.contains(&part.to_ascii_lowercase())));
+            match many.as_slice() {
+                [one] => return Some(one.clone()),
+                [a, b] if (a == "null") != (b == "null") && !a.contains('&') && !b.contains('&') => {
+                    let other = if a == "null" { b } else { a };
+                    if other != "false" && other != "true" {
+                        return Some(format!("?{other}"));
+                    }
+                }
+                _ => {}
             }
             Some(
                 many.iter()
@@ -235,16 +250,6 @@ pub(crate) fn constant_values<'ast, 'arena>(
     (!string_keyed || flat.iter().all(|t| *t == flat[0])).then_some(flat)
 }
 
-/// Whether an array's item type has an array that is not a constant one but a list or non-empty: PHPStan has
-/// `ArrayType&AccessoryArrayListType` (or `&NonEmptyArrayType`) there, which Rector's `NodeTypeCorrector` removes from
-/// the type of an expression but not from its items, and `IntersectionTypeMapper` maps an intersection that is not of
-/// objects to nothing (checked with Rector 2.6.1).
-fn has_array_intersection(item: &TUnion) -> bool {
-    item.types
-        .iter()
-        .any(|t| matches!(t, TAtomic::Array(a) if !a.is_sealed() && (matches!(a, TArray::List(_)) || a.is_non_empty())))
-}
-
 /// The members of a union as PHPStan has them: a template type is its bound, `array-key` is `int|string` and
 /// `scalar` is `int|float|string|bool`. `None` for a template bound that is `mixed`.
 fn expand(types: &[TAtomic]) -> Option<Vec<TAtomic>> {
@@ -303,6 +308,8 @@ static BOOL: TAtomic = TAtomic::Scalar(TScalar::bool());
 /// One type that is not a union, as a parameter type.
 fn single(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<String> {
     match t {
+        // `NullType::toNativePhpTypeNode()`: a standalone `null` from PHP 8.2 (PHPStan 2.3)
+        TAtomic::Null if php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE => Some("null".to_string()),
         TAtomic::Null | TAtomic::Void | TAtomic::Never | TAtomic::Mixed(_) => None,
         TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => {
             Some(if php_version < NULL_FALSE_TRUE_STANDALONE_TYPE {
@@ -547,9 +554,6 @@ pub(crate) fn item_declaration(
     item: &TUnion,
     php_version: u32,
 ) -> Option<String> {
-    if has_array_intersection(item) {
-        return None;
-    }
     let declaration = param_declaration(item, &facts.codebase, php_version)?;
     let names: Vec<&str> = declaration.split('|').collect();
     let key = |n: &str| n.rsplit('\\').next().unwrap_or(n).to_ascii_lowercase();
@@ -629,7 +633,7 @@ fn assigned<'ast, 'arena>(
 /// gives it `non-empty-list<lowercase-string>`, whose item `AccessoryNonEmptyArrayTypeCorrector` makes `string`.
 /// Not where a `str_contains()`, `str_starts_with()` or `str_ends_with()` of the haystack proves the delimiter is
 /// there: the extension then gives an unsealed constant array. PHPStan finds that call only by its fully qualified
-/// name, so an unqualified one counts outside a namespace only (checked with Rector 2.6.1).
+/// name, so an unqualified one counts outside a namespace only (checked with Rector 2.8.4).
 fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Expression<'arena>) -> bool {
     use crate::rules::lint_b_helpers::value;
     use crate::rules::rector_code_quality::named;
@@ -668,7 +672,7 @@ fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Exp
     !proven
 }
 
-/// A call PHPStan's return type extensions make a non-empty list where Mago gives a list (checked with Rector 2.6.1):
+/// A call PHPStan's return type extensions make a non-empty list where Mago gives a list (checked with Rector 2.8.4):
 /// `explode()` but with a negative limit, and `range()` but of literal integers with 50 items or fewer (a constant
 /// array).
 fn non_empty_call(expr: &Expression<'_>) -> bool {

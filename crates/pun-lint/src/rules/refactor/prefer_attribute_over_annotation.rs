@@ -1,4 +1,4 @@
-//! `lint/refactor/prefer-attribute-over-annotation`, ported from Rector 2.6.1's `AnnotationToAttributeRector`
+//! `lint/refactor/prefer-attribute-over-annotation`, ported from Rector 2.8.4's `AnnotationToAttributeRector`
 //! (rules/Php80/Rector/Class_) with its `AnnotationToAttribute` configuration, on the name handling's doc comments
 //! (`rector_names::doc`) and attributes (`rector_names::attribute`).
 //!
@@ -13,6 +13,7 @@
 //! class exists becomes the attribute with the tag's value. The tags go from the doc (a text after an annotation's
 //! closing parenthesis stays), and the attributes come after the node's own.
 
+use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Node, NodeKind, Program};
 use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
@@ -37,11 +38,11 @@ impl Rule for AnnotationToAttribute {
     fn id(&self) -> &'static str {
         "lint/refactor/prefer-attribute-over-annotation"
     }
-
     /// Rector runs the rule once per file; a closure keeps its doc, which a second run would read again.
     fn once(&self) -> bool {
         true
     }
+
 
     fn configure(&mut self, options: &Value) -> Result<(), String> {
         self.configs.clear();
@@ -346,6 +347,7 @@ impl AnnotationToAttribute {
                 config,
                 name,
                 &constructor,
+                foldable_parameters(ctx, &config.attribute_class).as_deref(),
                 ctx.php_version >= 80100,
             ));
         }
@@ -460,4 +462,27 @@ fn constructor_parameters(ctx: &Context<'_>, class: &str) -> Vec<(String, bool)>
             (name, has_int)
         })
         .collect()
+}
+
+/// `UnknownNamedArgsToOptionsFolder::resolveConstructorParameterNames()`: the names of the constructor's parameters
+/// when one of them is an `$options` that takes an array; `None` for an unknown class or constructor, or a variadic
+/// parameter.
+fn foldable_parameters(ctx: &Context<'_>, class: &str) -> Option<Vec<String>> {
+    let facts = facts(ctx);
+    let constructor = facts.codebase.get_method(class.as_bytes(), b"__construct")?;
+    let mut names = Vec::new();
+    let mut has_options = false;
+    for p in constructor.parameters.iter() {
+        if p.flags.is_variadic() {
+            return None;
+        }
+        let name = p.name.0.as_str().unwrap_or_default().trim_start_matches('$').to_string();
+        if name == "options" {
+            has_options = p.type_metadata.as_ref().is_none_or(|t| {
+                t.type_union.types.iter().any(|a| matches!(a, TAtomic::Array(_) | TAtomic::Iterable(_) | TAtomic::Mixed(_)))
+            });
+        }
+        names.push(name);
+    }
+    has_options.then_some(names)
 }

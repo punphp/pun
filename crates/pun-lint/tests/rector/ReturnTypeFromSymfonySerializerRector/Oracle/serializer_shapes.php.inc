@@ -131,7 +131,6 @@ trait HasParent
         return $this->serializer->deserialize($data, parent::class, 'json');
     }
 }
-
 -----
 <?php
 
@@ -266,4 +265,3 @@ trait HasParent
         return $this->serializer->deserialize($data, parent::class, 'json');
     }
 }
-

@@ -1,4 +1,4 @@
-//! `lint/types/add-bool-return-type`, ported from Rector 2.6.1's `BoolReturnTypeFromBooleanStrictReturnsRector`
+//! `lint/types/add-bool-return-type`, ported from Rector 2.8.4's `BoolReturnTypeFromBooleanStrictReturnsRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a function or method whose every `return` returns a boolean
 //! expression (`!`, `empty()`, `isset()`, `instanceof`, a `(bool)` cast, a comparison, `&&`, `||`, `and`, `or`,
 //! `xor`) or a call of a built-in function declared to return `bool`, and whose end cannot be reached, returns
