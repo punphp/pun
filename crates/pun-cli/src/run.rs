@@ -75,7 +75,12 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
         preset: a.preset.clone(),
         blade: a.blade,
     };
-    pun_config::load(root, &opts).map_err(config_error)
+    load(root, &opts)
+}
+
+/// `pun.toml` (or the given config) under `root`; an error is a config error.
+pub(crate) fn load(root: &Path, opts: &Options) -> Result<Config> {
+    pun_config::load(root, opts).map_err(config_error)
 }
 
 /// Hands a native rule its options from `[lint.rules]`. Overrides change levels only, as one instance of the rule

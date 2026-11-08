@@ -124,14 +124,6 @@ pub(crate) struct Analysed {
     pub(crate) paths: Vec<PathBuf>,
 }
 
-pub(crate) fn load_config(root: &Path, config: Option<PathBuf>) -> Result<Config> {
-    let opts = Options {
-        config,
-        ..Default::default()
-    };
-    pun_config::load(root, &opts).map_err(|e| run_error(format!("{e:#}"), None))
-}
-
 /// The engine's rule for PHPStan's errors about ignores (`ignore.unmatched`, `ignore.count`, ...), which no rule
 /// reports.
 const UNMATCHED_IGNORE: &str = "unmatched-ignore";
@@ -170,7 +162,7 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> 
     let ignores = (params.get_str("ignoreErrors").and_then(Value::as_array)).cloned();
     let ignores = ignores.unwrap_or_default();
     // pun.toml is the config file the entries are in, as IgnoreErrorsConfigFixer finds them in a project's NEON file
-    let pun_toml = (cfg.sources.iter()).find(|s| s.extension().is_some_and(|e| e == "toml"));
+    let pun_toml = cfg.pun_toml();
     let mut ignore_errors = IgnoredErrors::new(&ignores, true).with_rules(rule_of_identifier);
     if let Some(file) = pun_toml {
         ignore_errors = ignore_errors.with_config_entries(&file.to_string_lossy(), &ignores, &cfg.root.to_string_lossy());
@@ -361,7 +353,11 @@ pub(crate) fn problem(f: &Finding, source: &str, index: &LineIndex) -> Problem {
 pub(crate) fn run(a: AnalyseArgs) -> Result<u8> {
     let started = Instant::now();
     let root = root()?;
-    let cfg = load_config(&root, a.config.clone())?;
+    let opts = Options {
+        config: a.config.clone(),
+        ..Default::default()
+    };
+    let cfg = crate::run::load(&root, &opts)?;
     // as PHPStan stops without a level (`pun check` runs the other commands instead)
     if cfg.analyse.rules.is_empty() {
         let hint = "set [analyse] preset, or turn rules on under [analyse.rules]";
@@ -385,9 +381,7 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
                 paths: &analysed.paths,
                 general: &analysed.general,
                 fixable_ignored: analysed.fixable_ignored,
-                config: (cfg.sources.iter())
-                    .find(|s| s.extension().is_some_and(|e| e == "toml"))
-                    .map(|s| relative(&root, s)),
+                config: cfg.pun_toml().map(|s| relative(&root, s)),
             };
             print!(
                 "{}",

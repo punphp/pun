@@ -487,6 +487,13 @@ fn check_composer(composer: &Composer) -> Result<()> {
 }
 
 impl Config {
+    /// The `pun.toml` among [`Config::sources`], if one was read.
+    pub fn pun_toml(&self) -> Option<&Path> {
+        (self.sources.iter())
+            .find(|s| s.extension().is_some_and(|e| e == "toml"))
+            .map(PathBuf::as_path)
+    }
+
     /// The target PHP version ([`Config::php`]), always valid.
     pub fn php_version(&self) -> PhpVersion {
         self.php.parse().unwrap()
