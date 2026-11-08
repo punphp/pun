@@ -1,7 +1,7 @@
 # These upstream oracle fixtures assert byte offsets in CRLF source.
 crates/pun-lint/tests/mago/style-require-todo-reference/Mago/*_comment_prefixes_and_unicode_tags.php -text whitespace=cr-at-eol
 
-# The Composer package (composer.json, bin/pun) is this repository's archive: everything else stays out of it, so
+# The Composer package (composer.json, composer/) is this repository's archive: everything else stays out of it, so
 # `composer require punphp/pun` downloads the shim, not the Rust source. Add each new top-level path here.
 /.agents export-ignore
 /.claude export-ignore

@@ -6,10 +6,11 @@
 
 const PUN_VERSION = '0.0.1'; // the workspace version (tests/composer.rs): used when Composer can't tell the installed tag (dev-main)
 
+/** Pun's run error: the binary could not be fetched or started, so it exits 2 like `pun` itself. */
 function pun_fail(string $message): never
 {
     fwrite(STDERR, "pun: $message\n");
-    exit(1);
+    exit(2);
 }
 
 function pun_target(): string
@@ -76,4 +77,4 @@ if (! is_file($binary)) {
 }
 
 $process = proc_open([$binary, ...array_slice($argv, 1)], [STDIN, STDOUT, STDERR], $pipes);
-exit(is_resource($process) ? proc_close($process) : 1);
+exit(is_resource($process) ? proc_close($process) : 2);

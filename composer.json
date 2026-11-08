@@ -8,5 +8,5 @@
     "require": {
         "php": ">=8.1"
     },
-    "bin": ["bin/pun"]
+    "bin": ["composer/bin/pun"]
 }
