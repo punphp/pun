@@ -1,4 +1,4 @@
-// Pun homepage behaviour: install tabs, the terminal race, benchmark bars and count-ups.
+// Pun homepage behaviour: the install copy button, the terminal race, benchmark bars and count-ups.
 // Every number on the page comes from BENCHMARKS. Add a group when a benchmark is measured; the tabs appear by themselves.
 
 export const BENCHMARKS = [

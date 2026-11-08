@@ -102,3 +102,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 ```
+
+## Mago
+
+`third_party/mago-analyzer`, `third_party/mago-codex`, `third_party/mago-syntax` and
+`third_party/mago-phpdoc-syntax` are copies of [Mago](https://github.com/carthage-software/mago) 1.57.0 crates
+with Pun's patches (each crate's `PATCHES.md` lists them). They keep Mago's dual MIT and Apache-2.0 license; the
+texts are in each crate's `LICENSE-MIT` and `LICENSE-APACHE`.

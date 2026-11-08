@@ -14,22 +14,20 @@ Pun formats, lints, and analyses PHP 8.4+ projects. It is written in Rust and re
 Pint compatibility is checked against pinned upstream tools on a project corpus and with mutation fuzzing.
 PHPStan, Larastan, and Rector support is incomplete. See the [parity report](context/reports/scoreboard.md) and the rule reference under [docs](docs/content/docs/index.mdx).
 
-## Install with Composer
-
-From the first release, `composer require --dev punphp/pun` installs a PHP shim that downloads the native binary on first run (Linux and macOS).
-
-## Build from source
-
-Requires Rust 1.99 or later. Release packages are not published yet.
+## Install
 
 ```sh
-cargo install --locked --git https://github.com/punphp/pun punphp
-pun --version
+composer require --dev punphp/pun
+vendor/bin/pun --version
 ```
+
+The package (`composer.json` and `composer/bin/pun`) is a PHP shim that downloads the native binary for your platform on first run, checks its SHA-256 checksum, and runs it (Linux and macOS, x86_64 and arm64).
 
 PHP files need no PHP or Node runtime. Blade formatting requires Node.js (or Bun) and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
 
 ## Start a project
+
+Commands below are written as `pun`; in a project, run them as `vendor/bin/pun`.
 
 For an existing Pint, PHP-CS-Fixer, Rector, or PHPStan configuration:
 
@@ -74,6 +72,10 @@ Pun never falls back to PHP for an unsupported rule. Enabling one is a configura
 Checks exit 0 when clean, 1 for findings, and 2 when Pun cannot run. Coding agents get compact output automatically.
 See the [command reference](docs/content/docs/commands/format.mdx), [configuration reference](docs/content/docs/configuration/pun-toml.mdx), and [CI guide](docs/content/docs/guides/ci.mdx).
 
+## Develop
+
+Building Pun itself needs Rust 1.99 or later: `cargo build --release -p punphp` writes `target/release/pun`. [AGENTS.md](AGENTS.md) lists the checks and the upstream oracles.
+
 ## Credits
 
 Pun would not be possible without [Mago](https://github.com/carthage-software/mago), [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer), [Laravel Pint](https://github.com/laravel/pint), [PHPStan](https://github.com/phpstan/phpstan), [Larastan](https://github.com/larastan/larastan), and [Rector](https://github.com/rectorphp/rector).
@@ -86,11 +88,11 @@ Pun ports behaviour, test fixtures and data from these projects. Their licences 
 
 | Project | Used for | Licence |
 | --- | --- | --- |
-| PHP-CS-Fixer | Fixer logic and upstream fixtures (pun-tokens, pun-fixers, pun-harness/fixtures) | MIT |
+| PHP-CS-Fixer | Fixer logic and upstream fixtures (pun-tokens, pun-fixers) | MIT |
 | Laravel Pint | Presets, custom fixers, CLI output | MIT |
 | php-src | Parser tables generated from `Zend/zend_language_parser.y` (pun-format lint) | PHP License 3.01 |
 | PHPStan, nette/neon, nette/schema, nette/di | Config, NEON, schema and baseline behaviour (pun-phpstan) | MIT / BSD-3-Clause |
 | sebastian/diff | Diff algorithm (pun-cli php_diff) | BSD-3-Clause |
-| Mago | Parser, formatter, linter crates (dependencies) | MIT / Apache-2.0 |
+| Mago | Parser, analyser and linter crates (dependencies; mago-analyzer, mago-codex, mago-syntax and mago-phpdoc-syntax vendored with patches under `third_party/`) | MIT / Apache-2.0 |
 | agent-detector (crates.io) | Coding-agent detection for agent output (pun-cli, dependency) | MIT |
 | dialoguer, console (crates.io) | `pun migrate` checklist (pun-cli, dependency) | MIT |

@@ -1,11 +1,9 @@
 ---
 title: Installation
-description: Install Pun with Composer or build it from source, and check its runtime requirements.
+description: Install Pun with Composer and check its runtime requirements.
 ---
 
 ## Composer
-
-Available from the first release.
 
 ```bash
 composer require --dev punphp/pun
@@ -14,19 +12,12 @@ vendor/bin/pun --version
 
 The package is a small PHP script. On first run, it downloads the release binary for its version and platform (Linux or macOS, x86_64 or arm64) from GitHub Releases, checks its SHA-256 checksum, and keeps it in `vendor/bin`. Later runs start that binary directly. Windows is not supported.
 
-## Build from source
+These docs write commands as `pun`. In a project, run them as `vendor/bin/pun`, or from a Composer script, where `vendor/bin` is on the `PATH`:
 
-Requires Rust 1.99 or later and access to the repository. Release packages are not published yet.
-
-```bash
-cargo install --locked --git https://github.com/punphp/pun punphp
-pun --version
-```
-
-From a local checkout, install with:
-
-```bash
-cargo install --locked --path crates/pun-cli
+```json composer.json
+"scripts": {
+    "check": "pun check"
+}
 ```
 
 ## Runtime requirements

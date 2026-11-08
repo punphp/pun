@@ -7,11 +7,11 @@ Run [`pun check`](/docs/commands/check) without `--fix`. It reports formatting c
 
 ## GitHub Actions
 
-Add this step after installing Pun on the runner's `PATH` and installing project dependencies. See [installation](/docs/installation) for build requirements. For analysis, include your usual PHP and Composer setup and `composer install` before the check.
+Add this step after your usual PHP setup and `composer install`, which installs Pun from your `require-dev` (see [installation](/docs/installation)).
 
 ```yaml .github/workflows/style.yml
 - name: Check
-  run: pun check
+  run: vendor/bin/pun check
 ```
 
 Under `GITHUB_ACTIONS=true`, Pun adds annotations to its default output. `pun check --format=github` prints annotations only.
