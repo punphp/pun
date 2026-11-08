@@ -3,7 +3,7 @@
 
 [[project]]
 name = "pinkary"
-url = "/home/forge/projects/pinkary.com"
+url = "https://github.com/pinkary-project/pinkary.com.git"
 commit = "53529d53c71d1cfb85ca3e535cb3292be8baa7e6"
 
 [[project]]

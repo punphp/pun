@@ -46,7 +46,6 @@ jobs:
         with:
           shared-key: test
       # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
-      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
       - uses: actions/cache@v4
         with:
           path: |
@@ -72,7 +71,6 @@ jobs:
           shared-key: coverage
           cache-directories: target/coverage
       # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
-      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
       - uses: actions/cache@v4
         with:
           path: |
@@ -96,7 +94,6 @@ jobs:
         with:
           shared-key: parity
       # corpus/manifest.toml points pinkary at a local checkout; CI fetches the same commit upstream.
-      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
       - uses: actions/cache@v4
         with:
           path: |
@@ -116,7 +113,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: parity
-      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
       - uses: actions/cache@v4
         with:
           path: |
