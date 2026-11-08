@@ -8,9 +8,19 @@ use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 use pun_analyse::{Project, run};
+use rayon::prelude::*;
 use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
+
+/// One case's result: its name, the purity gaps it confirmed, and its failure (with whether an exact rule failed).
+#[derive(Default)]
+struct Outcome {
+    name: String,
+    missing_purity: Vec<(String, String, i64)>,
+    exact_failure: Option<String>,
+    failure: Option<(String, String)>,
+}
 
 /// These newly ported contracts must also match inside fixtures with older, unrelated inference gaps.
 const EXACT: &[&str] = &[
@@ -644,6 +654,8 @@ fn phpstan_level_fixtures() {
         .filter(|p| p.is_dir())
         .collect();
     levels.sort();
+    // Every case is its own project, so they run in parallel; the outcomes are merged in order afterwards.
+    let mut files_by_level = Vec::new();
     for dir in levels {
         let level: u8 = dir.file_name().unwrap().to_str().unwrap().parse().unwrap();
         let mut files = Vec::new();
@@ -654,96 +666,117 @@ fn phpstan_level_fixtures() {
             .filter(|f| f.to_string_lossy().contains(&filter))
         {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
-            for case in test["cases"]
+            files_by_level.push((level, test));
+        }
+    }
+    let jobs: Vec<(u8, &Value, &Value)> = files_by_level
+        .iter()
+        .flat_map(|(level, test)| {
+            test["cases"]
                 .as_array()
                 .unwrap()
                 .iter()
                 .skip(case_start)
                 .take(case_end.saturating_sub(case_start))
-            {
-                let paths = |k: &str| -> Vec<PathBuf> {
-                    case[k]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|p| data.join(p.as_str().unwrap()))
-                        .collect()
-                };
-                let ported = |id: &str, message: &str| {
-                    PORTED.contains(&id)
-                        || EXACT.contains(&id)
-                        || (id == "class.notFound"
-                            && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
-                        || (id == "parameter.notFound"
-                            && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
-                        // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
-                        || (id == "classConstant.phpDocType" && message.contains(" native type "))
-                };
-                let mut want: BTreeSet<Key> = case["errors"]
+                .map(move |case| (*level, test, case))
+        })
+        .collect();
+    let outcomes: Vec<Outcome> = jobs
+        .par_iter()
+        .map(|&(level, test, case)| {
+            let mut out = Outcome::default();
+            let paths = |k: &str| -> Vec<PathBuf> {
+                case[k]
                     .as_array()
                     .unwrap()
                     .iter()
-                    .filter(|e| {
-                        e["identifier"]
-                            .as_str()
-                            .is_some_and(|id| ported(id, e["message"].as_str().unwrap()))
-                    })
-                    .map(key)
-                    .collect();
-                let mut project = Project::new(paths("files"), paths("scan"));
-                project.level = level;
-                project.options.set(
-                    pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
-                    level >= 2,
-                );
-                // The pinned exports used PHP's register_argc_argv=0, independently of this host's INI.
-                project.options.set(
-                    pun_analyse::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED,
-                    false,
-                );
-                project.options.set(
-                    pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
-                    level >= 1,
-                );
-                let got: BTreeSet<Key> = run(&project)
-                    .unwrap()
-                    .into_iter()
-                    .filter(|e| ported(&e.identifier, &e.message))
-                    .map(|e| {
-                        let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
-                        (file, e.line, e.identifier, e.message, e.tip)
-                    })
-                    .collect();
-                let name = format!(
-                    "{level} {}::{}",
-                    test["test"].as_str().unwrap(),
-                    case["method"].as_str().unwrap()
-                );
-                tested.insert(name.clone());
-                for e in want.difference(&got).filter(|e| e.2 == "void.pure") {
-                    let gap = (name.clone(), e.0.clone(), e.1);
-                    if purity_gaps.contains(&gap) {
-                        missing_purity.insert(gap);
-                    }
-                }
-                want.retain(|e| {
-                    e.2 != "void.pure" || !purity_gaps.contains(&(name.clone(), e.0.clone(), e.1))
-                });
-                if want != got {
-                    if want
-                        .symmetric_difference(&got)
-                        .any(|e| EXACT.contains(&e.2.as_str()))
-                    {
-                        exact_failures.insert(name.clone());
-                    }
-                    details.push(format!(
-                        "{name}\n  missing {:#?}\n  extra   {:#?}",
-                        want.difference(&got).collect::<Vec<_>>(),
-                        got.difference(&want).collect::<Vec<_>>()
-                    ));
-                    failing.insert(name);
+                    .map(|p| data.join(p.as_str().unwrap()))
+                    .collect()
+            };
+            let ported = |id: &str, message: &str| {
+                PORTED.contains(&id)
+                || EXACT.contains(&id)
+                || (id == "class.notFound"
+                    && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                || (id == "parameter.notFound"
+                    && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
+                || (id == "classConstant.phpDocType" && message.contains(" native type "))
+            };
+            let mut want: BTreeSet<Key> = case["errors"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|e| {
+                    e["identifier"]
+                        .as_str()
+                        .is_some_and(|id| ported(id, e["message"].as_str().unwrap()))
+                })
+                .map(key)
+                .collect();
+            let mut project = Project::new(paths("files"), paths("scan"));
+            project.level = level;
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY,
+                level >= 2,
+            );
+            // The pinned exports used PHP's register_argc_argv=0, independently of this host's INI.
+            project.options.set(
+                pun_analyse::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED,
+                false,
+            );
+            project.options.set(
+                pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES,
+                level >= 1,
+            );
+            let got: BTreeSet<Key> = run(&project)
+                .unwrap()
+                .into_iter()
+                .filter(|e| ported(&e.identifier, &e.message))
+                .map(|e| {
+                    let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
+                    (file, e.line, e.identifier, e.message, e.tip)
+                })
+                .collect();
+            let name = format!(
+                "{level} {}::{}",
+                test["test"].as_str().unwrap(),
+                case["method"].as_str().unwrap()
+            );
+            out.name = name.clone();
+            for e in want.difference(&got).filter(|e| e.2 == "void.pure") {
+                let gap = (name.clone(), e.0.clone(), e.1);
+                if purity_gaps.contains(&gap) {
+                    out.missing_purity.push(gap);
                 }
             }
+            want.retain(|e| {
+                e.2 != "void.pure" || !purity_gaps.contains(&(name.clone(), e.0.clone(), e.1))
+            });
+            if want != got {
+                if want
+                    .symmetric_difference(&got)
+                    .any(|e| EXACT.contains(&e.2.as_str()))
+                {
+                    out.exact_failure = Some(name.clone());
+                }
+                let detail = format!(
+                    "{name}\n  missing {:#?}\n  extra   {:#?}",
+                    want.difference(&got).collect::<Vec<_>>(),
+                    got.difference(&want).collect::<Vec<_>>()
+                );
+                out.failure = Some((name, detail));
+            }
+            out
+        })
+        .collect();
+    for out in outcomes {
+        tested.insert(out.name);
+        missing_purity.extend(out.missing_purity);
+        exact_failures.extend(out.exact_failure);
+        if let Some((name, detail)) = out.failure {
+            details.push(detail);
+            failing.insert(name);
         }
     }
     let fixed: Vec<_> = gaps

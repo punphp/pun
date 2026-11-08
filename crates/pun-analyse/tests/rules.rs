@@ -6,6 +6,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use pun_analyse::{IDENTIFIERS, Project, run};
+use rayon::prelude::*;
 use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
@@ -43,9 +44,23 @@ fn phpstan_rule_fixtures() {
     let mut details = Vec::new();
     // identifier => (cases where it occurs, cases where it matches)
     let mut per_rule: BTreeMap<String, (usize, usize)> = BTreeMap::new();
-    for f in files {
-        let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
-        for case in test["cases"].as_array().unwrap() {
+    let tests: Vec<Value> = files
+        .iter()
+        .map(|f| serde_json::from_str(&std::fs::read_to_string(f).unwrap()).unwrap())
+        .collect();
+    let jobs: Vec<(&Value, &Value)> = (tests.iter())
+        .flat_map(|test| {
+            test["cases"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(move |case| (test, case))
+        })
+        .collect();
+    // Every case is its own project, so they run in parallel; the results are compared in order below.
+    let results: Vec<(String, BTreeSet<Key>, BTreeSet<Key>)> = jobs
+        .par_iter()
+        .map(|&(test, case)| {
             let paths = |k: &str| -> Vec<PathBuf> {
                 case[k]
                     .as_array()
@@ -86,24 +101,26 @@ fn phpstan_rule_fixtures() {
                 test["test"].as_str().unwrap(),
                 case["method"].as_str().unwrap()
             );
-            tested.insert(name.clone());
-            let ids: BTreeSet<&String> = want.iter().chain(&got).map(|k| &k.2).collect();
-            for id in ids {
-                let of = |s: &BTreeSet<Key>| {
-                    s.iter().filter(|k| &k.2 == id).cloned().collect::<Vec<_>>()
-                };
-                let entry = per_rule.entry(id.clone()).or_default();
-                entry.0 += 1;
-                entry.1 += usize::from(of(&want) == of(&got));
-            }
-            if want != got {
-                details.push(format!(
-                    "{name}\n  missing {:?}\n  extra   {:?}",
-                    want.difference(&got).collect::<Vec<_>>(),
-                    got.difference(&want).collect::<Vec<_>>()
-                ));
-                failing.insert(name);
-            }
+            (name, want, got)
+        })
+        .collect();
+    for (name, want, got) in results {
+        tested.insert(name.clone());
+        let ids: BTreeSet<&String> = want.iter().chain(&got).map(|k| &k.2).collect();
+        for id in ids {
+            let of =
+                |s: &BTreeSet<Key>| s.iter().filter(|k| &k.2 == id).cloned().collect::<Vec<_>>();
+            let entry = per_rule.entry(id.clone()).or_default();
+            entry.0 += 1;
+            entry.1 += usize::from(of(&want) == of(&got));
+        }
+        if want != got {
+            details.push(format!(
+                "{name}\n  missing {:?}\n  extra   {:?}",
+                want.difference(&got).collect::<Vec<_>>(),
+                got.difference(&want).collect::<Vec<_>>()
+            ));
+            failing.insert(name);
         }
     }
     for (id, (cases, ok)) in &per_rule {
