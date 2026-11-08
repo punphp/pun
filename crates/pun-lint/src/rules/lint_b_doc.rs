@@ -71,6 +71,11 @@ impl<'s> Doc<'s> {
         Self::at(source, Span::new(doc.start, doc.end))
     }
 
+    /// The doc comment `text` on its own.
+    pub fn parse(text: &'s str) -> Option<Self> {
+        Self::at(text, Span::new(0, text.len()))
+    }
+
     fn at(source: &'s str, span: Span) -> Option<Self> {
         let text = &source[span.start..span.end];
         // PHP's lexer makes a doc comment of `/**` and white space only; `/***/` is a plain comment.
@@ -134,7 +139,7 @@ impl<'s> Doc<'s> {
     /// The text of child `i`, from its first token to its last; `""` for a blank line.
     pub fn text(&self, i: usize) -> &'s str {
         let (from, to) = self.children[i];
-        if from == to {
+        if from >= to {
             return "";
         }
         &self.text[self.tokens[from].1..self.tokens[to - 1].2]
@@ -145,74 +150,141 @@ impl<'s> Doc<'s> {
         self.print_appending(removed, &[])
     }
 
-    /// [`Doc::print`] with the tags `appended` (`@name value`) added after the children (`addPhpDocTagNode()`).
+    /// [`Doc::print`] with the tags `appended` (`@name value`) added after the children (`addPhpDocTagNode()`):
+    /// Rector's `PhpDocInfoPrinter::printFormatPreserving()` over phpdoc-parser's `Printer::printFormatPreserving()`.
     pub fn print_appending(&self, removed: &[bool], appended: &[&str]) -> String {
-        // `EmptyPhpDocDetector`: nothing but blank lines left.
-        let kept: Vec<usize> = (0..self.children.len()).filter(|&i| !removed[i]).collect();
-        if appended.is_empty()
-            && kept
-                .iter()
-                .all(|&i| self.children[i].0 == self.children[i].1)
-        {
+        let empty = |i: usize| self.children[i].0 >= self.children[i].1;
+        let mut kept: Vec<usize> = (0..self.children.len()).filter(|&i| !removed[i]).collect();
+        // `EmptyPhpDocDetector`: nothing but empty texts left.
+        if appended.is_empty() && kept.iter().all(|&i| empty(i)) {
             return String::new();
         }
-        // `RemoveNodesStartAndEndResolver`: a removed child goes with the token before it (its line break).
-        let jumps: Vec<(usize, usize)> = (0..self.children.len())
-            .filter(|&i| removed[i])
-            .map(|i| (self.children[i].0.saturating_sub(1), self.children[i].1))
-            .collect();
-        let tokens = |from: usize, to: usize, skip_empty_lines_above: bool| -> String {
-            let mut from = from;
-            if from > 0 && self.tokens[from - 1].0 == Kind::Ws {
-                from -= 1;
-            }
-            if skip_empty_lines_above
-                && self.tokens[from].0 == Kind::Eol
-                && self.tokens.get(from + 1).is_some_and(|t| t.0 == Kind::Eol)
-            {
-                from += 1;
-            }
-            let mut out = String::new();
-            let mut i = from;
-            while i < to {
-                while let Some(&(_, end)) = jumps.iter().find(|j| j.0 == i) {
-                    i = end;
+        // A tag added to a single-line doc: `printFresh()`, phpdoc-parser's `Printer::print()`.
+        if !appended.is_empty() && !self.tokens.iter().any(|t| t.0 == Kind::Eol) {
+            let line_start = |s: &str| {
+                let mut out = String::new();
+                let mut rest = s;
+                while let Some(at) = rest.find('\n') {
+                    out.push_str(&rest[..at]);
+                    rest = &rest[at + 1..];
+                    out.push_str(if matches!(rest.as_bytes().first(), None | Some(b'\r' | b'\n')) {
+                        "\n *"
+                    } else {
+                        "\n * "
+                    });
                 }
-                if let Some(t) = self.tokens.get(i) {
-                    out.push_str(&self.text[t.1..t.2]);
-                }
-                i += 1;
+                out.push_str(rest);
+                out
+            };
+            let parts: Vec<String> = kept
+                .iter()
+                .map(|&i| line_start(self.text(i)))
+                .chain(appended.iter().map(|a| a.to_string()))
+                .map(|s| if s.is_empty() { s } else { format!(" {s}") })
+                .collect();
+            return format!("/**\n *{}\n */", parts.join("\n *"));
+        }
+        // `removeTrailingEmptyLines()`: removing the last tag keeps the empty lines above it, so they go too.
+        if appended.is_empty() && self.children.last().is_some_and(|_| !empty(self.children.len() - 1)) {
+            while kept.last().is_some_and(|&i| empty(i)) {
+                kept.pop();
             }
-            out
+        }
+        let content = |from: usize, to: usize| -> &str {
+            if from >= to {
+                return "";
+            }
+            &self.text[self.tokens[from].1..self.tokens[to].1]
         };
-        let mut output = String::new();
-        let mut current = 0;
-        for &i in &kept {
-            let (start, end) = self.children[i];
-            // `correctPreviouslyReprintedFirstNode()`: the first child printed is not the first child.
-            if current == 0 && i != 0 {
-                current = start - usize::from(self.tokens[start - 1].0 == Kind::Eol);
+        // `Differ::diffWithReplacements()`: the originals in order, the added tags after them; removed originals
+        // right before as many added tags are replaced by them.
+        enum Elem<'a> {
+            Keep(usize),
+            Remove(usize),
+            Replace(usize, &'a str),
+            Add(&'a str),
+        }
+        let mut diff: Vec<Elem<'_>> = (0..self.children.len())
+            .map(|i| if kept.contains(&i) { Elem::Keep(i) } else { Elem::Remove(i) })
+            .collect();
+        let trailing = diff.iter().rev().take_while(|e| matches!(e, Elem::Remove(_))).count();
+        if trailing > 0 && trailing == appended.len() {
+            let first = diff.len() - trailing;
+            for (n, tag) in appended.iter().enumerate() {
+                diff[first + n] = Elem::Replace(first + n, tag);
             }
-            // The children keep their keys when one goes, so the child whose key is the new count counts as last.
-            let count = kept.len() + appended.len();
-            let printed = tokens(current, end, i + 1 == count);
-            output.push_str(printed.trim_end());
-            current = end;
+        } else {
+            diff.extend(appended.iter().map(|a| Elem::Add(a)));
         }
-        // `standardPrintPhpDocChildNode()` in a doc made multi-line
-        for appended in appended {
-            output.push_str("\n * ");
-            output.push_str(appended);
+        // `detectLastChildIndent()`, else `isMultiline()`'s indent.
+        let insert = (0..self.children.len())
+            .rev()
+            .find_map(|i| {
+                let mut index = self.children[i].0.checked_sub(1)?;
+                let mut line_start = String::new();
+                while self.tokens[index].0 == Kind::Ws {
+                    let t = self.tokens[index];
+                    line_start.insert_str(0, &self.text[t.1..t.2]);
+                    index = index.checked_sub(1)?;
+                }
+                let t = self.tokens[index];
+                if t.0 != Kind::Eol {
+                    return None;
+                }
+                line_start.insert_str(0, &self.text[t.1..t.2]);
+                let line = &line_start[line_start.rfind('\n')? + 1..];
+                let star = line.find('*')?;
+                let (before, after) = (&line[..star], &line[star + 1..]);
+                (before.bytes().all(|b| matches!(b, b' ' | b'\t'))
+                    && after.bytes().all(|b| matches!(b, b' ' | b'\t')))
+                .then(|| format!("\n{before}*{after}"))
+            })
+            .unwrap_or_else(|| "\n * ".to_string());
+        let mut output = String::new();
+        let mut index = 0;
+        let mut delayed: Vec<&str> = Vec::new();
+        let mut before_first_keep = true;
+        for (position, elem) in diff.iter().enumerate() {
+            match *elem {
+                Elem::Keep(i) | Elem::Replace(i, _) => {
+                    before_first_keep = false;
+                    let (start, end) = self.children[i];
+                    output.push_str(content(index, start));
+                    for tag in delayed.drain(..) {
+                        output.push_str(tag);
+                        output.push_str(&insert);
+                    }
+                    match *elem {
+                        Elem::Replace(_, tag) => output.push_str(tag),
+                        _ => output.push_str(content(start, end.max(start))),
+                    }
+                    index = end;
+                }
+                Elem::Add(tag) if before_first_keep => delayed.push(tag),
+                Elem::Add(tag) => {
+                    output.push_str(&insert);
+                    output.push_str(tag);
+                }
+                Elem::Remove(i) => {
+                    let (start, end) = self.children[i];
+                    // Removing the first child keeps the tokens before it on its line, and drops its line.
+                    if position == 0 {
+                        let stop = (index..start)
+                            .find(|&t| self.tokens[t].0 == Kind::Eol)
+                            .unwrap_or(start);
+                        output.push_str(content(index, stop));
+                    }
+                    index = end;
+                }
+            }
         }
-        // `printEnd()`: a doc without children has no last token position, so it ends on a new line.
-        match self.children.last() {
-            Some(c) => output.push_str(&tokens(c.1, self.tokens.len(), true)),
-            None => output.push_str("\n */"),
+        if !delayed.is_empty() {
+            // `emptyListInsertionMap` has no entry for a doc's children: phpdoc-parser prints the doc anew.
+            let parts: Vec<String> = delayed.iter().map(|a| format!(" {a}")).collect();
+            return format!("/**\n *{}\n */", parts.join("\n *"));
         }
-        if !output.starts_with("/**") {
-            output.insert_str(0, "/**");
-        }
-        output.replace(" \n", "\n")
+        output.push_str(content(index, self.tokens.len() - 1));
+        output.replace(" \r\n", "\r\n").replace(" \n", "\n")
     }
 }
 
@@ -261,47 +333,72 @@ fn lex(text: &str) -> Vec<(Kind, usize, usize)> {
     tokens
 }
 
-/// `BetterPhpDocParser::parseWithNode()`'s children: a text runs to a blank line or a tag line, a tag's description
-/// runs over blank lines and text up to the next tag line, and a blank line is an empty text.
+/// phpdoc-parser's `PhpDocParser::parse()` children, each as its `START_INDEX` and one past its `END_INDEX` (an empty
+/// text ends before it starts). A text, or a tag's description, runs over line breaks to the text of the next lines,
+/// and stops before a line that starts with a tag or ends the doc; the empty lines it would end on are each an empty
+/// text of their own.
 fn children(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(usize, usize)> {
     let is_tag = |i: usize| {
         let t = tokens[i];
         t.0 == Kind::Other && {
             let word = &text.as_bytes()[t.1..t.2];
-            word[0] == b'@' && word.get(1).is_some_and(u8::is_ascii_alphabetic)
+            word[0] == b'@' && word.get(1).is_some_and(|b| b.is_ascii_alphabetic() || *b == b'\\')
         }
     };
     let ends = |i: usize| matches!(tokens[i].0, Kind::Close | Kind::End);
+    // `TokenIterator::next()` skips horizontal white space.
+    let skip = |mut i: usize| {
+        while tokens[i].0 == Kind::Ws && i + 1 < tokens.len() {
+            i += 1;
+        }
+        i
+    };
+    // `endIndexOfLastRelevantToken()`, plus one.
+    let end_of = |current: usize| {
+        let mut end = current - 1;
+        while tokens[end].0 == Kind::Ws && end > 0 {
+            end -= 1;
+        }
+        end + 1
+    };
     let mut children = Vec::new();
-    let mut pos = 1 + usize::from(tokens[1].0 == Kind::Eol);
+    let mut pos = skip(1);
+    if tokens[pos].0 == Kind::Eol {
+        pos = skip(pos + 1);
+    }
     if ends(pos) {
         return children;
     }
     loop {
         let start = pos;
-        let tag = is_tag(pos);
-        while !ends(pos) && tokens[pos].0 != Kind::Eol {
-            pos += 1;
-            if tokens[pos].0 == Kind::Eol {
-                let mut next = pos;
-                while tokens[next].0 == Kind::Eol {
-                    next += 1;
-                }
-                let stop = if tag {
-                    is_tag(next) || ends(next)
-                } else {
-                    next > pos + 1 || is_tag(next) || ends(next)
-                };
-                if !stop {
-                    pos = next;
-                }
+        // `parseText()`, which a tag's description also is.
+        let mut savepoint: Option<usize> = None;
+        loop {
+            let skipped = pos > 0 && tokens[pos - 1].0 == Kind::Ws;
+            let from = pos;
+            while !matches!(tokens[pos].0, Kind::Eol | Kind::Close | Kind::End) {
+                pos += 1;
             }
+            if !matches!(tokens[pos].0, Kind::Eol | Kind::Close) {
+                break;
+            }
+            if savepoint.is_none() || skipped || pos > from {
+                savepoint = Some(pos);
+            }
+            let next = skip(pos + 1);
+            if is_tag(next) || ends(next) {
+                break;
+            }
+            pos = next;
         }
-        children.push((start, pos));
-        if ends(pos) {
+        if let Some(savepoint) = savepoint {
+            pos = savepoint;
+        }
+        children.push((start, end_of(pos)));
+        if ends(pos) || tokens[pos].0 != Kind::Eol {
             break;
         }
-        pos += 1;
+        pos = skip(pos + 1);
         if ends(pos) {
             break;
         }

@@ -1,4 +1,4 @@
-//! `lint/refactor/add-override-attribute`, ported from Rector 2.6.1's
+//! `lint/refactor/add-override-attribute`, ported from Rector 2.8.4's
 //! `AddOverrideAttributeToOverriddenPropertiesRector` (rules/Php85/Rector/Property), from PHP 8.5.
 //!
 //! In a named class the codebase knows, a property statement that is not `private` and has no attribute naming

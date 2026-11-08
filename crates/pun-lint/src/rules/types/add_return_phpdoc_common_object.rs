@@ -1,4 +1,4 @@
-//! `lint/types/add-return-phpdoc-common-object`, ported from Rector 2.6.1's
+//! `lint/types/add-return-phpdoc-common-object`, ported from Rector 2.8.4's
 //! `AddReturnDocblockForCommonObjectDenominatorRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a
 //! function or method whose one `return` returns an array of objects gets `@return Parent[]` of the class or the
 //! first parent class or interface they share.

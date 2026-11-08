@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-native-call`, ported from Rector 2.6.1's `ReturnTypeFromStrictNativeCallRector`
+//! `lint/types/add-return-type-from-native-call`, ported from Rector 2.8.4's `ReturnTypeFromStrictNativeCallRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod, with `AddReturnTypeFromStrictNativeCall`,
 //! `StrictNativeFunctionReturnTypeAnalyzer` and `ExclusiveNativeCallLikeReturnMatcher`): a function or method whose
 //! every `return` returns a call of one of PHP's own functions or methods gets the union of the calls' types.

@@ -1,4 +1,4 @@
-//! `lint/classes/prefer-unserialize-method`, ported from Rector 2.6.1's `WakeupToUnserializeRector`
+//! `lint/classes/prefer-unserialize-method`, ported from Rector 2.8.4's `WakeupToUnserializeRector`
 //! (rules/Php85/Rector/Class_).
 //!
 //! PHP 8.5 deprecates `__wakeup()`. A class without `__unserialize()` gets its `__wakeup()` renamed to

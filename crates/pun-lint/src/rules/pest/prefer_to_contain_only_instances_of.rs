@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-contain-only-instances-of`, ported from pest-plugin-rector's
 //! `UseToContainOnlyInstancesOfRector`: `expect($items)->each->toBeInstanceOf(User::class)` becomes
-//! `expect($items)->toContainOnlyInstancesOf(User::class)` when the checked value may be iterable.
+//! `expect($items)->toContainOnlyInstancesOf(User::class)` when the checked value is known to be iterable.
 
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
@@ -35,7 +35,7 @@ impl Rule for PreferToContainOnlyInstancesOf {
         if !is_expect_chain(call) || !is_name(&call.method, "toBeInstanceOf") {
             return;
         }
-        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Iterable) == Trinary::No) {
+        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Iterable) != Trinary::Yes) {
             return;
         }
         if call.argument_list.arguments.len() != 1 {

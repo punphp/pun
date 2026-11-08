@@ -1,4 +1,4 @@
-//! `lint/types/add-var-phpdoc-from-constructor-param`, ported from Rector 2.6.1's
+//! `lint/types/add-var-phpdoc-from-constructor-param`, ported from Rector 2.8.4's
 //! `DocblockVarFromParamDocblockInConstructorRector` (rules/TypeDeclarationDocblocks/Rector/Class_): a property
 //! declared `array` that the constructor assigns gets the assigned value's array type as its `@var`.
 

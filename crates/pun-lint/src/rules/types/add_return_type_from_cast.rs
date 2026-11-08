@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-cast`, ported from Rector 2.6.1's `ReturnTypeFromReturnCastRector`
+//! `lint/types/add-return-type-from-cast`, ported from Rector 2.8.4's `ReturnTypeFromReturnCastRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) and its `AddReturnTypeFromCast`: a function or method whose every
 //! `return` returns a cast to the same type, and whose end cannot be reached, gets that return type.
 //!

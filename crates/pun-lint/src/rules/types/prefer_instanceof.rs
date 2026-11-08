@@ -1,4 +1,4 @@
-//! `lint/types/prefer-instanceof`, ported from Rector 2.6.1's `InlineIsAInstanceOfRector`
+//! `lint/types/prefer-instanceof`, ported from Rector 2.8.4's `InlineIsAInstanceOfRector`
 //! (rules/CodeQuality/Rector/FuncCall): `is_a($object, X::class)` on an object becomes `$object instanceof X`.
 //!
 //! The first argument's type (`getType`, see [`super::rector_type`]) must be one object type: a class, `object`, an

@@ -1,4 +1,4 @@
-//! What the four `ForeachToArray*Rector` ports share (Rector 2.6.1, rules/Php84/Rector/Foreach_): a `foreach` whose
+//! What the four `ForeachToArray*Rector` ports share (Rector 2.8.4, rules/Php84/Rector/Foreach_): a `foreach` whose
 //! only statement is an `if` that assigns and breaks, or returns, becomes one call of `array_all()`, `array_any()`,
 //! `array_find()` or `array_find_key()` with an arrow function of the `if`'s condition.
 //!

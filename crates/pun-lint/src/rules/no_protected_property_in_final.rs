@@ -1,4 +1,4 @@
-//! `lint/classes/no-protected-property-in-final`, ported from Rector 2.6.1's `PrivatizeFinalClassPropertyRector`
+//! `lint/classes/no-protected-property-in-final`, ported from Rector 2.8.4's `PrivatizeFinalClassPropertyRector`
 //! (rules/Privatization/Rector/Property).
 //!
 //! A `protected` property of a `final` class becomes `private`, one declared alone (`protected $a, $b;` stays), and

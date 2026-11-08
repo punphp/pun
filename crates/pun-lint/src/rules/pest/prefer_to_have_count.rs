@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-have-count`, ported from pest-plugin-rector's `UseToHaveCountRector`:
 //! `expect(count($items))->toBe(3)` (or `sizeof()`, or `toEqual()`) becomes `expect($items)->toHaveCount(3)` when
-//! `$items` may be an array or iterable.
+//! `$items` is known to be an array or iterable.
 
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
@@ -50,8 +50,8 @@ impl Rule for PreferToHaveCount {
             return;
         };
         let value = argument.value();
-        if type_is(ctx, value, Is::Array) == Trinary::No
-            && type_is(ctx, value, Is::Iterable) == Trinary::No
+        if type_is(ctx, value, Is::Array) != Trinary::Yes
+            && type_is(ctx, value, Is::Iterable) != Trinary::Yes
         {
             return;
         }

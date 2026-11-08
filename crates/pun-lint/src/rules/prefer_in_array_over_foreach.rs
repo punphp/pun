@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-in-array-over-foreach`, ported from Rector 2.6.1's `ForeachToInArrayRector`
+//! `lint/complexity/prefer-in-array-over-foreach`, ported from Rector 2.8.4's `ForeachToInArrayRector`
 //! (rules/CodeQuality/Rector/Foreach_).
 //!
 //! A `foreach` over an array whose only statement is `if ($item === <expr>) { return true; }` (or `==`, or

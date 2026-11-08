@@ -1,4 +1,4 @@
-//! `lint/types/prefer-specific-return-type`, ported from Rector 2.6.1's `NarrowObjectReturnTypeRector`
+//! `lint/types/prefer-specific-return-type`, ported from Rector 2.8.4's `NarrowObjectReturnTypeRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a method of a final class, or a final method, declared to return
 //! `object` or a class that is neither final nor an interface, whose every `return` returns an object of one class
 //! below it, returns that class instead. A `@return` naming one type takes the class too, unless it names it already.

@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-func-num-args`, ported from Rector 2.6.1's `SimplifyFuncGetArgsCountRector`
+//! `lint/complexity/prefer-func-num-args`, ported from Rector 2.8.4's `SimplifyFuncGetArgsCountRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `count(func_get_args())` becomes `func_num_args()`.

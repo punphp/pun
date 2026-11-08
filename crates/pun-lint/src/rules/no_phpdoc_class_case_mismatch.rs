@@ -1,4 +1,4 @@
-//! `lint/complexity/no-phpdoc-class-case-mismatch`, ported from Rector 2.6.1's `FixClassCaseSensitivityVarDocblockRector`
+//! `lint/complexity/no-phpdoc-class-case-mismatch`, ported from Rector 2.8.4's `FixClassCaseSensitivityVarDocblockRector`
 //! (rules/CodeQuality/Rector/Property).
 //!
 //! A `@var` tag of a property or an expression statement whose type is one class name written in another case than

@@ -1,4 +1,4 @@
-//! `lint/complexity/no-concat-assign-new-item`, ported from Rector 2.6.1's `NewArrayItemConcatAssignToAssignRector`
+//! `lint/complexity/no-concat-assign-new-item`, ported from Rector 2.8.4's `NewArrayItemConcatAssignToAssignRector`
 //! (rules/CodeQuality/Rector/AssignOp).
 //!
 //! `$values[] .= $name;` becomes `$values[] = $name;`: a new array item starts as `null`, so the concatenation adds

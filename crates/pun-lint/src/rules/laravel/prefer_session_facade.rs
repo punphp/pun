@@ -1,8 +1,8 @@
-//! `SessionVariableToSessionFacadeRector` from rector-laravel 2.5.0.
+//! `SessionVariableToSessionFacadeRector` from rector-laravel 2.7.3.
 
 use mago_syntax::cst::{Expression, Node, NodeKind, Variable};
 
-use super::{call, in_string, is_written, replace};
+use super::{call, in_string, is_by_ref_argument, is_written, replace};
 use crate::rules::rector_code_quality::text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -44,7 +44,10 @@ impl Rule for PreferSessionFacade {
                 ("put", vec![text(ctx, key), text(ctx, a.rhs)])
             }
             Node::ArrayAccess(a) if is_session(a.array) => {
-                if is_written(node_span(a), ancestors) || in_string(ancestors) {
+                if is_written(node_span(a), ancestors)
+                    || is_by_ref_argument(ctx, node_span(a), ancestors)
+                    || in_string(ancestors)
+                {
                     return;
                 }
                 ("get", vec![text(ctx, a.index)])
@@ -77,6 +80,7 @@ impl Rule for PreferSessionFacade {
             Node::Variable(Variable::Direct(v)) if v.name.eq_ignore_ascii_case(b"$_SESSION") => {
                 let span = node_span(v);
                 if is_written(span, ancestors)
+                    || is_by_ref_argument(ctx, span, ancestors)
                     || in_string(ancestors)
                     || ancestors.iter().any(|a| match a {
                         Node::ArrayAccess(a) => node_span(a.array) == span,

@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-be-lowercase`, ported from pest-plugin-rector's `UseToBeLowercaseRector`:
 //! `expect(strtolower($value) === $value)->toBeTrue()` (either way round) becomes `expect($value)->toBeLowercase()`
-//! when `$value` may be a string.
+//! when `$value` is known to be a string.
 
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
@@ -59,7 +59,7 @@ impl Rule for PreferToBeLowercase {
             }
             _ => return,
         };
-        if type_is(ctx, value, Is::String) == Trinary::No {
+        if type_is(ctx, value, Is::String) != Trinary::Yes {
             return;
         }
         let mut edits = holder.set_arguments(ctx, value);

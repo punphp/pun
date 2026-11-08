@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-infinite`, ported from pest-plugin-rector's `UseToBeInfiniteRector`: `expect(is_infinite($value))->toBeTrue()` becomes `expect($value)->toBeInfinite()`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toBeInfinite()`. The checked value's type must possibly be a float or integer.
+//! `->not` before the matcher becomes `->not->toBeInfinite()`. The checked value's type must be a float or integer.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -34,8 +34,7 @@ impl Rule for PreferToBeInfinite {
             "toBeInfinite",
             |values| match values {
                 [value]
-                    if !(type_is(ctx, value, Is::Float) == Trinary::No
-                        && type_is(ctx, value, Is::Integer) == Trinary::No) =>
+                    if (type_is(ctx, value, Is::Float) == Trinary::Yes || type_is(ctx, value, Is::Integer) == Trinary::Yes) =>
                 {
                     Some((*value, vec![]))
                 }

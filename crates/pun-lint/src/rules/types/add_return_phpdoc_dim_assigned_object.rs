@@ -1,4 +1,4 @@
-//! `lint/types/add-return-phpdoc-dim-assigned-object`, ported from Rector 2.6.1's
+//! `lint/types/add-return-phpdoc-dim-assigned-object`, ported from Rector 2.8.4's
 //! `AddReturnDocblockForArrayDimAssignedObjectRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a function
 //! or method that returns a variable it only fills with `$items[] = new Item(...)` gets `@return Item[]`.
 

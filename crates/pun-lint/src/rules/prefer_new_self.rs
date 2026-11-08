@@ -1,4 +1,4 @@
-//! `lint/classes/prefer-new-self`, ported from Rector 2.6.1's `NewStaticToNewSelfRector`
+//! `lint/classes/prefer-new-self`, ported from Rector 2.8.4's `NewStaticToNewSelfRector`
 //! (rules/CodeQuality/Rector/New_).
 //!
 //! In a `final` class, `new static()` becomes `new self()`: no child class can make `static` mean anything else. Rector

@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-in`, ported from pest-plugin-rector's `UseToBeInRector`: `expect(in_array($needle, $haystack, true))->toBeTrue()`
-//! becomes `expect($needle)->toBeIn($haystack)`. The haystack's type must possibly be an array or an iterable.
+//! becomes `expect($needle)->toBeIn($haystack)`. The haystack's type must be an array or an iterable.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -36,8 +36,7 @@ impl Rule for PreferToBeIn {
             |values| match values {
                 [needle, haystack, strict]
                     if is_constant(strict, "true")
-                        && !(type_is(ctx, haystack, Is::Array) == Trinary::No
-                            && type_is(ctx, haystack, Is::Iterable) == Trinary::No) =>
+                        && (type_is(ctx, haystack, Is::Array) == Trinary::Yes || type_is(ctx, haystack, Is::Iterable) == Trinary::Yes) =>
                 {
                     Some((*needle, vec![*haystack]))
                 }

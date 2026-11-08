@@ -1,4 +1,4 @@
-//! `lint/complexity/no-useless-array-values`, ported from Rector 2.6.1's `SimplifyInArrayValuesRector`
+//! `lint/complexity/no-useless-array-values`, ported from Rector 2.8.4's `SimplifyInArrayValuesRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `in_array($needle, array_values($haystack))` becomes `in_array($needle, $haystack)`: `in_array()` ignores the

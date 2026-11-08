@@ -1,4 +1,4 @@
-//! `lint/types/add-property-type-assigns`, ported from Rector 2.6.1's `TypedPropertyFromAssignsRector`
+//! `lint/types/add-property-type-assigns`, ported from Rector 2.8.4's `TypedPropertyFromAssignsRector`
 //! (rules/TypeDeclaration/Rector/Property) with `AllAssignNodePropertyTypeInferer` and `PropertyTypeDecorator`: an
 //! untyped private property gets the union of the native types of every value the class assigns to it.
 //!

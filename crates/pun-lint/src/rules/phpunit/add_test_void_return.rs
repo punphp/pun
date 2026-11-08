@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-test-void-return`, ported from Rector 2.6.1's `AddTestsVoidReturnTypeWhereNoReturnRector`
+//! `lint/phpunit/add-test-void-return`, ported from Rector 2.8.4's `AddTestsVoidReturnTypeWhereNoReturnRector`
 //! (rules/TypeDeclaration/Rector/Class_).
 //!
 //! In a test class, a test method (`TestsNodeAnalyzer::isTestClassMethod()`) without a return type that is not

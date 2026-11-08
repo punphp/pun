@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-min-max`, ported from Rector 2.6.1's `NumberCompareToMaxFuncCallRector`
+//! `lint/complexity/prefer-min-max`, ported from Rector 2.8.4's `NumberCompareToMaxFuncCallRector`
 //! (rules/CodeQuality/Rector/Ternary).
 //!
 //! `$a < $b ? $b : $a` and `$a > $b ? $a : $b` are `max(...)` when both sides are integers (read from the syntax,

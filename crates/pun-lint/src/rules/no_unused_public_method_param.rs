@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-public-method-param`, ported from Rector 2.6.1's `RemoveUnusedPublicMethodParameterRector`
+//! `lint/dead-code/no-unused-public-method-param`, ported from Rector 2.8.4's `RemoveUnusedPublicMethodParameterRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `ClassMethodParamRemover` and `ComplexNodeRemover::
 //! processRemoveParamWithKeys`.
 //!

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-false-ternary`, ported from Rector 2.6.1's `TernaryToBooleanOrFalseToBooleanAndRector`
+//! `lint/dead-code/no-false-ternary`, ported from Rector 2.8.4's `TernaryToBooleanOrFalseToBooleanAndRector`
 //! (rules/DeadCode/Rector/Ternary).
 //!
 //! `cond ? $bool : false` is `cond && $bool` when `$bool` is a `bool` (read from the syntax, `syntax_types::is_bool`)

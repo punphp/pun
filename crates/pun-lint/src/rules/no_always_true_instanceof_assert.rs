@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-always-true-instanceof-assert`, ported from Rector 2.6.1's `RemoveDeadInstanceOfAssertRector`
+//! `lint/dead-code/no-always-true-instanceof-assert`, ported from Rector 2.8.4's `RemoveDeadInstanceOfAssertRector`
 //! (rules/DeadCode/Rector/StmtsAwareInterface).
 //!
 //! An `assert($value instanceof SomeClass);` statement with that one argument, where `$value` is a variable or a

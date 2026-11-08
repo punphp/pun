@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-catch`, ported from Rector 2.6.1's `RemoveDeadTryCatchRector`
+//! `lint/dead-code/no-useless-catch`, ported from Rector 2.8.4's `RemoveDeadTryCatchRector`
 //! (rules/DeadCode/Rector/TryCatch).
 //!
 //! When the `finally` block is missing or empty:

@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-array-map`, ported from Rector 2.6.1's `AddClosureParamTypeForArrayMapRector`
+//! `lint/types/add-param-type-array-map`, ported from Rector 2.8.4's `AddClosureParamTypeForArrayMapRector`
 //! (rules/TypeDeclaration/Rector/FunctionLike): the closure passed first to `array_map()` gets, for each untyped
 //! parameter, the item type of the array passed at its position, when that array is an `ArrayType` (not a constant
 //! array, nor a non-empty one, whose item type Rector's type corrector makes `mixed`).

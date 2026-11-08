@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-property-type-setup-docblock`, ported from Rector 2.6.1's
+//! `lint/phpunit/add-property-type-setup-docblock`, ported from Rector 2.8.4's
 //! `TypedPropertyFromDocblockSetUpDefinedRector` (rules/TypeDeclaration/Rector/Class_): in a PHPUnit test case with a
 //! `setUp()` method, an untyped private non-static property with one item that the constructor or `setUp()` always
 //! assigns (`ConstructorAssignDetector`) gets the declaration of its `@var` type. The `@var` goes when it says no more

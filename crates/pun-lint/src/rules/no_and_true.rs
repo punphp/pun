@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-and-true`, ported from Rector 2.6.1's `RemoveAndTrueRector` (rules/DeadCode/Rector/BooleanAnd)
+//! `lint/dead-code/no-and-true`, ported from Rector 2.8.4's `RemoveAndTrueRector` (rules/DeadCode/Rector/BooleanAnd)
 //! with `ValueResolver::isTrue` (`ConstFetchAnalyzer`: a constant fetch named `true` in any case).
 //!
 //! `true && $a` and `$a && true` become `$a`; so does `true && true && $a`, where the left side is `&&` of `true`s.

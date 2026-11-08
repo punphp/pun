@@ -1,4 +1,4 @@
-//! `lint/types/add-string-return-type` and `lint/types/add-numeric-return-type`, ported from Rector 2.6.1's
+//! `lint/types/add-string-return-type` and `lint/types/add-numeric-return-type`, ported from Rector 2.8.4's
 //! `StringReturnTypeFromStrictStringReturnsRector` and `NumericReturnTypeFromStrictReturnsRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a function or method whose every `return` returns a value natively
 //! typed `string` (or `int`, or `float`), and whose end cannot be reached, gets that return type. Returns of only

@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-have-properties`, ported from pest-plugin-rector's `UseToHavePropertiesRector`: a run of
 //! `->toHaveProperty('a')->toHaveProperty('b')` with literal strings becomes `->toHaveProperties(['a', 'b'])`, when
-//! the checked value may be an object.
+//! the checked value is known to be an object.
 
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
@@ -34,7 +34,7 @@ impl Rule for PreferToHaveProperties {
         if !is_name(&call.method, "toHaveProperty") {
             return;
         }
-        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Object) == Trinary::No) {
+        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Object) != Trinary::Yes) {
             return;
         }
         let mut keys = Vec::new();

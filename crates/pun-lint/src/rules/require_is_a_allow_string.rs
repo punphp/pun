@@ -1,4 +1,4 @@
-//! `lint/complexity/require-is-a-allow-string`, ported from Rector 2.6.1's `IsAWithStringWithThirdArgumentRector`
+//! `lint/complexity/require-is-a-allow-string`, ported from Rector 2.8.4's `IsAWithStringWithThirdArgumentRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `is_a($class, ...)` on a class-name string is always false unless the third argument, `$allow_string`, is `true`.

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-continue`, ported from Rector 2.6.1's `RemoveDeadContinueRector`
+//! `lint/dead-code/no-useless-continue`, ported from Rector 2.8.4's `RemoveDeadContinueRector`
 //! (rules/DeadCode/Rector/For_).
 //!
 //! A `continue` (or `continue 1`, or `continue 0`) as the last statement of a loop body does nothing; Rector removes

@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-return-type-from-mock-object`, ported from Rector 2.6.1's `ReturnTypeFromMockObjectRector`
+//! `lint/phpunit/add-return-type-from-mock-object`, ported from Rector 2.8.4's `ReturnTypeFromMockObjectRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod).
 //!
 //! A method of a `PHPUnit\Framework\TestCase` without a return type (and that `ClassMethodReturnTypeOverrideGuard`

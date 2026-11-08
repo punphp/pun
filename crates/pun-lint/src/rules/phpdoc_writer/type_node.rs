@@ -28,9 +28,10 @@ pub enum TypeNode {
         sealed: bool,
         unsealed: String,
     },
-    /// `SpacingAwareCallableTypeNode`: `callable(int):string`, its parameters printed.
+    /// `CallableTypeNode`: `callable<T>(int): string`, its templates and parameters printed.
     Callable {
         ident: String,
+        templates: Vec<String>,
         params: Vec<String>,
         ret: Box<TypeNode>,
     },
@@ -134,11 +135,24 @@ fn from_parsed(
                 }
             },
         },
-        // `CallableTypePhpDocNodeVisitor`: without its templates
+        // `CallableTypeNode` with its templates (`TemplateTagValueNode`: `T of Bound super Lower = Default`)
         Node::Callable {
-            ident, params, ret, ..
+            ident, templates, params, ret,
         } => TypeNode::Callable {
             ident: ident.clone(),
+            templates: templates
+                .iter()
+                .map(|t| {
+                    let mut printed = t.name.clone();
+                    for (word, node) in [(" of ", &t.bound), (" super ", &t.lower), (" = ", &t.default)] {
+                        if let Some(node) = node {
+                            printed.push_str(word);
+                            printed.push_str(&from_parsed(node, false, all)?.to_string());
+                        }
+                    }
+                    Some(printed)
+                })
+                .collect::<Option<_>>()?,
             // `CallableTypeParameterNode`
             params: params
                 .iter()
@@ -280,24 +294,21 @@ impl fmt::Display for TypeNode {
                 write!(f, "{kind}{{{}}}", printed.join(", "))
             }
             TypeNode::Nullable(inner) => write!(f, "?{inner}"),
-            TypeNode::Callable { ident, params, ret } => {
+            TypeNode::Callable { ident, templates, params, ret } => {
+                // phpdoc-parser 2.4's `Printer::printType()` (Rector 2.8.4 prints with it): `ident(params): ret`, the
+                // return type in parentheses when it is a union, an intersection or a callable
+                let wrap = matches!(
+                    ret.as_ref(),
+                    TypeNode::Union { .. } | TypeNode::Intersection(_) | TypeNode::Callable { .. }
+                );
                 let mut ret = ret.to_string();
-                if ret.contains('|') {
+                if wrap && !ret.starts_with('(') {
                     ret = format!("({ret})");
                 }
-                // `normalizeParameterType()`, `normalizeReturnType()`
-                let params = params.join(", ");
-                let params = match (params.is_empty(), ret.as_str()) {
-                    (false, _) => format!("({params})"),
-                    (true, "mixed") => String::new(),
-                    (true, _) => "()".to_string(),
-                };
-                let ret = if ret != "mixed" || !params.is_empty() {
-                    format!(":{ret}")
-                } else {
-                    String::new()
-                };
-                write!(f, "{ident}{params}{ret}")
+                let params = format!("({})", params.join(", "));
+                let ret = format!(": {ret}");
+                let templates = if templates.is_empty() { String::new() } else { format!("<{}>", templates.join(", ")) };
+                write!(f, "{ident}{templates}{params}{ret}")
             }
         }
     }
@@ -339,12 +350,17 @@ fn print_array(inner: &TypeNode, generic_parent: bool) -> String {
             if all_generic {
                 return format!("array<int, {printed}>");
             }
-            types
-                .iter()
-                .map(|t| format!("{t}[]"))
-                .collect::<Vec<_>>()
-                .join("|")
+            types.iter().map(array_of).collect::<Vec<_>>().join("|")
         }
-        _ => format!("{printed}[]"),
+        _ => array_of(inner),
+    }
+}
+
+/// phpdoc-parser's `ArrayTypeNode::__toString()`: `T[]`, an intersection, a callable or a nullable type in
+/// parentheses.
+fn array_of(t: &TypeNode) -> String {
+    match t {
+        TypeNode::Intersection(_) | TypeNode::Callable { .. } | TypeNode::Nullable(_) => format!("({t})[]"),
+        _ => format!("{t}[]"),
     }
 }

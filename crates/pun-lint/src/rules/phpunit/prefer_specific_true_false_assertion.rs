@@ -3,10 +3,11 @@
 //!
 //! `assertTrue(is_dir($a))` becomes `assertDirectoryExists($a)`, and likewise for the functions upstream lists and for
 //! `empty()`, with `assertFalse`, `assertNotTrue` and `assertNotFalse`. A name PHPUnit's `Assert` class lacks (where
-//! the codebase knows the class) takes its successor (`assertFileNotExists` becomes `assertFileDoesNotExist`).
+//! the codebase knows the class) takes its successor (`assertFileNotExists` becomes `assertFileDoesNotExist`). A call
+//! with a named or unpacked argument stays, and so does `is_callable()` with more than one.
 
 use mago_codex::ttype::atomic::TAtomic;
-use mago_syntax::cst::{Call, Construct, Expression, Identifier, Node, NodeKind};
+use mago_syntax::cst::{Argument, Call, Construct, Expression, Identifier, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
@@ -42,6 +43,16 @@ const FUNCTION_NAME_WITH_ASSERT_METHOD_NAMES: &[(&str, &str, &str)] = &[
         "assertStringContainsString",
         "assertStringNotContainsString",
     ),
+    ("is_array", "assertIsArray", "assertIsNotArray"),
+    ("is_bool", "assertIsBool", "assertIsNotBool"),
+    ("is_callable", "assertIsCallable", "assertIsNotCallable"),
+    ("is_float", "assertIsFloat", "assertIsNotFloat"),
+    ("is_int", "assertIsInt", "assertIsNotInt"),
+    ("is_iterable", "assertIsIterable", "assertIsNotIterable"),
+    ("is_numeric", "assertIsNumeric", "assertIsNotNumeric"),
+    ("is_object", "assertIsObject", "assertIsNotObject"),
+    ("is_scalar", "assertIsScalar", "assertIsNotScalar"),
+    ("is_string", "assertIsString", "assertIsNotString"),
 ];
 
 const RENAMED_ASSERT_METHOD_NAMES: &[(&str, &str)] = &[
@@ -102,6 +113,15 @@ impl Rule for PreferSpecificTrueFalseAssertion {
         else {
             return;
         };
+        // `hasUnmovableArgs`: arguments move up by position, so a named or unpacked one stays.
+        if let Ok(args) = &inner
+            && args.iter().any(|a| match a {
+                Argument::Named(_) => true,
+                Argument::Positional(p) => p.ellipsis.is_some(),
+            })
+        {
+            return;
+        }
         if function == "is_a" {
             let Some(subject) = inner.as_ref().ok().and_then(|args| args.first()) else {
                 return;
@@ -109,6 +129,10 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             if is_string_type(ctx, subject.value()) {
                 return;
             }
+        }
+        // the is_callable() $syntax_only and $callable_name arguments have no counterpart in assertIsCallable()
+        if function == "is_callable" && inner.as_ref().is_ok_and(|args| args.len() > 1) {
+            return;
         }
         let written = call.name().unwrap_or_default();
         let mut name = None;

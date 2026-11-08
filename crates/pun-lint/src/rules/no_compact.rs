@@ -1,4 +1,4 @@
-//! `lint/complexity/no-compact`, ported from Rector 2.6.1's `CompactToVariablesRector` (rules/CodeQuality/Rector/
+//! `lint/complexity/no-compact`, ported from Rector 2.8.4's `CompactToVariablesRector` (rules/CodeQuality/Rector/
 //! FuncCall) and its `CompactConverter`.
 //!
 //! `compact('a', 'b')` is `['a' => $a, 'b' => $b]`. Rector also follows a variable whose type is a constant list of

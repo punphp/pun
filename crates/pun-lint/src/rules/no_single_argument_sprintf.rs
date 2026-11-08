@@ -1,4 +1,4 @@
-//! `lint/strings/no-single-argument-sprintf`, ported from Rector 2.6.1's `UnwrapSprintfOneArgumentRector`
+//! `lint/strings/no-single-argument-sprintf`, ported from Rector 2.8.4's `UnwrapSprintfOneArgumentRector`
 //! (rules/CodeQuality/Rector/FuncCall).
 //!
 //! `sprintf('value')` becomes `'value'`. The fix is unsafe: `sprintf('100%%')` gives `100%`, and a format with a

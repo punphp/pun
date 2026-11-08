@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-return-in-constructor`, ported from Rector 2.6.1's `RemoveUselessReturnExprInConstructRector`
+//! `lint/dead-code/no-return-in-constructor`, ported from Rector 2.8.4's `RemoveUselessReturnExprInConstructRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `ExprAnalyzer::isDynamicExpr`.
 //!
 //! A constructor's return value goes nowhere. In `__construct`, outside nested functions, closures and classes,

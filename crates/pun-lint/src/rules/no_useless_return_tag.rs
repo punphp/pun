@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-useless-return`, ported from Rector 2.6.1's `RemoveUselessReturnTagRector`
+//! `lint/phpdoc/no-useless-return`, ported from Rector 2.8.4's `RemoveUselessReturnTagRector`
 //! (rules/DeadCode/Rector/ClassMethod) with `ReturnTagRemover` and `DeadReturnTagValueNodeAnalyzer`
 //! (rules/DeadCode/PhpDoc).
 //!

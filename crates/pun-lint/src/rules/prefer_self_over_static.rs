@@ -1,4 +1,4 @@
-//! `lint/classes/prefer-self-over-static`, ported from Rector 2.6.1's `ConvertStaticToSelfRector`
+//! `lint/classes/prefer-self-over-static`, ported from Rector 2.8.4's `ConvertStaticToSelfRector`
 //! (rules/CodeQuality/Rector/Class_).
 //!
 //! `static::` becomes `self::` where late static binding cannot pick another member: in a `final` class for a static

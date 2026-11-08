@@ -1,9 +1,9 @@
-//! `lint/classes/no-protected-method-in-final`, ported from Rector 2.6.1's `PrivatizeFinalClassMethodRector`
+//! `lint/classes/no-protected-method-in-final`, ported from Rector 2.8.4's `PrivatizeFinalClassMethodRector`
 //! (rules/Privatization/Rector/ClassMethod).
 //!
-//! A `protected` method of a `final` class becomes `private`, except a magic method and Nette's `createComponent*`
-//! factories. See `lint_b_privatize` for the classes Pun knows enough about; a class that extends nothing cannot be a
-//! Laravel model nor call `parent::`, which Rector's other guards look for.
+//! A `protected` method of a `final` class becomes `private`, except a magic method; a `final` modifier goes with it.
+//! See `lint_b_privatize` for the classes Pun knows enough about; a class that extends nothing cannot be a Laravel
+//! model nor call `parent::`, which Rector's other guards look for.
 
 use mago_syntax::cst::{ClassLikeMember, Node, NodeKind};
 use pun_problem::{Fix, Safety};
@@ -39,10 +39,7 @@ impl Rule for NoProtectedMethodInFinal {
                 continue;
             };
             let name = method.name.value;
-            if name.starts_with(b"createComponent")
-                || !is_protected(&method.modifiers)
-                || is_magic(name)
-            {
+            if !is_protected(&method.modifiers) || is_magic(name) {
                 continue;
             }
             out.push(Report {

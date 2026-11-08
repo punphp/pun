@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-constant`, ported from Rector 2.6.1's `ReturnTypeFromStrictConstantReturnRector`
+//! `lint/types/add-return-type-from-constant`, ported from Rector 2.8.4's `ReturnTypeFromStrictConstantReturnRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a method whose every `return` returns a constant (`FOO`,
 //! `Class::FOO`, and `true`, `false` and `null`, which PHP-Parser reads as constants) gets the union of their types,
 //! values dropped.

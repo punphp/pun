@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-function`, ported from Rector 2.6.1's `RenameFunctionRector` (rules/Renaming/Rector/FuncCall).
+//! `lint/refactor/rename-function`, ported from Rector 2.8.4's `RenameFunctionRector` (rules/Renaming/Rector/FuncCall).
 //!
 //! Options: a map of old function names to new ones, `{ view = "Laravel\\Templating\\render" }`. A call (or a
 //! first-class callable) whose name is an old one, compared without case as `FuncCallNameResolver` resolves it, gets the

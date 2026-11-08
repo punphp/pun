@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-parent`, ported from Rector 2.6.1's
+//! `lint/types/add-return-type-from-parent`, ported from Rector 2.8.4's
 //! `AddReturnTypeDeclarationBasedOnParentClassMethodRector` (rules/TypeDeclaration/Rector/ClassMethod): a method of a
 //! class without a return type gets the native return type of the method it overrides (found by
 //! `ParentClassMethodTypeOverrideGuard::getParentClassMethod`), or of the first one up the chain that declares one.
@@ -12,7 +12,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::{Method, Modifier, Node, NodeKind};
 
 use super::declare::{return_declaration, text_order};
-use super::facts::{Facts, facts, is_tentative};
+use super::facts::{Facts, facts};
 use super::{SCALAR_TYPES, add_return_type, class_scope};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -115,12 +115,8 @@ fn parent_return_type(
             return None;
         }
         let owner = declaring_class(codebase, class, parent)?;
-        let tentative = parent.flags.is_built_in() && is_tentative(owner.as_bytes(), method);
-        if let Some(declared) = parent
-            .return_type_declaration_metadata
-            .as_ref()
-            .filter(|_| !tentative)
-        {
+        // PHPStan 2.3 reads a built-in method's tentative return type as its native one (`applyTentativeReturnType`)
+        if let Some(declared) = parent.return_type_declaration_metadata.as_ref() {
             if declared.type_union.is_mixed() {
                 return (php_version >= MIXED_TYPE).then(|| "mixed".to_string());
             }

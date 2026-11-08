@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-digits`, ported from pest-plugin-rector's `UseToBeDigitsRector`: `expect(ctype_digit($value))->toBeTrue()` becomes `expect($value)->toBeDigits()`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toBeDigits()`. The checked value's type must possibly be a string.
+//! `->not` before the matcher becomes `->not->toBeDigits()`. The checked value's type must be a string.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToBeDigits {
             "ctype_digit",
             "toBeDigits",
             |values| match values {
-                [value] if !(type_is(ctx, value, Is::String) == Trinary::No) => {
+                [value] if type_is(ctx, value, Is::String) == Trinary::Yes => {
                     Some((*value, vec![]))
                 }
                 _ => None,

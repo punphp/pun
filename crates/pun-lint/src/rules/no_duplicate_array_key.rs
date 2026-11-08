@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-duplicate-array-key`, ported from Rector 2.6.1's `RemoveDuplicatedArrayKeyRector`
+//! `lint/dead-code/no-duplicate-array-key`, ported from Rector 2.8.4's `RemoveDuplicatedArrayKeyRector`
 //! (rules/DeadCode/Rector/Array_), with `ExprAnalyzer::isDynamicExpr`.
 //!
 //! In an array literal, an item whose key a later item repeats is removed: PHP keeps only the last value. Keys are

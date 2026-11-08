@@ -1,6 +1,6 @@
-//! `lint/types/add-param-phpdoc-from-reference-assign`, ported from Rector 2.6.1's
+//! `lint/types/add-param-phpdoc-from-reference-assign`, ported from Rector 2.8.4's
 //! `AddParamArrayDocblockFromAssignsParamToParamReferenceRector` (rules/TypeDeclarationDocblocks/Rector/ClassMethod):
-//! a by-reference parameter declared `array` that the method assigns one item to gets that item's type as `T[]`.
+//! a by-reference parameter declared `array` that a private method assigns one item to gets that item's type as `T[]`.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::{Type, mixed};
@@ -31,6 +31,11 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
         let Some(f) = FunctionLike::of(node).filter(|f| f.method.is_some()) else {
             return;
         };
+        // a by-ref param type is invariant in PHPStan; narrowing it below array breaks callers passing a plain array,
+        // which are invisible for a non-private method
+        if !matches!(node, Node::Method(m) if m.modifiers.iter().any(|m| matches!(m, mago_syntax::cst::Modifier::Private(_)))) {
+            return;
+        }
         let target = f.target(ctx);
         let mut info = target.info(ctx.source);
         let mut scope = ancestors.to_vec();

@@ -1,14 +1,15 @@
-//! `lint/laravel-12/prefer-scope-attribute`, ported from rector-laravel 2.5.0's
+//! `lint/laravel-12/prefer-scope-attribute`, ported from rector-laravel 2.7.3's
 //! `ScopeNamedClassMethodToScopeAttributedClassMethodRector` (src/Rector/ClassMethod) and
 //! `ScopeAnalyzer::isNamedScope` (src/NodeAnalyzer).
 //!
 //! In a model class (an anonymous one too), each non-abstract method named `scope` + an uppercase letter + more, whose first parameter
 //! is untyped or an `Illuminate\Database\Eloquent\Builder`, loses the `scope` prefix (the next letter lowercased),
 //! becomes `protected` (every other modifier goes) and gets `#[\Illuminate\Database\Eloquent\Attributes\Scope]`;
-//! unless the class (its parents, traits and `@method` tags included) has a method of the new name already, or the
-//! method has the attribute.
+//! unless the class (its parents, traits and `@method` tags included) has a method of the new name already, a parent
+//! class or interface declares the method (`ParentClassMethodTypeOverrideGuard::hasParentClassMethod`), or the method
+//! has the attribute.
 
-use mago_syntax::cst::{ClassLikeMember, Hint, Method, MethodBody, Node, NodeKind};
+use mago_syntax::cst::{ClassLikeMember, Hint, Method, MethodBody, Modifier, Node, NodeKind};
 use pun_problem::{Edit, Span};
 
 use super::property_attribute::{ClassView, MODEL, report};
@@ -16,6 +17,7 @@ use crate::rules::rector_batch5::{has_attribute, resolve_class_name};
 use crate::rules::rector_stmts::line_indent;
 use crate::rules::types::compare::mapper::flatten;
 use crate::rules::types::facts::facts;
+use crate::rules::types::{class_scope, has_parent_class_method};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -62,7 +64,11 @@ impl Rule for PreferScopeAttribute {
             let name = String::from_utf8_lossy(method.name.value);
             let mut new_name = name[5..].to_string();
             new_name[..1].make_ascii_lowercase();
+            let private = (method.modifiers.iter()).any(|m| matches!(m, Modifier::Private(_)));
             if has_method(ctx, &class_name, &new_name)
+                || (!private
+                    && class_scope(&scope)
+                        .is_none_or(|c| has_parent_class_method(&facts(ctx), &c, method.name.value)))
                 || has_attribute(&scope, &method.attribute_lists, SCOPE)
             {
                 continue;

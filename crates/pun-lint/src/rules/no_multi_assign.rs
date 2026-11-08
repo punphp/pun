@@ -1,4 +1,4 @@
-//! `lint/style/no-multi-assign`, ported from Rector 2.6.1's `SplitDoubleAssignRector`
+//! `lint/style/no-multi-assign`, ported from Rector 2.8.4's `SplitDoubleAssignRector`
 //! (rules/CodingStyle/Rector/Assign).
 //!
 //! `$a = $b = value;` becomes one statement per variable, `$a = value; $b = value;`. A call (or `new`) is not

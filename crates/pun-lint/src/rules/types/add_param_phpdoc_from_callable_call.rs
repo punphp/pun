@@ -1,4 +1,4 @@
-//! `lint/types/add-param-phpdoc-from-callable-call`, ported from Rector 2.6.1's
+//! `lint/types/add-param-phpdoc-from-callable-call`, ported from Rector 2.8.4's
 //! `AddParamArrayDocblockBasedOnCallableNativeFuncCallRector` (rules/TypeDeclaration/Rector/ClassMethod): a parameter
 //! declared `array` that is passed to `array_walk()`, `array_map()`, `usort()` or `array_filter()` with a closure
 //! whose parameter is typed gets `@param Type[]`.
@@ -114,6 +114,7 @@ impl Rule for AddParamPhpdocFromCallableCall {
         if params_with_type.is_empty() {
             return;
         }
+        let mut changed = false;
         for (name, types) in params_with_type {
             let t = if types.len() > 1 { union(types) } else { types.into_iter().next().unwrap() };
             let variadic = f
@@ -122,7 +123,10 @@ impl Rule for AddParamPhpdocFromCallableCall {
                 .iter()
                 .find(|p| &p.variable.name[1..] == name.as_bytes())
                 .is_some_and(|p| p.ellipsis.is_some());
-            change_param_type(&mut info, &Type::array(mixed(), t), &name, variadic);
+            changed |= change_param_type(&mut info, &Type::array(mixed(), t), &name, variadic);
+        }
+        if !changed {
+            return;
         }
         out.extend(doc_report(
             f.name,

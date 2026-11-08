@@ -608,7 +608,7 @@ fn phpstan_baseline_extensions_options_and_ignores() {
     );
 }
 
-/// rector.php read through Rector 2.6.1 (`.oracle/rector-bin`): its paths become `[lint] exclude` for the files
+/// rector.php read through Rector 2.8.4 (`.oracle/rector-bin`): its paths become `[lint] exclude` for the files
 /// outside them, a rule skipped for a path an override, and what Pun can't run is listed (a reason shared by more
 /// than three rules once, with the count).
 #[test]

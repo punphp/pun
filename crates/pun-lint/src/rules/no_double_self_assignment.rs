@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-double-self-assignment`, ported from Rector 2.6.1's `RemoveDoubleSelfAssignRector`
+//! `lint/dead-code/no-double-self-assignment`, ported from Rector 2.8.4's `RemoveDoubleSelfAssignRector`
 //! (rules/DeadCode/Rector/Assign).
 //!
 //! `$a = $a = f();` becomes `$a = f();`: an `=` whose value is another `=` to the same variable. Both sides must be

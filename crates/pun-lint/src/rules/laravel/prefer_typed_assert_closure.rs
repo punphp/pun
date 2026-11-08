@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-typed-assert-closure`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-typed-assert-closure`, ported from rector-laravel 2.7.3's
 //! `AssertWithClassStringToTypeHintedClosureRector` (src/Rector/StaticCall) and its `FacadeAssertionAnalyzer`.
 //!
 //! `Bus::assertDispatched(Job::class, function ($job) {...})` (the `Illuminate\Support\Facades\Bus` or `Event`

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-typed-property-instanceof`, ported from Rector 2.6.1's `RemoveTypedPropertyDeadInstanceOfRector`
+//! `lint/dead-code/no-typed-property-instanceof`, ported from Rector 2.8.4's `RemoveTypedPropertyDeadInstanceOfRector`
 //! (rules/DeadCode/Rector/If_).
 //!
 //! In a class's methods, an `if` without `elseif` or `else` whose condition is `$this->property instanceof SomeClass`

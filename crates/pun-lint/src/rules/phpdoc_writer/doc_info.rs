@@ -48,9 +48,10 @@ pub struct TypedValue {
 pub enum TagValue {
     /// `@param`, `@var` or `@return` with a type.
     Typed(TypedValue),
-    /// Any other value, never reprinted: an untyped tag, or one its tag's parser rejects (`InvalidTagValueNode`, which
-    /// Rector's `DoctrineAnnotationDecorator` turns into a generic tag).
+    /// Any other value, never reprinted: an untyped tag (a typeless `@param $a`).
     Other,
+    /// A `@param`, `@var` or `@return` value its tag's parser rejects (`InvalidTagValueNode`), never reprinted.
+    Invalid,
 }
 
 #[derive(Clone, Debug)]
@@ -82,7 +83,8 @@ impl Child {
         }
     }
 
-    /// `(string) $phpDocChildNode` of a reprinted child: only typed tags are ever changed or added.
+    /// `(string) $phpDocChildNode` of a reprinted child: only typed tags are ever changed or added (an untyped one is
+    /// printed from its text).
     fn print(&self) -> String {
         let (name, v) = self.typed().expect("a changed or added child is a typed tag");
         let value = match name {
@@ -155,6 +157,11 @@ impl PhpDocInfo {
         self.children
             .iter()
             .filter_map(move |c| c.typed().filter(|(n, _)| *n == name).map(|(_, v)| v))
+    }
+
+    /// `hasInvalidTag()`: a tag named `name` whose value its parser rejects.
+    pub fn has_invalid_tag(&self, name: &str) -> bool {
+        (self.children.iter()).any(|c| matches!(&c.node, ChildNode::Tag { name: n, value: TagValue::Invalid } if n == name))
     }
 
     /// `getReturnTagValue()`.
@@ -236,12 +243,24 @@ impl PhpDocInfo {
         if !self.children.is_empty() && self.tokens.is_empty() {
             return self.print_new();
         }
+        // `printFormatPreserving()`: a tag was added to a single-line docblock, printed fresh
+        if !self.single_line && !self.tokens.iter().any(|t| t.0 == Kind::Eol) {
+            return self.print_new();
+        }
         self.print_format_preserving()
     }
 
     /// `PhpDocInfoPrinter::printNew()`: `(string) $phpDocNode`.
     fn print_new(&self) -> String {
-        let children: Vec<String> = self.children.iter().map(|c| format!(" {}", c.print())).collect();
+        let children: Vec<String> = (self.children.iter())
+            .map(|c| match (c.typed(), c.start_end) {
+                // an untyped child of a single-line doc the new tag made multi-line: its own text
+                (None, Some((start, end))) => {
+                    format!(" {}", self.text[self.tokens[start].1..self.tokens[end - 1].2].trim())
+                }
+                _ => format!(" {}", c.print()),
+            })
+            .collect();
         // (never inlined: `addPhpDocTagNode()` made it multi-line)
         format!("/**\n *{}\n */", children.join("\n *"))
     }
@@ -521,7 +540,7 @@ fn typed_value(
         return TagValue::Other;
     }
     let Ok((parsed, offset)) = phpdoc::parse_prefix(rest) else {
-        return TagValue::Other;
+        return TagValue::Invalid;
     };
     let type_text = rest[..offset].trim_end_matches([' ', '\t']);
     let ty = TypeNode::from_parsed(&parsed).unwrap_or_else(|| TypeNode::Raw(type_text.to_string()));
@@ -549,7 +568,7 @@ fn typed_value(
             }
             // `parseRequiredVariableName()`: a `TOKEN_VARIABLE`, which `$this` is not
             let Some(len) = variable_len(&value[at..]).filter(|len| &value[at..at + len] != "$this") else {
-                return TagValue::Other;
+                return TagValue::Invalid;
             };
             variable = value[at..at + len].to_string();
             at += len;
@@ -571,7 +590,7 @@ fn typed_value(
         let starts = &value[next..];
         // (a `TOKEN_UNION` or `TOKEN_INTERSECTION` never follows the type: the type parser takes it or fails)
         if next < value.len() && !starts.starts_with(['\r', '\n']) && !preceded_by_ws(next) {
-            return TagValue::Other;
+            return TagValue::Invalid;
         }
     }
     // the description's lines joined by "\n" (each line break with the next line's `*` and one space), then

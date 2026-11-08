@@ -1,4 +1,4 @@
-//! `lint/style/no-redundant-final-const`, ported from Rector 2.6.1's `RemoveFinalFromConstRector`
+//! `lint/style/no-redundant-final-const`, ported from Rector 2.8.4's `RemoveFinalFromConstRector`
 //! (rules/CodingStyle/Rector/ClassConst), with `VisibilityManipulator::removeFinal`.
 //!
 //! In a `final class`, `final public const X` says nothing more than `public const X`: no child class can override

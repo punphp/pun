@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-redundant-default-argument`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-redundant-default-argument`, ported from Rector 2.8.4's
 //! `RemoveArgumentFromDefaultParentCallRector` (rules/DeadCode/Rector/ClassMethod).
 //!
 //! In a class that extends another, a statement `parent::name(...)` of a public or protected method's body loses its

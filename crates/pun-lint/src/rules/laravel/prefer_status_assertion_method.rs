@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-status-assertion-method`, ported from rector-laravel 2.5.0's `AssertStatusToAssertMethodRector`
+//! `lint/laravel/prefer-status-assertion-method`, ported from rector-laravel 2.7.3's `AssertStatusToAssertMethodRector`
 //! (src/Rector/MethodCall).
 //!
 //! On an `Illuminate\Testing\TestResponse`, `assertStatus(200)` becomes `assertOk()`, and the same for the other
@@ -69,13 +69,28 @@ impl Rule for PreferStatusAssertionMethod {
         };
         let method = match value {
             200 => "assertOk",
+            201 => "assertCreated",
+            202 => "assertAccepted",
             204 => "assertNoContent",
+            301 => "assertMovedPermanently",
+            302 => "assertFound",
+            304 => "assertNotModified",
+            307 => "assertTemporaryRedirect",
+            308 => "assertPermanentRedirect",
+            400 => "assertBadRequest",
             401 => "assertUnauthorized",
+            402 => "assertPaymentRequired",
             403 => "assertForbidden",
             404 => "assertNotFound",
             405 => "assertMethodNotAllowed",
+            406 => "assertNotAcceptable",
+            408 => "assertRequestTimeout",
+            409 => "assertConflict",
             410 => "assertGone",
+            415 => "assertUnsupportedMediaType",
             422 => "assertUnprocessable",
+            424 => "assertFailedDependency",
+            429 => "assertTooManyRequests",
             500 => "assertInternalServerError",
             503 => "assertServiceUnavailable",
             _ => return,

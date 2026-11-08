@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-empty-method`, ported from Rector 2.6.1's `RemoveEmptyClassMethodRector`
+//! `lint/dead-code/no-empty-method`, ported from Rector 2.8.4's `RemoveEmptyClassMethodRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `IsClassMethodUsedAnalyzer`, `ClassMethodManipulator` and
 //! `ControllerClassMethodManipulator` in `class_method.rs`.
 //!

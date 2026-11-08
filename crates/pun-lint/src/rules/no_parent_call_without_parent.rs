@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-parent-call-without-parent`, ported from Rector 2.6.1's `RemoveParentCallWithoutParentRector`
+//! `lint/dead-code/no-parent-call-without-parent`, ported from Rector 2.8.4's `RemoveParentCallWithoutParentRector`
 //! (rules/DeadCode/Rector/StaticCall) and `ClassMethodManipulator::hasParentMethodOrInterfaceMethod`.
 //!
 //! In a named class's method, a statement `parent::name(...);` goes, and `$x = parent::name(...);` assigns `null`,

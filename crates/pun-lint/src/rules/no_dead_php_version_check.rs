@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-dead-php-version-check`, ported from Rector 2.6.1's `RemovePhpVersionIdCheckRector`
+//! `lint/dead-code/no-dead-php-version-check`, ported from Rector 2.8.4's `RemovePhpVersionIdCheckRector`
 //! (rules/DeadCode/Rector/ConstFetch).
 //!
 //! An `if` whose condition compares `PHP_VERSION_ID` with an integer by `<`, `>` or `>=` that the project's minimum

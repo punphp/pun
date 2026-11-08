@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-redundant-foreach-guard`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-redundant-foreach-guard`, ported from Rector 2.8.4's
 //! `RemoveUnusedNonEmptyArrayBeforeForeachRector` (rules/DeadCode/Rector/If_), with
 //! `UselessIfCondBeforeForeachDetector` and `CountManipulator`.
 //!

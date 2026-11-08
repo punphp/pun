@@ -1,4 +1,4 @@
-//! `lint/functions/no-call-user-func-method`, ported from Rector 2.6.1's `CallUserFuncToMethodCallRector`
+//! `lint/functions/no-call-user-func-method`, ported from Rector 2.8.4's `CallUserFuncToMethodCallRector`
 //! (rules/CodingStyle/Rector/FuncCall).
 //!
 //! `call_user_func([$object, 'method'], ...$args)` becomes `$object->method(...$args)` when the first item holds an

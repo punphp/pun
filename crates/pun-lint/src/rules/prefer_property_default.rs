@@ -1,10 +1,12 @@
-//! `lint/complexity/prefer-property-default`, ported from Rector 2.6.1's `InlineConstructorDefaultToPropertyRector`
+//! `lint/complexity/prefer-property-default`, ported from Rector 2.8.4's `InlineConstructorDefaultToPropertyRector`
 //! (rules/CodeQuality/Rector/Class_).
 //!
 //! A constructor statement `$this->name = <value known at compile time>;` becomes the default value of the property
 //! `name`, and goes from the constructor. The statement's comments move above the property, after its own. Rector
 //! looks at the constructor's statements in order and stops at the first `if`, which may break the flow; what it
-//! changed before stays. A readonly property or class, or a property a property hook reads, is left alone.
+//! changed before stays. Only a `final` class changes (a child class may skip the constructor and rely on the default). After
+//! `parent::__construct()`, a property that a parent class declares is left alone, and so is a readonly property or
+//! class, or a property a property hook reads.
 
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
@@ -29,7 +31,7 @@ impl Rule for PreferPropertyDefault {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
@@ -45,9 +47,17 @@ impl Rule for PreferPropertyDefault {
         let MethodBody::Concrete(block) = &constructor.body else {
             return;
         };
-        if modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_))) {
+        // A child class may bypass the constructor and depend on the declared property default; php-parser gives an
+        // anonymous class no `final` flag.
+        if modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_)))
+            || !matches!(node, Node::Class(_))
+            || !modifiers.iter().any(|m| matches!(m, Modifier::Final(_)))
+        {
             return;
         }
+        let mut scope = ancestors.to_vec();
+        scope.push(node);
+        let mut has_parent_construct_call = false;
         let list = block_list(source, block);
         // Per property item: the new default and the comments to move, in order.
         let mut moved: Vec<(&PropertyItem, &Property, String, Vec<Span>)> = Vec::new();
@@ -60,6 +70,10 @@ impl Rule for PreferPropertyDefault {
             let Statement::Expression(e) = statement else {
                 continue;
             };
+            if is_parent_construct_call(e.expression) {
+                has_parent_construct_call = true;
+                continue;
+            }
             let Expression::Assignment(assign) = unparenthesize(e.expression) else {
                 continue;
             };
@@ -72,6 +86,10 @@ impl Rule for PreferPropertyDefault {
                 continue;
             };
             if is_dynamic_expr(assign.rhs) || read_in_hooks(members, name) {
+                continue;
+            }
+            // parent constructor may set the very same property, keep assign order as is
+            if has_parent_construct_call && is_property_defined_in_parent_class(ctx, &scope, name) {
                 continue;
             }
             let Some((property, item)) = find_property(members, name) else {
@@ -215,5 +233,33 @@ fn find_property<'a>(
             .into_iter()
             .find(|i| i.variable().name[1..].eq_ignore_ascii_case(name))
             .map(|i| (property, i))
+    })
+}
+
+/// `isParentConstructCall`: `parent::__construct(...)`, the method name in any letter case.
+fn is_parent_construct_call(expr: &Expression<'_>) -> bool {
+    matches!(
+        unparenthesize(expr),
+        Expression::Call(Call::StaticMethod(c))
+            if matches!(c.class, Expression::Parent(_))
+                && matches!(&c.method, ClassLikeMemberSelector::Identifier(m) if m.value.eq_ignore_ascii_case(b"__construct"))
+    )
+}
+
+/// `isPropertyDefinedInParentClass`: a parent class of the class (`scope` ends with it) has the property, its own or
+/// inherited. A class or parent the codebase does not know may have it ("unknown parent, keep it safe").
+fn is_property_defined_in_parent_class(ctx: &Context<'_>, scope: &[Node<'_, '_>], name: &[u8]) -> bool {
+    let facts = super::types::facts::facts(ctx);
+    let codebase = &facts.codebase;
+    let Some(class) = super::types::class_scope(scope)
+        .and_then(|c| c.name)
+        .and_then(|n| codebase.get_class_like(n.as_bytes()))
+    else {
+        return true;
+    };
+    let property = [b"$".as_slice(), name].concat();
+    class.direct_parent_class.iter().chain(class.all_parent_classes.iter()).any(|parent| {
+        codebase.get_class_like(parent.as_bytes()).is_none()
+            || codebase.property_exists(parent.as_bytes(), &property)
     })
 }

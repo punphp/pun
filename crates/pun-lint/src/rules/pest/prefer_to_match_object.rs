@@ -58,7 +58,7 @@ impl Rule for PreferToMatchObject {
                 i += 1;
                 continue;
             };
-            if type_is(ctx, subject, Is::Object) == Trinary::No {
+            if type_is(ctx, subject, Is::Object) != Trinary::Yes {
                 items.push(Item::Old(i));
                 i += 1;
                 continue;

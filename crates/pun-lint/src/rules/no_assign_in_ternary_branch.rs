@@ -1,4 +1,4 @@
-//! `lint/style/no-assign-in-ternary-branch`, ported from Rector 2.6.1's `TernaryConditionVariableAssignmentRector`
+//! `lint/style/no-assign-in-ternary-branch`, ported from Rector 2.8.4's `TernaryConditionVariableAssignmentRector`
 //! (rules/CodingStyle/Rector/Ternary).
 //!
 //! `$value ? $a = 1 : $a = 0;` becomes `$a = $value ? 1 : 0;`: when both branches of a ternary assign to the same

@@ -1,10 +1,10 @@
-//! `lint/phpunit/add-property-type-setup`, ported from Rector 2.6.1's `TypedPropertyFromStrictSetUpRector`
+//! `lint/phpunit/add-property-type-setup`, ported from Rector 2.8.4's `TypedPropertyFromStrictSetUpRector`
 //! (rules/TypeDeclaration/Rector/Property) with `TrustedClassMethodPropertyTypeInferer`: in a class with a `setUp()`
 //! method, an untyped private property gets the type of what `setUp()` assigns it, as
 //! `lint/types/add-property-type-constructor` infers it from the constructor.
 //!
 //! A property of several items gets the type of its first one. When the type is `MockObject` and the `@var` names
-//! another class, the `@var` becomes `(\PHPUnit\Framework\MockObject\MockObject & \That\Class)`.
+//! another class, the `@var` becomes `\PHPUnit\Framework\MockObject\MockObject&\That\Class`.
 //!
 //! Unlike Rector, Pun leaves a property alone whose default is `null` when the type does not allow `null`: Rector
 //! writes `private int $a = null;`, which PHP rejects.
@@ -83,7 +83,7 @@ impl Rule for AddPropertyTypeSetup {
                     let class = doc_class(&view.path, written);
                     if !class.eq_ignore_ascii_case(MOCK_OBJECT)
                         && let Some(e) =
-                            var.set(ctx.source, &format!("(\\{MOCK_OBJECT} & \\{class})"))
+                            var.set(ctx.source, &format!("\\{MOCK_OBJECT}&\\{class}"))
                     {
                         edits.extend(e);
                     }

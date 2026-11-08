@@ -1,4 +1,4 @@
-//! `lint/laravel/no-useless-value-call`, ported from rector-laravel 2.5.0's `RemoveRedundantValueCallsRector`
+//! `lint/laravel/no-useless-value-call`, ported from rector-laravel 2.7.3's `RemoveRedundantValueCallsRector`
 //! (src/Rector/FuncCall).
 //!
 //! `value($x)` with one argument becomes `$x` when the argument's type cannot be a `Closure`

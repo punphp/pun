@@ -59,7 +59,7 @@ impl Rule for PreferToMatchArray {
                 i += 1;
                 continue;
             };
-            if type_is(ctx, array, Is::Array) == Trinary::No || !assertion(first) {
+            if type_is(ctx, array, Is::Array) != Trinary::Yes || !assertion(first) {
                 items.push(Item::Old(i));
                 i += 1;
                 continue;

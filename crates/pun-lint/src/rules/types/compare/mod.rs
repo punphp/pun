@@ -1,4 +1,4 @@
-//! Rector 2.6.1's type comparison, for the rules that ask whether a PHPDoc type says more than the native type:
+//! Rector 2.8.4's type comparison, for the rules that ask whether a PHPDoc type says more than the native type:
 //! `TypeComparator` (src/NodeTypeResolver/TypeComparator), its `ScalarTypeComparator`, `TypeHasher`
 //! (src/NodeTypeResolver/PHPStan/TypeHasher.php), `TypeFactory::createMixedPassedOrUnionType[AndKeepConstant]` and the
 //! `StaticTypeMapper` that turns a native type declaration or a PHPDoc type node into a PHPStan type ([`mapper`]).

@@ -1,4 +1,4 @@
-//! `AbortIfRector` from rector-laravel 2.5.0.
+//! `AbortIfRector` from rector-laravel 2.7.3.
 
 use crate::{Context, Report, Rule};
 use mago_syntax::cst::{Node, NodeKind};

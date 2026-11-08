@@ -1,4 +1,4 @@
-//! `lint/laravel/add-relation-query-closure-type`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/add-relation-query-closure-type`, ported from rector-laravel 2.7.3's
 //! `EloquentWhereRelationTypeHintingParameterRector` (src/Rector/MethodCall).
 //!
 //! A query builder's `whereHas()`, `orWhereHas()`, `whereDoesntHave()` or `orWhereDoesntHave()` whose second argument

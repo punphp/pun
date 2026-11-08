@@ -143,10 +143,22 @@ fn narrow_from(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str, preslash: 
             return shortened;
         }
     }
+    // a class in the current namespace wins over a global class with the same short name
+    let unqualified = !preslash && !class_name.contains('\\');
+    if let Some(ns) = scope.namespace
+        && unqualified
+    {
+        let namespaced = format!("{ns}\\{class_name}");
+        if has_class(ctx, &namespaced) {
+            return DocType::FullyQualified(namespaced);
+        }
+    }
     if has_class(ctx, class_name) {
         return DocType::FullyQualified(class_name.to_string());
     }
-    if let Some(ns) = scope.namespace {
+    if let Some(ns) = scope.namespace
+        && !unqualified
+    {
         let namespaced = format!("{ns}\\{class_name}");
         if has_class(ctx, &namespaced) {
             return DocType::FullyQualified(namespaced);

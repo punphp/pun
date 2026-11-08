@@ -1,13 +1,13 @@
 //! `lint/pest/prefer-filesystem-matchers`, ported from pest-plugin-rector's `SimplifyFilesystemMatchersRector`:
 //! `expect(is_file($path) && is_readable($path))->toBeTrue()` becomes `expect($path)->toBeReadableFile()` (and the
-//! same for directories and `is_writable()`), and `->toBeFile()->toBeReadable()` becomes `->toBeReadableFile()`.
+//! same for directories and `is_writable()`) when `$path` is known to be a string, and `->toBeFile()->toBeReadable()` becomes `->toBeReadableFile()`.
 
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
     func_call, function_name, identifier, is_expect_chain, is_name, matcher_subject, method_call,
-    rename, subject_holder,
+    rename, subject_holder, type_is, Is, Trinary,
 };
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};
@@ -51,7 +51,9 @@ impl Rule for PreferFilesystemMatchers {
             )
         {
             let value = left_argument.value();
-            if !same_expression(ctx.source, value, right_argument.value()) {
+            if !same_expression(ctx.source, value, right_argument.value())
+                || type_is(ctx, value, Is::String) != Trinary::Yes
+            {
                 return;
             }
             let Some(matcher) = function_matcher(left_name, right_name)

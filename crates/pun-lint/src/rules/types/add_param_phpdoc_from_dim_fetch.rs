@@ -1,4 +1,4 @@
-//! `lint/types/add-param-phpdoc-from-dim-fetch`, ported from Rector 2.6.1's `AddParamArrayDocblockFromDimFetchAccessRector`
+//! `lint/types/add-param-phpdoc-from-dim-fetch`, ported from Rector 2.8.4's `AddParamArrayDocblockFromDimFetchAccessRector`
 //! (rules/TypeDeclarationDocblocks/Rector/ClassMethod): a parameter declared `array` that is read only with string
 //! (or only with integer) keys gets `@param array<string, mixed>` (or `array<int, mixed>`).
 

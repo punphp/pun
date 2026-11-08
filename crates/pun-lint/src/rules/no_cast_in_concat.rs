@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-cast-in-concat`, ported from Rector 2.6.1's `RemoveConcatAutocastRector`
+//! `lint/dead-code/no-cast-in-concat`, ported from Rector 2.8.4's `RemoveConcatAutocastRector`
 //! (rules/DeadCode/Rector/Concat).
 //!
 //! `'a' . (string) $b` becomes `'a' . $b`: `.` casts to string already. php-parser reads `(binary)` as a string cast

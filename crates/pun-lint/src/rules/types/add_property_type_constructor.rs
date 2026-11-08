@@ -1,4 +1,4 @@
-//! `lint/types/add-property-type-constructor`, ported from Rector 2.6.1's `TypedPropertyFromStrictConstructorRector`
+//! `lint/types/add-property-type-constructor`, ported from Rector 2.8.4's `TypedPropertyFromStrictConstructorRector`
 //! (rules/TypeDeclaration/Rector/Property) with `TrustedClassMethodPropertyTypeInferer`: an untyped property the
 //! constructor assigns gets the type of what it assigns.
 //!
@@ -25,7 +25,8 @@ use super::property_type::{
     Assigned, ClassView, Prop, TYPED_PROPERTIES, Ty, VarTag, are_equal, assigned_native_ty,
     assigned_type, conflicts_with_default, declared_ty, default_span, default_ty, doc_text,
     doc_type, hint_ty, is_doctrine_collection, is_legal, is_null_literal, is_var_tag_useless,
-    mixed_passed_or_union, parent_allows, property_declaration, union, variable_span,
+    is_safe_protected_property, mixed_passed_or_union, parent_allows, property_declaration, union,
+    variable_span,
 };
 use crate::rules::no_redundant_property_default::is_property_assigned;
 use crate::syntax::{node_span, unparenthesize};
@@ -70,7 +71,11 @@ impl Rule for AddPropertyTypeConstructor {
         let test_case = is_test_case(&facts, &view);
         let mut edits: Vec<Edit> = Vec::new();
         for prop in &props {
-            if !is_legal(&facts, &view, prop, true) || !parent_allows(&facts, &view, prop.name()) {
+            // `PropertyTypeOverrideGuard`: `inline_public` only for a property that is not protected
+            if !is_legal(&facts, &view, prop, true)
+                || (prop.is_protected() && !is_safe_protected_property(&facts, &view, prop.name()))
+                || !parent_allows(&facts, &view, prop.name())
+            {
                 continue;
             }
             let t = infer(&facts, &view, prop, constructor, ctx, test_case);

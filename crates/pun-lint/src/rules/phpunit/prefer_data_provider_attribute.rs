@@ -121,9 +121,10 @@ fn doctrine_content(rest: &str) -> Option<String> {
     if !simple {
         return None;
     }
-    // processDoctrine(): no arguments give an empty content
+    // Rector 2.8.4's `DoctrineAnnotationDecorator`: `(` + the arguments + `)`, so no arguments give `()` (and
+    // `DataProvider('')`)
     if argument.is_empty() {
-        return Some(String::new());
+        return Some("()".to_string());
     }
     let line = inner[close + 1..].split('\n').next().unwrap_or_default();
     if line.contains('@') {

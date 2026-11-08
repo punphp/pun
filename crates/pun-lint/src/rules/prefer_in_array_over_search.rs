@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-in-array-over-search`, ported from Rector 2.6.1's `SimplifyArraySearchRector`
+//! `lint/complexity/prefer-in-array-over-search`, ported from Rector 2.8.4's `SimplifyArraySearchRector`
 //! (rules/CodeQuality/Rector/Identical) with `BinaryOpManipulator::matchFirstAndSecondConditionNode`.
 //!
 //! `array_search($a, $b) !== false` becomes `in_array($a, $b)` and `array_search($a, $b) === false` becomes

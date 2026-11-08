@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-void-on-magic-method`, ported from Rector 2.6.1's `RemoveVoidDocblockFromMagicMethodRector`
+//! `lint/phpdoc/no-void-on-magic-method`, ported from Rector 2.8.4's `RemoveVoidDocblockFromMagicMethodRector`
 //! (rules/DeadCode/Rector/ClassMethod).
 //!
 //! `__construct()`, `__destruct()` and `__clone()` return nothing, so a `@return void` tag on one without a native

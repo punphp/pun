@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-condition-exact-return`, ported from Rector 2.6.1's `RemoveConditionExactReturnRector`
+//! `lint/dead-code/no-condition-exact-return`, ported from Rector 2.8.4's `RemoveConditionExactReturnRector`
 //! (rules/DeadCode/Rector/Stmt).
 //!
 //! `if ($value === 'x') { return 'x'; } return $value;` returns `$value` either way: the `if` goes and the `return`

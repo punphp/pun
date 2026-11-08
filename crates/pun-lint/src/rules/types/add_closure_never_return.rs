@@ -1,4 +1,4 @@
-//! `lint/types/add-closure-never-return`, ported from Rector 2.6.1's `AddClosureNeverReturnTypeRector`
+//! `lint/types/add-closure-never-return`, ported from Rector 2.8.4's `AddClosureNeverReturnTypeRector`
 //! (rules/TypeDeclaration/Rector/Closure): a closure that never returns gets the `never` return type (see
 //! [`super::never`]).
 

@@ -1,4 +1,4 @@
-//! `lint/complexity/require-attribute-argument-order`, ported from Rector 2.6.1's `SortAttributeNamedArgsRector`
+//! `lint/complexity/require-attribute-argument-order`, ported from Rector 2.8.4's `SortAttributeNamedArgsRector`
 //! (rules/CodeQuality/Rector/Attribute).
 //!
 //! The named arguments of an attribute move into the order of its class constructor's parameters, as

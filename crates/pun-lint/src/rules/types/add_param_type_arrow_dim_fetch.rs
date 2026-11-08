@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-arrow-dim-fetch`, ported from Rector 2.6.1's `AddArrowFunctionParamArrayWhereDimFetchRector`
+//! `lint/types/add-param-type-arrow-dim-fetch`, ported from Rector 2.8.4's `AddArrowFunctionParamArrayWhereDimFetchRector`
 //! (rules/TypeDeclaration/Rector/FuncCall): in a call of `array_walk()`, `array_map()`, `usort()` or
 //! `array_filter()` with two arguments, an untyped parameter of the closure or arrow function that its body reads
 //! with a key (`$item['key']`) gets the `array` type, unless the body checks it with `is_array()` or `instanceof`,

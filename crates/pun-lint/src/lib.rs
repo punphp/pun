@@ -96,8 +96,9 @@ pub trait Rule: Send + Sync {
     }
 
     /// Whether the rule's fix may match again on the code it wrote (removing the argument at a position, renames that
-    /// can chain). Rector runs a rule once per file; the fix rounds of [`Linter::fix`] stop running such a rule on a
-    /// file once one of its fixes applied there.
+    /// can chain). Rector 2.8.4 reruns its rules until the file stops changing, but on the same AST, where such a fix
+    /// does not match again (a removed argument leaves its position empty); the fix rounds of [`Linter::fix`] parse
+    /// the new source, so they stop running such a rule on a file once one of its fixes applied there.
     fn once(&self) -> bool {
         false
     }

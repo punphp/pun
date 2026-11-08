@@ -1,4 +1,4 @@
-//! `lint/complexity/no-redundant-nullable-check`, ported from Rector 2.6.1's `SimplifyIfNullableReturnRector`
+//! `lint/complexity/no-redundant-nullable-check`, ported from Rector 2.8.4's `SimplifyIfNullableReturnRector`
 //! (rules/CodeQuality/Rector/If_) with `VarTagRemover::removeVarPhpTagValueNodeIfNotComment()`.
 //!
 //! ```php

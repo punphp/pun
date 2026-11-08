@@ -1,4 +1,4 @@
-//! `lint/php-8.5/no-null-debug-info`, ported from Rector 2.6.1's `NullDebugInfoReturnRector`
+//! `lint/php-8.5/no-null-debug-info`, ported from Rector 2.8.4's `NullDebugInfoReturnRector`
 //! (rules/Php85/Rector/ClassMethod).
 //!
 //! PHP 8.5 deprecates returning `null` from `__debugInfo()`, so `return null;` and a bare `return;` in that method

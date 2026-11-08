@@ -1,4 +1,4 @@
-//! Rector 2.6.1's `TypeFactory::createMixedPassedOrUnionTypeAndKeepConstant` (src/NodeTypeResolver/PHPStan/Type/
+//! Rector 2.8.4's `TypeFactory::createMixedPassedOrUnionTypeAndKeepConstant` (src/NodeTypeResolver/PHPStan/Type/
 //! TypeFactory.php) with the `TypeHasher` it keys types by (src/NodeTypeResolver/PHPStan/TypeHasher.php), on Mago's
 //! types standing in for PHPStan's, and `ReturnedNodesReturnTypeInfererTypeInferer::inferFunctionLike`, which builds a
 //! body's return type with it.
@@ -319,16 +319,6 @@ fn corrected(t: &TAtomic) -> TAtomic {
             }
         }
         _ => t.clone(),
-    }
-}
-
-/// Whether `t` is, in PHPStan, an intersection with an accessory type that Rector's `IntersectionTypeMapper` cannot
-/// write inside a union: a non-empty array or a list.
-pub(crate) fn is_accessory_array(t: &TAtomic) -> bool {
-    match t {
-        TAtomic::Array(TArray::Keyed(k)) => !is_constant_array(t) && k.non_empty,
-        TAtomic::Array(TArray::List(_)) => !is_constant_array(t),
-        _ => false,
     }
 }
 

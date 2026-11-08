@@ -1,5 +1,5 @@
 //! `lint/types/add-return-type-from-new-array` and `lint/types/add-private-method-array-return-type`, ported from
-//! Rector 2.6.1's `ReturnTypeFromStrictNewArrayRector` and `PrivateMethodReturnTypeFromStrictNewArrayRector`
+//! Rector 2.8.4's `ReturnTypeFromStrictNewArrayRector` and `PrivateMethodReturnTypeFromStrictNewArrayRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) with the `StrictReturnNewArrayResolver` they share
 //! (rules/TypeDeclaration/NodeAnalyzer).
 //!
@@ -193,8 +193,9 @@ fn resolve(
             if return_type.is_list().yes() {
                 narrow = intersect(vec![narrow, Type::Accessory(Accessory::List)]);
             }
-            change_return_type(&mut info, &narrow);
-            edits.push(target.edit(ctx.source, &info.print()));
+            if change_return_type(&mut info, &narrow) {
+                edits.push(target.edit(ctx.source, &info.print()));
+            }
         }
     }
     edits.push(Edit::new(Span::new(at, at), ": array".to_string()));
@@ -232,15 +233,21 @@ fn match_array_assigned_variables<'s, 'arena: 's>(
     variables
 }
 
-/// `shouldAddReturnArrayDocType()`: a constant array of items with integer keys, or any other array.
+/// `shouldAddReturnArrayDocType()`: only plain list<> and generic array<> doc types are worth adding; array shapes
+/// (a constant array with keys that is no list, anywhere in the type) produce noisy, fragile doc types.
 fn should_add_return_array_doc_type(t: &Type) -> bool {
-    match t {
-        Type::ConstArray(_) => {
-            !matches!(t.iterable_value_type(), Type::Never(_))
-                && t.iterable_key_type().is_integer().yes()
+    fn visit(t: &Type, found: &std::cell::Cell<bool>) -> Type {
+        if let Type::ConstArray(a) = t
+            && !a.keys.is_empty()
+            && !t.is_list().yes()
+        {
+            found.set(true);
         }
-        _ => true,
+        t.traverse(&|child| visit(child, found))
     }
+    let found = std::cell::Cell::new(false);
+    visit(t, &found);
+    !found.get()
 }
 
 /// PHPStan's type of a native array as the scope builds it: Mago's non-empty list a `list<T>`

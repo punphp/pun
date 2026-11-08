@@ -1,4 +1,4 @@
-//! `lint/style/prefer-property-over-local-getter`, ported from Rector 2.6.1's `PrivatizeLocalGetterToPropertyRector`
+//! `lint/style/prefer-property-over-local-getter`, ported from Rector 2.8.4's `PrivatizeLocalGetterToPropertyRector`
 //! (rules/Privatization/Rector/MethodCall).
 //!
 //! `$this->getSome()` becomes `$this->some` when `getSome` is a method of the same class, private or of a final

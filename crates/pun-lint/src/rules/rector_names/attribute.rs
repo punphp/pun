@@ -237,6 +237,7 @@ pub(crate) fn create(
     config: &AttributeConfig,
     name: String,
     constructor: &[(String, bool)],
+    foldable: Option<&[String]>,
     nested: bool,
 ) -> Attribute {
     // `getValuesWithSilentKey()`
@@ -317,9 +318,45 @@ pub(crate) fn create(
             };
         }
     }
+    if let Some(parameters) = foldable {
+        args = fold_unknown_named_args(args, parameters);
+    }
     let mut attribute = Attribute { name, args };
     decorate(&config.attribute_class, &mut attribute);
     attribute
+}
+
+/// `UnknownNamedArgsToOptionsFolder::fold()`: the named arguments the constructor does not declare go into its
+/// `$options` array (after the items of an explicit `options:` array, which must be an array literal).
+fn fold_unknown_named_args(args: Vec<Arg>, parameters: &[String]) -> Vec<Arg> {
+    let mut kept = Vec::new();
+    let mut options: Vec<Item> = Vec::new();
+    let mut explicit: Option<&Arg> = None;
+    for arg in &args {
+        match arg.name.as_deref() {
+            Some("options") => explicit = Some(arg),
+            Some(name) if !parameters.iter().any(|p| p == name) => options.push(Item {
+                key: Some(Expr::Str(name.to_string(), Quote::Single)),
+                value: arg.value.clone(),
+            }),
+            _ => kept.push(arg.clone()),
+        }
+    }
+    if options.is_empty() {
+        return args;
+    }
+    if let Some(explicit) = explicit {
+        // an explicit options: ... of an unexpected shape cannot be merged safely, keep the original arguments
+        let Expr::Array(items) = &explicit.value else {
+            return args;
+        };
+        options = [items.clone(), options].concat();
+    }
+    kept.push(Arg {
+        name: Some("options".to_string()),
+        value: Expr::Array(options),
+    });
+    kept
 }
 
 /// Whether an attribute's argument is the nested annotation that stays (`hasRemoveArrayState()`).

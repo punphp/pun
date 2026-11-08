@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-redundant-property-default`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-redundant-property-default`, ported from Rector 2.8.4's
 //! `RemoveDefaultValueFromAssignedPropertyRector` (rules/DeadCode/Rector/Property), with `ConstructorAssignDetector`,
 //! `PropertyAssignMatcher` and `PropertyFetchAnalyzer::isFilledViaMethodCallInConstructStmts`.
 //!
@@ -343,10 +343,12 @@ impl<'a> Scope<'_, '_, 'a> {
     fn is_assigned(&self, name: &[u8]) -> bool {
         let mut assigned = false;
         for method in self.initializers() {
+            // `IS_FIRST_LEVEL_STATEMENT`: the method's own statements, and the expression of each expression
+            // statement.
             let first: Vec<Span> = first_level(method)
-                .filter_map(|s| match s {
-                    Statement::Expression(e) => Some(node_span(unparenthesize(e.expression))),
-                    _ => None,
+                .map(|s| match s {
+                    Statement::Expression(e) => node_span(unparenthesize(e.expression)),
+                    s => node_span(s),
                 })
                 .collect();
             for statement in first_level(method) {
@@ -425,7 +427,9 @@ impl<'a> Scope<'_, '_, 'a> {
 
     /// The traversal of `isPropertyAssigned`, in php-parser's order: `in_loop` inside a loop or `switch` body.
     fn walk(&self, node: Node<'a, 'a>, name: &[u8], first: &[Span], in_loop: bool) -> Found {
+        // A nested if/else does not guarantee the assignment; the outer condition can skip it.
         if let Node::If(r#if) = node
+            && first.contains(&node_span(r#if))
             && if_else_assign(r#if, name, self.path, self.ctx)
         {
             return Found::Stop(!in_loop);

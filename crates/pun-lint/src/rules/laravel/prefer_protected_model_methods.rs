@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-protected-model-methods`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-protected-model-methods`, ported from rector-laravel 2.7.3's
 //! `MakeModelAttributesAndScopesProtectedRector` (src/Rector/ClassMethod), with `ScopeAnalyzer::isScopeMethod`
 //! (src/NodeAnalyzer/ScopeAnalyzer.php).
 //!

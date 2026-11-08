@@ -1,4 +1,4 @@
-//! `lint/types/add-var-phpdoc-from-dim-fetch`, ported from Rector 2.6.1's `AddVarArrayDocblockFromDimFetchAssignRector`
+//! `lint/types/add-var-phpdoc-from-dim-fetch`, ported from Rector 2.8.4's `AddVarArrayDocblockFromDimFetchAssignRector`
 //! (rules/TypeDeclarationDocblocks/Rector/Class_): a property declared `array` that the class's methods append to
 //! (`$this->items[] = ...`) gets the appended values' type as its `@var`.
 
@@ -43,6 +43,17 @@ impl Rule for AddVarPhpdocFromDimFetch {
             let target = DocTarget::of(ctx, property.start);
             let mut info = target.info(ctx.source);
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
+                continue;
+            }
+            // `hasNonAppendAssignToPropertyName()`: a keyed dim assign (`$this->prop['x'] = ...`) or a direct assign
+            // carries a value type this rule does not read from bare appends; skip to avoid a too-narrow `@var`
+            let non_append = methods(members).any(|m| {
+                assignments(Node::Method(m)).into_iter().any(|a| match a.lhs {
+                    Expression::ArrayAccess(access) => this_property(access.array) == Some(property.names[0]),
+                    lhs => this_property(lhs) == Some(property.names[0]),
+                })
+            });
+            if non_append {
                 continue;
             }
             // `ArrayDimFetchFinder::findDimFetchAssignToPropertyName()`: `$this->name[] = expr` in the methods

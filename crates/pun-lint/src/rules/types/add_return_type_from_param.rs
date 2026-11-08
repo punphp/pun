@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-param`, ported from Rector 2.6.1's `ReturnTypeFromStrictParamRector`
+//! `lint/types/add-return-type-from-param`, ported from Rector 2.8.4's `ReturnTypeFromStrictParamRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) and its `AddReturnTypeFromParam`: a function or method whose last
 //! `return` returns a typed parameter that the body never assigns, and whose returns have one native type (`null`
 //! aside), gets that parameter's type, as written, as its return type. Mago does not narrow an `int` by truthiness

@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-method`, ported from Rector 2.6.1's `RenameMethodRector` (rules/Renaming/Rector/MethodCall).
+//! `lint/refactor/rename-method`, ported from Rector 2.8.4's `RenameMethodRector` (rules/Renaming/Rector/MethodCall).
 //!
 //! Each rename names a class, an old method and a new one; the first rename that matches decides.
 //!

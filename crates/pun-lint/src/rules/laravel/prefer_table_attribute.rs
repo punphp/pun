@@ -1,16 +1,17 @@
-//! `lint/laravel/prefer-table-attribute`, ported from rector-laravel 2.5.0's `TablePropertyToTableAttributeRector`
+//! `lint/laravel/prefer-table-attribute`, ported from rector-laravel 2.7.3's `TablePropertyToTableAttributeRector`
 //! (src/Rector/Class_) and `TableAttributeFactory` (src/NodeFactory).
 //!
 //! A model's `protected $table = '...'` (or, when the class has `#[Table]` already, that attribute's `name:`) becomes
 //! `#[\Illuminate\Database\Eloquent\Attributes\Table(name: ..., key: ..., keyType: ..., incrementing: ...)]`, with the
-//! defaults of the protected `$primaryKey`, `$keyType` and `$incrementing` properties (or the existing attribute's
-//! arguments of those names, which the properties override). The properties it reads go; an existing `#[Table]`
+//! defaults of the protected `$primaryKey` (unless `null`), `$keyType` and `$incrementing` properties (or the existing
+//! attribute's arguments of those names, and its `timestamps:` and `dateFormat:`, which the properties override). The properties it reads go; an existing `#[Table]`
 //! group is replaced in place, the other attributes of that group with it.
 
-use mago_syntax::cst::{Expression, Node, NodeKind, PartialArgument};
+use mago_syntax::cst::{Expression, Literal, Node, NodeKind, PartialArgument};
 
 use super::property_attribute::{ClassView, MODEL, is_string_node, moved_value, report, rewrite};
 use crate::rules::rector_batch5::resolve_class_name;
+use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
 const TABLE: &str = "Illuminate\\Database\\Eloquent\\Attributes\\Table";
@@ -64,7 +65,7 @@ impl Rule for PreferTableAttribute {
         // Seed options from existing attribute args (properties take precedence below)
         let mut options = Vec::new();
         if has_existing {
-            for name in ["key", "keyType", "incrementing"] {
+            for name in ["key", "keyType", "incrementing", "timestamps", "dateFormat"] {
                 if let Some(arg) = existing_arg(&class, ancestors, name) {
                     set(&mut options, name, arg);
                 }
@@ -80,6 +81,9 @@ impl Rule for PreferTableAttribute {
             if let Some((index, p)) = class.property(property)
                 && p.is_protected()
                 && let Some(value) = p.default()
+                // `ValueResolver::isNull`: a `null` primary key stays a property.
+                && !(property == "primaryKey"
+                    && matches!(unparenthesize(value), Expression::Literal(Literal::Null(_))))
             {
                 set(&mut options, option, value);
                 removed.push(index);

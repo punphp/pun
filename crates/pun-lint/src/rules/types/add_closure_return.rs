@@ -1,11 +1,12 @@
-//! `lint/types/add-closure-return-type` and `lint/types/add-arrow-function-return-type`, ported from Rector 2.6.1's
+//! `lint/types/add-closure-return-type` and `lint/types/add-arrow-function-return-type`, ported from Rector 2.8.4's
 //! `ClosureReturnTypeRector` (rules/TypeDeclaration/Rector/Closure) and `AddArrowFunctionReturnTypeRector`
 //! (rules/TypeDeclaration/Rector/ArrowFunction): a closure gets the union of its returns' native types, an arrow
 //! function the native type of its expression.
 //!
 //! Mago does not tell a declared `mixed` from an unknown type, so neither gets a type here (Rector writes `mixed`
 //! for the declared one); and an arrow function returning an offset (`fn () => $a['k']`), for which Rector reads
-//! the docblock type, gets its native type.
+//! the docblock type, gets its native type. `new parent()` in a trait is `parent` (PHPStan's
+//! `NonexistentParentClassType`).
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::union::TUnion;
@@ -16,7 +17,7 @@ use super::facts::{Facts, facts};
 use super::native::native_type;
 use super::silent_void::{Place, has_silent_void};
 use super::{add_return_type, class_scope, returns_scoped};
-use crate::syntax::node_span;
+use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
 pub struct AddClosureReturn;
@@ -79,6 +80,14 @@ pub(crate) fn closure_return<'ast, 'arena>(
     if returns.is_empty() {
         return;
     }
+    if returns.iter().all(|r| r.value.is_some_and(|v| is_new_parent_in_trait(v, ancestors))) {
+        let at = match &closure.use_clause {
+            Some(uses) => node_span(uses).end,
+            None => node_span(&closure.parameter_list).end,
+        };
+        out.push(add_return_type(node_span(&closure.function), at, "parent"));
+        return;
+    }
     let mut types: Vec<&TAtomic> = Vec::new();
     let mut has_void = false;
     for r in &returns {
@@ -112,6 +121,18 @@ pub(crate) fn closure_return<'ast, 'arena>(
     out.push(add_return_type(node_span(&closure.function), at, &r#type));
 }
 
+/// `new parent()` in a trait: PHPStan's `NonexistentParentClassType`, whose native type node is `parent`.
+fn is_new_parent_in_trait(expr: &Expression<'_>, ancestors: &[Node<'_, '_>]) -> bool {
+    matches!(unparenthesize(expr), Expression::Instantiation(i) if matches!(i.class, Expression::Parent(_)))
+        && matches!(
+            ancestors.iter().rev().find(|a| matches!(
+                a,
+                Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_)
+            )),
+            Some(Node::Trait(_))
+        )
+}
+
 /// The native type of `expr`, or the type PHPStan knows there.
 fn type_of<'f>(facts: &'f Facts, expr: &Expression<'_>, full: bool) -> Option<&'f TUnion> {
     if full {
@@ -139,7 +160,7 @@ impl Rule for AddArrowFunctionReturn {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
@@ -147,6 +168,10 @@ impl Rule for AddArrowFunctionReturn {
             return;
         };
         if arrow.return_type_hint.is_some() {
+            return;
+        }
+        if is_new_parent_in_trait(arrow.expression, ancestors) {
+            out.push(add_return_type(node_span(&arrow.r#fn), node_span(&arrow.parameter_list).end, "parent"));
             return;
         }
         let facts = facts(ctx);

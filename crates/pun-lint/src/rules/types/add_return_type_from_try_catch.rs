@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-try-catch`, ported from Rector 2.6.1's `AddReturnTypeFromTryCatchTypeRector`
+//! `lint/types/add-return-type-from-try-catch`, ported from Rector 2.8.4's `AddReturnTypeFromTryCatchTypeRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a method whose `return`s all return a value, and whose first-level
 //! `try` / `catch` / `finally` blocks each return a value of the same type, gets that type.
 //!

@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-assignment`, ported from Rector 2.6.1's `RemoveUnusedVariableAssignRector`
+//! `lint/dead-code/no-unused-assignment`, ported from Rector 2.8.4's `RemoveUnusedVariableAssignRector`
 //! (rules/DeadCode/Rector/Assign), with `NoDiscardCallAnalyzer`, `ReservedKeywordAnalyzer::isNativeVariable` and
 //! `VariableAnalyzer`.
 //!
@@ -41,10 +41,6 @@ impl Rule for NoUnusedAssignment {
         Some(&[NodeKind::ExpressionStatement])
     }
 
-    /// A removal can leave an earlier assignment unused, which Rector, one pass over the file, keeps.
-    fn once(&self) -> bool {
-        true
-    }
 
     fn visit<'ast, 'arena>(
         &self,

@@ -1,4 +1,4 @@
-//! `lint/refactor/remove-function-argument`, ported from Rector 2.6.1's `RemoveFuncCallArgRector`
+//! `lint/refactor/remove-function-argument`, ported from Rector 2.8.4's `RemoveFuncCallArgRector`
 //! (rules/Removing/Rector/FuncCall).
 //!
 //! Options: `items = [{ function = "ldap_first_attribute", argument-position = 2 }]` (`RemoveFuncCallArg`). A call to

@@ -1,4 +1,4 @@
-//! `lint/types/add-property-type-jms-scalar` and `lint/types/add-property-type-jms-object`, ported from Rector 2.6.1's
+//! `lint/types/add-property-type-jms-scalar` and `lint/types/add-property-type-jms-object`, ported from Rector 2.8.4's
 //! `ScalarTypedPropertyFromJMSSerializerAttributeTypeRector` and `ObjectTypedPropertyFromJMSSerializerAttributeTypeRector`
 //! (rules/TypeDeclaration/Rector/Class_) with `JMSTypeAnalyzer`, `JMSTypePropertyTypeFactory` and
 //! `ScalarStringToTypeMapper`: an untyped property without a default whose `#[JMS\Serializer\Annotation\Type(...)]`
@@ -256,7 +256,6 @@ fn scalar_name(lowered: &str) -> bool {
                 | "never-returns"
                 | "no-return"
                 | "array-key"
-                | "list"
                 | "lowercase-string"
                 | "uppercase-string"
         )
@@ -283,7 +282,8 @@ fn scalar_declaration(lowered: &str) -> Option<&'static str> {
         "int" | "integer" | "positive-int" | "negative-int" | "non-negative-int"
         | "non-positive-int" => "int",
         "bool" | "boolean" | "true" | "false" => "bool",
-        "array" | "non-empty-array" => "array",
+        // `list` is `array&list`, an intersection PHPStan 2.3's `NativePhpTypeNodeHelper::intersection()` writes as `array`
+        "array" | "non-empty-array" | "list" => "array",
         "iterable" => "iterable",
         "object" => "object",
         _ => return None,

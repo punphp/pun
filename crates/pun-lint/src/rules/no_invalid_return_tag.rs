@@ -1,11 +1,11 @@
-//! `lint/dead-code/no-invalid-return-tag`, ported from Rector 2.6.1's `RemoveReturnTagIncompatibleWithNativeTypeRector`
+//! `lint/dead-code/no-invalid-return-tag`, ported from Rector 2.8.4's `RemoveReturnTagIncompatibleWithNativeTypeRector`
 //! (rules/DeadCode/Rector/ClassMethod).
 //!
 //! The first `@return` of a function's or method's doc comment goes when its type contradicts the native return type
-//! (`$native->isSuperTypeOf($doc)` is no); a narrower type stays. It also stays with a description, a generic type,
-//! a type alias of the class (`@phpstan-type`, `@psalm-type`, `@phan-type` or an imported one), a template of the
-//! method, or `$this` over a class type in a trait. The removal takes `@phan-return` along, not the `@phpstan-` and
-//! `@psalm-` tags; a doc comment left empty goes.
+//! (`$native->isSuperTypeOf($doc)` is no); a narrower type stays. It also stays with a description, a generic type, a
+//! type alias of the class anywhere in it (`@phpstan-type`, `@psalm-type`, `@phan-type` or an imported one), a template
+//! of the method, or `$this` over a class type in a trait. The removal takes `@phan-return` along, not the `@phpstan-`
+//! and `@psalm-` tags; a doc comment left empty goes.
 
 use mago_syntax::cst::{Node, NodeKind};
 use pun_phpstan::phpdoc::{Node as DocNode, TagValue, tags};
@@ -56,9 +56,13 @@ impl Rule for NoInvalidReturnTag {
             return;
         }
         if let DocNode::Ident(name) = &tag.ty
-            && (class_type_aliases(ctx, ancestors).contains(name)
-                || template_names(doc.text_all()).contains(name))
+            && template_names(doc.text_all()).contains(name)
         {
+            return;
+        }
+        // the alias can be nested in a composed type as well, e.g. "ConfigArray|CustomConfig" or "?ConfigArray"
+        let aliases = class_type_aliases(ctx, ancestors);
+        if !aliases.is_empty() && contains_name(&tag.ty, &aliases) {
             return;
         }
         let facts = facts(ctx);
@@ -98,6 +102,25 @@ pub(crate) fn template_names(doc: &str) -> Vec<String> {
             _ => None,
         })
         .collect()
+}
+
+/// `containsTypeAliasName()`: an identifier anywhere in the type node is one of `names`.
+fn contains_name(node: &DocNode, names: &[String]) -> bool {
+    let any = |nodes: &[DocNode]| nodes.iter().any(|n| contains_name(n, names));
+    match node {
+        DocNode::Ident(name) => names.contains(name),
+        DocNode::Nullable(inner) | DocNode::Array(inner) | DocNode::Projection(_, inner) => contains_name(inner, names),
+        DocNode::Union(nodes) | DocNode::Inter(nodes) => any(nodes),
+        DocNode::Generic { args, .. } => any(args),
+        DocNode::OffsetAccess(a, b) => contains_name(a, names) || contains_name(b, names),
+        DocNode::Conditional { subject, target, then, otherwise, .. } => {
+            [subject, target, then, otherwise].iter().any(|n| contains_name(n, names))
+        }
+        DocNode::ConditionalForParameter { target, then, otherwise, .. } => {
+            [target, then, otherwise].iter().any(|n| contains_name(n, names))
+        }
+        _ => false,
+    }
 }
 
 /// The type aliases the doc comment of the class-like around the node defines or imports

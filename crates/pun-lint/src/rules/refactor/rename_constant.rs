@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-constant`, ported from Rector 2.6.1's `RenameConstantRector`
+//! `lint/refactor/rename-constant`, ported from Rector 2.8.4's `RenameConstantRector`
 //! (rules/Renaming/Rector/ConstFetch).
 //!
 //! Options: a map of old constant names to new ones, `{ MYSQL_ASSOC = "MYSQLI_ASSOC" }`; both must be plain constant

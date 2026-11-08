@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-be-url`, ported from pest-plugin-rector's `UseToBeUrlRector`: `expect(filter_var($url,
 //! FILTER_VALIDATE_URL))->not->toBeFalse()` and `expect(filter_var($url, FILTER_VALIDATE_URL) !== false)->toBeTrue()`
-//! become `expect($url)->toBeUrl()` when `$url` may be a string.
+//! become `expect($url)->toBeUrl()` when `$url` is known to be a string.
 
 use mago_syntax::cst::{BinaryOperator, Expression, FunctionCall, MethodCall, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
@@ -75,7 +75,7 @@ impl Rule for PreferToBeUrl {
         } else {
             return;
         };
-        if type_is(ctx, url, Is::String) == Trinary::No {
+        if type_is(ctx, url, Is::String) != Trinary::Yes {
             return;
         }
         edits.extend(holder.set_arguments(ctx, url));

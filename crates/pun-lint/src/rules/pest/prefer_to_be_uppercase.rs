@@ -1,6 +1,6 @@
 //! `lint/pest/prefer-to-be-uppercase`, ported from pest-plugin-rector's `UseToBeUppercaseRector`:
 //! `expect(strtoupper($value) === $value)->toBeTrue()` (either way round) becomes `expect($value)->toBeUppercase()`
-//! when `$value` may be a string.
+//! when `$value` is known to be a string.
 
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
@@ -59,7 +59,7 @@ impl Rule for PreferToBeUppercase {
             }
             _ => return,
         };
-        if type_is(ctx, value, Is::String) == Trinary::No {
+        if type_is(ctx, value, Is::String) != Trinary::Yes {
             return;
         }
         let mut edits = holder.set_arguments(ctx, value);

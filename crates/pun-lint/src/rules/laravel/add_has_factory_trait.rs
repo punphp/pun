@@ -1,4 +1,4 @@
-//! `lint/laravel/add-has-factory-trait`, ported from rector-laravel 2.5.0's `AddHasFactoryToModelsRector`
+//! `lint/laravel/add-has-factory-trait`, ported from rector-laravel 2.7.3's `AddHasFactoryToModelsRector`
 //! (src/Rector/Class_).
 //!
 //! A class (named or anonymous) that is an Eloquent model gets `use \Illuminate\Database\Eloquent\Factories\HasFactory;`

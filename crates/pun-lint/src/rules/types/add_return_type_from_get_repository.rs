@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-get-repository`, ported from Rector 2.6.1's
+//! `lint/types/add-return-type-from-get-repository`, ported from Rector 2.8.4's
 //! `ReturnTypeFromGetRepositoryDocblockRector` (rules/TypeDeclaration/Rector/ClassMethod): a method without a return
 //! type whose one `return` returns an entity manager's `getRepository()` call (directly or through the variable it
 //! was assigned to) returns the existing class its `@return` names, and the `@return` goes.

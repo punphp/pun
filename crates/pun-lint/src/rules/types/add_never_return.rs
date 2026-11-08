@@ -1,4 +1,4 @@
-//! `lint/types/add-never-return-type`, ported from Rector 2.6.1's `ReturnNeverTypeRector` (rules/TypeDeclaration/
+//! `lint/types/add-never-return-type`, ported from Rector 2.8.4's `ReturnNeverTypeRector` (rules/TypeDeclaration/
 //! Rector/ClassMethod): a function or method that never returns gets the `never` return type (see [`super::never`]).
 //! A public method of a PHPUnit test class that already has a return type is left alone.
 

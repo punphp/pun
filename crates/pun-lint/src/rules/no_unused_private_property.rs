@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-private-property`, ported from Rector 2.6.1's `RemoveUnusedPrivatePropertyRector`
+//! `lint/dead-code/no-unused-private-property`, ported from Rector 2.8.4's `RemoveUnusedPrivatePropertyRector`
 //! (rules/DeadCode/Rector/Property), with `PropertyWriteonlyAnalyzer`, `PropertyFetchFinder` and the
 //! `AssignedToNodeVisitor` marks it reads.
 //!

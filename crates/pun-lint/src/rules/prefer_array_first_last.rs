@@ -1,4 +1,4 @@
-//! `lint/php-8.5/prefer-array-first-last`, ported from Rector 2.6.1's `ArrayFirstLastRector`
+//! `lint/php-8.5/prefer-array-first-last`, ported from Rector 2.8.4's `ArrayFirstLastRector`
 //! (rules/Php85/Rector/ArrayDimFetch).
 //!
 //! `$a[array_key_first($a)]` becomes `array_first($a)` (and `_last` likewise); `array_values($a)[0]` becomes

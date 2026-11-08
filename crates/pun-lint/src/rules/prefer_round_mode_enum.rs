@@ -1,4 +1,4 @@
-//! `lint/php-8.4/prefer-round-mode-enum`, ported from Rector 2.6.1's `RoundingModeEnumRector`
+//! `lint/php-8.4/prefer-round-mode-enum`, ported from Rector 2.8.4's `RoundingModeEnumRector`
 //! (rules/Php84/Rector/FuncCall).
 //!
 //! `round($x, $p, PHP_ROUND_HALF_UP)` becomes `round($x, $p, \RoundingMode::HalfAwayFromZero)`, and likewise for the

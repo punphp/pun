@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-future-php-version-check`, ported from Rector 2.6.1's `UnwrapFutureCompatibleIfPhpVersionRector`
+//! `lint/dead-code/no-future-php-version-check`, ported from Rector 2.8.4's `UnwrapFutureCompatibleIfPhpVersionRector`
 //! (rules/DeadCode/Rector/If_), with `ConditionResolver` and `ConditionEvaluator` (rules/DeadCode).
 //!
 //! An `if` without `elseif` whose condition is a `version_compare()` that the project's minimum PHP version decides

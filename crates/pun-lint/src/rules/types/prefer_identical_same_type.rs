@@ -1,4 +1,4 @@
-//! `lint/types/prefer-identical-same-type`, ported from Rector 2.6.1's `UseIdenticalOverEqualWithSameTypeRector`
+//! `lint/types/prefer-identical-same-type`, ported from Rector 2.8.4's `UseIdenticalOverEqualWithSameTypeRector`
 //! (rules/CodeQuality/Rector/Equal): `==` and `!=` (`<>`) become `===` and `!==` when both sides have the same
 //! native type (`getNativeType`, see [`super::facts`]).
 //!

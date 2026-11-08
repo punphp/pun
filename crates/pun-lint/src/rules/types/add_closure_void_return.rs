@@ -1,4 +1,4 @@
-//! `lint/types/add-closure-void-return`, ported from Rector 2.6.1's `AddClosureVoidReturnTypeWhereNoReturnRector`
+//! `lint/types/add-closure-void-return`, ported from Rector 2.8.4's `AddClosureVoidReturnTypeWhereNoReturnRector`
 //! (rules/TypeDeclaration/Rector/Closure).
 //!
 //! A closure without a return type that returns no value and does not yield gets `: void`.

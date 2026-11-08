@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-between`, ported from pest-plugin-rector's `UseToBeBetweenRector`: `expect($value >= $min
-//! && $value <= $max)->toBeTrue()` becomes `expect($value)->toBeBetween($min, $max)` when `$value` may be an int or a
+//! && $value <= $max)->toBeTrue()` becomes `expect($value)->toBeBetween($min, $max)` when `$value` is known to be an int or a
 //! float.
 
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
@@ -58,8 +58,8 @@ impl Rule for PreferToBeBetween {
             return;
         }
         let value = left.lhs;
-        if type_is(ctx, value, Is::Integer) == Trinary::No
-            && type_is(ctx, value, Is::Float) == Trinary::No
+        if type_is(ctx, value, Is::Integer) != Trinary::Yes
+            && type_is(ctx, value, Is::Float) != Trinary::Yes
         {
             return;
         }

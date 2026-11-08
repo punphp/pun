@@ -1,4 +1,4 @@
-//! `lint/types/add-nullable-return-type` and `lint/types/add-union-return-type`, ported from Rector 2.6.1's
+//! `lint/types/add-nullable-return-type` and `lint/types/add-union-return-type`, ported from Rector 2.8.4's
 //! `ReturnNullableTypeRector` and `ReturnUnionTypeRector` (rules/TypeDeclaration/Rector/ClassMethod, with
 //! `AddUnionReturnType`): a function or method whose returns' native types make a union gets it, as `?T` from the
 //! nullable rule (PHP 7.1) and as anything else from the union rule (PHP 8.0).

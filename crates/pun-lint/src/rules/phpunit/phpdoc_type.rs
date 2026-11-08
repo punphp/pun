@@ -1,7 +1,8 @@
 //! The typed tags (`@var`, `@return`, `@param`) of a doc comment as phpdoc-parser reads them, as far as Pun follows:
 //! a type that is a name (`IdentifierTypeNode`), or a union or an intersection of names, each maybe with `[]`s, then
-//! the variable and the description. A changed tag is printed as phpdoc-parser prints a tag value node anew:
-//! `@tag type $variable description`, single-spaced.
+//! the variable and the description. A tag whose type changes keeps its text around the type (phpdoc-parser's
+//! format-preserving printer); [`TypedTag::print_with`] prints a tag value node anew: `@tag type $variable description`,
+//! single-spaced.
 
 use crate::rules::lint_b_doc::Doc;
 
@@ -172,8 +173,8 @@ pub(crate) fn short_name(name: &str) -> &str {
     name.rsplit('\\').next().unwrap_or(name)
 }
 
-/// The doc comment after `PhpDocTypeChanger` sets the type of the tag `name` (`@var`, `@return`) to `ty`: the tag
-/// reprinted, or, without one, a new tag `name ty` added (a new doc for a node without one). `None` where
+/// The doc comment after `PhpDocTypeChanger` sets the type of the tag `name` (`@var`, `@return`) to `ty`: the type
+/// replaced in place, or, without one, a new tag `name ty` added (a new doc for a node without one). `None` where
 /// [`typed_tag`] does not read the doc.
 pub(crate) fn with_tag_type(doc: Option<&Doc<'_>>, name: &str, ty: &str) -> Option<String> {
     let added = format!("{name} {ty}");
@@ -181,16 +182,19 @@ pub(crate) fn with_tag_type(doc: Option<&Doc<'_>>, name: &str, ty: &str) -> Opti
         return Some(format!("/**\n * {added}\n */"));
     };
     match typed_tag(doc, name, None).ok()? {
+        // Rector 2.8.4 prints with phpdoc-parser's format-preserving printer: only the type node is printed anew,
+        // the white space around it stays.
         Some(tag) => {
             let text = doc.text_all();
-            let child = doc.text(tag.index).trim_end();
-            let from = child.as_ptr() as usize - text.as_ptr() as usize;
-            Some(format!(
-                "{}{}{}",
-                &text[..from],
-                tag.print_with(ty),
-                &text[from + child.len()..]
-            ))
+            let members: Vec<&str> = match &tag.ty {
+                TagType::Name(one) | TagType::Other(one) => vec![one],
+                TagType::Union(m) | TagType::Intersection(m) => m.clone(),
+            };
+            let offset = |s: &str| s.as_ptr() as usize - text.as_ptr() as usize;
+            let from = offset(members[0]);
+            let last = members[members.len() - 1];
+            let to = offset(last) + last.len();
+            Some(format!("{}{}{}", &text[..from], ty, &text[to..]))
         }
         None => Some(doc.print_appending(&vec![false; doc.len()], &[&added])),
     }

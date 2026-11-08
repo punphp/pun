@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-dim-fetch-key`, ported from Rector 2.6.1's `AddParamFromDimFetchKeyUseRector`
+//! `lint/types/add-param-type-dim-fetch-key`, ported from Rector 2.8.4's `AddParamFromDimFetchKeyUseRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) with `ArrayDimFetchFinder::findByDimName` and `ParamTypeAddGuard`: an
 //! untyped parameter of a class's method that the method uses as an array key (`$items[$key]`) gets the key type of
 //! the array, when every such array is a general or constant array.
@@ -24,7 +24,7 @@ use super::facts::{Facts, facts};
 use super::has_parent_class_method;
 use super::names::resolve_class_name;
 use super::param::{Flow, add_hint, param_declaration, traverse};
-use crate::rules::add_param_type_sprintf::is_legal;
+use super::add_param_type_property::is_legal;
 use crate::rules::class_method::type_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};

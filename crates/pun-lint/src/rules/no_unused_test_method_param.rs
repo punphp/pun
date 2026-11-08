@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-test-method-param`, ported from Rector 2.6.1's
+//! `lint/dead-code/no-unused-test-method-param`, ported from Rector 2.8.4's
 //! `RemoveTestsOverriddenPrivateMethodParameterRector` (rules/DeadCode/Rector/ClassMethod), with
 //! `OverriddenParameterResolver` (rules/DeadCode/NodeCollector) and `PrivateMethodParamRemover`
 //! (rules/DeadCode/NodeManipulator).
@@ -12,7 +12,8 @@
 //!
 //! A caller is a method call or static call whose receiver PHPStan types as the class (`$this`, `self`, `static`,
 //! the class's name, or a value of the class or a subclass). A caller that takes the method as a first-class callable,
-//! unpacks its arguments or passes a named argument for a parameter that stays keeps everything as it is.
+//! unpacks its arguments or passes a named argument for a parameter that stays keeps everything as it is; a
+//! `self::name(...)` or `static::name(...)` callable is no caller (PHPStan 2.3 gives its class name no scope).
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -240,6 +241,13 @@ fn caller_edits(
                     (c.class, &c.method, Caller::Call(&c.argument_list), true)
                 }
                 Node::MethodPartialApplication(c) => (c.object, &c.method, Caller::Callable, false),
+                // PHPStan 2.3 gives the `self`/`static` of `self::name(...)` no scope (only the virtual
+                // `StaticMethodCallableNode` gets one), so `isObjectType()` fails and Rector finds no caller there.
+                Node::StaticMethodPartialApplication(c)
+                    if matches!(c.class, Expression::Self_(_) | Expression::Static(_)) =>
+                {
+                    return true;
+                }
                 Node::StaticMethodPartialApplication(c) => {
                     (c.class, &c.method, Caller::Callable, true)
                 }

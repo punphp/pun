@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-ternary`, ported from Rector 2.6.1's `ReturnTypeFromStrictTernaryRector`
+//! `lint/types/add-return-type-from-ternary`, ported from Rector 2.8.4's `ReturnTypeFromStrictTernaryRector`
 //! (rules/TypeDeclaration/Rector/Class_): a function or method whose one `return` returns a ternary with a known
 //! native type, and whose returns (`null` aside) make one type, gets the ternary's type. Rector writes the ternary's
 //! docblock-aware type; Pun, reading native types only, writes the native one.

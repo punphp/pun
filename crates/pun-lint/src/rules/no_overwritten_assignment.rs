@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-overwritten-assignment`, ported from Rector 2.6.1's `RemoveDoubleAssignRector`
+//! `lint/dead-code/no-overwritten-assignment`, ported from Rector 2.8.4's `RemoveDoubleAssignRector`
 //! (rules/DeadCode/Rector/Assign).
 //!
 //! An assignment the next statement assigns again to the same variable or property goes: `$value = 1; $value = 2;`

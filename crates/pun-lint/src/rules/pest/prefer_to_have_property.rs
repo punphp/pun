@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-have-property`, ported from pest-plugin-rector's `UseToHavePropertyRector`: `expect(property_exists($subject, $other))->toBeTrue()` becomes `expect($subject)->toHaveProperty($other)`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toHaveProperty()`. The checked value's type must possibly be a object.
+//! `->not` before the matcher becomes `->not->toHaveProperty()`. The checked value's type must be an object.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToHaveProperty {
             "property_exists",
             "toHaveProperty",
             |values| match values {
-                [subject, other] if !(type_is(ctx, subject, Is::Object) == Trinary::No) => {
+                [subject, other] if type_is(ctx, subject, Is::Object) == Trinary::Yes => {
                     Some((*subject, vec![*other]))
                 }
                 _ => None,

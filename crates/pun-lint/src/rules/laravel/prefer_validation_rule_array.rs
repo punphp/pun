@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-validation-rule-array`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-validation-rule-array`, ported from rector-laravel 2.7.3's
 //! `ValidationRuleArrayStringValueToArrayRector` (src/Rector/MethodCall).
 //!
 //! In the rules array of `$request->validate([...])` (an `Illuminate\Http\Request`), `Validator::make($data, [...])`

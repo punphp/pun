@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-symfony-serializer`, ported from Rector 2.6.1's
+//! `lint/types/add-return-type-from-symfony-serializer`, ported from Rector 2.8.4's
 //! `ReturnTypeFromSymfonySerializerRector` (rules/TypeDeclaration/Rector/ClassMethod): a method whose only statement
 //! returns `$serializer->deserialize($data, Foo::class, $format)` on a Symfony `Serializer` returns a `Foo`.
 

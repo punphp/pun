@@ -1,4 +1,4 @@
-//! `lint/complexity/prefer-null-coalesce`, ported from Rector 2.6.1's
+//! `lint/complexity/prefer-null-coalesce`, ported from Rector 2.8.4's
 //! `ArrayKeyExistsTernaryThenValueToCoalescingRector` (rules/CodeQuality/Rector/Ternary).
 //!
 //! `array_key_exists($key, $values) ? $values[$key] : null` becomes `$values[$key] ?? null`. The two differ only when

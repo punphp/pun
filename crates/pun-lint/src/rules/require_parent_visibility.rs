@@ -1,4 +1,4 @@
-//! `lint/style/require-parent-visibility`, ported from Rector 2.6.1's `MakeInheritedMethodVisibilitySameAsParentRector`
+//! `lint/style/require-parent-visibility`, ported from Rector 2.8.4's `MakeInheritedMethodVisibilitySameAsParentRector`
 //! (rules/CodingStyle/Rector/ClassMethod).
 //!
 //! A method that overrides a public or protected method of a parent class gets that method's visibility. Magic methods,

@@ -1,5 +1,5 @@
-//! `lint/complexity/prefer-empty-array-identical`, ported from Rector 2.6.1's `SimplifyEmptyCheckOnEmptyArrayRector`
-//! (rules/CodeQuality/Rector/Empty_), as it runs on PHPStan 2.2.7.
+//! `lint/complexity/prefer-empty-array-identical`, ported from Rector 2.8.4's `SimplifyEmptyCheckOnEmptyArrayRector`
+//! (rules/CodeQuality/Rector/Empty_), as it runs on PHPStan 2.3.5.
 //!
 //! `empty($array)` is `$array === []` and `!empty($array)` is `$array !== []` when `$array` is an array: a variable
 //! whose type and native type are arrays, or an own property declared `array` (`syntax_types::is_array_property`).

@@ -1,4 +1,4 @@
-//! Rector 2.6.1's `AddNeverReturnType` (rules/TypeDeclaration/NodeManipulator), shared by `ReturnNeverTypeRector` and
+//! Rector 2.8.4's `AddNeverReturnType` (rules/TypeDeclaration/NodeManipulator), shared by `ReturnNeverTypeRector` and
 //! `AddClosureNeverReturnTypeRector`, with the `ClassMethodReturnTypeOverrideGuard` it asks about methods.
 //!
 //! A function-like gets `: never` (or its `: void` becomes `never`) when its body throws in a statement of its own or

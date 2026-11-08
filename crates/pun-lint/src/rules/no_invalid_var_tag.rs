@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-invalid-var-tag`, ported from Rector 2.6.1's `RemoveNonExistingVarAnnotationRector`
+//! `lint/dead-code/no-invalid-var-tag`, ported from Rector 2.8.4's `RemoveNonExistingVarAnnotationRector`
 //! (rules/DeadCode/Rector/Node).
 //!
 //! A `@var` tag on a statement (`foreach`, `static`, `echo`, `return`, an expression, `if`, `while`, `switch`, or the

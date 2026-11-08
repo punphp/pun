@@ -7,6 +7,7 @@ use pun_problem::Edit;
 use mago_syntax::token::TokenKind;
 use pun_problem::Span;
 
+use super::lint_b_doc::Doc;
 use super::rector_code_quality::named;
 use super::rector_stmts::{
     Frame, List, block_list, body_list, braced, enclosing, first_comment, holder_list,
@@ -212,78 +213,27 @@ pub(crate) fn member_from(
 }
 
 /// The doc comment `doc` without the `@param` tags of the parameters `names` (with their `$`), as Rector's phpdoc
-/// printer removes a tag node (`PhpDocTagRemover`, with [`list_removal`]'s rules over the doc's text and tag nodes).
-/// `Some("")` when nothing is left, which Rector prints as no doc comment; `None` when no tag goes.
+/// printer removes a tag node (`PhpDocTagRemover`, printed by [`Doc::print`]). `Some("")` when nothing is left, which
+/// Rector prints as no doc comment; `None` when no tag goes.
 pub(crate) fn doc_without_params(doc: &str, names: &[&[u8]]) -> Option<String> {
-    let nodes = doc_nodes(doc);
-    let removed: Vec<bool> = nodes
-        .iter()
-        .map(|n| param_tag_name(&doc[n.start..n.end]).is_some_and(|name| names.contains(&name)))
-        .collect();
-    if !removed.contains(&true) {
-        return None;
-    }
-    let Some(edits) = list_removal(&nodes, &removed) else {
-        return Some(String::new());
-    };
-    let mut out = doc.to_string();
-    for edit in edits.iter().rev() {
-        out.replace_range(edit.span.start..edit.span.end, &edit.text);
-    }
-    Some(out)
+    doc_without_tags(doc, |tag| {
+        param_tag_name(tag).is_some_and(|name| names.contains(&name))
+    })
 }
 
 /// [`doc_without_params`] for the tags `remove` picks by their text (from the `@` to the end of their description).
 pub(crate) fn doc_without_tags(doc: &str, remove: impl Fn(&str) -> bool) -> Option<String> {
-    let nodes = doc_nodes(doc);
-    let removed: Vec<bool> = nodes
-        .iter()
-        .map(|n| doc[n.start..n.end].starts_with('@') && remove(&doc[n.start..n.end]))
+    let parsed = Doc::parse(doc)?;
+    let removed: Vec<bool> = (0..parsed.len())
+        .map(|i| {
+            let tag = parsed.text(i);
+            tag.starts_with('@') && remove(tag)
+        })
         .collect();
     if !removed.contains(&true) {
         return None;
     }
-    let Some(edits) = list_removal(&nodes, &removed) else {
-        return Some(String::new());
-    };
-    let mut out = doc.to_string();
-    for edit in edits.iter().rev() {
-        out.replace_range(edit.span.start..edit.span.end, &edit.text);
-    }
-    Some(out)
-}
-
-/// The text and tag nodes of a doc comment: a tag from its `@` to the end of the last line of its description, a
-/// text from its first character to the end of its paragraph. A blank line ends either.
-fn doc_nodes(doc: &str) -> Vec<Span> {
-    let inner_end = doc.len() - doc.strip_suffix("*/").map_or(0, |_| 2);
-    let mut nodes: Vec<Span> = Vec::new();
-    let mut open = false;
-    let mut line_start = 0;
-    for line in doc[..inner_end].split_inclusive('\n') {
-        let start = line_start;
-        line_start += line.len();
-        let body = line.trim_end_matches(['\n', '\r']);
-        let mut content = body.trim_start();
-        if start == 0 {
-            content = content.strip_prefix("/**").unwrap_or(content);
-        } else if let Some(rest) = content.strip_prefix('*') {
-            content = rest;
-        }
-        let content_trimmed = content.trim();
-        if content_trimmed.is_empty() {
-            open = false;
-            continue;
-        }
-        let from = start + body.len() - content.trim_start().len();
-        let to = from + content_trimmed.len();
-        match nodes.last_mut() {
-            Some(last) if open && !content_trimmed.starts_with('@') => last.end = to,
-            _ => nodes.push(Span::new(from, to)),
-        }
-        open = true;
-    }
-    nodes
+    Some(parsed.print(&removed))
 }
 
 /// The parameter a `@param` tag names, with its `$`.
@@ -872,7 +822,7 @@ fn function_like<'a>(
 
 /// The number of writes of an array literal to the variable `name` in `node` (outside nested function-likes and
 /// classes), `None` when another write may change its type: any other assignment, a reference to it, a `foreach`,
-/// `list()`, `global` or `static` target, `unset()`, or a closure's `use`.
+/// `list()`, `global` or `static` target, `unset()`, a closure's `use`, or any assignment to a variable variable.
 fn variable_writes(node: Node<'_, '_>, name: &[u8]) -> Option<usize> {
     let is_var = |e: &Expression<'_>| matches!(unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == name);
     let mut count = 0;
@@ -898,6 +848,15 @@ fn variable_writes(node: Node<'_, '_>, name: &[u8]) -> Option<usize> {
             if uses_variable(Node::Expression(a.lhs), name) {
                 return None;
             }
+        }
+        // PHPStan 2.3's `assignDynamicVariable` widens every defined variable the name may be.
+        Node::Assignment(a)
+            if matches!(
+                unparenthesize(a.lhs),
+                Expression::Variable(Variable::Indirect(_) | Variable::Nested(_))
+            ) =>
+        {
+            return None;
         }
         Node::UnaryPrefix(u) if u.operator.is_reference() && is_var(u.operand) => return None,
         Node::UnaryPrefix(u)

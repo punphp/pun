@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-redundant-condition`, ported from Rector 2.6.1's `RemoveNextSameValueConditionRector`
+//! `lint/dead-code/no-redundant-condition`, ported from Rector 2.8.4's `RemoveNextSameValueConditionRector`
 //! (rules/DeadCode/Rector/Stmt).
 //!
 //! Two `if`s in a row, neither with an `elseif` or `else`, that check the same condition become one: the second's

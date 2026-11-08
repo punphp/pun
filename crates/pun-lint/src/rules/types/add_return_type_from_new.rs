@@ -1,11 +1,12 @@
-//! `lint/types/add-return-type-from-new`, ported from Rector 2.6.1's `ReturnTypeFromReturnNewRector`
+//! `lint/types/add-return-type-from-new`, ported from Rector 2.8.4's `ReturnTypeFromReturnNewRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod) with its `StrictReturnNewAnalyzer`: a function or method that always
 //! returns a new object gets that object's class as its return type.
 //!
 //! Two shapes count. Every `return` returns a variable whose native type is `object`, or the class `X` that a
 //! top-level `$var = new X;` set it to; or every `return` returns `new ...` of a known class, `self`, `static` or an
 //! anonymous class, giving one type or a union of classes. With more than one `return`, an anonymous class counts
-//! as the first class or interface it names (`TypeFactory::normalizeObjectType`).
+//! as the first class or interface it names (`TypeFactory::normalizeObjectType`), and one that names none makes the
+//! union `object`.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -182,12 +183,18 @@ fn direct_return_new(
     if php_version < PHP_80 {
         return None;
     }
+    // an anonymous class that names no parent is `object`, which takes in the other classes (PHPStan's
+    // `NativePhpTypeNodeHelper::union()` drops the names beside `object`)
+    if types.iter().any(|t| matches!(t, NewType::Anonymous(_))) {
+        return Some("object".to_string());
+    }
     let classes: Option<Vec<String>> = types
         .iter()
         .map(|t| match t {
             NewType::Class(class) => Some(format!("\\{class}")),
-            // Rector writes `new static` as `self` in a union.
-            NewType::SelfType | NewType::Static => Some("self".to_string()),
+            NewType::SelfType => Some("self".to_string()),
+            // PHPStan 2.3's `StaticType::toNativePhpTypeNode()`: `static` in a union too (PHP 8.0 here)
+            NewType::Static => Some("static".to_string()),
             NewType::Anonymous(_) => None,
         })
         .collect();

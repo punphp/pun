@@ -1,4 +1,4 @@
-//! `lint/refactor/rename-cast`, ported from Rector 2.6.1's `RenameCastRector` (rules/Renaming/Rector/Cast).
+//! `lint/refactor/rename-cast`, ported from Rector 2.8.4's `RenameCastRector` (rules/Renaming/Rector/Cast).
 //!
 //! Options: `items = [{ from-cast-expr-class = "PhpParser\\Node\\Expr\\Cast\\Double", from-cast-kind = 3,
 //! to-cast-kind = 2 }]` (`RenameCast`, with php-parser's `KIND_*` numbers). A cast of that class whose `kind` (what

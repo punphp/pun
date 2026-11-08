@@ -1,22 +1,23 @@
-//! `lint/laravel/prefer-closure-only-bind`, ported from rector-laravel 2.5.0's `ContainerBindConcreteWithClosureOnlyRector`
+//! `lint/laravel/prefer-closure-only-bind`, ported from rector-laravel 2.7.3's `ContainerBindConcreteWithClosureOnlyRector`
 //! (src/Rector/MethodCall).
 //!
-//! On an `Illuminate\Contracts\Container\Container`, `bind()`, `singleton()`, `bindIf()` or `singletonIf()` with a
-//! class string and a closure drops the class string and declares it as the closure's return type instead
-//! (`bind(Foo::class, function () {...})` becomes `bind(function (): \Foo {...})`), which the container reads. The
+//! On an `Illuminate\Contracts\Container\Container`, `bind()` or `singleton()` with a class string (`abstract`) and a
+//! closure (`concrete`), positional or named, drops the class string and declares it as the closure's return type
+//! instead (`bind(Foo::class, function () {...})` becomes `bind(function (): \Foo {...})`), which the container
+//! reads. `bind()`'s `shared` argument follows the closure by name; any other argument leaves the call alone. The
 //! closure's returned type (`ReturnTypeInferer`: the native types of its `return`s, `mixed` when it has none or only
 //! bare ones) must possibly be the class. When that answer depends on whether a returned variable holds an object of
 //! exactly its class (a `new`), which Mago's types do not say, Pun leaves the call.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
-use mago_syntax::cst::{Closure, Expression, Node, NodeKind, Variable};
+use mago_syntax::cst::{Argument, Closure, Expression, Node, NodeKind, Variable};
 use pun_problem::{Edit, Safety, Span};
 
 use super::object_type::{
     Tri, class_string_class, class_super_of, exact_class_super_of, is_object_type, object_class,
 };
-use super::{is_name, member_name};
+use super::{get_arg, is_name, member_name};
 use crate::rules::types::facts::facts;
 use crate::rules::types::returns_scoped;
 use crate::syntax::{node_span, unparenthesize};
@@ -41,11 +42,13 @@ impl Rule for PreferClosureOnlyBind {
         out: &mut Vec<Report>,
     ) {
         let Node::MethodCall(call) = node else { return };
-        if !member_name(&call.method).is_some_and(|n| {
-            ["bind", "singleton", "bindIf", "singletonIf"]
-                .iter()
-                .any(|m| is_name(n, m))
-        }) || !is_object_type(
+        // `bindIf()` and `singletonIf()` pass the abstract to `bound()`, where a closure fails.
+        let Some(method) = member_name(&call.method)
+            .filter(|n| is_name(n, "bind") || is_name(n, "singleton"))
+        else {
+            return;
+        };
+        if !is_object_type(
             ctx,
             ancestors,
             call.object,
@@ -53,10 +56,19 @@ impl Rule for PreferClosureOnlyBind {
         ) {
             return;
         }
-        let args: Vec<_> = call.argument_list.arguments.iter().collect();
-        let [first, second, ..] = args[..] else {
+        let list = &call.argument_list;
+        let (Some(first), Some(second)) = (get_arg(list, "abstract", 0), get_arg(list, "concrete", 1))
+        else {
             return;
         };
+        // `singleton()` has no `$shared` parameter.
+        let shared = is_name(method, "bind")
+            .then(|| get_arg(list, "shared", 2))
+            .flatten();
+        // A spread or an unknown name would be dropped with the rest.
+        if 2 + usize::from(shared.is_some()) != list.arguments.len() {
+            return;
+        }
         let abstract_expr = unparenthesize(first.value());
         let (false, Expression::Closure(closure)) = (
             matches!(abstract_expr, Expression::Variable(Variable::Direct(_))),
@@ -74,8 +86,8 @@ impl Rule for PreferClosureOnlyBind {
             return;
         }
         let hint = format!("\\{class}");
-        let type_edit = match &closure.return_type_hint {
-            Some(r) => Edit::new(node_span(&r.hint), hint),
+        let (type_span, type_text) = match &closure.return_type_hint {
+            Some(r) => (node_span(&r.hint), hint),
             None => {
                 let close = closure
                     .use_clause
@@ -84,20 +96,31 @@ impl Rule for PreferClosureOnlyBind {
                         u.right_parenthesis
                     });
                 let at = close.end.offset as usize;
-                Edit::new(Span::new(at, at), format!(": {hint}"))
+                (Span::new(at, at), format!(": {hint}"))
             }
         };
+        // The closure takes the first place, unnamed; `shared` follows by name.
+        let value = node_span(second.value());
+        let mut args = format!(
+            "{}{type_text}{}",
+            &ctx.source[value.start..type_span.start],
+            &ctx.source[type_span.end..value.end]
+        );
+        if let Some(shared) = shared {
+            let span = node_span(shared.value());
+            let name = if matches!(shared, Argument::Named(_)) { "" } else { "shared: " };
+            let start = if name.is_empty() { node_span(shared).start } else { span.start };
+            args.push_str(&format!(", {name}{}", &ctx.source[start..span.end]));
+        }
+        let all = Span::new(
+            node_span(list.arguments.first().unwrap()).start,
+            node_span(list.arguments.last().unwrap()).end,
+        );
         out.push(Report::fixed(
             node_span(call),
             format!("Declare `{class}` as the closure's return type instead of passing it."),
             Safety::Safe,
-            vec![
-                Edit::new(
-                    Span::new(node_span(first).start, node_span(second).start),
-                    "",
-                ),
-                type_edit,
-            ],
+            vec![Edit::new(all, args)],
         ));
     }
 }

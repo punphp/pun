@@ -1,4 +1,4 @@
-//! `lint/types/no-nullsafe-on-non-null`, ported from Rector 2.6.1's `CleanupUnneededNullsafeOperatorRector`
+//! `lint/types/no-nullsafe-on-non-null`, ported from Rector 2.8.4's `CleanupUnneededNullsafeOperatorRector`
 //! (rules/CodeQuality/Rector/NullsafeMethodCall): `f()?->m()` becomes `f()->m()` when the function, method or static
 //! method called before `?->` declares that it returns one object type.
 //!

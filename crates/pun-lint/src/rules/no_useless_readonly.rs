@@ -1,4 +1,4 @@
-//! `lint/phpdoc/no-useless-readonly`, ported from Rector 2.6.1's `RemoveUselessReadOnlyTagRector`
+//! `lint/phpdoc/no-useless-readonly`, ported from Rector 2.8.4's `RemoveUselessReadOnlyTagRector`
 //! (rules/DeadCode/Rector/Property).
 //!
 //! A `@readonly` tag without a description says what the native `readonly` of the class, the property or the promoted

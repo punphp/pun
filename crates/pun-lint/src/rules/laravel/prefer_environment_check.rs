@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-environment-check`, ported from rector-laravel 2.5.0's `AppEnvironmentComparisonToParameterRector`
+//! `lint/laravel/prefer-environment-check`, ported from rector-laravel 2.7.3's `AppEnvironmentComparisonToParameterRector`
 //! (src/Rector/Expr).
 //!
 //! A call of `environment()` without arguments, on an `Illuminate\Contracts\Foundation\Application` or through the

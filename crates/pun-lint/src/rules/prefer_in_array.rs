@@ -1,14 +1,17 @@
-//! `lint/complexity/prefer-in-array`, ported from Rector 2.6.1's `RepeatedOrEqualToInArrayRector`
+//! `lint/complexity/prefer-in-array`, ported from Rector 2.8.4's `RepeatedOrEqualToInArrayRector`
 //! (rules/CodeQuality/Rector/BooleanOr).
 //!
 //! Three comparisons or more of the same expression joined by `||`, `$a === 'a' || $a === 'b' || $a === 'c'`, become
-//! `in_array($a, ['a', 'b', 'c'], true)`; with `==` the call is not strict. A chain that mixes `==` and `===` stays.
+//! `in_array($a, ['a', 'b', 'c'], true)`; with `==` the call is not strict. A chain that mixes `==` and `===` stays,
+//! and so does one with a value that may have side effects (a call), or one in a default or class constant value.
 
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_code_quality::equal;
-use super::rector_stmts::{compared_values, has_binary};
+use super::rector_stmts::{
+    compared_values, has_binary, is_in_constant_expression, is_safe_to_evaluate_eagerly,
+};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -26,7 +29,7 @@ impl Rule for PreferInArray {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
@@ -38,10 +41,14 @@ impl Rule for PreferInArray {
         let compare = |op: &BinaryOperator<'_>| {
             matches!(op, BinaryOperator::Equal(_) | BinaryOperator::Identical(_))
         };
+        // in_array() func call is not allowed in a constant expression
+        if is_in_constant_expression(ancestors) {
+            return;
+        }
         let Some(pairs) = compared_values(binary, &or, &compare) else {
             return;
         };
-        if pairs.len() < 3 {
+        if pairs.len() < 3 || !pairs.iter().all(|(_, v)| is_safe_to_evaluate_eagerly(v)) {
             return;
         }
         // All compared expressions must be equal to the last one.

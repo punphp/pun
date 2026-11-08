@@ -1,4 +1,4 @@
-//! The `phpunit` group: rules ported from rector-phpunit (rectorphp/rector-phpunit at e68085d, rules/...), each in its
+//! The `phpunit` group: rules ported from rector-phpunit (rectorphp/rector-phpunit at 22c6dae, rules/...), each in its
 //! own file, and what they share: `TestsNodeAnalyzer`, `IdentifierManipulator` and `ArgumentMover`.
 //!
 //! Rector asks PHPStan whether a class is a `PHPUnit\Framework\TestCase` and what type a call's receiver has. Pun reads
@@ -588,8 +588,9 @@ pub(crate) fn remove_first_arg(ctx: &Context<'_>, call: &AnyCall<'_>, name: &str
 /// `IdentifierManipulator::renameNodeWithMap`: the new name for the call's name as written, a key of `map`.
 pub(crate) fn renamed(call: &AnyCall<'_>, map: &[(&str, &'static str)]) -> Option<&'static str> {
     let name = call.name()?;
+    // method names are case-insensitive in PHP, the map matches the same way
     map.iter()
-        .find(|(k, _)| k.as_bytes() == name)
+        .find(|(k, _)| k.as_bytes().eq_ignore_ascii_case(name))
         .map(|(_, v)| *v)
 }
 
@@ -632,22 +633,6 @@ pub(crate) fn class_string(
         }
         expr => string_value(expr),
     }
-}
-
-/// `FlipAssertRector::isScalarValue`: a php-parser `Scalar` (a literal, a magic constant, an interpolated string), a
-/// constant or a class constant.
-pub(crate) fn is_scalar_value(expr: &Expression<'_>) -> bool {
-    use mago_syntax::cst::{Access, CompositeString};
-    matches!(
-        unparenthesize(expr),
-        Expression::Literal(_)
-            | Expression::MagicConstant(_)
-            | Expression::CompositeString(
-                CompositeString::Interpolated(_) | CompositeString::Document(_)
-            )
-            | Expression::ConstantAccess(_)
-            | Expression::Access(Access::ClassConstant(_))
-    )
 }
 
 /// Whether PHPStan's type of `expr` is a `ConstantScalarType` (a literal value or `null`) or a `ConstantArrayType`

@@ -1,4 +1,4 @@
-//! `lint/php-8.4/add-csv-escape-argument`, ported from Rector 2.6.1's `AddEscapeArgumentRector`
+//! `lint/php-8.4/add-csv-escape-argument`, ported from Rector 2.8.4's `AddEscapeArgumentRector`
 //! (rules/Php84/Rector/FuncCall).
 //!
 //! PHP 8.4 deprecates relying on the default `$escape` of the CSV functions, so a call that leaves it out gets

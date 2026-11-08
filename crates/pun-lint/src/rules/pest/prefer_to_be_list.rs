@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-list`, ported from pest-plugin-rector's `UseToBeListRector`: `expect(array_is_list($value))->toBeTrue()` becomes `expect($value)->toBeList()`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toBeList()`. The checked value's type must possibly be a array.
+//! `->not` before the matcher becomes `->not->toBeList()`. The checked value's type must be an array.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -33,7 +33,7 @@ impl Rule for PreferToBeList {
             "array_is_list",
             "toBeList",
             |values| match values {
-                [value] if !(type_is(ctx, value, Is::Array) == Trinary::No) => {
+                [value] if type_is(ctx, value, Is::Array) == Trinary::Yes => {
                     Some((*value, vec![]))
                 }
                 _ => None,

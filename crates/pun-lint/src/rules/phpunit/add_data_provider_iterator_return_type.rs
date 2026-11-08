@@ -1,4 +1,4 @@
-//! `lint/phpunit/add-data-provider-iterator-return-type`, ported from Rector 2.6.1's
+//! `lint/phpunit/add-data-provider-iterator-return-type`, ported from Rector 2.8.4's
 //! `ReturnIteratorInDataProviderRector` (rules/CodeQuality/Rector/Class_) and its `DataProviderMethodsFinder`.
 //!
 //! In a test class, a data provider (a method of the class named by a generic `@dataProvider` tag or by the first

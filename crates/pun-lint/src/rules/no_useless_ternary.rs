@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-useless-ternary`, ported from Rector 2.6.1's `RemoveUselessTernaryRector`
+//! `lint/dead-code/no-useless-ternary`, ported from Rector 2.8.4's `RemoveUselessTernaryRector`
 //! (rules/DeadCode/Rector/Ternary).
 //!
 //! `$b ?: false` on a `bool`, `$a ?: []` on an `array` and `$i ?: 0` on an `int` are the condition itself, and so are

@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-exception-class-string`, ported from rector-laravel 2.5.0's
+//! `lint/laravel/prefer-exception-class-string`, ported from rector-laravel 2.7.3's
 //! `ThrowIfAndThrowUnlessExceptionsToUseClassStringRector` (src/Rector/FuncCall).
 //!
 //! `throw_if($condition, new SomeException($a, $b))` becomes `throw_if($condition, SomeException::class, $a, $b)`, and

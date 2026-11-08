@@ -1,4 +1,4 @@
-//! `lint/functions/require-strict-array-search`, ported from Rector 2.6.1's `StrictArraySearchRector`
+//! `lint/functions/require-strict-array-search`, ported from Rector 2.8.4's `StrictArraySearchRector`
 //! (rules/CodingStyle/Rector/FuncCall).
 //!
 //! `array_search($needle, $haystack)` gets `true` as its third argument. Rector adds it after named arguments too,

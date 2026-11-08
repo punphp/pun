@@ -1,5 +1,5 @@
 //! `lint/pest/prefer-to-be-nan`, ported from pest-plugin-rector's `UseToBeNanRector`: `expect(is_nan($value))->toBeTrue()` becomes `expect($value)->toBeNan()`, and `toBeFalse()` or a
-//! `->not` before the matcher becomes `->not->toBeNan()`. The checked value's type must possibly be a float or integer.
+//! `->not` before the matcher becomes `->not->toBeNan()`. The checked value's type must be a float or integer.
 
 use mago_syntax::cst::{Node, NodeKind};
 
@@ -34,8 +34,7 @@ impl Rule for PreferToBeNan {
             "toBeNan",
             |values| match values {
                 [value]
-                    if !(type_is(ctx, value, Is::Float) == Trinary::No
-                        && type_is(ctx, value, Is::Integer) == Trinary::No) =>
+                    if (type_is(ctx, value, Is::Float) == Trinary::Yes || type_is(ctx, value, Is::Integer) == Trinary::Yes) =>
                 {
                     Some((*value, vec![]))
                 }

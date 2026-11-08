@@ -1,4 +1,4 @@
-//! `lint/types/add-return-type-from-property`, ported from Rector 2.6.1's `ReturnTypeFromStrictTypedPropertyRector`
+//! `lint/types/add-return-type-from-property`, ported from Rector 2.8.4's `ReturnTypeFromStrictTypedPropertyRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a method whose every `return` returns a property with a declared type
 //! (other than `mixed`) gets the union of the returned values' native types.
 

@@ -1,4 +1,4 @@
-//! `lint/laravel/prefer-class-container-key`, ported from rector-laravel 2.5.0's `ReplaceServiceContainerCallArgRector`
+//! `lint/laravel/prefer-class-container-key`, ported from rector-laravel 2.7.3's `ReplaceServiceContainerCallArgRector`
 //! (src/Rector/MethodCall).
 //!
 //! The first argument of `make()` or `get()` on an `Illuminate\Contracts\Container\Container`, of a static `make()` or

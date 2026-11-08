@@ -1,4 +1,4 @@
-//! `lint/statements/add-safe-strict-types`, ported from Rector 2.6.1's `SafeDeclareStrictTypesRector`
+//! `lint/statements/add-safe-strict-types`, ported from Rector 2.8.4's `SafeDeclareStrictTypesRector`
 //! (rules/TypeDeclaration/Rector/StmtsAwareInterface) and its `StrictTypeSafetyChecker` (rules/TypeDeclaration/
 //! NodeAnalyzer).
 //!

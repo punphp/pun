@@ -1,4 +1,4 @@
-//! `lint/types/add-param-type-spl-fixed-array`, ported from Rector 2.6.1's `AddParamTypeSplFixedArrayRector`
+//! `lint/types/add-param-type-spl-fixed-array`, ported from Rector 2.8.4's `AddParamTypeSplFixedArrayRector`
 //! (rules/TypeDeclaration/Rector/FunctionLike) with `PhpDocTypeChanger::changeParamType`: a parameter of a function or
 //! method declared as PHP-CS-Fixer's `Tokens` class gets the generic `@param Tokens<Token>` type in the docblock.
 
@@ -101,12 +101,13 @@ impl Rule for AddParamTypeSplFixedArray {
                 }
                 if appended.is_empty() {
                     text
-                } else if replaced.is_empty() {
+                } else {
+                    // the replaced tags printed in place, then the new ones added to that doc
+                    let Some(doc) = crate::rules::lint_b_doc::Doc::parse(&text) else {
+                        return;
+                    };
                     let appended: Vec<&str> = appended.iter().map(String::as_str).collect();
                     doc.print_appending(&vec![false; doc.len()], &appended)
-                } else {
-                    // a tag replaced and another added in one docblock: not followed
-                    return;
                 }
             }
         };

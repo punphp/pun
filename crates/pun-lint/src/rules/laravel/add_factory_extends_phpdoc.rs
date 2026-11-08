@@ -1,4 +1,4 @@
-//! `lint/laravel/add-factory-extends-phpdoc`, ported from rector-laravel 2.5.0's `AddExtendsAnnotationToModelFactoriesRector`
+//! `lint/laravel/add-factory-extends-phpdoc`, ported from rector-laravel 2.7.3's `AddExtendsAnnotationToModelFactoriesRector`
 //! (src/Rector/Class_).
 //!
 //! A class that is an `Illuminate\Database\Eloquent\Factories\Factory` and whose first `$model` property (the name

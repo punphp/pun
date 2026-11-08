@@ -1,4 +1,4 @@
-//! `lint/style/prefer-spread`, ported from Rector 2.6.1's `CallUserFuncArrayToVariadicRector`
+//! `lint/style/prefer-spread`, ported from Rector 2.8.4's `CallUserFuncArrayToVariadicRector`
 //! (rules/CodingStyle/Rector/FuncCall) and `ArrayCallableToMethodCallFactory` (src/NodeFactory).
 //!
 //! `call_user_func_array('name', $args)` becomes `name(...$args)`, `call_user_func_array([$object, 'method'], $args)`

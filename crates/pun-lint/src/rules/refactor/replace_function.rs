@@ -1,4 +1,4 @@
-//! The `refactor` codemods that put something else in place of a function call, ported from Rector 2.6.1
+//! The `refactor` codemods that put something else in place of a function call, ported from Rector 2.8.4
 //! (rules/Transform/Rector/FuncCall):
 //!
 //! - `lint/refactor/replace-function-with-constant` (`FuncCallToConstFetchRector`): `{ php_sapi_name = "PHP_SAPI" }`.

@@ -1,9 +1,10 @@
-//! `lint/complexity/no-single-case-switch`, ported from Rector 2.6.1's `SingularSwitchToIfRector`
+//! `lint/complexity/no-single-case-switch`, ported from Rector 2.8.4's `SingularSwitchToIfRector`
 //! (rules/CodeQuality/Rector/Switch_) with `SwitchManipulator::removeBreakNodes`.
 //!
 //! A `switch` with one `case` becomes an `if` that compares with `===`, its `break`s dropped (`break 2` becomes
-//! `break`). A `switch` with only `default` becomes the default's statements without any `break`. Rector stops with an
-//! error on a `default` with no statement left; Pun leaves that `switch` alone.
+//! `break`). A `switch` with only `default` becomes the default's statements without any `break`. A `break` or `continue` nested in
+//! the case's statements keeps the `switch`. Rector stops with an error on a `default` with no statement left; Pun
+//! leaves that `switch` alone.
 //!
 //! The new code is laid out as php-parser's format-preserving printer lays it out: the new `if` printed anew with
 //! the statements moved to its indent, and the comments before the `switch` dropped; the statements of a `default`
@@ -42,6 +43,10 @@ impl Rule for NoSingleCaseSwitch {
             SwitchBody::ColonDelimited(b) => &b.cases,
         };
         let [case] = cases.as_slice() else { return };
+        // nested break/continue would lose the switch to target and cause a fatal error
+        if has_nested_break_or_continue(case) {
+            return;
+        }
         let source = ctx.source;
         let tokens = tokens(ctx);
         let (case_node, condition) = match case {
@@ -85,6 +90,37 @@ impl Rule for NoSingleCaseSwitch {
             }),
         });
     }
+}
+
+/// `hasNestedBreakOrContinue`: a `break` or `continue` below the case's statements (a top-level `break` goes with the
+/// `switch`), outside nested functions and classes.
+fn has_nested_break_or_continue(case: &SwitchCase<'_>) -> bool {
+    fn find(node: Node<'_, '_>) -> bool {
+        let mut found = false;
+        node.visit_children(|child| {
+            found = found
+                || match child {
+                    Node::Function(_)
+                    | Node::Method(_)
+                    | Node::Closure(_)
+                    | Node::ArrowFunction(_)
+                    | Node::Class(_)
+                    | Node::AnonymousClass(_) => false,
+                    Node::Break(_) | Node::Continue(_) => true,
+                    _ => find(child),
+                }
+        });
+        found
+    }
+    let statements = match case {
+        SwitchCase::Expression(c) => &c.statements,
+        SwitchCase::Default(c) => &c.statements,
+    };
+    statements.iter().any(|s| match s {
+        Statement::Break(_) => false,
+        Statement::Continue(_) => true,
+        s => find(Node::Statement(s)),
+    })
 }
 
 /// One statement of the new code: its comments and its text. Comments after the last statement go, as in Rector.

@@ -1,4 +1,4 @@
-//! `lint/types/add-datetime-property-type`, ported from Rector 2.6.1's `MergeDateTimePropertyTypeDeclarationRector`
+//! `lint/types/add-datetime-property-type`, ported from Rector 2.8.4's `MergeDateTimePropertyTypeDeclarationRector`
 //! (rules/TypeDeclaration/Rector/Class_).
 //!
 //! A private property typed `\DateTime` whose `@var` says `DateTimeInterface` gets the type `\DateTimeInterface`; the

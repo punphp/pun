@@ -1,12 +1,13 @@
-//! `lint/dead-code/no-useless-override`, ported from Rector 2.6.1's `RemoveParentDelegatingClassMethodRector`
-//! (rules/DeadCode/Rector/ClassMethod).
+//! `lint/dead-code/no-useless-override`, ported from Rector 2.8.4's `RemoveParentDelegatingClassMethodRector`
+//! (rules/DeadCode/Rector/Class_).
 //!
 //! A method (not the constructor) whose whole body is `parent::sameName($a, $b)` or `return parent::sameName($a, $b);`
 //! with its own parameters in order goes, when the parent class has a method of that name that is not private, with
 //! the same `static` and `public`, the same native parameter types where the child declares one and the same native
 //! return type where the child declares one. It stays when it is final, abstract, private, returns by reference, has
-//! attributes, a parameter that is variadic, by reference, has a default or attributes, or a doc comment with
-//! `@param`, `@return` (or their `@phpstan-`/`@psalm-` forms) or `@deprecated`. A parent Pun does not know keeps it.
+//! attributes, a parameter that is variadic, by reference, has a default or attributes, or a doc comment with any
+//! tag (an annotation such as `@Route(...)` counts). A parent Pun does not know keeps it, and so does an anonymous
+//! class, which has no name to reflect.
 //! Union and intersection types count as different (PHPStan prints them in its own order).
 
 use mago_syntax::cst::*;
@@ -40,6 +41,10 @@ impl Rule for NoUselessOverride {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
+        // `getName()` of an anonymous class is null.
+        if matches!(node, Node::AnonymousClass(_)) {
+            return;
+        }
         let facts = facts(ctx);
         with_class_info(node, ancestors, &facts, |class| {
             for (index, member) in class.members.iter().enumerate() {
@@ -97,18 +102,8 @@ fn is_removable(
     if statement_count(ctx.source, body) != 1 || !method.attribute_lists.is_empty() {
         return false;
     }
-    const REFINING: [&str; 7] = [
-        "@param",
-        "@phpstan-param",
-        "@psalm-param",
-        "@return",
-        "@phpstan-return",
-        "@psalm-return",
-        "@deprecated",
-    ];
-    if member_doc(ctx.source, class, index)
-        .is_some_and(|doc| doc_tags(doc).iter().any(|t| REFINING.contains(t)))
-    {
+    // `hasRefiningDocblock`: any tag node.
+    if member_doc(ctx.source, class, index).is_some_and(|doc| !doc_tags(doc).is_empty()) {
         return false;
     }
     // `matchParentMethodReflection`.

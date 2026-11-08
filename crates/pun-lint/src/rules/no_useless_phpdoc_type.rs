@@ -1,10 +1,10 @@
-//! `lint/dead-code/no-useless-phpdoc-type`, ported from Rector 2.6.1's `RemoveUselessUnionReturnDocblockRector`
+//! `lint/dead-code/no-useless-phpdoc-type`, ported from Rector 2.8.4's `RemoveUselessUnionReturnDocblockRector`
 //! (rules/DeadCode/Rector/ClassMethod), from PHP 8.0 (union types).
 //!
 //! The first `@return` of a function's or method's doc comment goes when it is a union that takes in the whole native
-//! return type (`$doc->isSuperTypeOf($native)` is yes), so it says nothing more. It stays with a description, and
-//! when the native type may be an array (the doc may say its items). The removal takes `@phan-return` along, not the
-//! `@phpstan-` and `@psalm-` tags; a doc comment left empty goes.
+//! return type (`$doc->isSuperTypeOf($native)` is yes), so it says nothing more. It stays with a description, and with
+//! `static` or `$this` in the union, and when the native type may be an array (the doc may say its items). The removal
+//! takes `@phan-return` along, not the `@phpstan-` and `@psalm-` tags; a doc comment left empty goes.
 
 use mago_syntax::cst::{Node, NodeKind};
 use pun_phpstan::phpdoc::Node as DocNode;
@@ -53,7 +53,14 @@ impl Rule for NoUselessPhpdocType {
             return;
         };
         // keep description, it carries info the native type cannot; only union docblock types are handled here
-        if tag.has_description || !matches!(tag.ty, DocNode::Union(_)) {
+        let DocNode::Union(members) = &tag.ty else {
+            return;
+        };
+        if tag.has_description {
+            return;
+        }
+        // keep static/$this, they denote the runtime subclass the native type cannot express
+        if members.iter().any(|m| matches!(m, DocNode::This) || matches!(m, DocNode::Ident(n) if n == "static")) {
             return;
         }
         let facts = facts(ctx);

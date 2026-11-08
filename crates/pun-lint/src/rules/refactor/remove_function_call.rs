@@ -1,4 +1,4 @@
-//! `lint/refactor/remove-function-call`, ported from Rector 2.6.1's `RemoveFuncCallRector`
+//! `lint/refactor/remove-function-call`, ported from Rector 2.8.4's `RemoveFuncCallRector`
 //! (rules/Removing/Rector/FuncCall).
 //!
 //! Options: `items = ["var_dump"]`. A statement that is only a call to one of the functions is removed. The call's name

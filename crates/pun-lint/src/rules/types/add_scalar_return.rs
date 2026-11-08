@@ -1,5 +1,5 @@
 //! `lint/types/add-string-return-type-from-scalar` and `lint/types/add-numeric-return-type-from-scalar`, ported from
-//! Rector 2.6.1's `StringReturnTypeFromStrictScalarReturnsRector` and `NumericReturnTypeFromStrictScalarReturnsRector`
+//! Rector 2.8.4's `StringReturnTypeFromStrictScalarReturnsRector` and `NumericReturnTypeFromStrictScalarReturnsRector`
 //! (rules/TypeDeclaration/Rector/ClassMethod): a function or method whose every `return` returns a string literal
 //! returns `string`; one whose every `return` returns an integer literal (or a float literal), maybe negated, returns
 //! `int` (or `float`). The end of the body must not be reachable.

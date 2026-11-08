@@ -1,4 +1,4 @@
-//! `lint/dead-code/no-unused-promoted-property`, ported from Rector 2.6.1's `RemoveUnusedPromotedPropertyRector`
+//! `lint/dead-code/no-unused-promoted-property`, ported from Rector 2.8.4's `RemoveUnusedPromotedPropertyRector`
 //! (rules/DeadCode/Rector/ClassMethod), with `PropertyFetchFinder::findLocalPropertyFetchesByName` and
 //! `PropertyWriteonlyAnalyzer::hasClassDynamicPropertyNames`.
 //!

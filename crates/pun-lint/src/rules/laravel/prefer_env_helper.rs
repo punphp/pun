@@ -1,13 +1,13 @@
-//! `lint/laravel/prefer-env-helper`, ported from rector-laravel 2.5.0's `EnvVariableToEnvHelperRector`
+//! `lint/laravel/prefer-env-helper`, ported from rector-laravel 2.7.3's `EnvVariableToEnvHelperRector`
 //! (src/Rector/ArrayDimFetch).
 //!
-//! Reading `$_ENV['NAME']` becomes `\Illuminate\Support\Env::get('NAME')`. An assigned item is left alone
-//! (`AttributeKey::IS_BEING_ASSIGNED`), and so is any other place a call cannot be written to (Rector rewrites those
-//! into code PHP rejects).
+//! Reading `$_ENV['NAME']` becomes `\Illuminate\Support\Env::get('NAME')`. An item that is written is left alone,
+//! as is one passed to a by-reference parameter (`ArrayDimFetchContextNodeVisitor::IS_IN_WRITE_CONTEXT`) or one in an
+//! interpolated string (`IS_IN_INTERPOLATED_STRING`).
 
 use mago_syntax::cst::{Node, NodeKind};
 
-use super::{in_string, is_variable, is_written, replace};
+use super::{in_string, is_by_ref_argument, is_variable, is_written, replace};
 use crate::rules::rector_code_quality::text;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -37,7 +37,7 @@ impl Rule for PreferEnvHelper {
             return;
         }
         let span = node_span(access);
-        if is_written(span, ancestors) || in_string(ancestors) {
+        if is_written(span, ancestors) || is_by_ref_argument(ctx, span, ancestors) || in_string(ancestors) {
             return;
         }
         out.push(replace(
