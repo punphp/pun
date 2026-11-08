@@ -2,7 +2,6 @@
 //! it, baselines, `ignoreErrors` and `@phpstan-ignore` comments; built-in
 //! symbols and PHPStan's type strings.
 
-pub mod baseline;
 pub mod comments;
 pub mod fixers;
 pub mod config;

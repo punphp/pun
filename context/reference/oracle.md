@@ -174,7 +174,6 @@ parents); expected values are never written by hand. Re-run one after touching i
 | `php scripts/phpstan-config.php <phar> <cwd> [-c f] [-l n] [--generated-config f] [--generate-baseline f] [path...]` | (stdout) resolved parameters + allConfigFiles, or PHPStan's stderr error, as `phpstan analyse` gets them |
 | `php scripts/export-phpstan-config-fixtures.php [case...]` | `config/<case>/expected.json` from `case.json`, and `config-corpus/<name>.json` (pinkary, larastan, laravel-pint, laravel-framework-src/-types) |
 | `php scripts/export-schema-fixtures.php` | `schema.json`: parametersSchema validation (ContainerFactory::validateParameters) |
-| `php scripts/export-baseline-fixtures.php` | `baseline.json`: BaselineNeon/PhpErrorFormatter output and what PHPStan reads back |
 | `php scripts/export-ignore-fixtures.php` | `comments.json` (RichParser::getLinesToIgnore), `local-processor.json` (LocalIgnoresProcessor), `ignore.json` (IgnoredErrorHelper + result processing) |
 | `php scripts/export-local-ignore-fixtures.php` | `local.json`: real `phpstan analyse` on `local/*.php`, comments blanked vs. kept |
 | `php scripts/export-php-helpers-fixtures.php` | `php.json`: regex (Nette Strings::match), preg_quote, FileHelper, relative paths, fnmatch, (string) casts, `phpfile/ok-*.php` |
