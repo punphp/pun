@@ -31,11 +31,9 @@ impl Fixer for MultilineCommentOpeningClosingFixer {
                 continue;
             }
             let mut new_content = original_content.to_vec();
-            // Fix opening
             if token.is_kind(T_COMMENT) {
                 new_content = Preg::replace(r"/^\/\*{2,}(?!\/)/", "/*", &new_content);
             }
-            // Fix closing
             new_content = Preg::replace(r"/(?<!\/)\*{2,}\/$/", "*/", &new_content);
             if new_content != original_content {
                 let id = token.get_id().unwrap();

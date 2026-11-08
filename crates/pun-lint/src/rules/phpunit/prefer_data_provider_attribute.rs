@@ -87,7 +87,6 @@ impl Rule for PreferDataProviderAttribute {
                 existing.push(Some(group.clone()));
                 groups.push(group);
             }
-            // cleanup
             removed[i] = true;
         }
         if !removed.contains(&true) {

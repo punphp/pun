@@ -30,7 +30,6 @@ impl Rule for RequireFinalTestCase {
         out: &mut Vec<Report>,
     ) {
         let Node::Class(class) = node else { return };
-        // skip obvious cases
         if class
             .modifiers
             .iter()

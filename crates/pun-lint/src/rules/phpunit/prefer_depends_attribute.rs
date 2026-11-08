@@ -77,7 +77,6 @@ impl Rule for PreferDependsAttribute {
                 };
                 let items: Vec<String> = items.iter().map(|i| map_item(i)).collect();
                 groups.push(format!("#[\\{class}({})]", items.join(", ")));
-                // cleanup
                 removed[i] = true;
             }
             if groups.is_empty() {

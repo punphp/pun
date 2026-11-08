@@ -109,7 +109,6 @@ impl Rule for PreferAttributeOverAnnotation {
         let mut class_groups = Vec::new();
         let mut edits = Vec::new();
         let mut span = None;
-        // handle class level
         let class = Annotated::of(ctx, node, ancestors);
         let mut class_doc = None;
         if let Some(class) = &class {
@@ -118,7 +117,6 @@ impl Rule for PreferAttributeOverAnnotation {
             };
             class_doc = found;
         }
-        // handle method level
         for member in members.iter() {
             let ClassLikeMember::Method(method) = member else {
                 continue;
@@ -214,7 +212,6 @@ impl PreferAttributeOverAnnotation {
                 } else {
                     own.push(group);
                 }
-                // cleanup
                 removed[i] = true;
             }
         }

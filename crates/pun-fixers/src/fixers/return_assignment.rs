@@ -105,7 +105,6 @@ impl ReturnAssignmentFixer {
         }
         // fix the candidates in reverse order when applicable
         for &index in candidates.iter().rev() {
-            // Check if returning only a variable (i.e. not the result of an expression, function call etc.)
             let return_var_index = next(tokens, index);
             if !tokens[return_var_index].is_kind(T_VARIABLE) {
                 continue; // example: "return 1;"
@@ -114,7 +113,6 @@ impl ReturnAssignmentFixer {
             if !tokens[end_return_var_index].equals_any(&[";".into(), T_CLOSE_TAG.into()], true) {
                 continue; // example: "return $a + 1;"
             }
-            // Check that the variable is assigned just before it is returned
             let mut assign_var_end_index = prev(tokens, index);
             if !tokens[assign_var_end_index].equals(";", true) {
                 continue; // example: "? return $a;"
@@ -171,7 +169,6 @@ impl ReturnAssignmentFixer {
             {
                 continue;
             }
-            // Check if there is a `catch` or `finally` block between the assignment and the return
             if is_used_in_catch_or_finally(
                 tokens,
                 return_var_index,
@@ -359,7 +356,6 @@ fn is_used_in_catch_or_finally(
     function_open_index: usize,
     function_close_index: usize,
 ) -> bool {
-    // Find try
     let Some(try_index) = tokens
         .get_prev_token_of_kind(return_var_index, &[T_TRY.into()], true)
         .filter(|&i| i > function_open_index)
@@ -373,7 +369,6 @@ fn is_used_in_catch_or_finally(
     let try_close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, try_open_index);
     // Find catch or finally; the function's `}` follows the try block
     let mut next_index = next(tokens, try_close_index);
-    // Find catches
     while tokens[next_index].is_kind(T_CATCH) {
         let catch_open_index = tokens
             .get_next_token_of_kind(next_index, &["{".into()], true)
@@ -381,7 +376,6 @@ fn is_used_in_catch_or_finally(
         let catch_close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, catch_open_index);
         // The try statement precedes the return inside the function body, so its catch blocks close before the function.
         debug_assert!(catch_close_index < function_close_index);
-        // Check if the variable is used in the catch block
         if tokens
             .get_next_token_of_kind(catch_open_index, &[var], true)
             .is_some_and(|i| i < catch_close_index)
@@ -400,7 +394,6 @@ fn is_used_in_catch_or_finally(
         .get_next_token_of_kind(finally_index, &["{".into()], true)
         .unwrap();
     let finally_close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, finally_open_index);
-    // Check if the variable is used in the finally block
     tokens
         .get_next_token_of_kind(finally_open_index, &[var], true)
         .is_some_and(|i| i < finally_close_index)

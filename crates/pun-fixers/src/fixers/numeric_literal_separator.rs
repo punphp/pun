@@ -90,7 +90,6 @@ impl NumericLiteralSeparatorFixer {
             return insert_every_right(value, 3, 1);
         }
 
-        // All other types
         let m =
             Preg::match_groups(r"/([0-9-_]+)?((\.)([0-9_]*))?((e)([0-9-_]+))?/i", &value).unwrap();
         let group = |i| m.get(i).unwrap_or(b"");

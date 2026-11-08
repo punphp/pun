@@ -48,7 +48,6 @@ impl Fixer for GeneralAttributeRemoveFixer {
                 tokens.clear_range(element.start, element.end);
                 removed_count += 1;
                 let sibling_index = tokens.get_non_empty_sibling(element.end, 1).unwrap();
-                // Clear element comma
                 if tokens[sibling_index].get_content() == b"," {
                     tokens.clear_at(sibling_index);
                 }
@@ -57,7 +56,6 @@ impl Fixer for GeneralAttributeRemoveFixer {
             if attribute_analysis.attributes.len() == removed_count {
                 tokens.clear_range(attribute_analysis.start_index, attribute_analysis.end_index);
             }
-            // Clear trailing comma
             let token_index = tokens
                 .get_meaningful_token_sibling(attribute_analysis.closing_bracket_index, -1)
                 .unwrap();

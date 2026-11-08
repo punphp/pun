@@ -44,14 +44,12 @@ impl Fixer for UseArrowFunctionsFixer {
 }
 
 fn fix_lambda(tokens: &mut Tokens, index: usize) {
-    // Find parameters
     let mut parameters_start = tokens.get_next_meaningful_token(index).unwrap();
     if tokens[parameters_start].is_kind(CT_RETURN_REF) {
         parameters_start = tokens.get_next_meaningful_token(parameters_start).unwrap();
     }
     let parameters_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, parameters_start);
 
-    // Find `use ()` start and end; abort if it contains reference variables
     let mut next = tokens.get_next_meaningful_token(parameters_end).unwrap();
     let mut use_range = None;
     if tokens[next].is_kind(CT_USE_LAMBDA) {
@@ -71,7 +69,6 @@ fn fix_lambda(tokens: &mut Tokens, index: usize) {
         next = tokens.get_next_meaningful_token(next).unwrap();
     }
 
-    // Find opening brace and following `return`; abort if there is more than whitespace between them
     let brace_open = if tokens[next].equals("{", true) {
         next
     } else {
@@ -87,7 +84,6 @@ fn fix_lambda(tokens: &mut Tokens, index: usize) {
         return;
     }
 
-    // Find semicolon of `return` statement
     let semicolon = tokens
         .get_next_token_of_kind(ret, &["{".into(), ";".into()], true)
         .unwrap();
@@ -95,7 +91,6 @@ fn fix_lambda(tokens: &mut Tokens, index: usize) {
         return;
     }
 
-    // Find closing brace; abort if there is more than whitespace between semicolon and closing brace
     let mut brace_close = semicolon + 1;
     if tokens[brace_close].is_kind(T_WHITESPACE) {
         brace_close += 1;

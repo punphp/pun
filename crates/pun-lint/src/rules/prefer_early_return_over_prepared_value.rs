@@ -165,7 +165,6 @@ fn match_bare_single_assign_if<'a>(
 ) -> Option<BareSingleAssignIf<'a>> {
     let source = ctx.source;
     let view = if_view(source, r#if);
-    // Exactly one statement, an assignment, and no `else` or `elseif`.
     if view.stmts.len() != 1 {
         return None;
     }

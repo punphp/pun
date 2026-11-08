@@ -29,7 +29,6 @@ impl Fixer for PhpdocParamOrderFixer {
             if !tokens[index].is_kind(T_DOC_COMMENT) {
                 continue;
             }
-            // Check for function / closure token
             if tokens
                 .get_next_token_of_kind(index, &[T_FUNCTION.into(), T_FN.into()], true)
                 .is_none()

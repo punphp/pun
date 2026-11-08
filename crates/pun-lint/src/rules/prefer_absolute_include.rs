@@ -89,7 +89,6 @@ fn absolutized(value: &[u8]) -> Option<Vec<u8>> {
     if value.starts_with(b"phar://") {
         return None;
     }
-    // skip absolute paths
     if value.starts_with(b"/") || value.starts_with(b"\\") {
         return None;
     }
@@ -102,7 +101,6 @@ fn absolutized(value: &[u8]) -> Option<Vec<u8>> {
     {
         return None;
     }
-    // add preslash to string
     let value = match value.strip_prefix(b".") {
         Some(rest) if rest.starts_with(b"/") => rest.to_vec(),
         _ => [b"/", value].concat(),
