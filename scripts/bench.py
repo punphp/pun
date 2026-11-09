@@ -4,7 +4,7 @@
     scripts/bench.py                              # every project, every tool
     scripts/bench.py pinkary laravel-framework    # some projects
     RUNS=5 WARMUP=0 scripts/bench.py              # measured runs per tool (default 3), untimed warm-ups (default 1)
-    TOOLS=pun,mago scripts/bench.py               # some tools: pint-parallel, pint, pun, mago
+    TOOLS=pun,mago scripts/bench.py               # some tools: pint-parallel, pint, pint-warm, pun, pun-format, mago
     PUN_BIN=target/release/pun MAGO_BIN=mago scripts/bench.py
 
 Setup: scripts/oracle.sh (or its Pint part) for .oracle/pint; scripts/corpus.sh for corpus/;
@@ -13,6 +13,8 @@ Pun's mago crates pin) under .oracle/mago/ or MAGO_BIN. Every tool is check-only
 
 - pint-parallel: `pint --test --parallel` in corpus/<name>, with the project's pint.json.
 - pint: `pint --test` (one process), same place.
+  Pint 1.32 caches results, so both get a `--cache-file` that is deleted before every run: Pun has no cache.
+- pint-warm: `pint --test` on a cache the warm-up runs filled. A reference row.
 - pun: `pun check --test` in a scratch copy (no .git, node_modules symlinked) after `pun migrate --yes`.
 - pun-format: `pun format --test`, same scratch copy (`pun` also runs lint and the analyser).
 - mago: `mago fmt --check .` in the same scratch copy, default config. Mago's style is not Pint's: a speed and memory
@@ -42,7 +44,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PROJECTS = ["pinkary", "pinkary-dirty", "laravel-framework", "laravel-laravel", "laravel-pint", "pest", "larastan"]
-TOOLS = ["pint-parallel", "pint", "pun", "pun-format", "mago"]
+TOOLS = ["pint-parallel", "pint", "pint-warm", "pun", "pun-format", "mago"]
 
 
 def tree_rss_bytes(root: int) -> int:
@@ -111,10 +113,12 @@ def bench_format() -> None:
             for extra in [*work.glob("phpstan*.neon*"), work / "rector.php"]:
                 extra.unlink(missing_ok=True)
             subprocess.run([pun, "migrate", "--yes"], cwd=work, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cold_cache = scratch / f"{name}.pint.cache"
             files = sum(1 for p in src.rglob("*.php") if not {"vendor", "node_modules", ".git"} & set(p.parts))
             commands = {
-                "pint-parallel": (["php", str(pint), "--test", "--parallel"], src),
-                "pint": (["php", str(pint), "--test"], src),
+                "pint-parallel": (["php", str(pint), "--test", "--parallel", f"--cache-file={cold_cache}"], src),
+                "pint": (["php", str(pint), "--test", f"--cache-file={cold_cache}"], src),
+                "pint-warm": (["php", str(pint), "--test", f"--cache-file={scratch / (name + '.pint-warm.cache')}"], src),
                 "pun": ([pun, "check", "--test"], work),
                 "pun-format": ([pun, "format", "--test"], work),
                 "mago": ([mago or "mago", "fmt", "--check", "."], work),
@@ -122,9 +126,11 @@ def bench_format() -> None:
             for tool in tools:
                 cmd, cwd = commands[tool]
                 for _ in range(warmup):
+                    cold_cache.unlink(missing_ok=True)
                     run_once(cmd, cwd)
                 results = []
                 for i in range(1, runs + 1):
+                    cold_cache.unlink(missing_ok=True)
                     t, m = run_once(cmd, cwd)
                     results.append((t, m))
                     detail.append(f"| {name} | {tool} | {i} | {t:.2f} s | {m / 1048576:.0f} MB |")

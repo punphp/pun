@@ -51,12 +51,13 @@ scripts/coverage.sh punphp-tokens
 1. `scripts/oracle.sh` installs Pint into `.oracle/pint`. `scripts/corpus.sh` checks out the projects in `corpus/`.
 2. `cargo build --profile profiling -p punphp` builds `target/profiling/pun`. `PUN_BIN=path` selects another binary.
 3. Put the Mago 1.57.0 release binary (the version the Mago crates pin) under `.oracle/mago/`, or pass `MAGO_BIN=path`.
-4. Run `scripts/bench.py`. `RUNS` (default 3) sets the measured runs per tool, `WARMUP` (default 1) the untimed runs before them, and `TOOLS` a subset of `pint-parallel,pint,pun,mago`.
+4. Run `scripts/bench.py`. `RUNS` (default 3) sets the measured runs per tool, `WARMUP` (default 1) the untimed runs before them, and `TOOLS` a subset of `pint-parallel,pint,pint-warm,pun,pun-format,mago`.
 
 The four tools:
 
 - `pint-parallel`: `pint --test --parallel` inside `corpus/<name>`, with the project's own `pint.json`.
 - `pint`: `pint --test`, one process, in the same place.
+- Pint 1.32 caches results. `pint` and `pint-parallel` get a cache file that is deleted before every run, because Pun has no cache. `pint-warm` reuses the cache the warm-up runs filled; it is a reference row.
 - `pun`: `pun check --test` in a scratch copy of the project (no `.git`, `node_modules` symlinked), after `pun migrate --yes` has written its `pun.toml`.
 - `mago`: `mago fmt --check .` in the same scratch copy, with Mago's default config. Mago's style is not Pint's, so its numbers are a speed and memory reference, not a parity check. Without the `.` and without a `mago.toml`, Mago checks no files.
 
