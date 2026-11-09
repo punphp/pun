@@ -23,8 +23,8 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
 - **Test time:** `scripts/analyse-tests.sh` takes about 40 minutes on 8 cores (about 10 of them building). `levels`
   and `rules` run their cases in parallel (390 s and 160 s alone, against 92 and about 30 minutes before), and test
   builds compile dependencies at `opt-level = 2` with line tables only. One analyse target dir is about 56 GB.
-- **Priorities, in order:** (1) launch: `dist generate` to regenerate `.github/workflows/release.yml` (edited by hand),
-  check the archive names against the shim, tag, then submit the repo to Packagist once (§3 Step 5); (2) CI
+- **Priorities, in order:** (1) beta launch: tag v0.1.0-beta.1, check the GitHub pre-release and a Composer install, then
+  submit the repo to Packagist once (§3 Step 5). Until a stable release, installs need `punphp/pun:@beta`; (2) CI
   re-enable; (3) finish analyse level 0 and levels 1-10; (4) the 24 new lint rules; (5) `pun check` in one pass;
   (6) perf rounds with `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable, the
@@ -430,8 +430,8 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 
 | Work | Status |
 | --- | --- |
-| release: run `dist generate` to regenerate .github/workflows/release.yml (the homebrew and npm jobs were removed by hand when the dist download timed out) and check that the archive names match what composer/bin/pun downloads (`punphp-<target>.tar.gz` plus `.sha256`) | todo |
 | release: after the first tag, submit github.com/punphp/pun to Packagist once and turn on its GitHub hook; tags then publish the package | needs Pushpak |
+| release: beta dry run: push the tag v0.1.0-beta.1, check that cargo-dist publishes the four archives and their .sha256 as a GitHub pre-release, then `composer require --dev punphp/pun:@beta` and `vendor/bin/pun --version` on Linux and macOS (dist plan, the shim's names and a local x86_64 musl build are already checked) | needs Pushpak |
 | docs 6: CLI rule-page links (needs the public docs origin; the plan settles the path, not the hostname) | blocked (needs Pushpak) |
 | docs content: 369 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
 | release notices: the Zend sorting port requires the acknowledgment in THIRD_PARTY_NOTICES.md and the Zend Engine acknowledgment in advertising materials that mention its features or use (Zend Engine License clauses 5 and 6); verify those materials before publication | todo |

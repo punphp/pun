@@ -41,8 +41,10 @@ only `composer.json`, the shim, the README and the licenses. On first run the sh
 `.sha256` and caches the binary in Composer's bin directory (`vendor/bin/pun-<version>`); it supports Linux (musl) and macOS on x86_64 and arm64.
 cargo-dist builds those four archives on a tag push (`dist-workspace.toml`: no installers, no source tarball). No
 crate, npm package, Homebrew tap or install script is published.
-**Build:** `dist generate` (release.yml was edited by hand), check the archive names against the shim, tag, submit
-the repo to Packagist once with the GitHub hook, then signing and publishing 1.0 after ../PLAN.md §3 Step 4.
+Betas are tagged `v0.1.0-beta.N`; cargo-dist marks them pre-releases, and Composer installs them only with
+`punphp/pun:@beta`. The shim's `PUN_VERSION` follows the workspace version.
+**Build:** the first beta tag and its Composer install check, Packagist submission with the GitHub hook, then signing
+and publishing 1.0 after ../PLAN.md §3 Step 4.
 
 ## 5. Later (C10, C14)
 

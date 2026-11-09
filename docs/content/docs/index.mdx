@@ -16,6 +16,8 @@ Pun is a PHP toolchain written in Rust. It reads `pun.toml` and provides these c
 
 ## Compatibility
 
+Pun is in beta. `pun format` matches Pint byte for byte on the parity corpus; `pun lint` and `pun analyse` are previews.
+
 Pun ports rules from Pint, PHP-CS-Fixer, Rector, PHPStan, Larastan, and Mago. PHPStan, Larastan, and Rector support is incomplete. The [rule reference](/docs/rules) marks unimplemented rules as Planned.
 
 `pun format` runs layout rules only. Risky and code-deleting Pint fixers are lint rules, so a migrated Pint configuration uses `pun check --fix`. See [parity](/docs/parity) for recorded comparisons and their limits.

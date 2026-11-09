@@ -11,17 +11,19 @@ Pun formats, lints, and analyses PHP 8.4+ projects. It is written in Rust and re
 | `pun migrate` | Convert existing tool configs to `pun.toml` |
 | `pun init` | Create `pun.toml` for a new project |
 
-Pint compatibility is checked against pinned upstream tools on a project corpus and with mutation fuzzing.
-PHPStan, Larastan, and Rector support is incomplete. See the [parity report](context/reports/scoreboard.md) and the rule reference under [docs](docs/content/docs/index.mdx).
+**Status: beta.** `pun format` matches Pint byte for byte on the parity corpus. `pun lint` and `pun analyse` are
+previews: PHPStan, Larastan, and Rector support is incomplete.
+
+Pint compatibility is checked against pinned upstream tools on a project corpus and with mutation fuzzing. See the [parity report](context/reports/scoreboard.md) and the rule reference under [docs](docs/content/docs/index.mdx).
 
 ## Install
 
 ```sh
-composer require --dev punphp/pun
+composer require --dev punphp/pun:@beta
 vendor/bin/pun --version
 ```
 
-The package (`composer.json` and `composer/bin/pun`) is a PHP shim that downloads the native binary for your platform on first run, checks its SHA-256 checksum, and runs it (Linux and macOS, x86_64 and arm64).
+The package (`composer.json` and `composer/bin/pun`) is a PHP shim that downloads the native binary for your platform on first run, checks its SHA-256 checksum, and runs it (Linux and macOS, x86_64 and arm64). Drop `:@beta` once a stable release is out.
 
 PHP files need no PHP or Node runtime. Blade formatting requires Node.js (or Bun) and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
 

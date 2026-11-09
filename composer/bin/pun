@@ -4,7 +4,7 @@
 // Composer shim for Pun: on first run, downloads the release binary matching this package's version and
 // platform from GitHub Releases into vendor/bin/, then runs it with the same arguments.
 
-const PUN_VERSION = '0.0.1'; // the workspace version (tests/composer.rs): used when Composer can't tell the installed tag (dev-main)
+const PUN_VERSION = '0.1.0-beta.1'; // the workspace version (tests/composer.rs): used when Composer can't tell the installed tag (dev-main)
 
 /** Pun's run error: the binary could not be fetched or started, so it exits 2 like `pun` itself. */
 function pun_fail(string $message): never
