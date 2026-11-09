@@ -24,21 +24,24 @@ An exact-spelling reference activates its alias throughout Pun's order-independe
 
 ## Speed
 
-The 2026-10-16 benchmark used a profiling build on a shared 2-core, 7 GB machine. These are median wall times from three runs on laravel/framework:
+The 2026-11-09 benchmark compared `pun format --test` with Pint 1.32.1's `pint --test` on an 8-core, 15 GB Linux machine, using a profiling build. These are median wall times from three runs:
 
-| | Time |
-| --- | --- |
-| Pint | 190 s |
-| Pun | 3.7 s |
+| | laravel/framework | Pinkary |
+| --- | --- | --- |
+| Pint | 294.7 s | 21.9 s |
+| Pint `--parallel` | 41.4 s | 7.4 s |
+| Pint, warm cache | 25.3 s | 1.0 s |
+| Pun | 1.8 s | 2.4 s |
 
-Pun has no result cache: every run checks every file. These timings are not measurements of the current checkout.
+Pint keeps a result cache, so a repeat run on unchanged files is faster. The first two Pint rows delete the cache before every run. Pun has no result cache: every run checks every file. On Pinkary, a warm Pint cache is faster than Pun, because Pun formats the 137 Blade templates through Prettier on every run.
 
 ## Byte-for-byte output
 
-The harness runs Pint on one project copy and `pun migrate` followed by `pun check --fix` on another. It then compares each file. The recorded results are:
+The harness runs Pint on one project copy and `pun migrate` followed by `pun check --fix` on another. It then compares each file. The results of the 2026-11-09 run against Pint 1.32.1 are:
 
 | Project | Files | Identical | Differing |
 | --- | --- | --- | --- |
+| dev-null | 1,991 | 1,991 | 0 |
 | larastan | 725 | 725 | 0 |
 | laravel/framework | 3,483 | 3,483 | 0 |
 | laravel/laravel | 66 | 66 | 0 |

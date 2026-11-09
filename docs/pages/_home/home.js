@@ -5,18 +5,19 @@ export const BENCHMARKS = [
   {
     id: "format",
     label: "Format",
-    title: "pun format vs pinned Pint",
-    caption: "laravel/framework, whole repo, Pint 1.29.3",
+    title: "pun format vs Pint 1.32.1",
+    caption: "laravel/framework, whole repo, cold runs, 8 cores",
     rows: [
-      { name: "Pint", sub: "PHP", seconds: 190, kind: "other" },
-      { name: "pun", sub: "Rust", seconds: 3.7, kind: "pun" },
+      { name: "Pint", sub: "PHP", seconds: 294.7, kind: "other" },
+      { name: "Pint --parallel", sub: "PHP, 8 processes", seconds: 41.4, kind: "other" },
+      { name: "pun", sub: "Rust", seconds: 1.76, kind: "pun" },
     ],
   },
   // Next, as measured: { id: "lint", label: "Lint", title: "pun lint vs Rector", ... },
   // { id: "analyse", label: "Analyse", title: "pun analyse vs PHPStan + Larastan", ... }, Mago, Psalm.
 ];
 
-const RACE = { project: "laravel/framework", files: 3483, slow: { name: "Pint", seconds: 190 }, fast: { name: "pun", seconds: 3.7 }, speed: 30 };
+const RACE = { project: "laravel/framework", files: 3483, slow: { name: "Pint", seconds: 294.7 }, fast: { name: "pun", seconds: 1.76 }, speed: 30 };
 
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt = (n, places = 1) => n.toLocaleString("en-US", { minimumFractionDigits: places, maximumFractionDigits: places });
@@ -147,11 +148,11 @@ function bench(root) {
     const others = group.rows.filter((r) => r.kind === "other");
     const puns = group.rows.filter((r) => r.kind !== "other");
     if (others.length && puns.length) {
-      const slowest = Math.min(...others.map((r) => r.seconds));
-      const x = Math.round(slowest / puns[0].seconds);
+      // The headline compares with the first row, the upstream tool's default command.
+      const x = Math.round(others[0].seconds / puns[0].seconds);
       const go = () => countUp(mega, x);
       seen ? go() : onView(sec, go);
-      megaNote.textContent = `faster than ${others.map((r) => r.name).join(" and ")}.`;
+      megaNote.textContent = `faster than ${others[0].name}.`;
     }
   };
 
