@@ -455,7 +455,7 @@ Errors PHPStan marks as non-ignorable, such as a duplicate parameter, remain vis
 
 ## Output and exit codes
 
-Default output includes code frames and a summary. `--concise` prints one line per finding. `--max-processes` caps worker threads.
+Default output includes code frames and a summary. `--concise` prints one line per finding. `-q` prints only the machine format or the summary line. `--color=auto|always|never` selects color mode. `--max-processes` caps worker threads. `--config <path>` reads another `pun.toml`.
 
 `--format`, also spelled `--error-format`, selects a PHPStan-compatible report: `table`, `raw`, `json`, `prettyJson`, `checkstyle`, `junit`, `gitlab`, `github`, or `teamcity`. `-v` adds identifiers to `raw` output.
 

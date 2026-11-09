@@ -53,6 +53,8 @@ Groups select implemented rules only. Naming an unimplemented rule directly is a
 
 `--deny-warnings` fails on any warning. `--max-warnings N` fails on more than `N` warnings.
 
+Lint also accepts [`pun format`'s file-selection and output flags](/docs/commands/format#pints-flags), such as `--dirty`, `--diff`, `--staged`, `--format`, and `--stdin`.
+
 ## Output
 
 Native lint rules report code frames and fixability. Token-based PHP-CS-Fixer ports report each affected file and its rule IDs. `--concise` prints one line per problem.

@@ -80,7 +80,11 @@ def source_urls() -> dict[tuple[str, str], str]:
             if row.get("docs_url"):
                 urls[("class", row["fqcn"].replace("\\\\", "\\"))] = row["docs_url"]
     fixers = json.loads((ROOT / "crates/pun-cli/src/gitlab_fixers.json").read_text())
+    # Pint wraps these in its Blade-skipping decorator, so its GitLab report names the decorator's path.
+    real = {"declare_strict_types": "strict", "fully_qualified_strict_types": "import",
+            "global_namespace_import": "import", "no_unused_imports": "import"}
     for name, (_, path) in fixers.items():
+        path = f"{real[name]}/{name}" if name in real else path
         urls[("php-cs-fixer", name)] = f"https://cs.symfony.com/doc/rules/{path}.html"
     return urls
 

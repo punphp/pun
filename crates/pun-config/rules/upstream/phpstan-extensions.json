@@ -2,7 +2,7 @@
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#checkdispatchargumenttypescompatiblewithclassconstructorrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#checkdispatchargumenttypescompatiblewithclassconstructorrule",
   "fqcn": "Larastan\\Larastan\\Rules\\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule",
   "gated_by": null,
   "identifiers": [
@@ -22,12 +22,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon services tags phpstan.rules.rule; registered twice (Illuminate\\Foundation\\Bus\\Dispatchable -> jobs, Illuminate\\Foundation\\Events\\Dispatchable -> events)",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#configcollectionrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#configcollectionrule",
   "fqcn": "Larastan\\Larastan\\Rules\\ConfigCollectionRule",
   "gated_by": "checkConfigTypes (default false)",
   "identifiers": [
@@ -39,12 +39,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
   "fqcn": "Larastan\\Larastan\\Rules\\ConsoleCommand\\UndefinedArgumentOrOptionRule",
   "gated_by": null,
   "identifiers": [
@@ -57,12 +57,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon rules:",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#deferrableserviceprovidermissingprovidesrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#deferrableserviceprovidermissingprovidesrule",
   "fqcn": "Larastan\\Larastan\\Rules\\DeferrableServiceProviderMissingProvidesRule",
   "gated_by": null,
   "identifiers": [
@@ -74,12 +74,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon rules:",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#modelappendsrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#modelappendsrule",
   "fqcn": "Larastan\\Larastan\\Rules\\ModelAppendsRule",
   "gated_by": "checkModelAppends (default true)",
   "identifiers": [
@@ -91,12 +91,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#modelpropertyrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#modelpropertyrule",
   "fqcn": "Larastan\\Larastan\\Rules\\ModelPropertyRule",
   "gated_by": "checkModelProperties (default false)",
   "identifiers": [
@@ -105,15 +105,15 @@
   "in_scope": false,
   "kind": "phpstan-rule",
   "level": null,
-  "out_of_scope_reason": "no Rule class in 3.10.0: documented check is done via the model-property PHPDoc type (Types\\ModelProperty) and core argument.type; docs mark it beta",
+  "out_of_scope_reason": "no Rule class in 3.14.0: documented check is done via the model-property PHPDoc type (Types\\ModelProperty) and core argument.type; docs mark it beta",
   "package": "larastan/larastan",
   "registered_in": "none (docs only; parameter consumed by Methods\\BuilderHelper)",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
   "fqcn": "Larastan\\Larastan\\Rules\\NoAuthFacadeInRequestScopeRule",
   "gated_by": "checkAuthCallsWhenInRequestScope (default false)",
   "identifiers": [
@@ -125,12 +125,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
   "fqcn": "Larastan\\Larastan\\Rules\\NoAuthHelperInRequestScopeRule",
   "gated_by": "checkAuthCallsWhenInRequestScope (default false)",
   "identifiers": [
@@ -142,12 +142,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noenvcallsoutsideofconfig",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#noenvcallsoutsideofconfig",
   "fqcn": "Larastan\\Larastan\\Rules\\NoEnvCallsOutsideOfConfigRule",
   "gated_by": "noEnvCallsOutsideOfConfig (default true)",
   "identifiers": [
@@ -159,12 +159,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nomissingtranslationsrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nomissingtranslationsrule",
   "fqcn": "Larastan\\Larastan\\Rules\\NoMissingTranslationsRule",
   "gated_by": "checkMissingTranslations (default false)",
   "identifiers": [
@@ -176,12 +176,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nomodelmake",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nomodelmake",
   "fqcn": "Larastan\\Larastan\\Rules\\NoModelMakeRule",
   "gated_by": "noModelMake (default true)",
   "identifiers": [
@@ -193,12 +193,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nopublicmodelscopeandaccessorrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nopublicmodelscopeandaccessorrule",
   "fqcn": "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule",
   "gated_by": "checkModelMethodVisibility (default false)",
   "identifiers": [
@@ -211,12 +211,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nounnecessarycollectioncall",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nounnecessarycollectioncall",
   "fqcn": "Larastan\\Larastan\\Rules\\NoUnnecessaryCollectionCallRule",
   "gated_by": "noUnnecessaryCollectionCall (default true; noUnnecessaryCollectionCallOnly/Except)",
   "identifiers": [
@@ -228,12 +228,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nounnecessaryenumerabletoarraycalls",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nounnecessaryenumerabletoarraycalls",
   "fqcn": "Larastan\\Larastan\\Rules\\NoUnnecessaryEnumerableToArrayCallsRule",
   "gated_by": "noUnnecessaryEnumerableToArrayCalls (default false)",
   "identifiers": [
@@ -245,12 +245,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#octanecompatibilityrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#octanecompatibilityrule",
   "fqcn": "Larastan\\Larastan\\Rules\\OctaneCompatibilityRule",
   "gated_by": "checkOctaneCompatibility (default false)",
   "identifiers": [
@@ -262,12 +262,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#relationexistencerule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#relationexistencerule",
   "fqcn": "Larastan\\Larastan\\Rules\\RelationExistenceRule",
   "gated_by": null,
   "identifiers": [
@@ -279,12 +279,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon services tags phpstan.rules.rule",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#unusedviewsrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#unusedviewsrule",
   "fqcn": "Larastan\\Larastan\\Rules\\UnusedViewsRule",
   "gated_by": "checkUnusedViews (default false)",
   "identifiers": [
@@ -296,12 +296,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon conditionalTags",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nouselessvaluefunctioncallsrule",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nouselessvaluefunctioncallsrule",
   "fqcn": "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule",
   "gated_by": null,
   "identifiers": [
@@ -313,12 +313,12 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon rules:",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,
   "deprecation_evidence": null,
-  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nouselesswithfunctioncallsruletest",
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md#nouselesswithfunctioncallsruletest",
   "fqcn": "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule",
   "gated_by": null,
   "identifiers": [
@@ -330,7 +330,7 @@
   "out_of_scope_reason": null,
   "package": "larastan/larastan",
   "registered_in": "extension.neon rules:",
-  "version": "3.10.0"
+  "version": "3.14.0"
  },
  {
   "deprecated": false,

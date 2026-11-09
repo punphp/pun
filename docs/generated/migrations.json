@@ -2985,6 +2985,14 @@
         ],
         "note": "Same. Options: same.",
         "unsupported": false
+      },
+      {
+        "name": "Pint/prettier_cache_fingerprint",
+        "tool": "pint",
+        "url": "https://laravel.com/docs/pint",
+        "rules": [],
+        "note": "a no-op that carries Prettier package versions into Pint's cache signature; Pun has no cache",
+        "unsupported": true
       }
     ],
     "php-cs-fixer": [
@@ -24777,7 +24785,7 @@
       {
         "name": "larastan.configCollection",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/config-collection"
         ],
@@ -24787,7 +24795,7 @@
       {
         "name": "larastan.console.undefinedArgument",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/undefined-console-input"
         ],
@@ -24797,7 +24805,7 @@
       {
         "name": "larastan.console.undefinedOption",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/undefined-console-input"
         ],
@@ -24807,7 +24815,7 @@
       {
         "name": "larastan.deferrableServiceProvider.missingProvides",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/deferrable-provider-missing-provides"
         ],
@@ -24817,7 +24825,7 @@
       {
         "name": "larastan.events.noConstructor",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/unexpected-dispatch-arguments"
         ],
@@ -24827,7 +24835,7 @@
       {
         "name": "larastan.jobs.noConstructor",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/unexpected-dispatch-arguments"
         ],
@@ -24837,7 +24845,7 @@
       {
         "name": "larastan.missingTranslations",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/missing-translation"
         ],
@@ -24847,7 +24855,7 @@
       {
         "name": "larastan.noAuthFacadeInRequestScope",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/no-auth-facade-in-request-scope"
         ],
@@ -24857,7 +24865,7 @@
       {
         "name": "larastan.noAuthHelperInRequestScope",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/no-auth-helper-in-request-scope"
         ],
@@ -24867,7 +24875,7 @@
       {
         "name": "larastan.noEnvCallsOutsideOfConfig",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/no-env-outside-config"
         ],
@@ -24877,7 +24885,7 @@
       {
         "name": "larastan.noModelMake",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/no-model-make"
         ],
@@ -24887,7 +24895,7 @@
       {
         "name": "larastan.noPublicModelAccessorMethod",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "lint/laravel/prefer-protected-model-methods"
         ],
@@ -24897,7 +24905,7 @@
       {
         "name": "larastan.noPublicModelScopeMethod",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "lint/laravel/prefer-protected-model-methods"
         ],
@@ -24907,7 +24915,7 @@
       {
         "name": "larastan.noUnnecessaryCollectionCall",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/redundant-collection-call"
         ],
@@ -24917,7 +24925,7 @@
       {
         "name": "larastan.octaneCompatibility",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/octane-compatibility"
         ],
@@ -24927,7 +24935,7 @@
       {
         "name": "larastan.relationExistence",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/undefined-relation"
         ],
@@ -24937,7 +24945,7 @@
       {
         "name": "larastan.unnecessaryEnumerableToArrayCall",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/redundant-to-array-call"
         ],
@@ -24947,7 +24955,7 @@
       {
         "name": "larastan.unusedViews",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/unused-view"
         ],
@@ -24957,7 +24965,7 @@
       {
         "name": "larastan.uselessConstructs.value",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "lint/laravel/no-useless-value-call"
         ],
@@ -24967,7 +24975,7 @@
       {
         "name": "larastan.uselessConstructs.with",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "lint/laravel/no-useless-with-call"
         ],
@@ -24977,7 +24985,7 @@
       {
         "name": "rules.modelAppends",
         "tool": "larastan",
-        "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+        "url": "https://github.com/larastan/larastan/blob/v3.14.0/docs/rules.md",
         "rules": [
           "analyse/laravel/undefined-model-append"
         ],
