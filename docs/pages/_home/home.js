@@ -175,7 +175,14 @@ export function initHome(root = document) {
   race(home);
   bench(home);
   for (const el of home.querySelectorAll(".score [data-count-to], .burst [data-count-to]")) onView(el, () => countUp(el, Number(el.dataset.countTo)));
-  for (const el of home.querySelectorAll(".stick")) onView(el, () => el.classList.add("in"), 0.2);
+  // Cards stay visible by default; only those still below the fold get the drop-in entrance.
+  if ("IntersectionObserver" in window && !reduced()) {
+    for (const el of home.querySelectorAll(".stick")) {
+      if (el.getBoundingClientRect().top < window.innerHeight) continue;
+      el.classList.add("armed");
+      onView(el, () => el.classList.add("in"), 0.2);
+    }
+  }
   onView(home.querySelector("[data-merge] .merge"), () => home.querySelector("[data-merge] .merge").classList.add("in"), 0.5);
 }
 

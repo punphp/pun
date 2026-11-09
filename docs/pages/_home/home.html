@@ -2,8 +2,7 @@
   <!-- HERO -->
   <section class="hero wrap">
     <div class="hero-copy">
-      <span class="pill rise"><span class="tag mint">new</span>one binary for the whole PHP toolchain</span>
-      <h1 class="rise" style="--d:.06s">PHP tooling, <span class="sticker pop-in">zero</span> waiting.</h1>
+      <h1 class="rise">PHP tooling, <span class="sticker pop-in">zero</span> waiting.</h1>
       <p class="lede rise" style="--d:.12s">Format, lint, analyse and migrate with one Rust binary. Same results as Pint, Rector and PHPStan, a whole lot sooner.</p>
 
       <div class="install rise" style="--d:.18s" data-install>
@@ -42,11 +41,8 @@
   <!-- RACE -->
   <section class="wrap sec" data-race>
     <div class="sec-head">
-      <div>
-        <p class="kicker">laravel/framework · 3,483 files</p>
-        <h2>Blink and it's done.</h2>
-      </div>
-      <button class="btn sm" type="button" data-race-replay>↻ Race again</button>
+      <h2>Blink and it's done.</h2>
+      <button class="btn sm" type="button" data-race-replay><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>Race again</button>
     </div>
 
     <div class="race-grid">
@@ -64,13 +60,12 @@
 <span class="waiting" data-waiting></span></pre>
       </div>
     </div>
-    <p class="race-note">Played at 1/30 speed, so Pint finishes in your lifetime. Times shown are the real ones.</p>
+    <p class="race-note">laravel/framework, 3,483 files. Played at 1/30 speed, so Pint finishes in your lifetime. Times shown are the real ones.</p>
   </section>
 
   <!-- BENCHMARKS -->
   <section class="wrap sec bench-sec" data-bench>
     <div class="bench-copy">
-      <p class="kicker">benchmarks</p>
       <h2>Fast is the feature.</h2>
       <div class="mega"><span data-mega>51</span><sup>×</sup></div>
       <p class="mega-note" data-mega-note>faster than Pint.</p>
@@ -87,21 +82,19 @@
 
   <!-- TOOLS -->
   <section class="wrap sec">
-    <p class="kicker">one install</p>
     <h2>Five tools. <span class="sticker gum">One</span> binary.</h2>
     <div class="tools">
-      <a class="tool stick" href="/docs/commands/format" style="--tilt:-1deg;--d:0s"><span class="tag mint">behaviour-safe</span><span class="tile zap" aria-hidden="true">F</span><h3>Format</h3><span class="replaces">replaces Pint · PHP-CS-Fixer</span><p>Layout only, 51× faster. Made for format on save.</p><code>$ pun format</code></a>
-      <a class="tool stick" href="/docs/commands/lint" style="--tilt:1deg;--d:.06s"><span class="tag zap">you choose the fixes</span><span class="tile gum" aria-hidden="true">L</span><h3>Lint</h3><span class="replaces">replaces Rector · risky fixers · Mago</span><p>Rules that change behaviour, applied only when you say so.</p><code>$ pun lint --fix</code></a>
-      <a class="tool stick" href="/docs/commands/analyse" style="--tilt:-1deg;--d:.12s"><span class="tag lilac">PHPStan-identical</span><span class="tile lilac" aria-hidden="true">A</span><h3>Analyse</h3><span class="replaces">replaces PHPStan · Larastan</span><p>Type errors, no levels to juggle.</p><code>$ pun analyse</code></a>
-      <a class="tool stick" href="/docs/commands/check" style="--tilt:1deg;--d:.18s"><span class="tag">Pint-identical</span><span class="tile mint" aria-hidden="true">C</span><h3>Check</h3><span class="replaces">all three, one pass</span><p>With --fix, it writes exactly what pint wrote.</p><code>$ pun check --fix</code></a>
-      <a class="tool stick" href="/docs/commands/migrate" style="--tilt:-1deg;--d:.24s"><span class="tag gum">zero diff</span><span class="tile zap" aria-hidden="true">M</span><h3>Migrate</h3><span class="replaces">replaces hand-editing configs</span><p>pint.json, phpstan.neon, rector.php become one file.</p><code>$ pun migrate</code></a>
+      <a class="tool stick" href="/docs/commands/format" style="--tilt:-1deg;--d:0s"><span class="tag mint">behaviour-safe</span><h3>Format</h3><span class="replaces">replaces Pint · PHP-CS-Fixer</span><p>Layout only, 51× faster. Made for format on save.</p><code>$ pun format</code></a>
+      <a class="tool stick" href="/docs/commands/lint" style="--tilt:1deg;--d:.06s"><span class="tag zap">you choose the fixes</span><h3>Lint</h3><span class="replaces">replaces Rector · risky fixers · Mago</span><p>Rules that change behaviour, applied only when you say so.</p><code>$ pun lint --fix</code></a>
+      <a class="tool stick" href="/docs/commands/analyse" style="--tilt:-1deg;--d:.12s"><span class="tag lilac">PHPStan-identical</span><h3>Analyse</h3><span class="replaces">replaces PHPStan · Larastan</span><p>Type errors, no levels to juggle.</p><code>$ pun analyse</code></a>
+      <a class="tool stick" href="/docs/commands/check" style="--tilt:1deg;--d:.18s"><span class="tag">Pint-identical</span><h3>Check</h3><span class="replaces">all three, one pass</span><p>With --fix, it writes exactly what pint wrote.</p><code>$ pun check --fix</code></a>
+      <a class="tool stick" href="/docs/commands/migrate" style="--tilt:-1deg;--d:.24s"><span class="tag gum">zero diff</span><h3>Migrate</h3><span class="replaces">replaces hand-editing configs</span><p>pint.json, phpstan.neon, rector.php become one file.</p><code>$ pun migrate</code></a>
     </div>
   </section>
 
   <!-- LARAVEL -->
   <section class="wrap sec laravel-sec">
     <div class="laravel-copy">
-      <p class="kicker">laravel first</p>
       <h2>Built for Laravel. <span class="sticker">Not</span> bolted on.</h2>
       <p class="sec-lede">Pun knows your app the way Larastan and rector-laravel do, without installing either. Turn it on with one line.</p>
       <div class="code toml-mini">
@@ -110,20 +103,19 @@
 pest = <span class="kw">true</span></pre>
       </div>
     </div>
-    <div class="laravel-grid">
-      <div class="lv"><span class="tile lilac" aria-hidden="true">A</span><h3>Larastan, built in</h3><p>Models, relations, facades, macros, container bindings and config, understood natively by pun analyse.</p></div>
-      <div class="lv"><span class="tile gum" aria-hidden="true">L</span><h3>rector-laravel rules</h3><p>Laravel upgrades and code-quality rewrites in pun lint, applied only when you say so.</p></div>
-      <div class="lv"><span class="tile zap" aria-hidden="true">F</span><h3>Pint's laravel preset</h3><p>The default for pun format. Same bytes Pint writes on every Laravel project.</p></div>
-      <div class="lv"><span class="tile mint" aria-hidden="true">T</span><h3>Tests that read well</h3><p><code>assertStatus(404)</code> becomes <code>assertNotFound()</code>, <code>$this-&gt;faker</code> becomes <code>fake()</code>, and Pest expectations get specific.</p></div>
-      <div class="lv"><span class="tile lilac" aria-hidden="true">R</span><h3>App rules</h3><p>Flags <code>$request-&gt;all()</code>, <code>$casts</code> properties, named migrations and middleware set in controllers.</p></div>
-      <div class="lv"><span class="tile gum" aria-hidden="true">B</span><h3>Laravel Boost aware</h3><p>pun migrate adds a Boost guideline, so your coding agent calls pun instead of the old tools.</p></div>
-    </div>
+    <ul class="laravel-list">
+      <li><h3>Larastan, built in</h3><p>Models, relations, facades, macros, container bindings and config, understood natively by pun analyse.</p></li>
+      <li><h3>rector-laravel rules</h3><p>Laravel upgrades and code-quality rewrites in pun lint, applied only when you say so.</p></li>
+      <li><h3>Pint's laravel preset</h3><p>The default for pun format. Same bytes Pint writes on every Laravel project.</p></li>
+      <li><h3>Tests that read well</h3><p><code>assertStatus(404)</code> becomes <code>assertNotFound()</code>, <code>$this-&gt;faker</code> becomes <code>fake()</code>, and Pest expectations get specific.</p></li>
+      <li><h3>App rules</h3><p>Flags <code>$request-&gt;all()</code>, <code>$casts</code> properties, named migrations and middleware set in controllers.</p></li>
+      <li><h3>Laravel Boost aware</h3><p>pun migrate adds a Boost guideline, so your coding agent calls pun instead of the old tools.</p></li>
+    </ul>
   </section>
 
   <!-- ONE CONFIG -->
   <section class="wrap sec config-sec" data-merge>
     <div>
-      <p class="kicker">pun migrate</p>
       <h2>Three configs walk in. One walks out.</h2>
       <p class="sec-lede">pint.json, phpstan.neon and rector.php become one pun.toml with Pun's rule names, and your PHPStan level expanded into the exact rules it ran. Then pun check --fix writes exactly what Pint wrote.</p>
       <a class="btn sm" href="/docs/commands/migrate">How migrate works →</a>
@@ -152,7 +144,6 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
 
   <!-- PARITY -->
   <section class="wrap sec">
-    <p class="kicker">parity, not "close enough"</p>
     <h2>Same bytes as Pint.</h2>
     <div class="parity">
       <div class="code">
@@ -189,7 +180,6 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
 <span class="hot">2 problems</span></pre>
     </div>
     <div>
-      <p class="kicker">built for agents</p>
       <h2>Fewer tokens. Same answers.</h2>
       <p class="sec-lede">Under Claude Code, Cursor, Codex and friends, every command switches to one line per problem. The docs ship llms.txt and a Markdown copy of every page.</p>
       <a class="btn sm" href="/docs/guides/coding-agents">Pun for agents →</a>

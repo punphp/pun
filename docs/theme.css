@@ -74,6 +74,13 @@
   --pun-pop-lilac: 6px 6px 0 0 #bbaaff;
 }
 
+/* Browser surfaces in the brand palette. */
+:root { accent-color: var(--blume-accent); caret-color: var(--blume-accent); scrollbar-color: var(--blume-border) transparent; }
+::selection { background: var(--blume-action); color: var(--blume-action-foreground); }
+
+/* Inline code: Martian Mono is wide, so set it lighter and smaller than Blume's default. */
+:root .prose :not(pre) > code:not(:where([class~=not-prose] *)) { font-size: .82em; font-weight: 400; background: var(--blume-muted); }
+
 /* Rule references use the site's existing tokens, including dark mode. */
 .rule-reference { margin-block: 1.5rem; }
 .rule-reference label { display: grid; gap: .35rem; font-weight: 500; }
