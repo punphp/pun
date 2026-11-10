@@ -315,8 +315,44 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
         }
         out
     } else {
-        // main sizes rayon's global pool by `--max-processes`.
-        read_in_parallel(&files, process)
+        // main sizes rayon's global pool by `--max-processes`. Blade templates go through Node workers, which are
+        // slow to start and to warm up: a few threads of their own, each with one worker, format the templates,
+        // largest first, beside rayon's pass over the PHP files.
+        let (mut blade, php): (Vec<_>, Vec<_>) =
+            (files.iter().cloned().enumerate()).partition(|(_, f)| blade_on && is_blade(f));
+        blade.sort_by_cached_key(|(_, f)| {
+            std::cmp::Reverse(std::fs::metadata(f).map_or(0, |m| m.len()))
+        });
+        // A Node worker takes about 0.4 s to start and warm up, so it needs some 30 templates to pay for itself:
+        // on Pinkary's 142, four workers beat both two and eight at any thread count.
+        let lanes = (blade.len() / 32)
+            .clamp(1, rayon::current_num_threads())
+            .min(blade.len());
+        let next = std::sync::atomic::AtomicUsize::new(0);
+        let php_paths: Vec<PathBuf> = php.iter().map(|(_, f)| f.clone()).collect();
+        let (mut done, php_done) = std::thread::scope(|s| {
+            let lanes: Vec<_> = (0..lanes)
+                .map(|_| {
+                    s.spawn(|| {
+                        let mut out = vec![];
+                        while let Some((i, f)) =
+                            blade.get(next.fetch_add(1, std::sync::atomic::Ordering::Relaxed))
+                        {
+                            out.push((*i, process(f, std::fs::read(f))));
+                        }
+                        out
+                    })
+                })
+                .collect();
+            let php_done = read_in_parallel(&php_paths, process);
+            let done: Vec<_> = (lanes.into_iter())
+                .flat_map(|h| h.join().unwrap_or_else(|p| std::panic::resume_unwind(p)))
+                .collect();
+            (done, php_done)
+        });
+        done.extend(php.iter().map(|(i, _)| *i).zip(php_done));
+        done.sort_by_key(|d| d.0);
+        done.into_iter().map(|d| d.1).collect()
     };
     drop(spinner);
     let processed: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;

@@ -31,9 +31,9 @@ The 2026-11-09 benchmark compared `pun format --test` with Pint 1.32.1's `pint -
 | Pint | 294.7 s | 21.9 s |
 | Pint `--parallel` | 41.4 s | 7.4 s |
 | Pint, warm cache | 25.3 s | 1.0 s |
-| Pun | 1.8 s | 2.4 s |
+| Pun | 1.8 s | 1.7 s |
 
-Pint keeps a result cache, so a repeat run on unchanged files is faster. The first two Pint rows delete the cache before every run. Pun has no result cache: every run checks every file. On Pinkary, a warm Pint cache is faster than Pun, because Pun formats the 137 Blade templates through Prettier on every run.
+Pint keeps a result cache, so a repeat run on unchanged files is faster. The first two Pint rows delete the cache before every run. Pun has no result cache: every run checks every file. On Pinkary, a warm Pint cache is faster than Pun, because Pun formats the 137 Blade templates through Prettier on every run. Pinkary's Pun time was re-measured on 2026-11-10, after Blade scheduling changes.
 
 ## Byte-for-byte output
 
