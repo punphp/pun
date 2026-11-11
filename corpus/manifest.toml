@@ -1,4 +1,4 @@
-# Formatting corpus. Each project is a shallow checkout at `commit` in corpus/<name>.
+# Corpus projects for format, lint and analyse runs. Each project is a shallow checkout at `commit` in corpus/<name>.
 # Populate with scripts/corpus.sh. Keep one key per line (the script greps it).
 
 [[project]]

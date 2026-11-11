@@ -6,6 +6,9 @@
 *.profraw
 target-*/
 /dist/
-/target-bench
 /.amp/portals/*
 __pycache__/
+.DS_Store
+.idea/
+.vscode/
+.env

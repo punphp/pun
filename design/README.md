@@ -13,7 +13,7 @@ Pun talks like a fast friend who also reads the benchmark methodology.
 - **Lead with the number, then the joke.** "Format laravel/framework in 3.7 s. Pint takes 190." Use one pun or wink per page, and none in docs headings.
 - **Keep it short.** Headlines have fewer than eight words. A lede is one sentence: "One Rust binary for format, lint, analyse and migrate."
 - **Use concrete nouns.** Name the tool that Pun replaces (Pint, PHP-CS-Fixer, Rector, PHPStan, Larastan), the file (`pint.json`, `pun.toml`), and the flag (`--test`). Do not write "blazing", "revolutionary", "seamless", or "supercharge".
-- **Prove it.** Publish only timings that the repo measured. Today that is laravel/framework: Pint 190 s, Pun 3.7 s cold and 0.07 s warm, which gives "51×". Every chart links to "reproduce →".
+- **Prove it.** Publish only timings that the repo measured. Today that is laravel/framework: Pint 294.7 s, Pun 1.8 s, which gives "167×". Every chart links to "reproduce →".
 - **Casing.** The product is "Pun" in sentences. It is "pun" in the wordmark, in commands, and in the Ribbon. Headings and buttons use sentence case. Commands are always in mono, with a `$` prompt.
 - **No emoji** in product UI or docs. The mascot and the bolt carry the personality.
 - **Say "you", not "we".** Write "your pint.json" and "your CI". Use "we" only in the changelog.
@@ -45,7 +45,7 @@ Each of the four fills has one job:
 
 - `zap` means speed. It fills the one primary Button, Highlight words, the bolt, Format, and Pun's cold-run bar.
 - `lilac` is the brand ground. It fills the hero StickerPanel, the app icon, and Analyse.
-- `gum` means play. It fills Bursts, the closing CTA, the warm-cache bar, and the `$` prompt.
+- `gum` means play. It fills Bursts, the closing CTA, and the `$` prompt.
 - `mint` means ready. It fills status Tags and the version chip.
 
 Text on any fill is always `ink`. The lowest contrast is 7.6:1, on `gum`. Fills have only 1.2:1 to 2.2:1 contrast against `paper`, so every fill gets the `outline`. The outline is the brand. Never drop it.
@@ -72,7 +72,7 @@ Fredoka's round terminals and circular bowls match the hand-drawn "pun" letterin
 
 - Headlines are bold (700) with light negative tracking, from -0.01em to -0.03em. Rounded letters need more air than a grotesque.
 - Headline sizes: `display` for the hero, `h1` for sections, `h2` for docs and the CTA, `h3` for cards.
-- `mega` is for the one speed multiple on a page (51×).
+- `mega` is for the one speed multiple on a page (167×).
 - Body copy is `body` at 16/1.6, with a maximum width of 68ch. A lede is `lede` in `ink-2`, with a maximum width of 30ch.
 - Mono covers commands, flags, file names, numbers in charts, Tags, Pills, and the uppercase `kicker` above section headlines.
 - Never set "pun" in a font as a logo. Use the wordmark SVG.

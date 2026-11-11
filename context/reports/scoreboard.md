@@ -61,71 +61,10 @@ The earlier seed-2 `Support/Facades/Process.php` CRLF difference came from a sta
 target/debug/pun, built before align_multiline_comment was ported, and `mutate.py minimise` always used that path.
 fuzz-parity.sh now refuses a binary older than the formatting crates, and minimise uses `PUN_BIN`.
 
-## Delegate mode
-
-Projects whose config enables rules Pun hasn't ported run every file through real PHP-CS-Fixer (context/reference/oracle.md
-"Delegate mode"). laravel-framework's own pint.json used to have 8 (align_multiline_comment, class_reference_name_casing,
-combine_consecutive_issets, combine_consecutive_unsets, phpdoc_return_self_reference, phpdoc_summary,
-phpdoc_trim_consecutive_blank_line_separation, switch_continue_to_break); all 8 are ported now, and
-`// @php-cs-fixer-ignore` is honoured natively, so its row above is a fully native run (`--explain` lists every rule
-as `native`, nothing delegated). 2026-10-16:
-
-| check | files | result |
-|---|---|---|
-| harness, laravel-framework, its own pint.json, fully native | 3483 | 0 differing (pint changed 22, pun changed 22) |
-| fuzz-parity.sh laravel-framework seeds 1, 2, 3 (Support + Collections, own pint.json; mutate.py now also targets the 8 rules) | 128 each | 0 differing (pint changed 112 / 110 / 115) |
-| fuzz-parity.sh laravel-framework seeds 4, 5 (Database + Foundation + Validation, own pint.json) | 602 each | 0 differing (pint changed 465 / 462) |
-| `.php-cs-fixer.php` with a project fixer class (crates/pun-delegate/tests/custom) | 3 | identical to `php-cs-fixer fix` (files and applied fixers) |
-| `pun format --format=json` vs Pint, delegated, perturbed Support + Collections + Validation | 210 | identical files and identical JSON report |
-
-`--test` on laravel-framework (debug build, one run each, `/usr/bin/time`):
-
-| run | wall | max RSS (pun process) |
-|---|---|---|
-| `pint --test` | 200.3 s | 163 MB |
-| before: `pun format --test --no-cache` (delegated, 2 PHP workers) | 159.0 s | 111 MB |
-| before: same with `--native-only` (8 rules skipped, not Pint-identical) | 53.6 s | 46 MB |
-| now: `pun format --test --no-cache` (fully native, Pint-identical; load 4.8) | 38.3 s | 50 MB |
-
 ## Benchmarks
 
-2026-10-16, **`--profile profiling` build** (release + line tables, `lto = false`, `codegen-units = 16`; a full release
-build is off-limits on this box). 2-core / 7 GB box shared with other agents (load 1-3 during these runs), so absolute
-numbers are noisy; wall / CPU (user+sys) from `/usr/bin/time`, median of 3 runs. Pint 1.x (`.oracle/pint`) never
-caches (its presets call `setUsingCache(false)`), Mago 1.57.0 (prebuilt binary, `mago fmt --check <files>`) has no
-cache, so their cold and warm runs are the same. Pun cold = `--no-cache`; warm = second run on a clean tree (every
-file already formatted, content-hash cache hit).
-
-| project | tool | cold wall | cold CPU | warm wall | warm CPU |
-|---|---|---|---|---|---|
-| laravel-framework (3027 PHP files, own pint.json) | pint `--test` | 190 s | 154 s | 190 s | 154 s |
-| | pun `--test` (fully native, no flags) | 3.7 s | 7.1 s | 0.07 s | 0.08 s |
-| | mago `fmt --check` | 1.1 s | 2.1 s | 1.1 s | 2.1 s |
-| laravel-framework, `--preset laravel` | pun | 6.1 s | 11.8 s | | |
-| pinkary (484 files, 137 Blade) | pint `--test` | 13.4 s | 15.1 s | 13.4 s | 15.1 s |
-| | pun `--test` | 4.2 s | 1.7 s + Node | 0.20 s | 0.19 s |
-| pinkary PHP only (347 files) | pun `--test`, pint.json without `Pint/laravel_blade` | 0.33 s | 0.58 s | 0.03 s | 0.02 s |
-| | mago `fmt --check` | 0.13 s | 0.25 s | 0.13 s | 0.25 s |
-
-- laravel-framework (re-measured 2026-10-16 20:40, `target-crlf/profiling/pun`, load 1.5-1.9): its own pint.json now
-  runs fully native, so this is the plain `pun format --test --no-cache` / `--test` with nothing skipped (Pint-identical;
-  `--native-only` gives the same 3.7 s since nothing is delegated). Cold varied 3.6-8.0 s over 9 runs as other agents'
-  builds came and went; the row is the median of the 3 runs in the quietest window. Pun/Mago is 3.3x wall, 3.4x CPU
-  cold; warm Pun is ~16x faster than Mago. Pun is ~50x Pint (wall; Pint not re-run). The only `--test` failure is
-  tests/Foundation/Fixtures/bad-syntax-strategy.php (a deliberate parse error that Pint reports too), so warm runs
-  re-check just that file. Before the speed work the same command took 17.2 s wall / 30.6 s CPU.
-- laravel-framework `PUN_PROFILE=1` tops (summed over threads, 8.2 s total): tokenize 1.16 s, lint 0.52 s,
-  braces_position 0.45 s, no_unused_imports 0.37 s, phpdoc_align 0.31 s, phpdoc_order 0.30 s, array_indentation 0.29 s,
-  no_extra_blank_lines 0.28 s, phpdoc_separation 0.22 s, phpdoc_return_self_reference 0.19 s. The 8 newly ported rules
-  add 0.50 s together (phpdoc_return_self_reference 0.19, phpdoc_trim_consecutive_blank_line_separation 0.10,
-  class_reference_name_casing 0.10, align_multiline_comment 0.07, phpdoc_summary 0.04, the rest < 0.01).
-- Pun refuses laravel-framework's `"php": "^8.3"` composer constraint; these runs set the harness escape hatch
-  `PUN_IGNORE_PHP_CONSTRAINT=1`. Mago is the prebuilt 1.57.0 binary at /home/forge/bench/mago, run as
-  `xargs -a lf.files mago fmt --check` on the same 3027 files.
-- pinkary cold is bound by Blade: Prettier (Node) takes ~2.9 s wall for the 137 Blade files even with one long-lived
-  worker per thread, so cold Pun is 3.2x Pint; warm is 67x. Of the 0.20 s warm run, ~0.17 s is
-  `ensure_prettier` launching Node four times (`node -v` + three package probes) before any file is read.
-- Stage timings: `PUN_PROFILE=1 pun format ...` prints time and call count per fixer, tokenize, lint and generate.
+The 2026-10-16 measurements (delegate mode and the result cache, both removed since) are in git history. The runs
+below are on the current design: every rule native and no cache.
 
 ### Blade probe recovery (Linux, 2026-10-25)
 

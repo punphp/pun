@@ -11,7 +11,7 @@
 # newer than the formatting crates' sources (pun-tokens, -format, -fixers, -config).
 # A project whose pint.json enables Pint/laravel_blade needs its node_modules (prettier); it is symlinked.
 # FUZZ_EXTRA=crlf (comma list) applies those mutate.py mutations to every file, after its 3 random ones.
-# FUZZ_CONFIG=<pint.json> replaces the project's config. PUN_PINT=<Pint PHAR> is passed to pun for rules it delegates.
+# FUZZ_CONFIG=<pint.json> replaces the project's config.
 # composer.json is not copied: Pint ignores it, and Pun would refuse projects allowing PHP < 8.4.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -31,7 +31,7 @@ find "$w/src" \( -name vendor -o -name node_modules \) -prune -exec rm -rf {} +
 echo "seed $seed: $(python3 "$ROOT/scripts/mutate.py" mutate "$w/src" "$seed")"
 [ -d "$project/node_modules" ] && ln -s "$project/node_modules" "$w/src/node_modules"
 cp -a "$w/src" "$w/pint"; cp -a "$w/src" "$w/pun"
-run() { (cd "$1" && env -i PATH="$PATH" HOME="$HOME" ${PUN_PINT:+PUN_PINT="$PUN_PINT"} timeout 1800 nice "${@:2}" >/dev/null 2>&1 || true); }
+run() { (cd "$1" && env -i PATH="$PATH" HOME="$HOME" timeout 1800 nice "${@:2}" >/dev/null 2>&1 || true); }
 run "$w/pint" php "$ROOT/.oracle/pint/builds/pint"
 run "$w/pun" sh -c '"$0" migrate && "$0" check --fix' "$PUN_BIN"
 rm -f "$w/pun/pun.toml"

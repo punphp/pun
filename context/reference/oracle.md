@@ -43,6 +43,8 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | `scripts/effective-rules.php [pint.json]` | effective fixer list (run order, options, priority, risky, class, file) |
 | `scripts/export-fixtures.php <effective.json> <outdir>` | upstream data-provider test cases to JSON |
 | `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and `pun migrate` + `pun format` (stdout, stderr, exit code, files) per argument set, same directory |
+| `scripts/export-phpunit-stub.php` | PHPUnit's declarations for `crates/pun-lint/tests/phpunit-stubs` |
+| `scripts/gen-third-party-licenses.sh [--check]` | `THIRD_PARTY_LICENSES.md` from cargo-about |
 | `scripts/perturb.php <dir>` | make a deliberately unformatted copy (anti-laravel config + token noise, `php -l` checked) |
 
 ## Rector

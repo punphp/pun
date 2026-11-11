@@ -142,7 +142,8 @@ def badges(data: dict, rid: str, rule: dict, sources: list[dict]) -> str:
     if ecosystem:
         sentences.append(f"Runs when {ecosystem} is installed.")
     if rule.get("gated_by") or re.match(r"(php|laravel|phpunit|pest)-\d", group):
-        sentences.append(f"Gated by {group if re.search(r'\d', group) else rule['gated_by']}.")
+        gate = group if re.search(r"\d", group) else rule["gated_by"]
+        sentences.append(f"Gated by {gate}.")
     gates = sorted({s["gated_by"] for s in sources if s.get("gated_by")})
     if gates:
         sentences.append("Additional upstream gates: " + ", ".join(f"`{gate}`" for gate in gates) + ".")

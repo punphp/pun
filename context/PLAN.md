@@ -59,9 +59,9 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **Home and licence:** github.com/punphp/pun, MIT (LICENSE, THIRD_PARTY_NOTICES.md). Not a shipfastlabs project. The
   repo stays private for now.
 - **Positioning:** Pun is to PHP what Bun is to JavaScript. Laravel first, PHP 8.4+ projects only.
-- **1.0 ships everything at once.** Nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
+- **1.0 ships everything at once.** Apart from the 0.1.0 betas (§0), nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
-- **The 1.0 bar:** every lint rule (all 703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
+- **The 1.0 bar:** every lint rule (all 719) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
   improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); deprecation-rules and strict-rules as plain rules. Speed and memory
   come first in every command.
 - **Brand:** "Sticker Pop", the sprinting elephant in sneakers; Fredoka for text, Martian Mono for code (design/).
@@ -140,7 +140,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   are left out for now.
 - **All lint rules are 1.0** (2026-10-26, replaces the 2026-10-18 split): the PHPUnit and Pest lint rules
   (rector-phpunit, Pest's Rector plugin and the `phpunit`/`pest` groups) and the lint rules in no set are part of the
-  1.0 bar. mapping.toml no longer has a `later` flag; all 703 lint rules are the 1.0 bar.
+  1.0 bar. mapping.toml no longer has a `later` flag; all 719 lint rules are the 1.0 bar.
 - **Analyse without Pest or PHPUnit support for 1.0** (2026-10-18): test files are analysed like any other PHP code,
   with no Pest plugin or PHPUnit typing (analyse 7 moves after 1.0). A project that doesn't want them analysed
   excludes them by glob: `[analyse] exclude = ["tests/**"]` removes matching files from both the analysis and the
@@ -445,8 +445,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | harness: lint and analyse modes (pun-harness is dev-only and its fixtures moved to pun-fixers/tests/fixtures) | todo |
-| scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
-| reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
 | oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
 | fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
 | audit fixers-messages follow-up: run scripts/cli-parity.sh on a bad fixer config to confirm the reworded configure errors end to end | todo |
