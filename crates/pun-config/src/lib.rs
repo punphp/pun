@@ -272,6 +272,14 @@ fn parse(
     let gates = schema::Gates { php, composer };
     let lint = schema::lint(path, lint, &files, &gates)?;
     let analyse = schema::analyse(path, analyse, &files, &gates)?;
+    // `pun analyse --generate-baseline` writes this file, so one to create is judged by its directory.
+    let escapes = |b: &&str| {
+        let dir = Path::new(b).parent().unwrap_or(Path::new(""));
+        !inside(root, b) || !inside(root, &dir.to_string_lossy())
+    };
+    if let Some(b) = analyse.baseline.as_deref().filter(escapes) {
+        bail!("{at}: [analyse] baseline: \"{b}\" is outside the project");
+    }
 
     if let Some(p @ ("per" | "symfony")) = opts.preset.as_deref() {
         bail!(

@@ -938,7 +938,8 @@ fn explain_names() {
 }
 
 /// `[files] paths` is what `--fix` rewrites: a relative, absolute or symlinked path that leaves the project is
-/// refused, while a path inside it and one that does not exist yet (the finder's error) load.
+/// refused, while a path inside it and one that does not exist yet (the finder's error) load. A baseline to
+/// create outside the project is refused too.
 #[test]
 fn files_paths_stay_in_the_project() {
     let d = dir(&[]);
@@ -948,18 +949,28 @@ fn files_paths_stay_in_the_project() {
     std::os::unix::fs::symlink(d.join("outside"), root.join("link")).unwrap();
     let outside = d.join("outside").display().to_string();
     let escaping = ["../outside".to_string(), outside, "link".to_string()];
+    let at = root.join("pun.toml").display().to_string();
     for path in escaping {
         std::fs::write(
             root.join("pun.toml"),
             format!("[files]\npaths = [{path:?}]\n"),
         )
         .unwrap();
-        let at = root.join("pun.toml").display().to_string();
         assert_eq!(
             err(&root, Options::default()),
             format!("{at}: [files] paths: \"{path}\" is outside the project")
         );
     }
+    // `--generate-baseline` writes the baseline, so a file to create outside the project is refused as well.
+    std::fs::write(
+        root.join("pun.toml"),
+        "[analyse]\nbaseline = \"../outside/b.toml\"\n",
+    )
+    .unwrap();
+    assert_eq!(
+        err(&root, Options::default()),
+        format!("{at}: [analyse] baseline: \"../outside/b.toml\" is outside the project")
+    );
     std::fs::write(
         root.join("pun.toml"),
         "[files]\npaths = [\"app\", \"later\"]\n",

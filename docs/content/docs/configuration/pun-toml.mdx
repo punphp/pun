@@ -107,7 +107,7 @@ Laravel, Pest, and PHPUnit set rules depend on packages detected in `composer.lo
 | `preset` | `basic`, `essential`, `recommended` (default), `strict` or `max`; each includes the ones before it |
 | `paths` | What analyse checks, instead of `[files] paths` |
 | `exclude` | Added to `[files] exclude`, for analyse only |
-| `baseline` | The baseline file |
+| `baseline` | The baseline file. It must be inside the project; a path that leaves it is a config error |
 | `stubs` | Stub files, as PHPStan's `stubFiles`: their PHPDoc refines vendor symbols |
 | `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
 | `[[analyse.ignore]]` | Errors to ignore, as PHPStan's `ignoreErrors` |
