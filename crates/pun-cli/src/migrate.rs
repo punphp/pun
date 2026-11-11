@@ -1,8 +1,8 @@
 //! `pun migrate`: finds the Pint, PHP-CS-Fixer, PHPStan, Rector and Mago configs, asks which to migrate (a checklist
-//! on a terminal; `--from`/`--yes`, agent mode or no terminal don't ask), and migrates the chosen ones it can. Today
-//! that is the format part: pint.json or `.php-cs-fixer(.dist).php` becomes pun.toml, and `@php-cs-fixer-ignore`
-//! comments become `@pun-ignore-file` with Pun rule IDs (context/plan/rules.md §4). PHPStan, Rector and Mago are listed and
-//! left untouched. With no config at all it writes a starter pun.toml.
+//! on a terminal; `--from`/`--yes`, agent mode or no terminal don't ask), and migrates the chosen ones it can: pint.json or
+//! `.php-cs-fixer(.dist).php` becomes `[format]`, rector.php `[lint]` and phpstan.neon `[analyse]`, and
+//! `@php-cs-fixer-ignore` comments become `@pun-ignore-file` with Pun rule IDs (context/plan/rules.md §4). Mago is
+//! listed and left untouched. With no config at all it writes a starter pun.toml.
 use crate::render::{ColorChoice, Look, Role};
 use crate::{agent, report, root};
 use anyhow::{Context, Result, bail};
@@ -86,7 +86,7 @@ impl Source {
         }
     }
 
-    /// Pint and PHP-CS-Fixer give `[format]`, Rector `[lint]`; the rest isn't migrated yet.
+    /// Pint and PHP-CS-Fixer give `[format]`, Rector `[lint]`, PHPStan `[analyse]`; Mago isn't migrated yet.
     fn supported(self) -> bool {
         matches!(
             self,
@@ -205,6 +205,9 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
     let rows: Vec<_> = (plan(&detected, &chosen).into_iter())
         .map(|(s, f, a)| match (s, a) {
             (Source::Rector, Action::Migrate) if !rector_installed => (s, f, Action::NoVendor),
+            (Source::Phpstan, Action::Migrate) if needs_vendor(&root, &root.join(&f)) => {
+                (s, f, Action::NoVendor)
+            }
             _ => (s, f, a),
         })
         .collect();
@@ -504,6 +507,16 @@ fn rector_lint(
     Ok(text)
 }
 
+/// Whether phpstan.neon includes a file under `vendor/` that is not there (Larastan's extension.neon before
+/// `composer install`): PHPStan cannot read such a config either.
+fn needs_vendor(root: &Path, config: &Path) -> bool {
+    let vendor = format!("File '{}", root.join("vendor").display());
+    migrate::phpstan::from_phpstan(root, config).is_err_and(|e| {
+        let e = e.to_string();
+        e.contains(&vendor) && e.ends_with("is missing or is not readable.")
+    })
+}
+
 /// phpstan.neon's `[analyse]` added to `parts` (context/plan/migrate.md Build 5); the ✔ line's text. Baselines are
 /// not copied: each gets the note to generate a Pun one.
 fn phpstan_analyse(
@@ -709,7 +722,11 @@ impl Report {
                 Action::NoVendor => (
                     Mark::Warn,
                     "not-read",
-                    "not read: run `composer install` so Pun can read it with Rector; left untouched".into(),
+                    match s {
+                        Source::Phpstan => "not read: run `composer install` so Pun can read its vendor includes; left untouched",
+                        _ => "not read: run `composer install` so Pun can read it with Rector; left untouched",
+                    }
+                    .into(),
                 ),
                 Action::Held => (
                     Mark::Skip,

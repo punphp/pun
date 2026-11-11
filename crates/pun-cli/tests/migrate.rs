@@ -387,6 +387,42 @@ fn starter_beside_phpstan() {
 }
 
 /// Agent mode never asks: one summary line, then a line per config.
+/// phpstan.neon that includes a vendor file before `composer install`: left for later, the rest is migrated (the
+/// expected lines are derived by hand from the rector.php case above).
+#[test]
+fn phpstan_without_vendor_is_left() {
+    let neon =
+        "includes:\n    - vendor/larastan/larastan/extension.neon\nparameters:\n    level: 5\n";
+    let d = project("no-vendor", &[("pint.json", PINT), ("phpstan.neon", neon)]);
+    let (out, err, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(
+        (out.as_str(), err.as_str(), code),
+        (
+            " ok pint.json     -> [format] preset empty, 1 rule changed, 1 rule -> [lint]
+ ! phpstan.neon  not read: run `composer install` so Pun can read its vendor includes; left untouched
+ ok Wrote pun.toml
+",
+            "",
+            Some(0)
+        )
+    );
+    assert_eq!(read(&d, "pun.toml"), TOML);
+    // An include that is missing outside vendor/ is still an error, as it is in PHPStan.
+    let d = project(
+        "no-include",
+        &[
+            ("pint.json", PINT),
+            ("phpstan.neon", "includes:\n    - nope.neon\n"),
+        ],
+    );
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    let missing = format!(
+        "x File '{}' is missing or is not readable.\n",
+        d.join("nope.neon").display()
+    );
+    assert_eq!((err, code), (missing, Some(2)));
+}
+
 #[test]
 fn agent_mode() {
     let unknown = (

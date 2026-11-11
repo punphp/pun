@@ -56,7 +56,7 @@ Custom rules, closures, null configurations, and out-of-scope upgrade rules are 
 
 ## PHPStan and Larastan
 
-Migration resolves includes the way PHPStan does, so an include under `vendor/`, such as Larastan's `extension.neon`, needs `composer install` first. A missing include stops the whole migration with exit code 2; `--from pint` still works without `vendor/`.
+Migration resolves includes the way PHPStan does, so an include under `vendor/`, such as Larastan's `extension.neon`, needs `composer install` first. When that include is missing, `phpstan.neon` is left untouched with a warning and the other configs are migrated; run `pun migrate` again after `composer install`. A missing include outside `vendor/` stops the migration with exit code 2.
 
 Migration converts levels to an analyse preset with explicit rule differences. It also converts paths, exclusions, stubs, ignore entries, and supported extension settings.
 
