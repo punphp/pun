@@ -135,7 +135,7 @@ fn caret_satisfies(version: &str, base: &str) -> bool {
 #[cfg(test)]
 mod tests {
     /// npm's caret ranges, derived by hand from node-semver's rules: `^0.8.0` is `>=0.8.0 <0.9.0`, `^3.0.0` is
-    /// `>=3.0.0 <4.0.0`; a short version is padded with zeros instead of panicking (AUDIT item 10).
+    /// `>=3.0.0 <4.0.0`; a short version is padded with zeros instead of panicking.
     #[test]
     fn caret_ranges() {
         use super::caret_satisfies as ok;

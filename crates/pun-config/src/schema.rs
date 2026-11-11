@@ -400,7 +400,7 @@ impl Files {
 }
 
 /// A PHP version as `major.minor`: `[php] version`, or the lowest composer.json's `require.php` admits. The one
-/// representation of the target PHP version (AUDIT 53): `to_id()` is PHP's `PHP_VERSION_ID` form that pun-lint and
+/// representation of the target PHP version: `to_id()` is PHP's `PHP_VERSION_ID` form that pun-lint and
 /// pun-analyse compare with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PhpVersion {

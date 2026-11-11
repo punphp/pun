@@ -5,7 +5,7 @@ Pun depends on Mago 1.57.0 (`mago-syntax`, `mago-linter`, ...). Mago also ships 
 capabilities with **no equivalent** among PHP-CS-Fixer's fixers (`src/Fixer/**`) or Pint's custom fixers
 (`app/Fixers`: `Pint/laravel_*`, `Pint/phpdoc_type_annotations_only`), and says which ones Pun should adopt.
 
-Sources: `/tmp/mago` at tag 1.57.0 (`crates/linter/src/rule/**`, `crates/formatter/src/settings.rs`,
+Sources: a checkout of Mago at tag 1.57.0 (`crates/linter/src/rule/**`, `crates/formatter/src/settings.rs`,
 `crates/analyzer/src/**`), `.oracle/php-cs-fixer/src/Fixer/**`, `.oracle/pint/app/Fixers`.
 
 Pun adds every extra as an **opt-in** `Pun/<name>` rule. None is in any preset, so default output stays
