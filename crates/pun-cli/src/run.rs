@@ -663,6 +663,9 @@ fn filter_problems(
     problems.sort_by_key(|p| p.span.start);
 }
 
+/// The most rounds of native rules and token pass `--fix` gives one file.
+const FIX_ROUNDS: usize = 10;
+
 /// One file: native lint, the token pass, the pending rules under `--fix`; the result written unless a dry run.
 /// Unreadable and unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
 fn process_file(
@@ -701,9 +704,8 @@ fn process_file(
         (true, Some(plan)) => plan.for_file(path),
         _ => BTreeMap::new(),
     };
-    let text = std::str::from_utf8(&code).ok();
     // A token rule changes a whole file, so only `@pun-ignore-file` turns it off.
-    let mut file_ignores = match text {
+    let mut file_ignores = match std::str::from_utf8(&code).ok() {
         Some(t) if !on.is_empty() => Ignores::parse(t),
         _ => Ignores::default(),
     };
@@ -719,83 +721,97 @@ fn process_file(
     let mut now = code.clone();
     let mut applied: Vec<&'static str> = vec![];
     let mut problems: Vec<Problem> = vec![];
-    let mut native_syntax_error = false;
     let native_on = (on.keys()).any(|id| {
         matches!(
             lint_plan::engine(id),
             Some(Engine::Native | Engine::Builtin)
         )
     });
-    if let (Some(linter), Some(text), true) = (&e.linter, text, native_on) {
-        let filter = |src: &str, ps: &mut Vec<Problem>| filter_problems(&on, &rel, src, ps);
-        let outcome = match fix {
-            true => linter.fix_with(rel_path, text, filter).map(|f| {
-                for p in &f.applied {
-                    let id = static_id(&p.rule);
-                    if !applied.contains(&id) {
-                        applied.push(id);
+    let token = token_rules(&token_on, fix, false);
+    // A lint fix can leave work for a rule that already ran (an emptied docblock, a pair of calls that now
+    // merges), so `--fix` with lint rules repeats both steps until the token pass changes nothing: a second run
+    // then finds nothing to fix. Formatting alone runs once, as Pint does.
+    let rounds = if fix && !on.is_empty() { FIX_ROUNDS } else { 1 };
+    for round in 1..=rounds {
+        let mut native_syntax_error = false;
+        let text = std::str::from_utf8(&now).ok().map(str::to_owned);
+        if let (Some(linter), Some(text), true) = (&e.linter, text.as_deref(), native_on) {
+            let filter = |src: &str, ps: &mut Vec<Problem>| filter_problems(&on, &rel, src, ps);
+            let outcome = match fix {
+                true => linter.fix_with(rel_path, text, filter).map(|f| {
+                    for p in &f.applied {
+                        let id = static_id(&p.rule);
+                        if !applied.contains(&id) {
+                            applied.push(id);
+                        }
                     }
+                    now = f.source.into_bytes();
+                    f.remaining
+                }),
+                false => linter.check(rel_path, text).map(|mut ps| {
+                    filter_problems(&on, &rel, text, &mut ps);
+                    ps
+                }),
+            };
+            match outcome {
+                Ok(ps) => problems = ps,
+                // The token pass (or PHP's grammar below) reports the syntax error.
+                Err(pun_lint::LintError::Syntax { .. }) => native_syntax_error = true,
+                Err(err) => {
+                    r.status = Status::Lint;
+                    r.message = err.to_string();
+                    return Ok(done(r));
                 }
-                now = f.source.into_bytes();
-                f.remaining
-            }),
-            false => linter.check(rel_path, text).map(|mut ps| {
-                filter_problems(&on, &rel, text, &mut ps);
-                ps
-            }),
-        };
-        match outcome {
-            Ok(ps) => problems = ps,
-            // The token pass (or PHP's grammar below) reports the syntax error.
-            Err(pun_lint::LintError::Syntax { .. }) => native_syntax_error = true,
-            Err(err) => {
-                r.status = Status::Lint;
-                r.message = err.to_string();
-                return Ok(done(r));
             }
         }
-    }
 
-    // 2. The token pass: the format rules and the token lint rules.
-    let token = token_rules(&token_on, fix, false);
-    if in_format || !token.is_empty() {
-        let pipeline = e.pipelines.get(in_format, &token)?;
-        let outcome = match isolated(|| run_file(&pipeline, path, &now)) {
-            Ok(run) => run?,
-            Err(message) => {
-                r.status = Status::Exception;
-                r.message = message;
-                return Ok(done(r));
+        // 2. The token pass: the format rules and the token lint rules.
+        if in_format || !token.is_empty() {
+            let pipeline = e.pipelines.get(in_format, &token)?;
+            let outcome = match isolated(|| run_file(&pipeline, path, &now)) {
+                Ok(run) => run?,
+                Err(message) => {
+                    r.status = Status::Exception;
+                    r.message = message;
+                    return Ok(done(r));
+                }
+            };
+            match outcome {
+                Err(err) => {
+                    r.status = if err.after_fix || round > 1 {
+                        Status::Lint
+                    } else {
+                        Status::Invalid
+                    };
+                    r.message = crate::console::carry(&err.message);
+                    return Ok(done(r));
+                }
+                Ok(None) => break,
+                Ok(Some((new, fixers))) => {
+                    for fixer in fixers {
+                        if !applied.contains(&fixer) {
+                            applied.push(fixer);
+                        }
+                    }
+                    // The native problems' spans refer to the source before the token pass.
+                    if !problems.is_empty()
+                        && let (Some(linter), Ok(t)) = (&e.linter, std::str::from_utf8(&new))
+                        && let Ok(mut ps) = linter.check(rel_path, t)
+                    {
+                        filter_problems(&on, &rel, t, &mut ps);
+                        problems = ps;
+                    }
+                    now = new;
+                }
             }
-        };
-        match outcome {
-            Err(err) => {
-                r.status = if err.after_fix {
-                    Status::Lint
-                } else {
-                    Status::Invalid
-                };
+        } else {
+            if native_syntax_error && let Err(err) = pun_format::lint(&code) {
+                r.status = Status::Invalid;
                 r.message = crate::console::carry(&err.message);
                 return Ok(done(r));
             }
-            Ok(None) => {}
-            Ok(Some((new, fixers))) => {
-                applied.extend(fixers);
-                // The native problems' spans refer to the source before the token pass.
-                if !problems.is_empty()
-                    && let (Some(linter), Ok(t)) = (&e.linter, std::str::from_utf8(&new))
-                    && let Ok(mut ps) = linter.check(rel_path, t)
-                {
-                    filter_problems(&on, &rel, t, &mut ps);
-                    problems = ps;
-                }
-                now = new;
-            }
+            break;
         }
-    } else if native_syntax_error && let Err(err) = pun_format::lint(&code) {
-        r.status = Status::Invalid;
-        r.message = crate::console::carry(&err.message);
-        return Ok(done(r));
     }
     let warned: Vec<&'static str> = (token_on.iter())
         .filter(|(_, o)| o.level == pun_problem::Level::Warning)

@@ -137,6 +137,32 @@ fn fix_applies_safe_fixes_and_deletes_unused_ignores() {
     assert_eq!(code, Some(1));
 }
 
+/// One rule's fix can leave work for a rule that ran before it: once the property has its native type, its
+/// `@var string` says nothing more. One `--fix` does both, so a second run has nothing to change.
+#[test]
+fn fix_repeats_until_no_rule_has_work_left() {
+    let d = project(
+        "lint",
+        "fix-settles",
+        &[
+            (
+                "pun.toml",
+                "[lint.rules]\n\"phpdoc/no-useless-var\" = \"error\"\n\"style/add-property-type-from-phpdoc\" = \"error\"\n",
+            ),
+            (
+                "a.php",
+                "<?php\n\nclass A extends B\n{\n    /**\n     * The name of the thing.\n     *\n     * @var string\n     */\n    protected $name = 'a';\n}\n",
+            ),
+        ],
+    );
+    let (_, _, code) = agent(&d, &["lint", "--fix"]);
+    assert_eq!(
+        read(&d, "a.php"),
+        "<?php\n\nclass A extends B\n{\n    /**\n     * The name of the thing.\n     */\n    protected string $name = 'a';\n}\n"
+    );
+    assert_eq!(code, Some(0));
+}
+
 #[test]
 fn fix_off_keeps_a_rule_report_only() {
     let toml = TOML.replace(
