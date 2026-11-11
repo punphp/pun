@@ -137,6 +137,8 @@ pub enum LintError {
     },
     /// The rules still had fixes after [`MAX_ROUNDS`] rounds; these rules had a fix in the last one.
     NoConvergence { rules: Vec<String> },
+    /// A rule panicked on this file. Only this file fails; the panic hook has already printed where.
+    Panicked { message: String },
 }
 
 impl fmt::Display for LintError {
@@ -153,6 +155,7 @@ impl fmt::Display for LintError {
                 "fixes did not settle after {MAX_ROUNDS} rounds ({})",
                 rules.join(", ")
             ),
+            LintError::Panicked { message } => write!(f, "a lint rule panicked: {message}"),
         }
     }
 }
@@ -251,7 +254,15 @@ impl Linter {
             ancestors: Vec::new(),
             found: Found::default(),
         };
-        walk::Walk { linter: self }.walk_program(program, &mut state);
+        // A rule's bug must fail this file, not the whole run with the files before it already written.
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            walk::Walk { linter: self }.walk_program(program, &mut state);
+        }))
+        .map_err(|panic| LintError::Panicked {
+            message: (panic.downcast_ref::<&str>().map(ToString::to_string))
+                .or_else(|| panic.downcast_ref::<String>().cloned())
+                .unwrap_or_default(),
+        })?;
         let found = state.found;
         let mut found: Vec<(&'static str, Report)> =
             found.rules.into_iter().zip(found.reports).collect();

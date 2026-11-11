@@ -120,6 +120,57 @@ fn fixes_that_never_settle_stop_after_max_rounds() {
     );
 }
 
+#[test]
+fn a_panicking_rule_fails_its_file_only() {
+    let linter = Linter::new(vec![Box::new(Panics)], 80400);
+    // `unwrap()` on a `None` and a formatted `panic!` carry their message as `&str` and `String`.
+    for (code, message) in [
+        ("<?php\ntry { } finally { }\n", "no finally"),
+        ("<?php\nbreak;\n", "line 2"),
+    ] {
+        let err = linter.check(Path::new("a.php"), code).unwrap_err();
+        assert_eq!(
+            err,
+            LintError::Panicked {
+                message: message.to_string()
+            }
+        );
+        assert_eq!(err.to_string(), format!("a lint rule panicked: {message}"));
+    }
+    // A payload that is no text gives an empty message.
+    let err = linter.check(Path::new("a.php"), "<?php\ncontinue;\n");
+    assert_eq!(err.unwrap_err().to_string(), "a lint rule panicked: ");
+    // The next file is linted as usual.
+    assert_eq!(
+        linter.check(Path::new("b.php"), "<?php\n$a = 1;\n"),
+        Ok(vec![])
+    );
+}
+
+/// Panics on `try` (a `&str` payload), `break` (a `String`) and `continue` (neither).
+struct Panics;
+
+impl Rule for Panics {
+    fn id(&self) -> &'static str {
+        "lint/test/panics"
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        _ancestors: &[Node<'ast, 'arena>],
+        _ctx: &Context<'_>,
+        _out: &mut Vec<Report>,
+    ) {
+        match node {
+            Node::Try(_) => panic!("no finally"),
+            Node::Break(_) => panic!("line {}", 2),
+            Node::Continue(_) => std::panic::panic_any(7),
+            _ => {}
+        }
+    }
+}
+
 /// Reports every `try`, with no fix.
 struct ReportOnly;
 
