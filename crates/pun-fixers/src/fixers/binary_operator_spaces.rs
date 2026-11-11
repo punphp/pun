@@ -88,6 +88,11 @@ struct Levels {
     current_level: Cell<usize>,
 }
 
+/// The spaces `fix` adds around operators, by the index they go before. The loop walks backwards and looks only
+/// at an operator's own neighbours, so it never reads a place where a space is still to come, and one
+/// `insert_slices` at the end gives what an insert per operator would, without rebuilding the list each time.
+type Spaces = std::collections::BTreeMap<usize, Vec<Token>>;
+
 fn is_binary(tokens: &Tokens, index: usize) -> bool {
     TokensAnalyzer::new(tokens).is_binary_operator(index)
 }
@@ -100,17 +105,17 @@ impl BinaryOperatorSpacesFixer {
             .map(|&(_, s)| s)
     }
 
-    fn fix_white_space_around_operator(&self, tokens: &mut Tokens, index: usize) {
+    fn fix_white_space_around_operator(&self, tokens: &mut Tokens, index: usize, spaces: &mut Spaces) {
         let token_content = strtolower(tokens[index].get_content());
         let Some(op) = self.operator(&token_content) else {
             return;
         };
         if op == SINGLE_SPACE {
-            Self::fix_white_space_around_operator_to_single_space(tokens, index);
+            Self::fix_white_space_around_operator_to_single_space(tokens, index, spaces);
             return;
         }
         if op == AT_LEAST_SINGLE_SPACE {
-            Self::fix_white_space_around_operator_to_at_least_single_space(tokens, index);
+            Self::fix_white_space_around_operator_to_at_least_single_space(tokens, index, spaces);
             return;
         }
         if op == NO_SPACE {
@@ -133,10 +138,14 @@ impl BinaryOperatorSpacesFixer {
             }
             return;
         }
-        tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
+        spaces.insert(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
     }
 
-    fn fix_white_space_around_operator_to_single_space(tokens: &mut Tokens, index: usize) {
+    fn fix_white_space_around_operator_to_single_space(
+        tokens: &mut Tokens,
+        index: usize,
+        spaces: &mut Spaces,
+    ) {
         if tokens[index + 1].is_whitespace(None) {
             let content = tokens[index + 1].get_content();
             if content != b" "
@@ -146,7 +155,7 @@ impl BinaryOperatorSpacesFixer {
                 tokens.set(index + 1, Token::new(T_WHITESPACE, " "));
             }
         } else {
-            tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
+            spaces.insert(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
         }
         if tokens[index - 1].is_whitespace(None) {
             let content = tokens[index - 1].get_content();
@@ -157,16 +166,20 @@ impl BinaryOperatorSpacesFixer {
                 tokens.set(index - 1, Token::new(T_WHITESPACE, " "));
             }
         } else {
-            tokens.insert_at(index, vec![Token::new(T_WHITESPACE, " ")]);
+            spaces.insert(index, vec![Token::new(T_WHITESPACE, " ")]);
         }
     }
 
-    fn fix_white_space_around_operator_to_at_least_single_space(tokens: &mut Tokens, index: usize) {
+    fn fix_white_space_around_operator_to_at_least_single_space(
+        tokens: &mut Tokens,
+        index: usize,
+        spaces: &mut Spaces,
+    ) {
         if !tokens[index + 1].is_whitespace(None) {
-            tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
+            spaces.insert(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
         }
         if !tokens[index - 1].is_whitespace(None) {
-            tokens.insert_at(index, vec![Token::new(T_WHITESPACE, " ")]);
+            spaces.insert(index, vec![Token::new(T_WHITESPACE, " ")]);
         }
     }
 
@@ -729,6 +742,7 @@ impl Fixer for BinaryOperatorSpacesFixer {
         true
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
+        let mut spaces = Spaces::new();
         // last and first tokens cannot be an operator
         let mut index = tokens.count() as isize - 2;
         while index > 0 {
@@ -739,15 +753,16 @@ impl Fixer for BinaryOperatorSpacesFixer {
             }
             if tokens[i].get_content() == b"=" {
                 match Self::is_equal_part_of_declare_statement(tokens, i) {
-                    None => self.fix_white_space_around_operator(tokens, i),
+                    None => self.fix_white_space_around_operator(tokens, i, &mut spaces),
                     Some(d) => index = d as isize, // skip `declare(foo ==bar)`, see `declare_equal_normalize`
                 }
             } else {
-                self.fix_white_space_around_operator(tokens, i);
+                self.fix_white_space_around_operator(tokens, i, &mut spaces);
             }
             // previous of binary operator is now never an operator / previous of declare statement cannot be an operator
             index -= 2;
         }
+        tokens.insert_slices(spaces);
         let to_align = self.align_operator_tokens.lock().unwrap().clone();
         if !to_align.is_empty() {
             self.fix_alignment(tokens, &to_align);
