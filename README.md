@@ -86,14 +86,19 @@ A special thank-you to Mago's maintainers and contributors. Pun uses Mago's pars
 
 To the people behind all these projects: thank you for the years of care in your code, tests, and documentation. Pun has come this far because you shared your work.
 
-Pun ports behaviour, test fixtures and data from these projects. Their licences apply to the ported parts.
+Pun ports behaviour, test fixtures and data from these projects. Their licences apply to the ported parts; the copyright notices and licence texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and those of the Rust crates in the binary are in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 | Project | Used for | Licence |
 | --- | --- | --- |
 | PHP-CS-Fixer | Fixer logic and upstream fixtures (pun-tokens, pun-fixers) | MIT |
 | Laravel Pint | Presets, custom fixers, CLI output | MIT |
-| php-src | Parser tables generated from `Zend/zend_language_parser.y` (pun-format lint) | PHP License 3.01 |
+| php-src | Parser tables generated from `Zend/zend_language_parser.y` (pun-format lint), union-type sorting (pun-phpstan) | Zend Engine License 2.00 |
 | PHPStan, nette/neon, nette/schema, nette/di | Config, NEON, schema and baseline behaviour (pun-phpstan) | MIT / BSD-3-Clause |
+| Larastan | Laravel analysis behaviour and test fixtures (pun-analyse) | MIT |
+| Rector, rector-phpunit, rector-laravel, pest-plugin-rector | Lint rules and their fixtures (pun-lint) | MIT |
+| PHPUnit, nikic/php-parser | Declarations the lint fixtures need (pun-lint tests) | BSD-3-Clause |
+| JetBrains phpstorm-stubs | Built-in symbols (through PHPStan and Mago) | Apache-2.0 |
+| PCRE2 | Regular expressions (linked statically) | BSD-3-Clause WITH PCRE2-exception |
 | sebastian/diff | Diff algorithm (pun-cli php_diff) | BSD-3-Clause |
 | Mago | Parser, analyser and linter crates (dependencies; mago-analyzer, mago-codex, mago-syntax and mago-phpdoc-syntax vendored with patches under `third_party/`) | MIT / Apache-2.0 |
 | agent-detector (crates.io) | Coding-agent detection for agent output (pun-cli, dependency) | MIT |
