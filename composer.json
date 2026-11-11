@@ -6,7 +6,7 @@
     "keywords": ["php", "formatter", "linter", "static analysis", "pint", "rector", "phpstan", "laravel", "dev"],
     "homepage": "https://github.com/punphp/pun",
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.4"
     },
     "bin": ["composer/bin/pun"]
 }
