@@ -937,6 +937,30 @@ fn explain_names() {
     );
 }
 
+/// `[files] paths` is what `--fix` rewrites: a relative, absolute or symlinked path that leaves the project is
+/// refused, while a path inside it and one that does not exist yet (the finder's error) load.
+#[test]
+fn files_paths_stay_in_the_project() {
+    let d = dir(&[]);
+    let root = d.join("project");
+    std::fs::create_dir_all(root.join("app")).unwrap();
+    std::fs::create_dir_all(d.join("outside")).unwrap();
+    std::os::unix::fs::symlink(d.join("outside"), root.join("link")).unwrap();
+    let outside = d.join("outside").display().to_string();
+    let escaping = ["../outside".to_string(), outside, "link".to_string()];
+    for path in escaping {
+        std::fs::write(root.join("pun.toml"), format!("[files]\npaths = [{path:?}]\n")).unwrap();
+        let at = root.join("pun.toml").display().to_string();
+        assert_eq!(
+            err(&root, Options::default()),
+            format!("{at}: [files] paths: \"{path}\" is outside the project")
+        );
+    }
+    std::fs::write(root.join("pun.toml"), "[files]\npaths = [\"app\", \"later\"]\n").unwrap();
+    let c = load(&root, &Options::default()).unwrap();
+    assert_eq!(c.files.paths, ["app", "later"]);
+}
+
 /// Every error names what to write instead.
 #[test]
 fn pun_toml_errors() {

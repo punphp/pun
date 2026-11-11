@@ -201,6 +201,15 @@ pub fn from_toml(root: &Path, text: &str) -> Result<Config> {
     )
 }
 
+/// Whether a configured path stays in the project once symlinks and `..` resolve. One that doesn't exist yet is
+/// the finder's error to report.
+fn inside(root: &Path, path: &str) -> bool {
+    let (Ok(real), Ok(root)) = (root.join(path).canonicalize(), root.canonicalize()) else {
+        return true;
+    };
+    real.starts_with(root)
+}
+
 fn parse(
     root: &Path,
     path: &Path,
@@ -253,6 +262,13 @@ fn parse(
             .unwrap_or(PhpVersion::NEWEST.to_id()),
     };
     let files = Files::from(files);
+    // `--fix` rewrites the files under these, and pun.toml comes with the repository: a pull request must not
+    // be able to aim it at the rest of the machine. Path arguments are the user's own and stay free.
+    for p in &files.paths {
+        if !inside(root, p) {
+            bail!("{at}: [files] paths: \"{p}\" is outside the project");
+        }
+    }
     let gates = schema::Gates { php, composer };
     let lint = schema::lint(path, lint, &files, &gates)?;
     let analyse = schema::analyse(path, analyse, &files, &gates)?;
