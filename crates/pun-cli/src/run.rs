@@ -729,10 +729,13 @@ fn process_file(
     });
     let token = token_rules(&token_on, fix, false);
     // A lint fix can leave work for a rule that already ran (an emptied docblock, a pair of calls that now
-    // merges), so `--fix` with lint rules repeats both steps until the token pass changes nothing: a second run
-    // then finds nothing to fix. Formatting alone runs once, as Pint does.
+    // merges), so `--fix` with lint rules repeats both steps until nothing changes: a second run then finds
+    // nothing to fix. The format rules run once, as in Pint, whose own second run can change a file again:
+    // round 2 is the lint rules alone, and only when they change something do the format rules repeat.
     let rounds = if fix && !on.is_empty() { FIX_ROUNDS } else { 1 };
     for round in 1..=rounds {
+        let before = (round == 2).then(|| now.clone());
+        let format = in_format && round != 2;
         let mut native_syntax_error = false;
         let text = std::str::from_utf8(&now).ok().map(str::to_owned);
         if let (Some(linter), Some(text), true) = (&e.linter, text.as_deref(), native_on) {
@@ -766,8 +769,8 @@ fn process_file(
         }
 
         // 2. The token pass: the format rules and the token lint rules.
-        if in_format || !token.is_empty() {
-            let pipeline = e.pipelines.get(in_format, &token)?;
+        let token_changed = if format || !token.is_empty() {
+            let pipeline = e.pipelines.get(format, &token)?;
             let outcome = match isolated(|| run_file(&pipeline, path, &now)) {
                 Ok(run) => run?,
                 Err(message) => {
@@ -786,7 +789,7 @@ fn process_file(
                     r.message = crate::console::carry(&err.message);
                     return Ok(done(r));
                 }
-                Ok(None) => break,
+                Ok(None) => false,
                 Ok(Some((new, fixers))) => {
                     for fixer in fixers {
                         if !applied.contains(&fixer) {
@@ -802,6 +805,7 @@ fn process_file(
                         problems = ps;
                     }
                     now = new;
+                    true
                 }
             }
         } else {
@@ -810,6 +814,13 @@ fn process_file(
                 r.message = crate::console::carry(&err.message);
                 return Ok(done(r));
             }
+            false
+        };
+        let again = match before {
+            Some(before) => before != now,
+            None => token_changed,
+        };
+        if !again {
             break;
         }
     }

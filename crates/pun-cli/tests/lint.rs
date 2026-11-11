@@ -164,6 +164,25 @@ fn fix_repeats_until_no_rule_has_work_left() {
 }
 
 #[test]
+fn fix_runs_the_format_rules_once_when_no_lint_rule_fires() {
+    // Pint 1.32 with these four rules leaves the indent before `namespace` after one run and removes it only on
+    // a second run. The expectation is Pint's one-run output: an idle lint rule must not repeat the format rules.
+    let d = project(
+        "lint",
+        "fix-format-once",
+        &[
+            (
+                "pun.toml",
+                "[format]\npreset = \"empty\"\n\n[format.rules]\n\"tags/blank-line-after-opening\" = true\n\"whitespace/no-extra-blank-lines\" = [\"extra\", \"throw\", \"use\"]\n\"whitespace/no-blank-line-whitespace\" = true\n\"whitespace/final-newline\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n",
+            ),
+            ("a.php", "<?php  \n  \nnamespace A;  \n"),
+        ],
+    );
+    agent(&d, &["check", "--fix"]);
+    assert_eq!(read(&d, "a.php"), "<?php\n\n  namespace A;\n");
+}
+
+#[test]
 fn fix_off_keeps_a_rule_report_only() {
     let toml = TOML.replace(
         "\"complexity/no-negated-boolean-literal\" = \"error\"",
