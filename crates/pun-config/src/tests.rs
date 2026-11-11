@@ -361,19 +361,21 @@ fn lint_sets() {
     let off = format!("{types}[lint.groups]\nlaravel = \"off\"\n");
     let l = lint(&[("pun.toml", &off), ("composer.lock", LARAVEL_LOCK)]);
     assert_eq!((l.rules.len(), l.ecosystems.len()), (73, 0));
-    // `modernize` has 37 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
+    // `modernize` has 36 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
     // 1 php-8.6 rule are off.
     let modernize = "[lint]\nsets = [\"modernize\"]\n";
     let l = lint(&[("pun.toml", modernize)]);
-    assert_eq!(l.rules.len(), 30);
+    assert_eq!(l.rules.len(), 29);
     assert!(ids(&l.rules).contains(&"lint/php-8.4/prefer-array-find"));
     assert!(!ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
     let l = lint(&[(
         "pun.toml",
         &format!("[php]\nversion = \"8.5\"\n{modernize}"),
     )]);
-    assert_eq!(l.rules.len(), 36);
+    assert_eq!(l.rules.len(), 35);
     assert!(ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
+    // Mago marks its fix unsafe (a collection passes the key too), so no set turns it on.
+    assert!(!ids(&l.rules).contains(&"lint/php-8.1/prefer-first-class-callable"));
     // Two sets: the union, 5 + 73 (no rule is in both).
     let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\", \"types\"]\n")]);
     assert_eq!(l.rules.len(), 78);

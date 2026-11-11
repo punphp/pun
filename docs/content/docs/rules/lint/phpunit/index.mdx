@@ -248,7 +248,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 [`lint/phpunit/no-bare-mock-assign`](/docs/rules/lint/phpunit/no-bare-mock-assign)
 
-Add explicit instance assert between above nullable object pass
+Use a `createMock()` result directly where it is used once, instead of assigning it to a variable first
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 

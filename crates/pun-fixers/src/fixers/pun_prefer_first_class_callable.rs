@@ -1,6 +1,6 @@
 //! Port of Mago's `prefer-first-class-callable` (default settings, so methods only):
 //! `fn ($x) => $this->format($x)` → `$this->format(...)`, `function ($x) { return Str::upper($x); }` → `Str::upper(...)`.
-//! Opt-in only (`Pun/prefer_first_class_callable`). Risky (Mago marks the fix unsafe too): the callable now
+//! Opt-in only (in no lint set). Risky (Mago marks the fix unsafe too): the callable now
 //! receives every argument its caller passes, e.g. Laravel collections pass the key as a second argument,
 //! which reaches an optional second parameter of the method. Deviations from Mago, which change behaviour:
 //! - closures/arrow functions with a return type, by-reference return, by-reference or defaulted parameters,

@@ -540,7 +540,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-without-incrementing-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model incrementing = false property to use the WithoutIncrementing attribute" }
 "laravel/prefer-without-timestamps-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model timestamps = false property to use the WithoutTimestamps attribute" }
 "laravel/require-final-controller" = { fix = "unsafe", ported = true, origin = "mago", status = "decided", summary = "Enforces that controller classes are declared as `final`." }
-"laravel/require-phpdoc-types-only" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Keeps only type annotations in PHPDoc." }
+"laravel/require-phpdoc-types-only" = { fix = "unsafe", ported = true, status = "decided", summary = "Keeps only type annotations in PHPDoc." }
 "operators/no-and-or-keywords" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `&&` and `||` logical operators instead of `and` and `or`." }
 "operators/no-error-suppression" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Error control operator should be added to deprecation notices and/or removed from other cases." }
 "operators/no-loose-equality" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Disallows the loose comparison operators `==` and `!=`; use `===` and `!==`." }
@@ -615,7 +615,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-to-throw" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use expect()->toThrow() instead of expectException() or try/catch in Pest tests." }
 "pest/prefer-type-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()" }
 "pest/require-type-matcher-first" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value assertions in expect() chains and consecutive expects" }
-"php-8.1/prefer-first-class-callable" = { fix = "safe", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Use first-class callable syntax (`strlen(...)`) instead of closures, Closure::fromCallable() and string or array callables." }
+"php-8.1/prefer-first-class-callable" = { fix = "unsafe", ported = true, origin = "mago", status = "decided", summary = "Use first-class callable syntax (`strlen(...)`) instead of closures, Closure::fromCallable() and string or array callables." }
 "php-8.4/add-csv-escape-argument" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Add escape argument on CSV function calls" }
 "php-8.4/prefer-array-all" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace foreach with boolean assignment and break OR foreach with early return with array_all" }
 "php-8.4/prefer-array-any" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace foreach with boolean assignment + break OR foreach with early return with array_any" }
@@ -670,7 +670,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-assert-is-type" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
 "phpunit/no-assert-same-type-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Correct expected type in assertSame() method to match strict type of passed variable" }
 "phpunit/no-at-matcher" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace at() method call with desired matcher" }
-"phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
+"phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use a `createMock()` result directly where it is used once, instead of assigning it to a variable first" }
 "phpunit/no-bare-mock-builder" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove getMockBuilder() to createMock()" }
 "phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove empty test methods" }
 "phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
@@ -799,9 +799,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/prefer-mb-functions" = { fix = "unsafe", intent = "correctness", ported = true, status = "decided", summary = "Replace non multibyte-safe functions with corresponding mb function." }
 "strings/require-interpolation-style" = { fix = "safe", ported = true, origin = "mago", status = "decided", summary = "Enforces a consistent string style: either prefer string interpolation" }
 "strings/require-string-line-ending" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "All multi-line strings must use correct line ending." }
-"style/add-param-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature." }
-"style/add-property-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@var` annotation of non-mixed types and adjusts accordingly the property signature.." }
-"style/add-return-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature." }
+"style/add-param-type-from-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature." }
+"style/add-property-type-from-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "Takes `@var` annotation of non-mixed types and adjusts accordingly the property signature.." }
+"style/add-return-type-from-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature." }
 "style/no-alias-function" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Master functions shall be used instead of aliases.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
 "style/no-ambiguous-constant" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that all constant references made from within a namespace are explicit." }
 "style/no-ambiguous-function" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that all function calls made from within a namespace are explicit." }
@@ -918,7 +918,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-param-type-array-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array type based on array dim fetch use" }
 "types/add-param-type-array-function" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array_filter()/array_map() function closure param type, based on passed iterable" }
 "types/add-param-type-array-map" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
-"types/add-param-type-array-reduce" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
+"types/add-param-type-array-reduce" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_reduce closures" }
 "types/add-param-type-arrow-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure and arrow function param array type, if dim fetch is used inside" }
 "types/add-param-type-data-provider" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Adds param type declaration based on PHPUnit provider return type declaration" }
 "types/add-param-type-dim-fetch-key" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add method param type based on use in array dim fetch of known keys" }

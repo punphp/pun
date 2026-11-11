@@ -9017,10 +9017,8 @@
       "command": "lint",
       "group": "laravel",
       "summary": "Keeps only type annotations in PHPDoc.",
-      "enabled": [
-        "coding-style"
-      ],
-      "fix": "safe",
+      "enabled": [],
+      "fix": "unsafe",
       "ecosystem": "laravel",
       "tools": [
         "pint"
@@ -10559,10 +10557,8 @@
       "command": "lint",
       "group": "php-8.1",
       "summary": "Use first-class callable syntax (strlen(...)) instead of closures, Closure::fromCallable() and string or array callables.",
-      "enabled": [
-        "modernize"
-      ],
-      "fix": "safe",
+      "enabled": [],
+      "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
         "mago"
@@ -11653,7 +11649,7 @@
       "id": "lint/phpunit/no-bare-mock-assign",
       "command": "lint",
       "group": "phpunit",
-      "summary": "Add explicit instance assert between above nullable object pass",
+      "summary": "Use a createMock() result directly where it is used once, instead of assigning it to a variable first",
       "enabled": [
         "code-quality"
       ],
@@ -14181,9 +14177,7 @@
       "command": "lint",
       "group": "style",
       "summary": "Takes @param annotations of non-mixed types and adjusts accordingly the function signature.",
-      "enabled": [
-        "coding-style"
-      ],
+      "enabled": [],
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
@@ -14200,9 +14194,7 @@
       "command": "lint",
       "group": "style",
       "summary": "Takes @var annotation of non-mixed types and adjusts accordingly the property signature..",
-      "enabled": [
-        "coding-style"
-      ],
+      "enabled": [],
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
@@ -14219,9 +14211,7 @@
       "command": "lint",
       "group": "style",
       "summary": "Takes @return annotation of non-mixed types and adjusts accordingly the function signature.",
-      "enabled": [
-        "coding-style"
-      ],
+      "enabled": [],
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
@@ -16452,7 +16442,7 @@
       "id": "lint/types/add-param-type-array-reduce",
       "command": "lint",
       "group": "types",
-      "summary": "Applies type hints to array_map closures",
+      "summary": "Applies type hints to array_reduce closures",
       "enabled": [
         "types"
       ],
