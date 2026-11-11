@@ -307,10 +307,16 @@ fn phar_file(cwd: &Path, path: &str) -> Option<bool> {
 /// serialized metadata and stubs are never evaluated, extracted or deserialized.
 fn archive_file(bytes: &[u8], member: &[u8], recursion: u8) -> Option<bool> {
     if bytes.starts_with(b"\x1f\x8b\x08") {
+        // The manifest's own limit, below: a small archive must not expand until memory runs out.
+        const LIMIT: u64 = 100 * 1024 * 1024;
         let mut unpacked = Vec::new();
         flate2::read::GzDecoder::new(bytes)
+            .take(LIMIT + 1)
             .read_to_end(&mut unpacked)
             .ok()?;
+        if unpacked.len() as u64 > LIMIT {
+            return None;
+        }
         // ext/phar/phar.c rejects --recursion_count == 0 before restarting archive dispatch.
         let recursion = recursion - 1;
         if recursion == 0 {
@@ -755,5 +761,34 @@ pub(super) fn assigned(c: &mut Checker, lhs: &Expression) {
         {
             g.valid = false;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::archive_file;
+    use std::io::Write;
+
+    /// A tar holding `x.php`, gzip-compressed after `padding` more zero bytes. Tar readers stop at the first
+    /// zero block, so the padding only changes the unpacked size.
+    fn gzipped_tar(padding: usize) -> Vec<u8> {
+        let mut tar = tar::Builder::new(Vec::new());
+        let mut header = tar::Header::new_gnu();
+        header.set_size(0);
+        header.set_cksum();
+        tar.append_data(&mut header, "x.php", &[][..]).unwrap();
+        let tar = tar.into_inner().unwrap();
+        let mut gz = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        gz.write_all(&tar).unwrap();
+        gz.write_all(&vec![0; padding]).unwrap();
+        gz.finish().unwrap()
+    }
+
+    /// A few kilobytes of gzip must not unpack into gigabytes: past 100 MiB the archive is unreadable, as an
+    /// oversized manifest is, while the same member in a small archive is found.
+    #[test]
+    fn gzip_archives_unpack_to_at_most_100_mib() {
+        assert_eq!(archive_file(&gzipped_tar(0), b"x.php", 3), Some(true));
+        assert_eq!(archive_file(&gzipped_tar(100 * 1024 * 1024), b"x.php", 3), None);
     }
 }
