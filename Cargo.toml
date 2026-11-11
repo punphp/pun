@@ -166,6 +166,8 @@ codegen-units = 4
 [profile.dist]
 inherits = "release"
 lto = "thin"
+# Symbols are 15% of the binary (75 MB to 64 MB on Linux x86_64). Panic messages keep their file and line.
+strip = true
 
 # Benchmarks and `perf`: release speed with line tables, cheap to build on a small box
 # (`CARGO_BUILD_JOBS=1 cargo build --profile profiling -p punphp`).
