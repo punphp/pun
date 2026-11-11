@@ -6,7 +6,7 @@ export const BENCHMARKS = [
     id: "format",
     label: "Format",
     title: "pun format vs Pint 1.32.1",
-    caption: "laravel/framework, whole repo, cold runs, 8 cores",
+    caption: "laravel/framework, whole repo, no cache, 8 cores",
     rows: [
       { name: "Pint", sub: "PHP", seconds: 294.7, kind: "other" },
       { name: "Pint --parallel", sub: "PHP, 8 processes", seconds: 41.4, kind: "other" },
@@ -17,7 +17,7 @@ export const BENCHMARKS = [
   // { id: "analyse", label: "Analyse", title: "pun analyse vs PHPStan + Larastan", ... }, Mago, Psalm.
 ];
 
-const RACE = { project: "laravel/framework", files: 3483, slow: { name: "Pint", seconds: 294.7 }, fast: { name: "pun", seconds: 1.76 }, speed: 30 };
+const RACE = { project: "laravel/framework", files: 3158, slow: { name: "Pint", seconds: 294.7 }, fast: { name: "pun", seconds: 1.76 }, speed: 30 };
 
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt = (n, places = 1) => n.toLocaleString("en-US", { minimumFractionDigits: places, maximumFractionDigits: places });

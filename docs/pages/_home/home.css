@@ -195,6 +195,7 @@
 }
 @media (max-width: 560px) {
   .pun-home .tools, .pun-home .laravel-list { grid-template-columns: 1fr; }
+  .pun-home .cmd code { white-space: normal; word-break: break-all; }
   .pun-home .tool, .pun-home .stick.armed.in { transform: none; }
   .pun-home .lane { grid-template-columns: 1fr; gap: 8px; }
   .pun-home .burst { right: -6px; } .pun-home .loose { left: -6px; }

@@ -3,7 +3,7 @@
   <section class="hero wrap">
     <div class="hero-copy">
       <h1 class="rise">PHP tooling, <span class="sticker pop-in">zero</span> waiting.</h1>
-      <p class="lede rise" style="--d:.12s">Format, lint, analyse and migrate with one Rust binary. Same results as Pint, Rector and PHPStan, a whole lot sooner.</p>
+      <p class="lede rise" style="--d:.12s">Format, lint, analyse and migrate with one Rust binary. Same bytes as Pint, a whole lot sooner. Lint and analyse are in beta.</p>
 
       <div class="install rise" style="--d:.18s" data-install>
         <div class="tabs" role="tablist" aria-label="Install with">
@@ -60,7 +60,7 @@
 <span class="waiting" data-waiting></span></pre>
       </div>
     </div>
-    <p class="race-note">laravel/framework, 3,483 files. Played at 1/30 speed, so Pint finishes in your lifetime. Times shown are the real ones.</p>
+    <p class="race-note">laravel/framework, 3,158 files. Played at 1/30 speed, so Pint finishes in your lifetime. Times shown are the real ones.</p>
   </section>
 
   <!-- BENCHMARKS -->
@@ -86,9 +86,9 @@
     <div class="tools">
       <a class="tool stick" href="/docs/commands/format" style="--tilt:-1deg;--d:0s"><span class="tag mint">behaviour-safe</span><h3>Format</h3><span class="replaces">replaces Pint · PHP-CS-Fixer</span><p>Layout only, in seconds where Pint takes minutes. Made for format on save.</p><code>$ pun format</code></a>
       <a class="tool stick" href="/docs/commands/lint" style="--tilt:1deg;--d:.06s"><span class="tag zap">you choose the fixes</span><h3>Lint</h3><span class="replaces">replaces Rector · risky fixers · Mago</span><p>Rules that change behaviour, applied only when you say so.</p><code>$ pun lint --fix</code></a>
-      <a class="tool stick" href="/docs/commands/analyse" style="--tilt:-1deg;--d:.12s"><span class="tag lilac">PHPStan-identical</span><h3>Analyse</h3><span class="replaces">replaces PHPStan · Larastan</span><p>Type errors, no levels to juggle.</p><code>$ pun analyse</code></a>
+      <a class="tool stick" href="/docs/commands/analyse" style="--tilt:-1deg;--d:.12s"><span class="tag lilac">beta</span><h3>Analyse</h3><span class="replaces">replaces PHPStan · Larastan</span><p>Type errors, no levels to juggle.</p><code>$ pun analyse</code></a>
       <a class="tool stick" href="/docs/commands/check" style="--tilt:1deg;--d:.18s"><span class="tag">Pint-identical</span><h3>Check</h3><span class="replaces">all three, one pass</span><p>With --fix, it writes exactly what pint wrote.</p><code>$ pun check --fix</code></a>
-      <a class="tool stick" href="/docs/commands/migrate" style="--tilt:-1deg;--d:.24s"><span class="tag gum">zero diff</span><h3>Migrate</h3><span class="replaces">replaces hand-editing configs</span><p>pint.json, phpstan.neon, rector.php become one file.</p><code>$ pun migrate</code></a>
+      <a class="tool stick" href="/docs/commands/migrate" style="--tilt:-1deg;--d:.24s"><span class="tag gum">reports what it skips</span><h3>Migrate</h3><span class="replaces">replaces hand-editing configs</span><p>pint.json, phpstan.neon, rector.php become one file.</p><code>$ pun migrate</code></a>
     </div>
   </section>
 
@@ -96,11 +96,12 @@
   <section class="wrap sec laravel-sec">
     <div class="laravel-copy">
       <h2>Built for Laravel. <span class="sticker">Not</span> bolted on.</h2>
-      <p class="sec-lede">Pun knows your app the way Larastan and rector-laravel do, without installing either. Turn it on with one line.</p>
+      <p class="sec-lede">Pun knows your app the way Larastan and rector-laravel do, without installing either. Nothing to turn on: it reads your composer.lock.</p>
       <div class="code toml-mini">
         <div class="code-bar"><span>pun.toml</span><span>TOML</span></div>
-<pre>laravel = <span class="kw">true</span>
-pest = <span class="kw">true</span></pre>
+<pre><span class="dim"># Laravel and Pest: found in composer.lock</span>
+[format]
+preset = <span class="str">"laravel"</span></pre>
       </div>
     </div>
     <ul class="laravel-list">
@@ -109,7 +110,7 @@ pest = <span class="kw">true</span></pre>
       <li><h3>Pint's laravel preset</h3><p>The default for pun format. Same bytes Pint writes on every Laravel project.</p></li>
       <li><h3>Tests that read well</h3><p><code>assertStatus(404)</code> becomes <code>assertNotFound()</code>, <code>$this-&gt;faker</code> becomes <code>fake()</code>, and Pest expectations get specific.</p></li>
       <li><h3>App rules</h3><p>Flags <code>$request-&gt;all()</code>, <code>$casts</code> properties, named migrations and middleware set in controllers.</p></li>
-      <li><h3>Laravel Boost aware</h3><p>pun migrate adds a Boost guideline, so your coding agent calls pun instead of the old tools.</p></li>
+      <li><h3>Blade, too</h3><p><code>pun format --blade</code> formats your Blade templates in the same run as your PHP.</p></li>
     </ul>
   </section>
 
@@ -129,13 +130,14 @@ pest = <span class="kw">true</span></pre>
       <div class="code toml">
         <div class="code-bar"><span>pun.toml</span><span>TOML</span></div>
 <pre><span class="dim"># one file, every command</span>
-preset = <span class="str">"recommended"</span>
-laravel = <span class="kw">true</span>
-
 [format]
 preset = <span class="str">"laravel"</span>
 
+[lint]
+sets = [<span class="str">"dead-code"</span>, <span class="str">"modernize"</span>]
+
 [analyse]
+preset = <span class="str">"recommended"</span>
 paths = [<span class="str">"app"</span>, <span class="str">"tests"</span>]
 baseline = <span class="str">"pun-baseline.toml"</span></pre>
       </div>
