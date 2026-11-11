@@ -26,7 +26,7 @@ These docs write commands as `pun`. In a project, run them as `vendor/bin/pun`, 
 
 - Projects must target PHP 8.4 or later. Pun reads the target from `composer.json` unless `[php] version` overrides it.
 - PHP checks need no PHP or Node runtime.
-- Blade formatting requires Node.js and these project dependencies. In a project with a `bun.lock` or `bun.lockb` file, Pun runs Prettier with Bun instead of Node.js.
+- Blade formatting requires Node.js and these project dependencies. In a project with a `bun.lock` or `bun.lockb` file, Pun runs Prettier with Bun instead of Node.js. Prettier and its plugins are loaded from the project's `node_modules`, so Blade formatting runs project code.
 
 ```bash
 npm install --save-dev prettier@^3.9.6 prettier-plugin-blade@^3.3.3 prettier-plugin-tailwindcss@^0.8.1
