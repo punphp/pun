@@ -18,6 +18,7 @@ use pun_phpstan::php::normalize_path;
 use pun_problem::ignore::Ignores;
 use pun_problem::{Level, LineIndex, Problem, Span};
 use pun_workspace::{Command, Exclusions};
+use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
@@ -122,6 +123,38 @@ pub(crate) struct Analysed {
     pub(crate) malformed: Vec<Problem>,
     /// The analysed paths (absolute): the path arguments, else the configured paths, else the root.
     pub(crate) paths: Vec<PathBuf>,
+}
+
+/// The syntax errors the engine did not report. It translates few of them into PHPParser's wording, and would
+/// otherwise analyse the recovered tree and pass the file. These carry PHP's own message, from the grammar
+/// `pun format` lints with, under PHPStan's identifier.
+fn syntax_errors(files: &[PathBuf], reported: &[pun_analyse::Error]) -> Vec<pun_analyse::Error> {
+    let reported: std::collections::HashSet<&str> = (reported.iter())
+        .filter(|e| e.identifier == "phpstan.parse")
+        .map(|e| e.file.as_str())
+        .collect();
+    (files.par_iter())
+        .filter(|file| !reported.contains(&*file.to_string_lossy()))
+        .filter_map(|file| {
+            let err = pun_format::lint(&std::fs::read(file).ok()?).err()?;
+            // PHP's compile-time "Fatal error" messages are left to the engine's PHPParser port.
+            let message = String::from_utf8_lossy(&err.message);
+            let message = message.strip_prefix("Parse error: ")?.trim_end_matches('.');
+            let message = match message.strip_prefix("syntax error") {
+                Some(rest) => format!("Syntax error{rest}"),
+                None => message.to_string(),
+            };
+            Some(pun_analyse::Error {
+                file: file.to_string_lossy().into_owned(),
+                line: i64::from(err.line),
+                identifier: "phpstan.parse".into(),
+                message,
+                tip: None,
+                can_be_ignored: false,
+                fixable: false,
+            })
+        })
+        .collect()
 }
 
 /// The engine's rule for PHPStan's errors about ignores (`ignore.unmatched`, `ignore.count`, ...), which no rule
@@ -234,6 +267,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     let analysis =
         pun_analyse::analyse_project(&project).map_err(|e| run_error(e.to_string(), None))?;
     let mut errors = analysis.errors;
+    errors.extend(syntax_errors(&project.analysed, &errors));
     let mut general = analysis.general;
     // AnalyseCommand presents only exception-backed failures, deduplicated by message. Non-ignorable rule
     // errors are not severe; the public analyser still retains diagnostics from the other valid files.

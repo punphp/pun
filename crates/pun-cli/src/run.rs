@@ -888,6 +888,10 @@ fn add_findings(results: &mut Vec<FileResult>, analysed: &crate::analyse::Analys
     for f in &analysed.findings {
         let i = index_of(results, &f.file);
         let r = &mut results[i];
+        // The format pass already reported this file's syntax error.
+        if f.rule == "parser-error" && matches!(r.status, Status::Invalid | Status::Lint) {
+            continue;
+        }
         let p = crate::analyse::problem(f, &r.source, &LineIndex::new(&r.source));
         r.problems.push(p);
     }

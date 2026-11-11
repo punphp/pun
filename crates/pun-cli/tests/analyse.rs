@@ -285,6 +285,42 @@ fn parser_failures_are_severe_not_configurable_rule_errors() {
     std::fs::remove_dir_all(d).unwrap();
 }
 
+/// The engine translates few syntax errors into PHPParser's wording; the others carry PHP's own message, taken
+/// from `php -l` (8.5): PHPStan reports each of these files as `phpstan.parse` on the same line, and nothing else.
+#[test]
+fn syntax_errors_fail_the_run() {
+    let d = sample("syntax-errors", "<?php\n$a = 1\n$b = 2;\n");
+    common::write_files(
+        &d,
+        &[
+            ("src/b.php", "<?php\nfunction f() {\n"),
+            ("src/control.php", ERRORS),
+        ],
+    );
+    let (out, code) = run(&d, &[PUN, "analyse"], &["--format=json"]);
+    let json: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(code, Some(1));
+    let mut found: Vec<(String, String, u64)> = (json["files"].as_object().unwrap().iter())
+        .flat_map(|(file, entry)| {
+            let name = file.rsplit('/').next().unwrap().to_string();
+            (entry["messages"].as_array().unwrap().iter()).map(move |m| {
+                let message = m["message"].as_str().unwrap().to_string();
+                (name.clone(), message, m["line"].as_u64().unwrap())
+            })
+        })
+        .collect();
+    found.sort();
+    let want = [
+        ("a.php", "Syntax error, unexpected variable \"$b\" on line 3", 3),
+        ("b.php", "Unclosed '{' on line 2 on line 3", 3),
+    ];
+    let want: Vec<_> = (want.iter())
+        .map(|(f, m, l)| (f.to_string(), m.to_string(), *l))
+        .collect();
+    assert_eq!(found, want, "{out}");
+    std::fs::remove_dir_all(d).unwrap();
+}
+
 #[test]
 fn non_ignorable_errors_survive_comments_and_baselines() {
     let d = sample("non-ignorable-baseline", NON_IGNORABLE);

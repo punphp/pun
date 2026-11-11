@@ -467,6 +467,8 @@ fn has_annotation(code: &[u8]) -> bool {
 pub struct LintError {
     /// Bytes, as PHP's message carries the source's bytes (an unexpected token cut at byte 30, Latin-1 text).
     pub message: Vec<u8>,
+    /// The line PHP names in the message.
+    pub line: u32,
     pub after_fix: bool,
 }
 
@@ -484,6 +486,7 @@ pub fn lint(code: &[u8]) -> Result<(), LintError> {
             format!(" on line {}.", e.line).as_bytes(),
         ]
         .concat(),
+        line: e.line,
         after_fix: false,
     })
 }

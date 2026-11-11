@@ -40,6 +40,10 @@ An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching i
 legacy_hook(); // @pun-ignore analyse/undefined/function -- provided at runtime
 ```
 
+## Syntax errors
+
+A file PHP cannot parse fails the run with a `parser-error` problem (PHPStan's `phpstan.parse`). As in PHPStan, the run then reports only the syntax errors: fix them and run again for the rest. The message is usually PHP's own, so its wording can differ from PHPStan's.
+
 ## Files
 
 Path arguments replace `[analyse] paths`, which otherwise defaults to `[files] paths` or the project root. Analysis skips Blade templates, `vendor/`, `bootstrap/cache`, `build`, `node_modules`, and `storage`.
