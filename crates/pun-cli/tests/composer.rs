@@ -22,7 +22,15 @@ fn shim_runs_the_workspace_version_with_its_arguments() {
     let shim = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../composer/bin/pun");
     std::fs::copy(&shim, dir.join("pun")).unwrap();
     // a shim whose fallback version drifted from the workspace's would download another release instead
-    let binary = dir.join(format!("pun-{}", env!("CARGO_PKG_VERSION")));
+    let os = match std::env::consts::OS {
+        "macos" => "apple-darwin",
+        _ => "unknown-linux-musl",
+    };
+    let binary = dir.join(format!(
+        "pun-{}-{}-{os}",
+        env!("CARGO_PKG_VERSION"),
+        std::env::consts::ARCH
+    ));
     std::fs::copy(PUN, &binary).unwrap();
     std::fs::write(dir.join("Bad.php"), "<?php\n$a = array( 1 );\n").unwrap();
 
@@ -43,4 +51,16 @@ fn shim_runs_the_workspace_version_with_its_arguments() {
         );
         assert_eq!(via_shim.stdout, direct.stdout, "stdout of {args:?}");
     }
+
+    // A binary that cannot start (another platform's, or a broken download) is named, not left to a PHP warning.
+    std::fs::write(&binary, "not a binary").unwrap();
+    let broken = run(Command::new("php").arg(dir.join("pun")).current_dir(&dir));
+    assert_eq!(broken.status.code(), Some(2));
+    assert_eq!(
+        String::from_utf8_lossy(&broken.stderr),
+        format!(
+            "pun: could not start {}; delete it to download it again\n",
+            binary.display()
+        )
+    );
 }

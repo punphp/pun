@@ -38,7 +38,7 @@ one page per rule from mapping.toml; output samples in the docs use the brand co
 **Today.** Pun ships only as the Composer package `punphp/pun`, the way Mago ships. `composer.json` sits at the repo
 root, `composer/bin/pun` is the shim, and `.gitattributes` export-ignores everything else, so a tag's zipball holds
 only `composer.json`, the shim, the README and the licenses. On first run the shim downloads `punphp-<target>.tar.gz` from the tag's GitHub release, checks its
-`.sha256` and caches the binary in Composer's bin directory (`vendor/bin/pun-<version>`); it supports Linux (musl) and macOS on x86_64 and arm64.
+`.sha256` and caches the binary in Composer's bin directory (`vendor/bin/pun-<version>-<target>`); it supports Linux (musl) and macOS on x86_64 and arm64.
 cargo-dist builds those four archives on a tag push (`dist-workspace.toml`: no installers, no source tarball). No
 crate, npm package, Homebrew tap or install script is published.
 Betas are tagged `v0.1.0-beta.N`; cargo-dist marks them pre-releases, and Composer installs them only with

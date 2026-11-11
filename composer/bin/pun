@@ -4,7 +4,7 @@
 // Composer shim for Pun: on first run, downloads the release binary matching this package's version and
 // platform from GitHub Releases into vendor/bin/, then runs it with the same arguments.
 
-const PUN_VERSION = '0.1.0-beta.1'; // the workspace version (tests/composer.rs): used when Composer can't tell the installed tag (dev-main)
+const PUN_VERSION = '0.1.0-beta.1'; // the workspace version (tests/composer.rs); Composer's bin proxy loads no autoloader, so this alone picks the release
 
 /** Pun's run error: the binary could not be fetched or started, so it exits 2 like `pun` itself. */
 function pun_fail(string $message): never
@@ -28,30 +28,34 @@ function pun_target(): string
     };
 }
 
-function pun_version(): string
-{
-    if (class_exists(Composer\InstalledVersions::class) && Composer\InstalledVersions::isInstalled('punphp/pun')) {
-        $v = Composer\InstalledVersions::getPrettyVersion('punphp/pun');
-        if (preg_match('/^v?(\d+\.\d+\.\d+.*)$/', (string) $v, $m)) {
-            return $m[1];
-        }
-    }
-
-    return PUN_VERSION;
-}
-
 function pun_download(string $url): string
 {
-    $context = stream_context_create(['http' => ['user_agent' => 'punphp/pun composer shim', 'follow_location' => 1]]);
-    $data = @file_get_contents($url, false, $context);
+    if (! ini_get('allow_url_fopen')) {
+        pun_fail("download failed: $url (allow_url_fopen is off in php.ini)");
+    }
+    $http = ['user_agent' => 'punphp/pun composer shim', 'follow_location' => 1, 'timeout' => 120];
+    // PHP's streams ignore the proxy variables that curl and Composer honour.
+    $proxy = getenv('HTTPS_PROXY') ?: getenv('https_proxy');
+    if ($proxy) {
+        $http['proxy'] = preg_replace('#^https?://#', 'tcp://', $proxy);
+        $http['request_fulluri'] = true;
+    }
+    $data = @file_get_contents($url, false, stream_context_create(['http' => $http]));
+    if ($data === false) {
+        // The last status line (after redirects), or PHP's own reason when there was no response.
+        $status = array_values(array_filter($http_response_header ?? [], fn ($h) => str_starts_with($h, 'HTTP/')));
+        $reason = end($status) ?: (error_get_last()['message'] ?? 'no response');
+        pun_fail("download failed: $url ($reason)");
+    }
 
-    return $data === false ? pun_fail("download failed: $url") : $data;
+    return $data;
 }
 
-$version = pun_version();
+$version = PUN_VERSION;
 $target = pun_target();
 $binDir = $GLOBALS['_composer_bin_dir'] ?? __DIR__;
-$binary = "$binDir/pun-$version";
+// Named by platform too: a project shared between a Mac and its Linux container needs one binary for each.
+$binary = "$binDir/pun-$version-$target";
 
 if (! is_file($binary)) {
     $archive = "punphp-$target.tar.gz";
@@ -63,18 +67,24 @@ if (! is_file($binary)) {
         pun_fail("checksum mismatch for $archive");
     }
 
-    $tmp = sys_get_temp_dir().'/pun-'.bin2hex(random_bytes(8));
-    mkdir($tmp, 0700, true);
+    // Extracted next to the binary, so the final rename stays on one filesystem and no run sees half a file.
+    $tmp = "$binDir/.pun-".bin2hex(random_bytes(8));
+    if (! @mkdir($tmp, 0700, true)) {
+        pun_fail("could not write to $binDir");
+    }
+    register_shutdown_function(fn () => exec('rm -rf '.escapeshellarg($tmp)));
     file_put_contents("$tmp/$archive", $data);
-    exec('tar xzf '.escapeshellarg("$tmp/$archive").' -C '.escapeshellarg($tmp), $_, $code);
+    exec('tar xzf '.escapeshellarg("$tmp/$archive").' -C '.escapeshellarg($tmp).' 2>&1', $_, $code);
     $found = glob("$tmp/*/pun") ?: glob("$tmp/pun");
     if ($code !== 0 || ! $found) {
         pun_fail("could not extract pun from $archive");
     }
     chmod($found[0], 0755);
     rename($found[0], $binary) || pun_fail("could not write $binary");
-    exec('rm -rf '.escapeshellarg($tmp));
 }
 
-$process = proc_open([$binary, ...array_slice($argv, 1)], [STDIN, STDOUT, STDERR], $pipes);
-exit(is_resource($process) ? proc_close($process) : 2);
+$process = @proc_open([$binary, ...array_slice($argv, 1)], [STDIN, STDOUT, STDERR], $pipes);
+if (! is_resource($process)) {
+    pun_fail("could not start $binary; delete it to download it again");
+}
+exit(proc_close($process));
