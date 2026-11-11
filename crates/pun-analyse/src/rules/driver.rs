@@ -212,7 +212,8 @@ impl Checks {
         if let Some(reported) = &self.reported {
             errors.retain(|e| {
                 let id = e.identifier.as_deref().unwrap_or_default();
-                id == "phpstan.parse" || reported(id)
+                // the collectors' entries feed `larastan_finish`, which removes them
+                id == "phpstan.parse" || id.starts_with("larastan.collected.") || reported(id)
             });
         }
     }

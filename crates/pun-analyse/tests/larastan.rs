@@ -453,6 +453,23 @@ fn larastan_views_and_translations() {
         true,
     );
     oracle_case(&dir, larastan.clone(), "larastan.");
+    // a run that reports only this rule (pun.toml's rule selection) still sees the views the files use
+    let mut files: Vec<PathBuf> = std::fs::read_dir(&dir)
+        .unwrap()
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x == "php"))
+        .collect();
+    files.sort();
+    let mut selected = Project::new(files, scanned(&root));
+    selected.larastan = Some(larastan.clone());
+    selected.reported = Some(std::sync::Arc::new(|id| id == "larastan.unusedViews"));
+    let unused: Vec<String> = run(&selected)
+        .unwrap()
+        .into_iter()
+        .map(|e| format!("{}: {}", e.file.rsplit('/').next().unwrap(), e.identifier))
+        .collect();
+    assert_eq!(unused, ["unused.blade.php: larastan.unusedViews"]);
     // views that do not parse, vendor and error views, and lang/ with other files and PHP arrays of every shape
     let edge = root.join("data/ViewsEdge");
     let mut views = Larastan::new(&edge);
