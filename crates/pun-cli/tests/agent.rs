@@ -454,15 +454,20 @@ fn config() {
         ],
     );
     let (human, _) = run(&d, &["config"], &[]);
-    // The summary line, then the same TOML a human gets.
-    assert_eq!(
-        agent(&d, &["config"]),
-        (
-            format!(
-                "pun config: ok, preset empty, PHP 8.5, 1 format rule, 2 lint rules (from composer.json, pun.toml, Ts)\n{human}"
-            ),
-            Some(0)
-        )
+    // The summary line goes to stderr; stdout is the same TOML a human gets, so `pun config > file` stays TOML.
+    assert_eq!(agent(&d, &["config"]), (human, Some(0)));
+    let out = common::clean_env(&mut Command::new(PUN), &["PATH"])
+        .arg("config")
+        .current_dir(&d)
+        .env("PUN_AGENT", "1")
+        .output()
+        .unwrap();
+    let summary = String::from_utf8(out.stderr).unwrap();
+    assert!(
+        summary.starts_with(
+            "pun config: ok, preset empty, PHP 8.5, 1 format rule, 2 lint rules (from composer.json, pun.toml, "
+        ),
+        "{summary}"
     );
     assert_eq!(
         agent(&d, &["config", "--format=json"]),

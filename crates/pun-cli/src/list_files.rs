@@ -63,14 +63,15 @@ pub(crate) fn run(a: ListFilesArgs) -> Result<u8> {
     } else {
         let list: String = files.iter().map(|f| format!("{f}\n")).collect();
         if agent::enabled() {
+            // The count goes to stderr, so stdout stays one path per line (`pun list-files | xargs`).
             let detail: Vec<String> = command
                 .map(|c| format!("{} set", c.1))
                 .into_iter()
                 .collect();
-            agent::render(&agent::count(files.len(), "file"), &detail, "", &[], false) + &list
-        } else {
-            list
+            let count = agent::count(files.len(), "file");
+            eprint!("{}", agent::render(&count, &detail, "", &[], false));
         }
+        list
     };
     std::io::stdout().write_all(out.as_bytes())?;
     Ok(0)

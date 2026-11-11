@@ -14,7 +14,7 @@ app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line
 
 Clean runs print only the summary. Lists stop after 20 items; `-v` shows all items and available diffs. Output has no color, progress indicator, or boxes. Exit codes do not change.
 
-`pun migrate` reports the written config and skipped items. `pun config` prints a summary before its TOML.
+`pun migrate` reports the written config and skipped items. `pun config` and `pun list-files` print their summary line on stderr, so stdout stays plain TOML or one path per line.
 
 ## Detection and overrides
 

@@ -510,19 +510,19 @@ fn list_files() {
         ),
         ok("[\"tests/T.php\"]\n")
     );
-    let (out, _, code) = pun_env(
+    // Under an agent the count is on stderr, so stdout still pipes into `xargs`.
+    let (out, summary, code) = pun_env(
         &dir,
         &["list-files", "--command", "analyse"],
         &[("PUN_AGENT", "1")],
     );
-    let (summary, rest) = out.split_once('\n').unwrap();
     assert!(
         summary.starts_with("pun list-files: 2 files, analyse set ("),
         "{summary}"
     );
-    assert_eq!((rest, code), ("app/A.php\napp/B.php\n", Some(0)));
-    let (out, _, _) = pun_env(&dir, &["list-files", "tests"], &[("PUN_AGENT", "1")]);
-    assert!(out.starts_with("pun list-files: 1 file ("), "{out}");
+    assert_eq!((out.as_str(), code), ("app/A.php\napp/B.php\n", Some(0)));
+    let (_, summary, _) = pun_env(&dir, &["list-files", "tests"], &[("PUN_AGENT", "1")]);
+    assert!(summary.starts_with("pun list-files: 1 file ("), "{summary}");
     assert_eq!(
         pun(&dir, &["list-files", "--format=txt"]),
         (

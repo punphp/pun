@@ -35,7 +35,7 @@ Path arguments replace configured paths. Outside format, exclusions still apply 
 | `--format json` | Print a JSON array |
 | `--config <path>` | Read another pun.toml |
 
-Agent output adds a summary before the paths. Use `--no-agent` when piping newline-delimited output to another command.
+Under a coding agent, the summary line goes to stderr, so stdout stays one path per line and is safe to pipe.
 
 ## Example
 

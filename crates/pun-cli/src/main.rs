@@ -418,7 +418,7 @@ fn show_config(
         ),
     };
     if fmt.is_none() && agent::enabled() {
-        // Agent mode: what was loaded in one line, then the TOML as usual.
+        // Agent mode: what was loaded in one line on stderr, so stdout stays the TOML (`pun config > file`).
         let detail = [
             format!("preset {}", cfg.preset),
             format!("PHP {}", cfg.php),
@@ -426,7 +426,7 @@ fn show_config(
             agent::count(cfg.lint.rules.len(), "lint rule"),
         ];
         let from = format!("from {}", sources.join(", "));
-        print!("{}", agent::render("ok", &detail, &from, &[], false));
+        eprint!("{}", agent::render("ok", &detail, &from, &[], false));
         print!("{toml}");
     } else if fmt == Some(ConfigFormat::Json) {
         println!("{}", serde_json::to_string_pretty(&v)?);
