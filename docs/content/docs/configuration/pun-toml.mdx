@@ -209,3 +209,18 @@ No pun.toml found. Run `pun migrate`, or `pun init` for a new project.
 ```
 
 `--preset <name>` (`laravel`, `psr12` or `empty`) or `--no-config` runs a built-in preset without a file, as in Pint.
+
+## Environment variables
+
+Pun reads these besides `pun.toml`:
+
+| Variable | Effect |
+| --- | --- |
+| `NO_COLOR` | Turns colour off when `--color` is `auto` |
+| `COLUMNS` | The output width when Pun cannot ask the terminal |
+| `CI` | `pun init` takes the defaults without asking |
+| `GITHUB_ACTIONS=true` | Human output is followed by GitHub annotations |
+| `PUN_AGENT`, `PAO_FORCE`, `PAO_DISABLE` | Turn [agent output](/docs/guides/coding-agents) on or off |
+| `PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS` | PHP-CS-Fixer's switch: an ignore comment that names a rule the run does not use is accepted instead of being an error |
+| `PUN_IGNORE_PHP_CONSTRAINT` | Runs on a project whose `composer.json` allows PHP below 8.4. Unsupported: Pun's results on older syntax are not checked against Pint |
+| `PUN_PROFILE` | Prints per-stage timings on stderr after the run |
