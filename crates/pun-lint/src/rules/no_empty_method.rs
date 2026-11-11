@@ -6,8 +6,8 @@
 //! class that is not final, a public or protected method that is not magic in a class that is not final, called in
 //! the class or one of its traits, a named constructor, the constructor of an anonymous class that extends another,
 //! required by a parent or an interface, a constructor with promoted parameters, `@deprecated`, a controller's or
-//! presenter's annotated action, a private or protected `__clone`, `__invoke`, or the documented constructor of an
-//! attribute class. A comment alone in the body counts as a statement (php-parser's `Nop`). Rector's
+//! presenter's annotated action, a private or protected `__clone`, `__invoke`, the documented constructor of an
+//! attribute class, or (Pun's own skip) a method that carries an attribute. A comment alone in the body counts as a statement (php-parser's `Nop`). Rector's
 //! `treatClassesAsFinal` feature flag is off by default and has no Pun setting.
 
 use mago_syntax::cst::*;
@@ -63,6 +63,11 @@ impl Rule for NoEmptyMethod {
                     continue;
                 }
                 if is_final(method) && !class.is_final {
+                    continue;
+                }
+                // Not Rector's: an attribute (Livewire's `#[On]`, a route, a test hook) makes a framework call the
+                // method, so it is not dead.
+                if !method.attribute_lists.is_empty() {
                     continue;
                 }
                 // `shouldSkipNonFinalNonPrivateClassMethod`.
