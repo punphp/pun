@@ -76,7 +76,7 @@ if (! is_file($binary)) {
     file_put_contents("$tmp/$archive", $data);
     exec('tar xzf '.escapeshellarg("$tmp/$archive").' -C '.escapeshellarg($tmp).' 2>&1', $_, $code);
     $found = glob("$tmp/*/pun") ?: glob("$tmp/pun");
-    if ($code !== 0 || ! $found) {
+    if ($code !== 0 || ! $found || is_link($found[0])) {
         pun_fail("could not extract pun from $archive");
     }
     chmod($found[0], 0755);
