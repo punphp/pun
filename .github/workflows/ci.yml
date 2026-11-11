@@ -17,8 +17,9 @@ env:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -37,8 +38,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
@@ -54,12 +56,15 @@ jobs:
             corpus/laravel-pint
           key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
       - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
-      - run: cargo test --workspace --locked
+      # punphp-analyse's 170 test targets need about 56 GB of disk and 40 minutes on 8 cores, more than a hosted
+      # runner has. Run them with scripts/analyse-tests.sh before a release.
+      - run: cargo test --workspace --exclude punphp-analyse --locked
 
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -79,20 +84,21 @@ jobs:
             corpus/laravel-pint
           key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
       - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
-      - run: scripts/coverage.sh
+      # every crate but punphp-analyse, for the reason in the test job
+      - run: scripts/coverage.sh punphp-tokens punphp-format punphp-fixers punphp-config punphp-workspace punphp-problem punphp-phpstan punphp-lint punphp punphp-harness
       - if: always()
         run: cat context/reports/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"
 
   parity:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: parity
-      # corpus/manifest.toml points pinkary at a local checkout; CI fetches the same commit upstream.
       - uses: actions/cache@v4
         with:
           path: |
@@ -105,8 +111,9 @@ jobs:
 
   fuzz:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
