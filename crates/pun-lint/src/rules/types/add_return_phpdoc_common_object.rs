@@ -74,6 +74,11 @@ impl Rule for AddReturnPhpdocCommonObject {
         if referenced.is_empty() {
             return;
         }
+        // An anonymous class has no name to write. Rector writes its internal `\AnonymousClass<hash>[]`; its name here
+        // holds the class's position, which the new docblock moves, so the fix would never settle.
+        if !referenced.iter().all(|c| is_class_name(c)) {
+            return;
+        }
         let mut unique: Vec<String> = Vec::new();
         for class in &referenced {
             if !unique.contains(class) {
@@ -102,6 +107,12 @@ impl Rule for AddReturnPhpdocCommonObject {
             ));
         }
     }
+}
+
+/// A name PHP source can spell: identifier characters and namespace separators only.
+fn is_class_name(name: &str) -> bool {
+    name.bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\' || b >= 0x80)
 }
 
 /// `$type->isObject()->yes()`.

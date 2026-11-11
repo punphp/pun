@@ -19,6 +19,8 @@
 //! without a space after `*` it writes `*@return` where Pun writes ` * @return`; it keeps an empty last line after
 //! the new tag, where Pun drops it; it keeps the spacing between a changed type and its description (`$items-desc`,
 //! `array<...>   the items`), where Pun writes one space; and in a doc without `*` lines it writes ` *  @return`.
+//! AddReturnDocblockForCommonObjectDenominatorRector/Pun: Rector writes `\AnonymousClass<hash>[]` for an array of
+//! anonymous classes, a name no code can use; Pun leaves the method alone.
 
 mod lint_c;
 
