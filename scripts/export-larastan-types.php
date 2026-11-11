@@ -212,6 +212,13 @@ foreach ($needed as $path) {
         $copy($larastan.'/'.$path);
     }
 }
+// each copied package keeps its licence file. A package whose dist archive leaves the file out (orchestra/*) and
+// vendor/composer have theirs committed by hand, and a rerun leaves them in place.
+foreach (glob($copyRoot.'/vendor/*/*', GLOB_ONLYDIR) as $package) {
+    foreach (glob($larastan.'/vendor/'.basename(dirname($package)).'/'.basename($package).'/{LICENSE,LICENCE,COPYING,license}*', GLOB_BRACE) as $licence) {
+        copy($licence, $package.'/'.basename($licence));
+    }
+}
 // the skeleton's vendor, as Testbench's CreateVendorSymlink links it
 @unlink($copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
 symlink('../../..', $copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
