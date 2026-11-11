@@ -8507,7 +8507,7 @@
       "id": "lint/laravel/prefer-request-validate",
       "command": "lint",
       "group": "laravel",
-      "summary": "Change static validate() method to $request->validate()",
+      "summary": "Change Request::validate() and request() to an injected $request. Adds a Request $request parameter to the method, so update its callers.",
       "enabled": [],
       "fix": "unsafe",
       "ecosystem": "laravel",

@@ -26,7 +26,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 ## What it does
 
-Change static validate() method to $request->validate()
+Change `Request::validate()` and `request()` to an injected `$request`. Adds a `Request $request` parameter to the method, so update its callers.
 
 ## Options
 

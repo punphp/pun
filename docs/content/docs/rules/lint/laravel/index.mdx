@@ -671,7 +671,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 [`lint/laravel/prefer-request-validate`](/docs/rules/lint/laravel/prefer-request-validate)
 
-Change static validate() method to $request->validate()
+Change `Request::validate()` and `request()` to an injected `$request`. Adds a `Request $request` parameter to the method, so update its callers.
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 

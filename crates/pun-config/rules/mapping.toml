@@ -514,7 +514,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-repository-method-call" = { fix = "unsafe", ported = false, status = "decided", summary = "Change array access on a config or cache repository to the matching method call, as the contracts do not extend ArrayAccess" }
 "laravel/prefer-request-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the Request facade instead of $_GET, $_POST and $_SERVER." }
 "laravel/prefer-request-server" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change server variable to Request facade's server method" }
-"laravel/prefer-request-validate" = { fix = "unsafe", ported = true, status = "decided", summary = "Change static validate() method to $request->validate()" }
+"laravel/prefer-request-validate" = { fix = "unsafe", ported = true, status = "decided", summary = "Change `Request::validate()` and `request()` to an injected `$request`. Adds a `Request $request` parameter to the method, so update its callers." }
 "laravel/prefer-resolve-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert app() to resolve() where applicable." }
 "laravel/prefer-route-key-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model getRouteKeyName() method to use the RouteKey attribute" }
 "laravel/prefer-session-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change PHP session usage to Session Facade methods" }
