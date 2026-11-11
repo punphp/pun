@@ -795,18 +795,11 @@ fn removed_presets() {
     }
 }
 
-/// The text after `docs      ` is mapping.toml's URL with the line of the rule's own row.
-fn explained(name: &str, id_key: &str) -> String {
+/// The text before the `docs` row, which must be the page of the rule `id` on the docs site.
+fn explained(name: &str, id: &str) -> String {
     let out = explain(name).unwrap();
     let (head, docs) = out.rsplit_once("docs      ").unwrap();
-    let line: usize = docs
-        .strip_prefix(&format!("{MAPPING_URL}#L"))
-        .unwrap()
-        .trim_end()
-        .parse()
-        .unwrap();
-    let row = MAPPING.lines().nth(line - 1).unwrap();
-    assert!(row.starts_with(&format!("\"{id_key}\" = ")), "{row}");
+    assert_eq!(docs, format!("https://pun.laravel.cloud/docs/rules/{id}\n"));
     head.to_string()
 }
 
@@ -815,7 +808,7 @@ fn explained(name: &str, id_key: &str) -> String {
 #[test]
 fn explain_rules() {
     assert_eq!(
-        explained("format/arrays/syntax", "arrays/syntax"),
+        explained("format/arrays/syntax", "format/arrays/syntax"),
         "format/arrays/syntax
 PHP arrays should be declared using the configured syntax.
 
@@ -828,11 +821,11 @@ upstream  array_syntax (php-cs-fixer)
     );
     // Without the command part, the same rule.
     assert_eq!(
-        explained("arrays/syntax", "arrays/syntax"),
-        explained("format/arrays/syntax", "arrays/syntax")
+        explained("arrays/syntax", "format/arrays/syntax"),
+        explained("format/arrays/syntax", "format/arrays/syntax")
     );
     assert_eq!(
-        explained("lint/style/no-alias-function", "style/no-alias-function"),
+        explained("lint/style/no-alias-function", "lint/style/no-alias-function"),
         "lint/style/no-alias-function
 Master functions shall be used instead of aliases.
 
@@ -845,7 +838,7 @@ upstream  no_alias_functions (php-cs-fixer)
     );
     // No summary; the analyse preset; PHPStan's identifier and parameters, Mago's codes.
     assert_eq!(
-        explained("analyse/undefined/method", "undefined/method"),
+        explained("analyse/undefined/method", "analyse/undefined/method"),
         "analyse/undefined/method
 
 group     undefined: References to something declared nowhere
@@ -861,7 +854,7 @@ upstream  CallMethodsRule (phpstan-classes)
 "
     );
     // A Mago analyzer code that reports for this rule besides its own (`also`).
-    let out = explained("analyse/undefined/trait", "undefined/trait");
+    let out = explained("analyse/undefined/trait", "analyse/undefined/trait");
     assert!(
         out.contains("\n          NonExistentClassLike (mago-analyzer, also)\n"),
         "{out}"
@@ -870,7 +863,7 @@ upstream  CallMethodsRule (phpstan-classes)
     assert_eq!(
         explained(
             "lint/comments/no-unused-ignore",
-            "comments/no-unused-ignore"
+            "lint/comments/no-unused-ignore"
         ),
         "lint/comments/no-unused-ignore
 A @pun-ignore comment that suppressed nothing. Fix removes it.
@@ -885,7 +878,7 @@ upstream  none (Pun's own rule)
     // A lint rule's fix, and a rule in no preset.
     let out = explained(
         "analyse/types/missing-return-type",
-        "types/missing-return-type",
+        "analyse/types/missing-return-type",
     );
     assert!(
         out.contains(
@@ -895,7 +888,7 @@ upstream  none (Pun's own rule)
     );
     let out = explained(
         "format/arrays/no-space-in-empty",
-        "arrays/no-space-in-empty",
+        "format/arrays/no-space-in-empty",
     );
     assert!(
         out.contains("\npresets   none (opt-in by name or group)\n"),

@@ -536,14 +536,15 @@ fn links_wrap_paths_and_rule_ids() {
         links: true,
         ..Look::plain()
     };
-    let r = Renderer::new(look, "/my project").with_rule_docs("https://docs.example/rules/");
+    let r = Renderer::new(look, "/my project");
     let files = [FileLine {
         path: "a.php".into(),
         status: FileStatus::Fixed,
-        rules: vec!["format/x/y".into()],
+        rules: vec!["format/arrays/syntax".into(), "syntax".into()],
     }];
     let path = "\x1b]8;;file:///my%20project/a.php\x1b\\a.php\x1b]8;;\x1b\\";
-    let rule = "\x1b]8;;https://docs.example/rules/format/x/y\x1b\\format/x/y\x1b]8;;\x1b\\";
+    // A rule links to its docs page; a name that is not a rule has no page.
+    let rule = "\x1b]8;;https://pun.laravel.cloud/docs/rules/format/arrays/syntax\x1b\\format/arrays/syntax\x1b]8;;\x1b\\, syntax";
     assert_eq!(
         r.file_lines(&files).concat(),
         format!(" ✔ {path}{}{rule}\n", " ".repeat(22))
@@ -558,11 +559,11 @@ fn links_wrap_paths_and_rule_ids() {
         r.run_error(&e),
         "✖ \x1b]8;;file:///my%20project/a.php\x1b\\a.php:3\x1b]8;;\x1b\\  m\n"
     );
-    // Without links the docs base changes nothing.
-    let unlinked = Renderer::new(Look::plain(), "/p").with_rule_docs("https://docs.example/rules/");
+    // Without links, plain text.
+    let unlinked = Renderer::new(Look::plain(), "/p");
     assert_eq!(
         unlinked.file_lines(&files).concat(),
-        " ✔ a.php                      format/x/y\n"
+        " ✔ a.php                      format/arrays/syntax, syntax\n"
     );
 }
 

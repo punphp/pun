@@ -5,9 +5,8 @@ use crate::{mapping, renamed, rules};
 use anyhow::{Result, bail};
 use std::fmt::Write;
 
-/// Where a rule's docs live until the docs site has rule pages: its line in mapping.toml on GitHub.
-pub const MAPPING_URL: &str =
-    "https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml";
+/// The docs site's rule pages: a rule's page is this followed by its ID.
+pub const RULE_DOCS_URL: &str = "https://pun.laravel.cloud/docs/rules/";
 
 /// The text `pun explain <name>` prints. `name` is a rule ID, a rule ID without its command (`arrays/syntax`), an
 /// upstream name (`no_alias_functions`, `method.notFound`) or a Pun name from before the rule IDs; anything but the
@@ -110,13 +109,8 @@ fn text(id: &str) -> String {
             &format!("{k} ({tool})"),
         );
     }
-    row("docs", &format!("{MAPPING_URL}#L{}", line(command, rest)));
+    row("docs", &format!("{RULE_DOCS_URL}{id}"));
     out
-}
-
-/// The 1-based line of `"<group>/<name>" = ` in `[rules.<command>]` of mapping.toml.
-fn line(command: &str, key: &str) -> usize {
-    mapping::section(&["rules", command]).line_of(key).unwrap()
 }
 
 /// A group's one-line description from `[meta.groups]`.

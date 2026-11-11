@@ -931,9 +931,10 @@ sets      coding-style
 fix       unsafe
 upstream  no_alias_functions (php-cs-fixer)
           no-alias-function (mago-linter)
-docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml#L";
+docs      https://pun.laravel.cloud/docs/rules/lint/style/no-alias-function
+";
     let (out, err, code) = pun(&dir, &["explain", "lint/style/no-alias-function"]);
-    assert!(out.starts_with(text), "{out}");
+    assert_eq!(out, text);
     assert_eq!((err.as_str(), code), ("", Some(0)));
     let (out, _, code) = pun(&dir, &["explain", "no_alias_functions"]);
     let note = "`no_alias_functions` is `lint/style/no-alias-function` in Pun.\n\n";

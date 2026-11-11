@@ -13,7 +13,7 @@ pub mod options;
 mod phpstan_parameters;
 mod schema;
 
-pub use explain::{MAPPING_URL, explain};
+pub use explain::{RULE_DOCS_URL, explain};
 pub use identifiers::rule_of_identifier;
 pub use schema::{
     Analyse, AnalysePreset, AnalyseRule, Ecosystem, Files, FixSafety, FormatPreset, Ignore,

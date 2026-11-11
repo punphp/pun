@@ -8,8 +8,6 @@ use std::sync::{LazyLock, OnceLock};
 pub(crate) struct Section {
     /// The header's keys, unquoted: `["options", "format/arrays/syntax"]`.
     pub path: Vec<String>,
-    /// The 1-based line of the header.
-    pub line: usize,
     /// The text between the header and the next one.
     body: &'static str,
     table: OnceLock<toml::Table>,
@@ -20,13 +18,6 @@ impl Section {
     pub(crate) fn table(&self) -> &toml::Table {
         self.table
             .get_or_init(|| toml::from_str(self.body).expect("rules/mapping.toml"))
-    }
-
-    /// The 1-based line of the entry `key` (`"arrays/syntax" = ...`).
-    pub(crate) fn line_of(&self, key: &str) -> Option<usize> {
-        let entry = format!("\"{key}\" = ");
-        let i = self.body.lines().position(|l| l.starts_with(&entry))?;
-        Some(self.line + 1 + i)
     }
 }
 
@@ -50,14 +41,13 @@ pub(crate) fn sections() -> &'static [Section] {
     static T: LazyLock<Vec<Section>> = LazyLock::new(|| {
         let mut out: Vec<Section> = vec![];
         let mut at = 0;
-        for (i, line) in MAPPING.split_inclusive('\n').enumerate() {
+        for line in MAPPING.split_inclusive('\n') {
             if let Some(path) = header(line.trim_end()) {
                 if let Some(last) = out.last_mut() {
                     last.body = &MAPPING[MAPPING.len() - last.body.len()..at];
                 }
                 out.push(Section {
                     path,
-                    line: i + 1,
                     body: &MAPPING[at + line.len()..],
                     table: OnceLock::new(),
                 });
@@ -117,18 +107,7 @@ mod tests {
         assert!(meta.table().contains_key("conflicts"));
         assert!(!meta.table().contains_key("arrays"));
         let groups = section(&["meta", "groups"]);
-        assert_eq!(groups.line, meta.line + meta.body.lines().count() + 1);
         assert!(groups.table().contains_key("arrays"));
-        let format = section(&["rules", "format"]);
-        let line = format.line_of("arrays/syntax").unwrap();
-        assert!(
-            MAPPING
-                .lines()
-                .nth(line - 1)
-                .unwrap()
-                .starts_with("\"arrays/syntax\" = ")
-        );
-        assert_eq!(format.line_of("nope/nope"), None);
         let tools: Vec<&str> = under("upstream").map(|(t, _)| t).take(3).collect();
         assert_eq!(tools, ["php-cs-fixer", "pint", "pun"]);
     }

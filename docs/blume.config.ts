@@ -10,6 +10,10 @@ export default defineConfig({
     root: "content",
   },
 
+  deployment: {
+    site: "https://pun.laravel.cloud",
+  },
+
   github: {
     owner: "punphp",
     repo: "pun",

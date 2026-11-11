@@ -278,9 +278,8 @@ Build 8 (wf/config-explain, 2026-10-17), assistant's calls where the plan is sil
   `presets` / `sets` / `preset` by command (`none (opt-in by name or group)` when empty), `intent` when set, `fix`
   (`none` without one), `fixed by` for analyse rules that have it, `upstream` (every `[upstream.*]` row mapping to the
   ID, as `name (tool)` in file order; `none (Pun's own rule)`), and `docs`.
-- **Docs link**: the docs site has no rule pages and no decided base URL (the output follow-up row in ../PLAN.md §3),
-  so `docs` links the rule's row in mapping.toml on GitHub (`.../crates/pun-config/rules/mapping.toml#L<line>`,
-  `pun_config::MAPPING_URL`). Switch it to the rule page once that row decides the base.
+- **Docs link**: `docs` is the rule's page on the docs site, `pun_config::RULE_DOCS_URL` followed by the ID
+  (`https://pun.laravel.cloud/docs/rules/format/arrays/syntax`).
 
 Build 4 (wf/options, 2026-10-17): the option names, the `null` spellings, the one-option shorthand and the errors are
 assistant's calls recorded in format.md Decisions ("Option names"). Lint rules that are fixers keep PHP-CS-Fixer's

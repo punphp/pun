@@ -87,7 +87,6 @@ pub(crate) struct Renderer {
     /// Problems print one line each (`--concise`).
     pub(crate) concise: bool,
     root: PathBuf,
-    rule_docs: Option<String>,
 }
 
 impl Renderer {
@@ -96,16 +95,7 @@ impl Renderer {
             look,
             concise: false,
             root: root.into(),
-            rule_docs: None,
         }
-    }
-
-    /// Link each rule ID to `base` followed by the ID. Test-only until the docs site has rule pages (the docs-base
-    /// row in PLAN.md §3 passes the base).
-    #[cfg(test)]
-    pub(crate) fn with_rule_docs(mut self, base: impl Into<String>) -> Renderer {
-        self.rule_docs = Some(base.into());
-        self
     }
 
     /// One line per file, the rule IDs in one column after the longest path. Each line is its own string, so a
@@ -459,13 +449,14 @@ impl Renderer {
         out
     }
 
-    /// A rule ID in the rule colour, linked to its docs page when the base URL is known.
+    /// A rule ID in the rule colour, linked to its page on the docs site. Only a rule has a page: a name such as
+    /// `syntax` stays plain.
     fn rule(&self, id: &str) -> String {
         let painted = self.look.paint(Role::Rule, id);
-        match &self.rule_docs {
-            Some(base) => self.look.link(&format!("{base}{id}"), &painted),
-            None => painted,
+        if !self.look.links || pun_config::rule(id).is_none() {
+            return painted;
         }
+        (self.look).link(&format!("{}{id}", pun_config::RULE_DOCS_URL), &painted)
     }
 
     /// `shown` linked to the file `path` (relative to the root) as a `file://` URL.

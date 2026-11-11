@@ -97,7 +97,7 @@ identifiers (`%s.alwaysFalse`) expanded.
 | 3. Groups, presets and sets | built | All 64 command groups, 8 presets and 8 sets; format configs from the pinned preset exports; cumulative analyse switches and level additions |
 | 4. Migration mapping | built | Six tool tables and overview; PHPStan patterns expanded from pinned inventories with exact-name precedence; config translation, reasons and Pun-only rules |
 | 5. Rules directory | built | Generated JSON, all upstream spellings and URL-kept filters; agent-browser exercised combined filters, empty presets, no-preset bucket, reload and browser history |
-| 6. CLI links | blocked | The public docs origin is not configured anywhere in the repository; need the hostname before emitting absolute terminal links |
+| 6. CLI links | built | `pun_config::RULE_DOCS_URL` (`https://pun.laravel.cloud/docs/rules/`) plus the rule ID: `pun explain`'s `docs` row and the terminal hyperlink on each rule ID; `deployment.site` in `docs/blume.config.ts` is the same origin |
 
 The content gaps in §6 remain separate work in PLAN.md §3, not placeholder prose to invent during generation.
 
