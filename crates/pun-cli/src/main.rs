@@ -39,7 +39,7 @@ use std::process::ExitCode;
 #[command(
     name = "pun",
     version,
-    about = "Fast PHP toolchain: Pint-compatible formatter"
+    about = "Pun: format, lint and analyse PHP in one binary"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -56,14 +56,14 @@ struct Cli {
 enum Cmd {
     /// Fix (or check) the layout of the given paths: the `[format]` rules.
     Format(Box<FormatArgs>),
-    /// Report the `[lint]` rules' problems; `--fix` applies their fixes, but those with `fix = "off"`.
+    /// Report the `[lint]` rules' problems; `--fix` applies their fixes, except for rules with `fix = "off"`.
     Lint(Box<StageCmd>),
     /// Format, lint and analyse in one run: reports, or `--fix` applies the format and lint fixes.
     Check(Box<StageCmd>),
     /// Find bugs with types (PHPStan's rules): the `[analyse]` rules. Never edits a file.
     #[command(visible_alias = "analyze")]
     Analyse(Box<analyse::AnalyseArgs>),
-    /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
+    /// Write pun.toml from pint.json or .php-cs-fixer(.dist).php, rector.php and phpstan.neon, and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
     /// Write pun.toml for a new project: asks the code style, lint sets and analysis preset (`--yes` takes the defaults).
     Init(init::InitArgs),
@@ -71,14 +71,16 @@ enum Cmd {
     ListFiles(list_files::ListFilesArgs),
     /// Print the resolved configuration.
     Config {
-        /// Accepted for compatibility; showing is all `pun config` does.
+        /// Accepted and ignored: printing is all `pun config` does.
         #[arg(long)]
         show: bool,
         /// Output format (default: toml).
         #[arg(long, value_enum)]
         format: Option<ConfigFormat>,
+        /// The pun.toml to read (default: the one in the current directory).
         #[arg(long)]
         config: Option<PathBuf>,
+        /// Resolve this built-in format preset without a pun.toml.
         #[arg(long)]
         preset: Option<String>,
     },
@@ -130,9 +132,9 @@ enum ConfigFormat {
 #[derive(Args, Default, Clone)]
 #[command(about = "Fix the coding style of the given path")]
 pub(crate) struct FormatArgs {
-    /// The path to fix (`-` reads stdin).
+    /// The paths to run on (`-` reads stdin).
     paths: Vec<PathBuf>,
-    /// Enable the [Pint/laravel_blade] rule to format Blade files.
+    /// Enable the `format/laravel/blade` rule to format Blade files.
     #[arg(long)]
     blade: bool,
     /// The configuration that should be used.
@@ -180,8 +182,10 @@ pub(crate) struct FormatArgs {
     /// The number of threads (default: one per core). Read like Pint's intval(), so any value is accepted.
     #[arg(long)]
     max_processes: Option<String>,
+    /// Print more detail: every finding under a coding agent, and the error class of a run error.
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
+    /// Print nothing; the exit code is the result.
     #[arg(short, long)]
     quiet: bool,
     /// Colour the output: auto (on for a terminal, off when piped or with NO_COLOR), always or never.

@@ -943,7 +943,7 @@ docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mappin
         pun(&dir, &["explain", "nope"]),
         (
             String::new(),
-            "x `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(),
+            "x `nope` is not a Pun rule or an upstream rule name\n".into(),
             Some(2)
         )
     );

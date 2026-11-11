@@ -37,9 +37,7 @@ pub fn explain(name: &str) -> Result<String> {
     };
     match id {
         Some(id) => Ok(format!("`{name}` is `{id}` in Pun.\n\n{}", text(&id))),
-        None => bail!(
-            "`{name}` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)"
-        ),
+        None => bail!("`{name}` is not a Pun rule or an upstream rule name"),
     }
 }
 

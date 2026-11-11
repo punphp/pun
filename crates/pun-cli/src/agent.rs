@@ -1,6 +1,6 @@
 //! Agent mode (context/PLAN.md "Agent-optimised output"): under a coding agent every command prints a summary line,
 //! then one compiler-style line per finding (`path:line:col rule [fix:safe] message`), capped unless `-v`. No
-//! colours, boxes or progress. Exit codes don't change. Humans (no agent detected) get the Pint output as before.
+//! colours, boxes or progress. Exit codes don't change. Humans (no agent detected) get Pun's human output (context/plan/output.md).
 use std::fmt::Write as _;
 use std::sync::OnceLock;
 use std::time::Instant;

@@ -451,8 +451,8 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
 }
 
 fn unsupported_format(e: &anyhow::Error) -> anyhow::Error {
-    let hint = format!("use {}", analyse_report::FORMATS.join(", "));
-    run_error(e.to_string(), Some(hint))
+    // PHPStan's message already lists the formats.
+    run_error(e.to_string(), None)
 }
 
 /// `--generate-baseline [file]`: every error into the baseline; nothing is reported, the exit code is 0.

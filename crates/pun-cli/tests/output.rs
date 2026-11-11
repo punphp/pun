@@ -1421,6 +1421,10 @@ fn run_errors_exit_2() {
     );
     assert_eq!(
         pun(&["explain", "nope"]),
-        (String::new(), "✖ `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(), Some(2))
+        (
+            String::new(),
+            "✖ `nope` is not a Pun rule or an upstream rule name\n".into(),
+            Some(2)
+        )
     );
 }

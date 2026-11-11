@@ -531,10 +531,10 @@ pub(crate) fn rule_id(path: &Path, command: &str, name: &str) -> Result<String> 
     let found = (fixer_of(other, name).and_then(crate::rule_of)).or_else(|| renamed(name));
     match found {
         Some(id) => bail!("{}: `{name}` is `{id}` in pun.toml", path.display()),
-        None => bail!(
-            "{}: `{name}` is not a {command} rule (see crates/pun-config/rules/mapping.toml)",
-            path.display()
-        ),
+        None => {
+            let a = if command == "analyse" { "an" } else { "a" };
+            bail!("{}: `{name}` is not {a} {command} rule", path.display())
+        }
     }
 }
 

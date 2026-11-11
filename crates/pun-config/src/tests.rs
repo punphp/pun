@@ -933,7 +933,7 @@ fn explain_names() {
     );
     assert_eq!(
         err("nope"),
-        "`nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)"
+        "`nope` is not a Pun rule or an upstream rule name"
     );
 }
 
@@ -949,14 +949,22 @@ fn files_paths_stay_in_the_project() {
     let outside = d.join("outside").display().to_string();
     let escaping = ["../outside".to_string(), outside, "link".to_string()];
     for path in escaping {
-        std::fs::write(root.join("pun.toml"), format!("[files]\npaths = [{path:?}]\n")).unwrap();
+        std::fs::write(
+            root.join("pun.toml"),
+            format!("[files]\npaths = [{path:?}]\n"),
+        )
+        .unwrap();
         let at = root.join("pun.toml").display().to_string();
         assert_eq!(
             err(&root, Options::default()),
             format!("{at}: [files] paths: \"{path}\" is outside the project")
         );
     }
-    std::fs::write(root.join("pun.toml"), "[files]\npaths = [\"app\", \"later\"]\n").unwrap();
+    std::fs::write(
+        root.join("pun.toml"),
+        "[files]\npaths = [\"app\", \"later\"]\n",
+    )
+    .unwrap();
     let c = load(&root, &Options::default()).unwrap();
     assert_eq!(c.files.paths, ["app", "later"]);
 }
@@ -1087,19 +1095,19 @@ fn pun_toml_errors() {
         ),
         (
             "[format.rules]\nnope = true\n",
-            "`nope` is not a format rule (see crates/pun-config/rules/mapping.toml)",
+            "`nope` is not a format rule",
         ),
         (
             "[lint.rules]\nnope = \"error\"\n",
-            "`nope` is not a lint rule (see crates/pun-config/rules/mapping.toml)",
+            "`nope` is not a lint rule",
         ),
         (
             "[analyse.rules]\nnope = \"on\"\n",
-            "`nope` is not a analyse rule (see crates/pun-config/rules/mapping.toml)",
+            "`nope` is not an analyse rule",
         ),
         (
             "[[analyse.ignore]]\nrule = \"nope\"\n",
-            "`nope` is not a analyse rule (see crates/pun-config/rules/mapping.toml)",
+            "`nope` is not an analyse rule",
         ),
         // PHPStan's ignoreErrors schema: message and rawMessage exclude each other, and an entry names something.
         (
@@ -1113,7 +1121,7 @@ fn pun_toml_errors() {
         // `ordered` is imports/ordered, attributes/ordered and types/ordered: not guessed.
         (
             "[format.rules]\nordered = true\n",
-            "`ordered` is not a format rule (see crates/pun-config/rules/mapping.toml)",
+            "`ordered` is not a format rule",
         ),
     ] {
         let got = e(toml);
