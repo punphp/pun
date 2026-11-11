@@ -311,7 +311,11 @@ fn syntax_errors_fail_the_run() {
         .collect();
     found.sort();
     let want = [
-        ("a.php", "Syntax error, unexpected variable \"$b\" on line 3", 3),
+        (
+            "a.php",
+            "Syntax error, unexpected variable \"$b\" on line 3",
+            3,
+        ),
         ("b.php", "Unclosed '{' on line 2 on line 3", 3),
     ];
     let want: Vec<_> = (want.iter())

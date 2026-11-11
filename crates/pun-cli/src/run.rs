@@ -870,7 +870,11 @@ fn process_file(
 /// requires. A directory that takes no new file gets the plain write Pint does.
 fn replace(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     use std::io::Write;
-    let mode = std::fs::OpenOptions::new().write(true).open(path)?.metadata()?.permissions();
+    let mode = std::fs::OpenOptions::new()
+        .write(true)
+        .open(path)?
+        .metadata()?
+        .permissions();
     let name = path.file_name().unwrap_or_default().to_string_lossy();
     let tmp = path.with_file_name(format!(".{name}.pun-{}", std::process::id()));
     let Ok(mut file) = std::fs::File::create(&tmp) else {
@@ -1078,7 +1082,10 @@ mod tests {
         std::fs::set_permissions(&file, mode(0o640)).unwrap();
         super::replace(&file, b"new").unwrap();
         assert_eq!(std::fs::read(&file).unwrap(), b"new");
-        assert_eq!(std::fs::metadata(&file).unwrap().permissions().mode() & 0o777, 0o640);
+        assert_eq!(
+            std::fs::metadata(&file).unwrap().permissions().mode() & 0o777,
+            0o640
+        );
         assert_eq!(names(), ["a.php"]);
 
         std::fs::set_permissions(&dir, mode(0o555)).unwrap();

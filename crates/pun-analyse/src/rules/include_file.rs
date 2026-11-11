@@ -789,6 +789,9 @@ mod tests {
     #[test]
     fn gzip_archives_unpack_to_at_most_100_mib() {
         assert_eq!(archive_file(&gzipped_tar(0), b"x.php", 3), Some(true));
-        assert_eq!(archive_file(&gzipped_tar(100 * 1024 * 1024), b"x.php", 3), None);
+        assert_eq!(
+            archive_file(&gzipped_tar(100 * 1024 * 1024), b"x.php", 3),
+            None
+        );
     }
 }
