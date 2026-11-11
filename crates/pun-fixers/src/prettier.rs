@@ -2,6 +2,7 @@
 use anyhow::{Result, bail};
 use pun_tokens::php_compat::strpos;
 use std::cell::RefCell;
+use std::ffi::OsString;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
@@ -82,7 +83,8 @@ pub fn stop() {
 }
 
 /// The scripts and config are content-addressed, resolved once per process and written via unique temporary
-/// filenames and rename, so concurrent writers never expose partial files.
+/// filenames and rename, so concurrent writers never expose partial files. They live in the user's own cache
+/// directory: a shared temporary directory would let another user of the machine put a script there first.
 fn resources() -> Result<PathBuf> {
     static RESOURCES: OnceLock<Result<PathBuf, String>> = OnceLock::new();
     RESOURCES
@@ -90,11 +92,31 @@ fn resources() -> Result<PathBuf> {
             let mut hasher = std::hash::DefaultHasher::new();
             std::hash::Hash::hash(&(WORKER, PROBE, PRETTIERRC), &mut hasher);
             let hash = std::hash::Hasher::finish(&hasher);
-            resources_in(&std::env::temp_dir().join(format!("pun-blade-{hash:016x}")))
-                .map_err(|e| e.to_string())
+            let name = format!("blade-{hash:016x}");
+            let dir = scripts_dir(std::env::var_os("XDG_CACHE_HOME"), std::env::var_os("HOME"), &name);
+            resources_in(&dir.map_err(|e| e.to_string())?).map_err(|e| e.to_string())
         })
         .clone()
         .map_err(anyhow::Error::msg)
+}
+
+/// Where the scripts go: `pun/<name>` in the user's cache directory, or without one (no `HOME`) a directory in
+/// the temporary directory that this process creates for itself alone.
+fn scripts_dir(xdg: Option<OsString>, home: Option<OsString>, name: &str) -> std::io::Result<PathBuf> {
+    if let Some(cache) = cache_dir(xdg, home) {
+        return Ok(cache.join("pun").join(name));
+    }
+    let dir = std::env::temp_dir().join(format!("pun-{name}-{}", std::process::id()));
+    // `create` fails on a directory that is already there, so nobody else's files are ever used.
+    std::os::unix::fs::DirBuilderExt::mode(&mut std::fs::DirBuilder::new(), 0o700).create(&dir)?;
+    Ok(dir)
+}
+
+/// The XDG cache directory: `$XDG_CACHE_HOME` when it is absolute, else `$HOME/.cache`.
+fn cache_dir(xdg: Option<OsString>, home: Option<OsString>) -> Option<PathBuf> {
+    let absolute = |dir: OsString| Some(PathBuf::from(dir)).filter(|dir| dir.is_absolute());
+    xdg.and_then(absolute)
+        .or_else(|| Some(home.and_then(absolute)?.join(".cache")))
 }
 
 fn resources_in(dir: &Path) -> Result<PathBuf> {
@@ -103,7 +125,11 @@ fn resources_in(dir: &Path) -> Result<PathBuf> {
         ("probe.cjs", PROBE),
         ("worker.cjs", WORKER),
     ];
-    if !files.iter().all(|(name, _)| dir.join(name).exists()) {
+    // Compared by content: a file someone edited or left half-written is replaced, never run.
+    let current = |(name, body): &(&str, &str)| {
+        std::fs::read(dir.join(name)).is_ok_and(|found| found == body.as_bytes())
+    };
+    if !files.iter().all(current) {
         std::fs::create_dir_all(dir)?;
         for (name, body) in files {
             static WRITES: AtomicUsize = AtomicUsize::new(0);
@@ -327,11 +353,24 @@ mod tests {
 
     #[test]
     fn resources_are_shared() {
+        // Under the user's cache directory, never the shared temporary one.
         let dir = resources().unwrap();
-        assert_ne!(
-            dir.file_name().unwrap().to_string_lossy(),
-            format!("pun-blade-{}", std::process::id())
-        );
+        let cache = cache_dir(std::env::var_os("XDG_CACHE_HOME"), std::env::var_os("HOME"));
+        assert_eq!(dir.parent().unwrap(), cache.unwrap().join("pun"));
+        let os = |s: &str| Some(OsString::from(s));
+        assert_eq!(cache_dir(os("/x/cache"), os("/home/u")), Some("/x/cache".into()));
+        assert_eq!(cache_dir(os("relative"), os("/home/u")), Some("/home/u/.cache".into()));
+        assert_eq!(cache_dir(None, os("/home/u")), Some("/home/u/.cache".into()));
+        assert_eq!(cache_dir(None, None), None);
+        // Without a home: a 0700 directory of this process's own, and never one that already exists.
+        let name = format!("test-private-{}", std::process::id());
+        let private = scripts_dir(None, None, &name).unwrap();
+        assert!(private.starts_with(std::env::temp_dir()));
+        let mode = std::os::unix::fs::PermissionsExt::mode(&private.metadata().unwrap().permissions());
+        assert_eq!(mode & 0o777, 0o700);
+        assert!(scripts_dir(None, None, &name).is_err());
+        std::fs::remove_dir(&private).unwrap();
+        assert_eq!(scripts_dir(None, os("/home/u"), "n").unwrap(), PathBuf::from("/home/u/.cache/pun/n"));
         let dir = std::env::temp_dir().join(format!("pun-blade-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         resources_in(&dir).unwrap();
@@ -342,11 +381,12 @@ mod tests {
         ] {
             assert_eq!(std::fs::read_to_string(dir.join(name)).unwrap(), body);
         }
-        std::fs::write(dir.join("worker.cjs"), "kept").unwrap();
+        // A script someone else put there is replaced, not run.
+        std::fs::write(dir.join("worker.cjs"), "planted").unwrap();
         resources_in(&dir).unwrap();
         assert_eq!(
             std::fs::read_to_string(dir.join("worker.cjs")).unwrap(),
-            "kept"
+            WORKER
         );
         for (name, body) in [("prettierrc.json", PRETTIERRC), ("probe.cjs", PROBE)] {
             std::fs::remove_file(dir.join(name)).unwrap();
