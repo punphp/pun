@@ -825,8 +825,7 @@ fn process_file(
         r.applied = applied;
         r.status = Status::Fixed;
         if !dry_run {
-            std::fs::write(path, &now)
-                .map_err(|_| crate::pint_error::PintError::Write(path.clone()))?;
+            replace(path, &now).map_err(|_| crate::pint_error::PintError::Write(path.clone()))?;
         }
     }
     if !problems.is_empty() {
@@ -864,6 +863,23 @@ fn process_file(
         result: r,
         remaining,
     })
+}
+
+/// Writes a fixed file so that a full disk or a killed run leaves the old file or the new one, never a part: the
+/// bytes go to a hidden file beside it, which then takes its name and mode. The file must be writable, as Pint
+/// requires. A directory that takes no new file gets the plain write Pint does.
+fn replace(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    use std::io::Write;
+    let mode = std::fs::OpenOptions::new().write(true).open(path)?.metadata()?.permissions();
+    let name = path.file_name().unwrap_or_default().to_string_lossy();
+    let tmp = path.with_file_name(format!(".{name}.pun-{}", std::process::id()));
+    let Ok(mut file) = std::fs::File::create(&tmp) else {
+        return std::fs::write(path, bytes);
+    };
+    let written = (file.write_all(bytes))
+        .and_then(|()| file.set_permissions(mode))
+        .and_then(|()| std::fs::rename(&tmp, path));
+    written.inspect_err(|_| drop(std::fs::remove_file(&tmp)))
 }
 
 /// `pun check`: the analysis's errors as problems of their files (a file only analyse covers gets a result of its
@@ -1042,5 +1058,38 @@ mod tests {
             super::isolated(|| panic!("boom")),
             Err::<(), _>("boom".into())
         );
+    }
+
+    /// `replace` swaps the file in whole and keeps its mode; a read-only file is refused untouched (Pint's "not
+    /// writable"), and a directory that takes no new file still gets the write.
+    #[test]
+    fn replace_swaps_the_file_in() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = std::env::temp_dir().join(format!("pun-replace-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let file = dir.join("a.php");
+        let mode = |m| std::fs::Permissions::from_mode(m);
+        let names = || -> Vec<_> {
+            let entries = std::fs::read_dir(&dir).unwrap();
+            entries.map(|e| e.unwrap().file_name()).collect()
+        };
+        std::fs::write(&file, "old").unwrap();
+        std::fs::set_permissions(&file, mode(0o640)).unwrap();
+        super::replace(&file, b"new").unwrap();
+        assert_eq!(std::fs::read(&file).unwrap(), b"new");
+        assert_eq!(std::fs::metadata(&file).unwrap().permissions().mode() & 0o777, 0o640);
+        assert_eq!(names(), ["a.php"]);
+
+        std::fs::set_permissions(&dir, mode(0o555)).unwrap();
+        super::replace(&file, b"in place").unwrap();
+        assert_eq!(std::fs::read(&file).unwrap(), b"in place");
+        std::fs::set_permissions(&dir, mode(0o755)).unwrap();
+
+        std::fs::set_permissions(&file, mode(0o444)).unwrap();
+        assert!(super::replace(&file, b"refused").is_err());
+        assert_eq!(std::fs::read(&file).unwrap(), b"in place");
+        assert_eq!(names(), ["a.php"]);
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }
