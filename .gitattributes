@@ -11,6 +11,7 @@ crates/pun-lint/tests/mago/style-require-todo-reference/Mago/*_comment_prefixes_
 /AGENTS.md export-ignore
 /Cargo.lock export-ignore
 /Cargo.toml export-ignore
+/clippy.toml export-ignore
 /context export-ignore
 /corpus export-ignore
 /crates export-ignore
