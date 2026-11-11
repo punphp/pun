@@ -252,7 +252,22 @@ pub(crate) struct PunArgs {
     watch: bool,
 }
 
+/// The stack of every thread that parses, lints or analyses: they recurse as deep as the syntax tree, and a long
+/// chain of concatenations or `&&` overflows the 8 MiB of a main thread and Rust's 2 MiB default.
+pub(crate) const STACK: usize = 36 * 1024 * 1024;
+
 fn main() -> ExitCode {
+    // `pun analyse` parses and analyses on the calling thread too, so the command runs on a thread with that stack.
+    let run = std::thread::Builder::new()
+        .name("main".into())
+        .stack_size(STACK)
+        .spawn(run)
+        .expect("the main thread starts");
+    run.join()
+        .unwrap_or_else(|panic| std::panic::resume_unwind(panic))
+}
+
+fn run() -> ExitCode {
     #[cfg(feature = "pprof")]
     let sampler = sampler::start();
     let matches = Cli::command().get_matches();
@@ -299,9 +314,7 @@ fn main() -> ExitCode {
         }
         _ => (None, other),
     };
-    // One rayon pool for every pass, capped by `--max-processes` (read like Pint's intval()). Its threads get a 36 MiB
-    // stack: the parser, the lint walk and analysis recurse as deep as the syntax tree, and a long chain of
-    // concatenations overflows Rust's 2 MiB default.
+    // One rayon pool for every pass, capped by `--max-processes` (read like Pint's intval()).
     let threads = max_processes
         .as_deref()
         .map(pun_tokens::php_compat::intval)
@@ -309,7 +322,7 @@ fn main() -> ExitCode {
         .map_or(0, |n| n as usize);
     let _ = rayon::ThreadPoolBuilder::new()
         .num_threads(threads)
-        .stack_size(36 * 1024 * 1024)
+        .stack_size(STACK)
         .build_global();
     let result = match cmd {
         Cmd::Format(a) if a.pun.watch => watch::run(*a),

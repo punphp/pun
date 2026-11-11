@@ -437,7 +437,10 @@ fn project_codebase(cfg: &Config, files: Vec<PathBuf>) {
         // A rule asks on a worker of rayon's global pool, whose other workers wait for the scan: it runs on a thread
         // and a pool of its own, sized as the global one.
         let threads = rayon::current_num_threads();
-        let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build();
+        let pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(threads)
+            .stack_size(crate::STACK)
+            .build();
         let pool = pool.expect("the project scan's thread pool");
         std::thread::scope(|s| {
             s.spawn(|| pool.install(|| scan_project(&cfg, &files)))
