@@ -1,0 +1,6 @@
+- name: Install the Rust toolchain the workspace needs
+  shell: bash
+  run: |
+    rustup toolchain install 1.99 --profile minimal --no-self-update
+    rustup default 1.99
+    echo "PCRE2_SYS_STATIC=1" >> "$GITHUB_ENV"

@@ -127,6 +127,12 @@ jobs:
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
             echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           fi
+      - name: "Install the Rust toolchain the workspace needs"
+        run: |
+          rustup toolchain install 1.99 --profile minimal --no-self-update
+          rustup default 1.99
+          echo "PCRE2_SYS_STATIC=1" >> "$GITHUB_ENV"
+        shell: "bash"
       - name: Install dist
         run: ${{ matrix.install_dist.run }}
       # Get the dist-manifest

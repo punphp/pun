@@ -18,3 +18,10 @@ targets = ["aarch64-apple-darwin", "aarch64-unknown-linux-musl", "x86_64-apple-d
 unix-archive = ".tar.gz"
 # No source tarball: .gitattributes keeps the Rust source out of `git archive` (it is the Composer package's archive)
 source-tarball = false
+# Steps run before each build: the toolchain the workspace needs (the macOS image ships an older one) and a static
+# PCRE2 on every target (pcre2-sys links Homebrew's dynamically when pkg-config finds it).
+github-build-setup = "../build-setup.yml"
+
+# GitHub's default arm64 macOS label for dist 0.33 is no longer offered.
+[dist.github-custom-runners]
+aarch64-apple-darwin = "macos-15"
