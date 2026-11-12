@@ -45,6 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
+      # pun-cli's tests run Pint's and Pun's Blade preflight with a Bun lock file.
+      - uses: oven-sh/setup-bun@v2
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
@@ -69,6 +71,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
+      # pun-cli's tests run Pint's and Pun's Blade preflight with a Bun lock file.
+      - uses: oven-sh/setup-bun@v2
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
