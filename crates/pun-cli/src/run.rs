@@ -715,6 +715,7 @@ fn process_file(
         .map(|(id, o)| (id.clone(), o.clone()))
         .collect();
     let fix = e.stage.fix();
+    let unchanged_on_disk = dry_run && !fix;
     let rel_path = Path::new(&rel);
 
     // 1. The native rules.
@@ -796,8 +797,10 @@ fn process_file(
                             applied.push(fixer);
                         }
                     }
-                    // The native problems' spans refer to the source before the token pass.
-                    if !problems.is_empty()
+                    // The native problems' spans refer to the source before the token pass. A run that only
+                    // reports keeps them: that source is the file on disk.
+                    if !unchanged_on_disk
+                        && !problems.is_empty()
                         && let (Some(linter), Ok(t)) = (&e.linter, std::str::from_utf8(&new))
                         && let Ok(mut ps) = linter.check(rel_path, t)
                     {
@@ -856,7 +859,8 @@ fn process_file(
         }
     }
     if !problems.is_empty() {
-        r.source = String::from_utf8_lossy(&now).into_owned();
+        r.source =
+            String::from_utf8_lossy(if unchanged_on_disk { &code } else { &now }).into_owned();
         r.problems = problems;
     }
 
