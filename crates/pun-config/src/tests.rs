@@ -825,7 +825,10 @@ upstream  array_syntax (php-cs-fixer)
         explained("format/arrays/syntax", "format/arrays/syntax")
     );
     assert_eq!(
-        explained("lint/style/no-alias-function", "lint/style/no-alias-function"),
+        explained(
+            "lint/style/no-alias-function",
+            "lint/style/no-alias-function"
+        ),
         "lint/style/no-alias-function
 Master functions shall be used instead of aliases.
 
