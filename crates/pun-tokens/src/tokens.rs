@@ -457,8 +457,8 @@ impl Tokens {
             .filter(|&k| self.is_token_kind_found(k))
             .collect();
         if !found.is_empty() {
-            for i in start..end {
-                if let Some(id) = self.tokens[i].id
+            for (i, token) in self.tokens.iter().enumerate().take(end).skip(start) {
+                if let Some(id) = token.id
                     && found.contains(&id)
                 {
                     out.get_mut(&id).unwrap().push(i);

@@ -244,10 +244,7 @@ impl FunctionsAnalyzer {
                 == php_compat::ltrim_chars(&function_use.full_name, b"\\");
         }
 
-        if AttributeAnalyzer::is_attribute(tokens, index) {
-            return false;
-        }
-        true
+        !AttributeAnalyzer::is_attribute(tokens, index)
     }
 
     fn build_functions_analysis(&self, tokens: &Tokens) {

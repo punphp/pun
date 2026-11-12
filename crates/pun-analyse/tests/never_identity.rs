@@ -123,7 +123,7 @@ fn replacement_and_serde_preserve_kind_without_tainting_computed_bottom() {
     let oracle = oracle();
     for (name, ty) in types() {
         let want = &oracle["types"][name]["kind"];
-        assert_eq!(&kind(&ty.clone()), want);
+        assert_eq!(&kind(&ty), want);
         assert_eq!(&kind(&ty.clone_with_types(ty.types.to_vec())), want);
         let encoded = serde_json::to_vec(&ty).unwrap();
         let decoded: TUnion = serde_json::from_slice(&encoded).unwrap();

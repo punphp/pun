@@ -273,7 +273,7 @@ fn list_files(dir: &Path, rel: &str, out: &mut BTreeSet<String>) -> Result<()> {
         let entry = entry?;
         let name = entry.file_name().to_string_lossy().into_owned();
         let rel = if rel.is_empty() {
-            name.clone()
+            name
         } else {
             format!("{rel}/{name}")
         };

@@ -602,10 +602,7 @@ fn template_check(
             if let Some(optional) = &with_default {
                 out.push(
                     "generics.requiredTypeAfterOptional",
-                    sprintf(
-                        &m.required_after_optional,
-                        &[name.clone(), optional.clone()],
-                    ),
+                    sprintf(&m.required_after_optional, &[name, optional.clone()]),
                 );
             }
             continue;
@@ -652,7 +649,7 @@ fn template_check(
                 &m.default_not_subtype,
                 &[
                     default.describe(Level::TypeOnly),
-                    name.clone(),
+                    name,
                     t.bound.describe(Level::TypeOnly),
                 ],
             ),

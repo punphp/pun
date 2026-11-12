@@ -254,7 +254,7 @@ fn coalesce_produces_expression_holders_without_replaying_indexes() {
                 );
             } else {
                 baseline = Some((
-                    artifacts.expression_types.clone(),
+                    artifacts.expression_types,
                     observer.visits.lock().unwrap().clone(),
                 ));
             }

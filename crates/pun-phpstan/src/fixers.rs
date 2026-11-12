@@ -213,7 +213,7 @@ fn remove_identifier_from_list(list: &[u8], identifier: &str) -> Option<(Option<
             T::Identifier if depth == 0 => {
                 items.extend(item.take());
                 item = Some(Item {
-                    name: list[span.clone()].to_vec(),
+                    name: list[span].to_vec(),
                     start: offset,
                     end,
                 });

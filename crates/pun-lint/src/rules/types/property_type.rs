@@ -1344,10 +1344,7 @@ fn is_non_typed_from_param(facts: &Facts, expr: &Expression<'_>) -> bool {
         return true;
     }
     let native_ty = ty(native);
-    if native_ty.is_union() && full.is_some_and(|f| ty(f).hash() != native_ty.hash()) {
-        return true;
-    }
-    false
+    native_ty.is_union() && full.is_some_and(|f| ty(f).hash() != native_ty.hash())
 }
 
 /// `NodeTypeResolver::getNativeType` of a value the class assigns: [`native_ty`], but a direct `new class` that names

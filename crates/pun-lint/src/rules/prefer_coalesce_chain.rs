@@ -61,11 +61,11 @@ impl Rule for PreferCoalesceChain {
         }
         let first = matched[0].0;
         let mut append: Option<&Expression> = None;
-        for key in first..list.stmts.len() {
+        for (key, stmt) in list.stmts.iter().enumerate().skip(first) {
             if matched.iter().any(|(k, _)| *k == key) {
                 continue;
             }
-            match list.stmts[key] {
+            match *stmt {
                 // A throw expression needs PHP 8.0.
                 Statement::Expression(e)
                     if matches!(unparenthesize(e.expression), Expression::Throw(_))

@@ -205,7 +205,7 @@ fn retained_assignment_shapes_do_not_change_live_or_native_artifacts() {
                     "native {native}, observe {observe}"
                 );
             } else {
-                baseline = Some(artifacts.expression_types.clone());
+                baseline = Some(artifacts.expression_types);
             }
         }
     }

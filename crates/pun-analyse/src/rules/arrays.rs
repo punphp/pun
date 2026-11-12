@@ -262,7 +262,7 @@ pub(super) fn literal_array<'arena>(
                 printed.entry(value.clone()).or_default().push(print);
                 lines.entry(value.clone()).or_insert(at);
                 if duplicate && !duplicate_keys.contains(&value) {
-                    duplicate_keys.push(value.clone());
+                    duplicate_keys.push(value);
                 }
             }
         }

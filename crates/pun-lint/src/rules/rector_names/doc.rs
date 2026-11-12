@@ -1281,8 +1281,8 @@ fn merge_nested_doctrine_annotations(slots: &mut Slots) {
             continue;
         };
         let mut start_end = slots.items[key].1.start_end;
-        for next in key + 1..slots.items.len() {
-            let child = &slots.items[next].1;
+        for (next, item) in slots.items.iter().enumerate().skip(key + 1) {
+            let child = &item.1;
             let combined = start_end.zip(child.start_end).map(|(a, b)| (a.0, b.1));
             match (&child.tag, &child.value) {
                 // `NESTED_ANNOTATION_END_REGEX`; the child after the text goes too

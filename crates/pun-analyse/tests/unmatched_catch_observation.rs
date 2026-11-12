@@ -222,7 +222,7 @@ fn catch_observations_match_pinned_rector_without_changing_live_flow_or_native_a
             let outer = source.find("try {\n        $value = 4;").unwrap();
             // PHPStan 2.3.3+ (the ordinary run) also walks a catch no throw point reaches, whose boundaries, returns
             // and yields Rector's pinned PHPStan 2.2.7 never sees: the observed flow is the ordinary one without them.
-            let mut flow = flow.clone();
+            let mut flow = flow;
             let position = flow
                 .iter()
                 .position(|(offset, ..)| *offset == nested)

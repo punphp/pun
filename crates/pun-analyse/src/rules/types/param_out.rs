@@ -887,7 +887,7 @@ fn too_wide(
             } else {
                 "parameterByRef.tooWideBool"
             };
-            errors.push((b.span, message, id, tip.clone()));
+            errors.push((b.span, message, id, tip));
             continue;
         }
         let Type::Union(members) = &out else { continue };
