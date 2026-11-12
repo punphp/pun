@@ -949,3 +949,24 @@ docs      https://pun.laravel.cloud/docs/rules/lint/style/no-alias-function
         )
     );
 }
+
+/// Composer's shim runs the binary from a cached `pun-<version>-<target>` file; the usage line still says `pun`.
+#[test]
+fn usage_line_says_pun_under_another_file_name() {
+    let dir = std::env::temp_dir().join(format!("pun-usage-name-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let copy = dir.join("pun-0.1.0-x86_64-unknown-linux-musl");
+    std::fs::copy(PUN, &copy).unwrap();
+    let help = |args: &[&str]| {
+        let out = Command::new(&copy)
+            .args(args)
+            .env("PUN_AGENT", "0")
+            .output()
+            .unwrap();
+        String::from_utf8(out.stdout).unwrap()
+    };
+    let (top, sub) = (help(&["--help"]), help(&["init", "--help"]));
+    std::fs::remove_dir_all(&dir).unwrap();
+    assert!(top.contains("Usage: pun [OPTIONS] <COMMAND>\n"), "{top}");
+    assert!(sub.contains("Usage: pun init [OPTIONS]\n"), "{sub}");
+}

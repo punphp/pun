@@ -38,6 +38,8 @@ use std::process::ExitCode;
 #[derive(Parser)]
 #[command(
     name = "pun",
+    // Composer's shim runs a cached `pun-<version>-<target>` file; the usage line says `pun` all the same.
+    bin_name = "pun",
     version,
     about = "Pun: format, lint and analyse PHP in one binary"
 )]
