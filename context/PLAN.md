@@ -23,7 +23,7 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
 - **Test time:** `scripts/analyse-tests.sh` takes about 40 minutes on 8 cores (about 10 of them building). `levels`
   and `rules` run their cases in parallel (390 s and 160 s alone, against 92 and about 30 minutes before), and test
   builds compile dependencies at `opt-level = 2` with line tables only. One analyse target dir is about 56 GB.
-- **Priorities, in order:** (1) beta launch: tag v0.1.0-beta.2, check the GitHub pre-release and a Composer install, then
+- **Priorities, in order:** (1) beta launch: v0.1.0-beta.2 is released; tag v0.1.0-beta.3 (Packagist keeps beta.2 at its first tag commit, with `php >=8.1`), then
   submit the repo to Packagist once (§3 Step 5). Until a stable release, installs need `punphp/pun:@beta`; (2) CI
   re-enable; (3) finish analyse level 0 and levels 1-10; (4) the 24 new lint rules; (5) `pun check` in one pass;
   (6) perf rounds with `scripts/bench.py`.
@@ -428,7 +428,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | Work | Status |
 | --- | --- |
 | release: after the first tag, submit github.com/punphp/pun to Packagist once and turn on its GitHub hook; tags then publish the package | needs Pushpak |
-| release: beta dry run: push the tag v0.1.0-beta.2 (v0.1.0-beta.1 was tagged on 2026-11-09 and its release run was cancelled), check that cargo-dist publishes the four archives and their .sha256 as a GitHub pre-release, then `composer require --dev punphp/pun:@beta` and `vendor/bin/pun --version` on Linux and macOS (dist plan, the shim's names and a local x86_64 musl build are already checked) | needs Pushpak |
+| release: beta dry run: push the tag v0.1.0-beta.3 (v0.1.0-beta.2 is released, but Packagist keeps it at its first tag commit; v0.1.0-beta.1 was tagged on 2026-11-09 and its release run was cancelled), check that cargo-dist publishes the four archives and their .sha256 as a GitHub pre-release, then `composer require --dev punphp/pun:@beta` and `vendor/bin/pun --version` on Linux and macOS (dist plan, the shim's names and a local x86_64 musl build are already checked) | needs Pushpak |
 | docs content: 369 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
 | release notices: the Zend sorting port requires the acknowledgment in THIRD_PARTY_NOTICES.md and the Zend Engine acknowledgment in advertising materials that mention its features or use (Zend Engine License clauses 5 and 6); verify those materials before publication | todo |
 
