@@ -195,7 +195,7 @@ fn declared(facts: &Facts, name: &str) -> Option<String> {
 }
 
 /// Whether the left side of `instanceof` needs parentheses: an operation that binds looser than `instanceof`.
-fn needs_parentheses(expr: &Expression<'_>) -> bool {
+pub(super) fn needs_parentheses(expr: &Expression<'_>) -> bool {
     match expr {
         Expression::Binary(b) => !matches!(b.operator, BinaryOperator::Exponentiation(_)),
         Expression::UnaryPrefix(u) => matches!(u.operator, UnaryPrefixOperator::Not(_)),

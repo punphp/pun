@@ -79,6 +79,7 @@ mod native;
 mod never;
 pub(crate) mod no_nullsafe_on_non_null;
 mod param;
+mod prefer_explicit_null_instanceof;
 mod prefer_generic_collection_phpdoc;
 mod prefer_identical_same_type;
 mod prefer_instanceof;
@@ -160,6 +161,7 @@ pub use doctrine_repository::{
 };
 pub(crate) use never::has_parent_class_method;
 pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
+pub use prefer_explicit_null_instanceof::PreferExplicitNullInstanceof;
 pub use prefer_generic_collection_phpdoc::PreferGenericCollectionPhpdoc;
 pub use prefer_identical_same_type::PreferIdenticalSameType;
 pub use prefer_instanceof::PreferInstanceof;
@@ -213,6 +215,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddReturnTypeFromParam),
         Box::new(AddFluentReturn),
         Box::new(AddNeverReturn),
+        Box::new(PreferExplicitNullInstanceof),
         Box::new(PreferInstanceof),
         Box::new(PreferIdenticalSameType),
         Box::new(NoNullsafeOnNonNull),

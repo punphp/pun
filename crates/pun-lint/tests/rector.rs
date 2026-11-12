@@ -11,15 +11,21 @@ use std::path::{Path, PathBuf};
 use pun_format::Pipeline;
 use pun_lint::Linter;
 use pun_lint::rules;
+use pun_lint::rules::NoDirnameDirConcat;
 use pun_lint::rules::NoDuplicateCaseBody;
 use pun_lint::rules::NoElseAfterReturn;
 use pun_lint::rules::NoIdenticalBranches;
 use pun_lint::rules::NoMirrorAssignment;
+use pun_lint::rules::NoNegatedInstanceofTernary;
+use pun_lint::rules::NoOverriddenAssignBeforeIf;
 use pun_lint::rules::NoRedundantPromotedAssign;
+use pun_lint::rules::NoRedundantTypeCheck;
 use pun_lint::rules::NoUnreachableCode;
 use pun_lint::rules::PreferCompoundAssignment;
 use pun_lint::rules::PreferEarlyReturn;
 use pun_lint::rules::PreferEarlyReturnOverPreparedValue;
+use pun_lint::rules::PreferExplicitArrayComparison;
+use pun_lint::rules::PreferIfStatement;
 use pun_lint::rules::PreferInArray;
 use pun_lint::rules::PreferNotInArray;
 use pun_lint::rules::{
@@ -613,4 +619,73 @@ fn absolutize_require_and_include_path() {
     run(&linter, "AbsolutizeRequireAndIncludePathRector/Oracle");
     // Where Rector cannot run, stops with an error or escapes bytes; the expected code is derived by hand.
     run(&linter, "AbsolutizeRequireAndIncludePathRector/Pun");
+}
+
+#[test]
+fn flip_negated_ternary_instanceof() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoNegatedInstanceofTernary)], 80400);
+    run(&linter, "FlipNegatedTernaryInstanceofRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "FlipNegatedTernaryInstanceofRector/Oracle");
+    // Where Rector leaves a nested ternary or a low-precedence operator bare in the else branch; the expected code
+    // is derived by hand.
+    run(&linter, "FlipNegatedTernaryInstanceofRector/Pun");
+}
+
+#[test]
+fn dirname_dir_concat_string_to_direct_string_path() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoDirnameDirConcat)], 80400);
+    run(
+        &linter,
+        "DirnameDirConcatStringToDirectStringPathRector/Fixture",
+    );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(
+        &linter,
+        "DirnameDirConcatStringToDirectStringPathRector/Oracle",
+    );
+}
+
+#[test]
+fn array_explicit_bool_compare() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferExplicitArrayComparison)], 80400);
+    run(&linter, "ArrayExplicitBoolCompareRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "ArrayExplicitBoolCompareRector/Oracle");
+    // In a branch no array reaches, PHPStan's type is `never` and Rector leaves the condition; Pun still sees the
+    // array and compares it, which means the same. The expected code is derived by hand.
+    run(&linter, "ArrayExplicitBoolCompareRector/Pun");
+}
+
+#[test]
+fn inline_if_to_explicit_if() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferIfStatement)], 80400);
+    run(&linter, "InlineIfToExplicitIfRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "InlineIfToExplicitIfRector/Oracle");
+    // Where Pun differs: a comment Rector would drop and a closing tag it would swallow keep the statement as it
+    // is, and a tab-indented statement keeps its tab. The expected code is derived by hand.
+    run(&linter, "InlineIfToExplicitIfRector/Pun");
+}
+
+#[test]
+fn remove_overridden_assign_before_if_else() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoOverriddenAssignBeforeIf)], 80400);
+    run(&linter, "RemoveOverriddenAssignBeforeIfElseRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveOverriddenAssignBeforeIfElseRector/Oracle");
+}
+
+#[test]
+fn remove_redundant_type_check() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoRedundantTypeCheck)], 80400);
+    run(&linter, "RemoveRedundantTypeCheckRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveRedundantTypeCheckRector/Oracle");
 }

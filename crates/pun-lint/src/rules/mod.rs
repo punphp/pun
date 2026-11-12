@@ -45,6 +45,7 @@ mod no_constant_via_variable;
 mod no_dead_catch;
 mod no_dead_php_version_check;
 mod no_debug_calls;
+mod no_dirname_dir_concat;
 mod no_double_self_assignment;
 mod no_duplicate_array_key;
 mod no_duplicate_case_body;
@@ -97,6 +98,7 @@ mod no_negated_boolean_literal;
 mod no_negated_comparison;
 mod no_negated_condition;
 mod no_negated_group;
+mod no_negated_instanceof_ternary;
 mod no_nested_ternary;
 mod no_null_array_key;
 mod no_null_debug_info;
@@ -104,6 +106,7 @@ mod no_null_default_argument;
 mod no_null_property_init;
 mod no_null_tag_value;
 mod no_out_of_range_chr;
+mod no_overridden_assign_before_if;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
 mod no_parent_call_without_parent;
@@ -120,6 +123,7 @@ mod no_redundant_nullable_check;
 mod no_redundant_promoted_assign;
 pub(crate) mod no_redundant_property_default;
 mod no_redundant_readonly_property;
+mod no_redundant_type_check;
 mod no_redundant_write_visibility;
 mod no_request_variable;
 mod no_required_after_optional;
@@ -203,7 +207,9 @@ mod prefer_early_return_over_prepared_value;
 mod prefer_empty_array_compare;
 mod prefer_empty_array_identical;
 mod prefer_empty_string_identical;
+mod prefer_explicit_array_comparison;
 mod prefer_func_num_args;
+mod prefer_if_statement;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
@@ -293,6 +299,7 @@ pub use no_constant_via_variable::NoConstantViaVariable;
 pub use no_dead_catch::NoDeadCatch;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
 pub use no_debug_calls::NoDebugCalls;
+pub use no_dirname_dir_concat::NoDirnameDirConcat;
 pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
 pub use no_duplicate_case_body::NoDuplicateCaseBody;
@@ -348,6 +355,7 @@ pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
 pub use no_negated_comparison::NoNegatedComparison;
 pub use no_negated_condition::NoNegatedCondition;
 pub use no_negated_group::NoNegatedGroup;
+pub use no_negated_instanceof_ternary::NoNegatedInstanceofTernary;
 pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_array_key::NoNullArrayKey;
 pub use no_null_debug_info::NoNullDebugInfo;
@@ -355,6 +363,7 @@ pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgu
 pub use no_null_property_init::NoNullPropertyInit;
 pub use no_null_tag_value::NoNullTagValue;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
+pub use no_overridden_assign_before_if::NoOverriddenAssignBeforeIf;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
 pub use no_parent_call_without_parent::NoParentCallWithoutParent;
@@ -371,6 +380,7 @@ pub use no_redundant_nullable_check::NoRedundantNullableCheck;
 pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
 pub use no_redundant_property_default::NoRedundantPropertyDefault;
 pub use no_redundant_readonly_property::NoRedundantReadonlyProperty;
+pub use no_redundant_type_check::NoRedundantTypeCheck;
 pub use no_redundant_write_visibility::NoRedundantWriteVisibility;
 pub use no_request_variable::NoRequestVariable;
 pub use no_required_after_optional::NoRequiredAfterOptional;
@@ -450,7 +460,9 @@ pub use prefer_early_return_over_prepared_value::PreferEarlyReturnOverPreparedVa
 pub use prefer_empty_array_compare::PreferEmptyArrayCompare;
 pub use prefer_empty_array_identical::PreferEmptyArrayIdentical;
 pub use prefer_empty_string_identical::PreferEmptyStringIdentical;
+pub use prefer_explicit_array_comparison::PreferExplicitArrayComparison;
 pub use prefer_func_num_args::PreferFuncNumArgs;
+pub use prefer_if_statement::PreferIfStatement;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
@@ -518,6 +530,10 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoConcatAssignNewItem),
         Box::new(NoNegatedBooleanLiteral),
         Box::new(NoNegatedGroup),
+        Box::new(NoNegatedInstanceofTernary),
+        Box::new(NoDirnameDirConcat),
+        Box::new(PreferExplicitArrayComparison),
+        Box::new(PreferIfStatement),
         Box::new(PreferEmptyArrayCompare),
         Box::new(PreferFuncNumArgs),
         Box::new(NoUselessArrayValues),
@@ -581,6 +597,8 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoDuplicateMatchArm),
         Box::new(NoUselessCondition),
         Box::new(NoConditionExactReturn),
+        Box::new(NoOverriddenAssignBeforeIf),
+        Box::new(NoRedundantTypeCheck),
         Box::new(NoOverwrittenAssignment),
         Box::new(NoRedundantCondition),
         Box::new(NoEmptyLoop),

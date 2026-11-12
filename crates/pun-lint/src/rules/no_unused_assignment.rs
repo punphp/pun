@@ -247,7 +247,7 @@ fn is_assign_ref(a: &Assignment<'_>) -> bool {
 }
 
 /// `ReservedKeywordAnalyzer::isNativeVariable`: PHPStan's `Scope::SUPERGLOBAL_VARIABLES`.
-fn is_native_variable(name: &[u8]) -> bool {
+pub(super) fn is_native_variable(name: &[u8]) -> bool {
     [
         &b"GLOBALS"[..],
         b"_SERVER",

@@ -3921,7 +3921,7 @@
         "DirnameDirConcatStringToDirectStringPathRector",
         "Rector\\CodeQuality\\Rector\\Concat\\DirnameDirConcatStringToDirectStringPathRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-duplicate-match-arm",
@@ -4233,7 +4233,7 @@
         "FlipNegatedTernaryInstanceofRector",
         "Rector\\Instanceof_\\Rector\\Ternary\\FlipNegatedTernaryInstanceofRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-phpdoc-class-case-mismatch",
@@ -4637,7 +4637,7 @@
         "ArrayExplicitBoolCompareRector",
         "Rector\\CodeQuality\\Rector\\If_\\ArrayExplicitBoolCompareRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-func-num-args",
@@ -4677,7 +4677,7 @@
         "InlineIfToExplicitIfRector",
         "Rector\\CodeQuality\\Rector\\Expression\\InlineIfToExplicitIfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-in-array",
@@ -5903,7 +5903,7 @@
         "RemoveOverriddenAssignBeforeIfElse",
         "RemoveOverriddenAssignBeforeIfElseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-overwritten-assignment",
@@ -6063,7 +6063,7 @@
         "RemoveRedundantTypeCheck",
         "RemoveRedundantTypeCheckRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-return-in-constructor",
@@ -17396,7 +17396,7 @@
         "ExplicitNullableObjectInstanceRector",
         "Rector\\CodeQuality\\Rector\\If_\\ExplicitNullableObjectInstanceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-generic-collection-phpdoc",

@@ -240,7 +240,7 @@ fn should_skip(
 
 /// The defined variables loop of `isNonTypedFromParam`: a variable of the function-like around the cast (before
 /// `at`) holds a literal string that is the name of one of its variables, which a variable variable may write.
-fn names_variable(ancestors: &[Node<'_, '_>], at: usize) -> bool {
+pub(super) fn names_variable(ancestors: &[Node<'_, '_>], at: usize) -> bool {
     let Some(root) = ancestors.iter().rev().find(|a| {
         matches!(
             a,
@@ -318,7 +318,7 @@ fn has_native_type(facts: &Facts, class: &str, name: &str) -> bool {
 
 /// `$nativeType->isSuperTypeOf($type)->yes()`, for the native types the casts keep: every part of `full` is of the
 /// native type's kind.
-fn within(full: &TUnion, native: &TUnion) -> bool {
+pub(super) fn within(full: &TUnion, native: &TUnion) -> bool {
     // a constant array is the supertype of itself alone
     let constant = |a: &TAtomic| match a {
         TAtomic::Array(TArray::Keyed(k)) => k.parameters.is_none() && k.known_items.is_some(),

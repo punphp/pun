@@ -6503,7 +6503,7 @@
         "rules": [
           "lint/complexity/prefer-explicit-array-comparison"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7151,7 +7151,7 @@
         "rules": [
           "lint/complexity/no-dirname-dir-concat"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7307,7 +7307,7 @@
         "rules": [
           "lint/types/prefer-explicit-null-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7397,7 +7397,7 @@
         "rules": [
           "lint/complexity/no-negated-instanceof-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7641,7 +7641,7 @@
         "rules": [
           "lint/complexity/prefer-if-statement"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8839,7 +8839,7 @@
         "rules": [
           "lint/dead-code/no-overridden-assign-before-if"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8897,7 +8897,7 @@
         "rules": [
           "lint/dead-code/no-redundant-type-check"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

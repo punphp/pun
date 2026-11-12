@@ -285,7 +285,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
 "complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
 "complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
-"complexity/no-dirname-dir-concat" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change dirname() and string concat, to __DIR__ and direct string path" }
+"complexity/no-dirname-dir-concat" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change dirname() and string concat, to __DIR__ and direct string path" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
 "complexity/no-else-clause" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
 "complexity/no-empty-file" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects redundant files that contain no executable code or declarations." }
@@ -303,7 +303,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-negated-boolean-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)" }
 "complexity/no-negated-comparison" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated comparisons such as `!($a === $b)` with the inverse operator." }
 "complexity/no-negated-group" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify negated conditions with de Morgan theorem" }
-"complexity/no-negated-instanceof-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Flip negated ternary of `instanceof` to direct use of object" }
+"complexity/no-negated-instanceof-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Flip negated ternary of `instanceof` to direct use of object" }
 "complexity/no-phpdoc-class-case-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Fix a misspelled class name casing in a @var docblock to match the real class name" }
 "complexity/no-redundant-isset" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant arguments in `isset()` calls where a nested access already implies the parent checks." }
 "complexity/no-redundant-literal-return" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant literal guard patterns where an if statement checks if a variable equals a literal and returns that same literal, followed by returning the variable." }
@@ -323,9 +323,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-coalesce-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that looks up a key with `??`." }
 "complexity/prefer-empty-array-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Compare with `[]` instead of empty()/is_array() on arrays." }
 "complexity/prefer-empty-array-identical" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify empty() functions calls on empty arrays" }
-"complexity/prefer-explicit-array-comparison" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make array if conditions more explicit" }
+"complexity/prefer-explicit-array-comparison" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make array if conditions more explicit" }
 "complexity/prefer-func-num-args" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify count of func_get_args() to func_num_args()" }
-"complexity/prefer-if-statement" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change inline if to explicit if" }
+"complexity/prefer-if-statement" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change inline if to explicit if" }
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that returns a boolean on a match with `in_array()`." }
 "complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `array_search()` compared with `false` to `in_array()`" }
@@ -386,7 +386,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
 "dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove named null argument, where null is already a default param value" }
 "dead-code/no-null-tag-value" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @var/@param/@return null docblock" }
-"dead-code/no-overridden-assign-before-if" = { fix = "unsafe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assign before if/else that overrides the variable in both branches" }
+"dead-code/no-overridden-assign-before-if" = { fix = "unsafe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove assign before if/else that overrides the variable in both branches" }
 "dead-code/no-overwritten-assignment" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an assignment that the next statement overwrites without reading it." }
 "dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
 "dead-code/no-redundant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Merge an if into the if before it when both check the same condition." }
@@ -394,7 +394,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
 "dead-code/no-redundant-promoted-assign" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless re-assign from property promotion" }
 "dead-code/no-redundant-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove redundant default value from property that is always assigned in the constructor" }
-"dead-code/no-redundant-type-check" = { fix = "unsafe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove is_<type>() check that can never fail on already known type" }
+"dead-code/no-redundant-type-check" = { fix = "unsafe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove is_<type>() check that can never fail on already known type" }
 "dead-code/no-return-in-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless return Expr in __construct()" }
 "dead-code/no-self-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, origin = "mago", status = "decided", summary = "Detects and removes self-assignments where a variable or property is assigned to itself." }
 "dead-code/no-tautology-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the value a ternary always gives when it compares the two values it chooses between." }
@@ -965,7 +965,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/no-loose-comparison" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Comparisons should be strict.", note = "fix is safe where analysis proves both operands have the same type (Rector UseIdenticalOverEqualWithSameType), unsafe otherwise (CS-Fixer strict_comparison)" }
 "types/no-nullsafe-on-non-null" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cleanup unneeded nullsafe operator" }
 "types/no-phpstan-phpdoc-tag" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Merge more precise @phpstan-var/@phpstan-param/@phpstan-return docblock tag into its native @var/@param/@return tag" }
-"types/prefer-explicit-null-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make implicit nullable object checks explicit with instanceof" }
+"types/prefer-explicit-null-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make implicit nullable object checks explicit with instanceof" }
 "types/prefer-generic-collection-phpdoc" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change @return \"Type[]|ArrayCollection\" union docblock to a generic \"ArrayCollection<int, Type>\"" }
 "types/prefer-identical-same-type" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Use ===/!== over ==/!=, if values have the same type" }
 "types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }

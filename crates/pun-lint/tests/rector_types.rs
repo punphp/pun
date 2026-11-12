@@ -49,7 +49,8 @@ use pun_lint::rules::{
     AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
     AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTryCatch,
     AddReturnTypeFromTypedCall, AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar,
-    AddUnionReturn, NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
+    AddUnionReturn, NoNullsafeOnNonNull, PreferExplicitNullInstanceof, PreferIdenticalSameType,
+    PreferInstanceof,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -720,5 +721,13 @@ fn property_contracts_scalar_hint_comparisons() {
         &["Oracle/property_contracts_scalar_hint_comparisons"],
         80100,
         &[],
+    );
+}
+
+#[test]
+fn explicit_nullable_object_instance() {
+    check(
+        PreferExplicitNullInstanceof,
+        "ExplicitNullableObjectInstanceRector",
     );
 }
