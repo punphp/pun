@@ -643,7 +643,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
 "phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
 "phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
-"phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
+"phpdoc/require-no-named-arguments" = { fix = "safe", ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }
 "phpunit/add-closure-return-type-from-assert" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures narrowed by assertInstanceOf() inside PHPUnit test case classes" }
 "phpunit/add-data-provider-allow-mock-objects" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] attribute to PHPUnit test classes that have methods with data providers and mock objects without expectations" }

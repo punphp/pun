@@ -11107,9 +11107,7 @@
       "command": "lint",
       "group": "phpdoc",
       "summary": "There must be @no-named-arguments tag in PHPDoc of a class/enum/interface/trait.",
-      "enabled": [
-        "coding-style"
-      ],
+      "enabled": [],
       "fix": "safe",
       "ecosystem": "core",
       "tools": [

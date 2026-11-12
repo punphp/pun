@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="lint/phpdoc/require-no-named-arguments" />
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
+Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour).
 
 ## Replaces
 
@@ -18,6 +18,14 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 ```toml title="pun.toml"
 [lint.rules]
 "phpdoc/require-no-named-arguments" = "error"
+```
+
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "phpdoc/require-no-named-arguments" = "off" }
 ```
 
 ```php
