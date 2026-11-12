@@ -541,7 +541,7 @@ def generate(data: dict) -> dict[Path, str]:
                 body += f'<Card title="{rid}">\n\n{rule_link(rid)}\n\n'
                 body += prose(rule.get("summary", "")) + "\n\n" + badges(data, rid, rule, sources[rid]) + "\n\n</Card>\n"
             out[CONTENT / f"rules/{command}/{group}/index.mdx"] = page(f"{command}/{group}", body + "</CardGroup>")
-        links = "\n".join(f"- [{g}](/docs/rules/{command}/{g}) ({len(ns)} rules)" for g, ns in groups.items())
+        links = "\n".join(f"- [{g}](/docs/rules/{command}/{g}) ({len(ns)} rule{'s' * (len(ns) != 1)})" for g, ns in groups.items())
         out[CONTENT / f"rules/{command}/index.mdx"] = page(f"{command} rules", links)
     preset_names = []
     for command in ("format", "analyse"):
