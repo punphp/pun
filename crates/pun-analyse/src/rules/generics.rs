@@ -764,10 +764,10 @@ fn type_aliases(c: &Checker, class: &str, depth: usize) -> Vec<String> {
     let Some(k) = c.codebase.get_class_like(class.as_bytes()) else {
         return Vec::new();
     };
-    let Some((_, entry, scopes)) = declared::doc_at(c, k.span) else {
+    let Some((_, entry, names)) = declared::doc_at(c, k.span) else {
         return Vec::new();
     };
-    aliases_of(c, &entry.doc, scopes.at(k.span.start.offset), depth)
+    aliases_of(c, &entry.doc, names, depth)
 }
 
 fn aliases_of(c: &Checker, doc: &Doc, names: &NamespaceScope, depth: usize) -> Vec<String> {

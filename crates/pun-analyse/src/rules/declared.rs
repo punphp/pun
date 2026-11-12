@@ -14,6 +14,7 @@ use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_database::file::File;
+use mago_names::scope::NamespaceScope;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::parser::parse_file;
@@ -24,7 +25,7 @@ use pun_phpstan::types::{
 };
 
 use super::Checker;
-use super::doc::{Doc, FileScopes, NameScope};
+use super::doc::{Doc, NameScope};
 use super::facts::DocEntry;
 use crate::text;
 
@@ -33,15 +34,16 @@ pub(super) fn original_name(k: &ClassLikeMetadata) -> String {
     text(k.original_name.as_bytes())
 }
 
-/// The doc comment before the declaration at `span` (a stub's, for a declaration a stub patches), with its file's
-/// namespace scopes.
+/// The doc comment before the declaration at `span` (a stub's, for a declaration a stub patches), with the names
+/// in scope there: a stub's PHPDoc resolves in the stub's namespace and imports, at the stub declaration's offset.
 pub(super) fn doc_at<'a>(
     c: &Checker<'a, '_>,
     span: Span,
-) -> Option<(&'a [u8], &'a DocEntry, &'a FileScopes)> {
+) -> Option<(&'a [u8], &'a DocEntry, &'a Arc<NamespaceScope>)> {
     let span = c.patched_docs.get(&span).copied().unwrap_or(span);
     let (raw, entry) = c.doc_before(span.file_id, span.start.offset)?;
-    Some((raw, entry, &c.file_facts(span.file_id)?.scopes))
+    let names = c.file_facts(span.file_id)?.scopes.at(span.start.offset);
+    Some((raw, entry, names))
 }
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
@@ -140,7 +142,7 @@ fn templates(doc: &Doc, scope: &NameScope, describe: &str) -> Vec<TemplateType> 
 
 /// A class-like's own `@template` types.
 pub(super) fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
-    let Some((_, entry, scopes)) = doc_at(c, k.span) else {
+    let Some((_, entry, names)) = doc_at(c, k.span) else {
         return Vec::new();
     };
     let doc = &entry.doc;
@@ -148,7 +150,7 @@ pub(super) fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<Templat
         return Vec::new();
     }
     let scope = NameScope {
-        names: scopes.at(k.span.start.offset).clone(),
+        names: names.clone(),
         class: Some(original_name(k)),
         parent: parent_name(c.codebase, k),
         templates: HashMap::new(),
@@ -2079,10 +2081,10 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                 .map_or_else(|| text(w.as_bytes()), original_name)
         };
         let mut direct: HashMap<String, Vec<Type>> = HashMap::new();
-        if let Some((_, entry, scopes)) = doc_at(c, k.span) {
+        if let Some((_, entry, names)) = doc_at(c, k.span) {
             let doc = &entry.doc;
             let mut scope = NameScope {
-                names: scopes.at(k.span.start.offset).clone(),
+                names: names.clone(),
                 class: Some(original_name(k)),
                 parent: parent_name(c.codebase, k),
                 templates: HashMap::new(),

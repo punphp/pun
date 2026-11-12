@@ -1,0 +1,14 @@
+<?php
+
+namespace StubScope;
+
+class Base
+{
+}
+
+/**
+ * @template T of Base
+ */
+class Box
+{
+}

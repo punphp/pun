@@ -1,0 +1,12 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "stub-scope/a.php",
+   "line": 12,
+   "identifier": "generics.notSubtype",
+   "message": "Type stdClass in generic type StubScope\\Box<stdClass> in PHPDoc tag @param for parameter $bad is not subtype of template type T of StubScope\\Base of class StubScope\\Box.",
+   "tip": null
+  }
+ ]
+}

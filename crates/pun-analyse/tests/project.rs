@@ -5,7 +5,7 @@
 
 use std::path::Path;
 
-use pun_analyse::{IDENTIFIERS, Project, analyse, run};
+use pun_analyse::{Project, analyse, reports, run};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
@@ -39,7 +39,7 @@ fn check_in(fixture: &str, neon: &str) {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|e| IDENTIFIERS.contains(&e["identifier"].as_str().unwrap_or("")))
+        .filter(|e| reports(e["identifier"].as_str().unwrap_or("")))
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
@@ -311,6 +311,14 @@ fn level_is_zero_when_unset() {
 #[test]
 fn stub_files() {
     check("phpstan-stubs");
+}
+
+/// A stub's PHPDoc resolves its names in the stub's namespace, wherever the declaration it patches sits in its own
+/// file: here `Box` starts past the end of the stub, whose `@template T of Base` is still `StubScope\Base`
+/// (PHPStan's run with phpstan-stub-scope.neon: `Box<Child>` is accepted, `Box<stdClass>` is not).
+#[test]
+fn stub_phpdoc_name_scope() {
+    check("phpstan-stub-scope");
 }
 
 /// `Project::reported` drops the errors of identifiers the run doesn't report before any ignore sees them, as

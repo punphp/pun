@@ -1,0 +1,5 @@
+parameters:
+    level: 2
+    paths: [stub-scope]
+    scanFiles: [stub-scope-lib/Box.php]
+    stubFiles: [stubs/scope.stub]
