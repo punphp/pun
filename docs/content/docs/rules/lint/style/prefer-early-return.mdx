@@ -21,6 +21,14 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 "style/prefer-early-return" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "style/prefer-early-return" = "off" }
+```
+
 ```php
 // @pun-ignore lint/style/prefer-early-return -- explain the exception
 ```

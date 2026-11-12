@@ -22,6 +22,14 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 "style/prefer-str-contains" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "style/prefer-str-contains" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/style/prefer-str-contains -- explain the exception
 ```

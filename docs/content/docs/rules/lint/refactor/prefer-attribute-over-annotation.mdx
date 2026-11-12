@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 "refactor/prefer-attribute-over-annotation" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "refactor/prefer-attribute-over-annotation" = "off" }
+```
+
 ```php
 // @pun-ignore lint/refactor/prefer-attribute-over-annotation -- explain the exception
 ```

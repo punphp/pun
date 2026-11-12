@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 "refactor/remove-phpdoc-annotation" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "refactor/remove-phpdoc-annotation" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/refactor/remove-phpdoc-annotation -- explain the exception
 ```

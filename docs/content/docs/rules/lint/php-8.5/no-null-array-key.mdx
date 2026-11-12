@@ -20,6 +20,14 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: safe (keeps b
 "php-8.5/no-null-array-key" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "php-8.5/no-null-array-key" = "off" }
+```
+
 ```php
 // @pun-ignore lint/php-8.5/no-null-array-key -- explain the exception
 ```

@@ -20,6 +20,14 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 "types/add-return-phpdoc-direct-array" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "types/add-return-phpdoc-direct-array" = "off" }
+```
+
 ```php
 // @pun-ignore lint/types/add-return-phpdoc-direct-array -- explain the exception
 ```

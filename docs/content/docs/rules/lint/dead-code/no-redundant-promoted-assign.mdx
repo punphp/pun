@@ -20,6 +20,14 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 "dead-code/no-redundant-promoted-assign" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "dead-code/no-redundant-promoted-assign" = "off" }
+```
+
 ```php
 // @pun-ignore lint/dead-code/no-redundant-promoted-assign -- explain the exception
 ```

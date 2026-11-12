@@ -21,6 +21,14 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: mixed (
 "types/no-loose-comparison" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "types/no-loose-comparison" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/types/no-loose-comparison -- explain the exception
 ```

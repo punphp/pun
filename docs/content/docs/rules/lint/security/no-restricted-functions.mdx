@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 "security/no-restricted-functions" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "security/no-restricted-functions" = "off" }
+```
+
 ```php
 // @pun-ignore lint/security/no-restricted-functions -- explain the exception
 ```

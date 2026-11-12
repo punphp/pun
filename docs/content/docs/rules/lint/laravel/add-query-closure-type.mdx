@@ -20,6 +20,14 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 "laravel/add-query-closure-type" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "laravel/add-query-closure-type" = "off" }
+```
+
 ```php
 // @pun-ignore lint/laravel/add-query-closure-type -- explain the exception
 ```

@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 "laravel/prefer-report-if" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "laravel/prefer-report-if" = "off" }
+```
+
 ```php
 // @pun-ignore lint/laravel/prefer-report-if -- explain the exception
 ```

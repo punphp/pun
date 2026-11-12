@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 "performance/require-qualified-native-constant" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "performance/require-qualified-native-constant" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/performance/require-qualified-native-constant -- explain the exception
 ```

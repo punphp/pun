@@ -20,6 +20,14 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 "pest/prefer-to-be-truthy-falsy" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "pest/prefer-to-be-truthy-falsy" = "off" }
+```
+
 ```php
 // @pun-ignore lint/pest/prefer-to-be-truthy-falsy -- explain the exception
 ```

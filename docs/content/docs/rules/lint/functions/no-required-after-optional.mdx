@@ -22,6 +22,14 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 "functions/no-required-after-optional" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "functions/no-required-after-optional" = "off" }
+```
+
 ```php
 // @pun-ignore lint/functions/no-required-after-optional -- explain the exception
 ```

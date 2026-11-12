@@ -20,6 +20,14 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: none (report 
 "classes/no-underscore-class" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "classes/no-underscore-class" = "off" }
+```
+
 ```php
 // @pun-ignore lint/classes/no-underscore-class -- explain the exception
 ```

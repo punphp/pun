@@ -20,6 +20,14 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 "laravel/add-new-relation-generics" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "laravel/add-new-relation-generics" = "off" }
+```
+
 ```php
 // @pun-ignore lint/laravel/add-new-relation-generics -- explain the exception
 ```

@@ -20,6 +20,14 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 "strings/require-interpolation-style" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "strings/require-interpolation-style" = "off" }
+```
+
 ```php
 // @pun-ignore lint/strings/require-interpolation-style -- explain the exception
 ```

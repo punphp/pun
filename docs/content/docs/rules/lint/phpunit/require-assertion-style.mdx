@@ -21,6 +21,14 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 "phpunit/require-assertion-style" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "phpunit/require-assertion-style" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/phpunit/require-assertion-style -- explain the exception
 ```

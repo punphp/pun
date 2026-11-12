@@ -21,6 +21,14 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 "style/no-redundant-final" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "style/no-redundant-final" = "off" }
+```
+
 ```php
 // @pun-ignore-file lint/style/no-redundant-final -- explain the exception
 ```

@@ -21,6 +21,14 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 "functions/require-strict-function-call" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "functions/require-strict-function-call" = "off" }
+```
+
 ```php
 // @pun-ignore lint/functions/require-strict-function-call -- explain the exception
 ```

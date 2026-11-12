@@ -20,6 +20,14 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 "dead-code/no-empty-method" = "error"
 ```
 
+To set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.
+
+```toml title="pun.toml"
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "dead-code/no-empty-method" = "off" }
+```
+
 ```php
 // @pun-ignore lint/dead-code/no-empty-method -- explain the exception
 ```

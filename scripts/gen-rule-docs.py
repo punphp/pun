@@ -186,6 +186,9 @@ def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict,
     body += "\n\n## Configuration\n\n" + code(f'[{command}.rules]\n"{group}/{name}" = {value}', "toml title=\"pun.toml\"")
     file_only = command == "format" or any(s["tool"] in ("php-cs-fixer", "pint") for s in sources)
     ignore = "@pun-ignore-file" if file_only else "@pun-ignore"
+    if command == "lint":
+        body += "\nTo set it for some files only, add an [override](/docs/configuration/pun-toml#lint). When several match a file, the last one wins.\n\n" + code(
+            f'[[lint.overrides]]\nfiles = ["tests/**"]\nrules = {{ "{group}/{name}" = "off" }}', "toml title=\"pun.toml\"")
     if rule.get("ignorable", True):
         body += "\n" + code(f"// {ignore} {rid} -- explain the exception")
     else:
