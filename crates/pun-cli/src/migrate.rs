@@ -512,7 +512,8 @@ fn rector_lint(
 fn needs_vendor(root: &Path, config: &Path) -> bool {
     let vendor = format!("File '{}", root.join("vendor").display());
     migrate::phpstan::from_phpstan(root, config).is_err_and(|e| {
-        let e = e.to_string();
+        // An include written `./vendor/...` keeps its `./` in the message.
+        let e = e.to_string().replace("/./", "/");
         e.contains(&vendor) && e.ends_with("is missing or is not readable.")
     })
 }
