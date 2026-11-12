@@ -126,6 +126,11 @@ fn main() -> Result<ExitCode> {
             Command::new("php")
                 .arg(&pint)
                 .args(&args)
+                // Pint 1.32 caches results in the temp dir; keep the file with the copies so it goes with them.
+                .arg(format!(
+                    "--cache-file={}",
+                    tmp.join(&p.name).join("pint.cache").display()
+                ))
                 .current_dir(&oracle_dir),
             "pint",
         )?;

@@ -318,18 +318,18 @@ fn preg_compile_matches_php() {
         ("/a(/r", "a"),
         ("/a(/rZ", "a"),
         ("/a(/Zr", "a"),
-        ("/^k$/iu", "K"),
-        ("/^k$/iur", "K"),
+        ("/^k$/iu", "\u{212A}"),
+        ("/^k$/iur", "\u{212A}"),
         ("/^\\x{212A}$/iur", "k"),
         ("/^s$/iur", "ſ"),
         ("/^\\x{017F}$/iur", "s"),
-        ("/^[^k]$/iur", "K"),
+        ("/^[^k]$/iur", "\u{212A}"),
         ("/^k$/iur", "K"),
         ("/^é$/iur", "É"),
-        ("/(*UTF)(?i)^k$/r", "K"),
-        ("/^(?-r:k)$/iur", "K"),
-        ("/k(?^i)k/iur", "KK"),
-        ("/k(?^i)k/iur", "KK"),
+        ("/(*UTF)(?i)^k$/r", "\u{212A}"),
+        ("/^(?-r:k)$/iur", "\u{212A}"),
+        ("/k(?^i)k/iur", "K\u{212A}"),
+        ("/k(?^i)k/iur", "\u{212A}\u{212A}"),
         ("/(?r)a/", "a"),
         ("/s(?r)s(?-r)s(?r:s)s/iu", "ſSſSſ"),
         ("/(*UTF)a(/r", "a"),
@@ -378,8 +378,14 @@ fn preg_compile_matches_php() {
             Err(e) => e.into(),
         })
         .collect();
+    // `r` needs PCRE2 10.43. When this PHP's engine and Pun's disagree on it, PHP is no oracle for the `r` cases;
+    // preg_caseless_restrict_matches_upstream checks them against upstream's own expectations.
+    let r = cases.iter().position(|c| *c == ("/a/r", "a")).unwrap();
+    let same_engine = got[r] == want[r];
     for ((g, w), c) in got.iter().zip(&want).zip(&cases) {
-        assert_eq!(g, w, "{c:?}");
+        if same_engine || !c.0.contains('r') {
+            assert_eq!(g, w, "{c:?}");
+        }
     }
     // PHP accepts `D` (PCRE2_DOLLAR_ENDONLY); the pcre2 crate can't set it, so only the parse is checked.
     assert!(preg_parse(b"/a$/D").unwrap().1.dollar_end_only);
@@ -397,33 +403,33 @@ fn preg_caseless_restrict_matches_upstream() {
         ("/AskZ/iur", "AskZ", Some("AskZ")),
         ("/AskZ/iur", "aSKz", Some("aSKz")),
         ("/AskZ/iur", "AſkZ", None),
-        ("/AskZ/iur", "AsKZ", None),
-        ("/k/iur", "K", None),
+        ("/AskZ/iur", "As\u{212A}Z", None),
+        ("/k/iur", "\u{212A}", None),
         ("/A\\x{17f}\\x{212a}Z/iur", "AskZ", None),
         ("/[AskZ]+/iur", "AſkZ", Some("A")),
-        ("/[AskZ]+/iur", "AsKZ", Some("As")),
+        ("/[AskZ]+/iur", "As\u{212A}Z", Some("As")),
         ("/[\\x{17f}\\x{212a}]+/iur", "AskZ", None),
         ("/[^s]+/iur", "AſZ", Some("AſZ")),
-        ("/k(?^i)k/iur", "KK", Some("KK")),
-        ("/k(?^i)k/iur", "KK", None),
+        ("/k(?^i)k/iur", "K\u{212A}", Some("K\u{212A}")),
+        ("/k(?^i)k/iur", "\u{212A}\u{212A}", None),
         // Anchored, inline and ordinary-case controls follow the same ASCII/non-ASCII boundary contract:
         // PCRE2 10.43, doc/pcre2api.3:2005-2014; (?r) does not enable caseless matching itself.
-        ("/^k$/iur", "K", None),
+        ("/^k$/iur", "\u{212A}", None),
         ("/^\\x{212A}$/iur", "k", None),
         ("/^s$/iur", "ſ", None),
         ("/^\\x{017F}$/iur", "s", None),
-        ("/^[^k]$/iur", "K", Some("K")),
+        ("/^[^k]$/iur", "\u{212A}", Some("\u{212A}")),
         ("/^k$/iur", "K", Some("K")),
         ("/^é$/iur", "É", Some("É")),
         ("/^k$/ur", "K", None),
         ("/a/SXr", "a", Some("a")),
         ("/a/rr", "a", Some("a")),
-        ("/(*UTF)(?i)^k$/r", "K", None),
+        ("/(*UTF)(?i)^k$/r", "\u{212A}", None),
         ("/(*UTF)(?i)^k$/r", "K", Some("K")),
         ("/(*UTF)(?i)k/rA", "aK", None),
         ("/(*UTF)(?i)k/rA", "K", Some("K")),
-        ("/(*UTF)(?i)k/rA", "K", None),
-        ("/^(?-r:k)$/iur", "K", Some("K")),
+        ("/(*UTF)(?i)k/rA", "\u{212A}", None),
+        ("/^(?-r:k)$/iur", "\u{212A}", Some("\u{212A}")),
     ];
     for (pattern, subject, want) in cases {
         if supports_r {

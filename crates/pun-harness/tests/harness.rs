@@ -230,11 +230,11 @@ fn missing_pieces() {
     let err = String::from_utf8_lossy(&out.stderr);
     assert!(err.starts_with("Error: spawning pun migrate\n"), "{err}");
     assert_eq!(out.status.code(), Some(1));
-    assert_eq!(
-        fs::read_dir(&tmp).unwrap().count(),
-        0,
-        "copies left in {tmp:?}"
-    );
+    let left: Vec<_> = fs::read_dir(&tmp)
+        .unwrap()
+        .map(|e| e.unwrap().file_name())
+        .collect();
+    assert!(left.is_empty(), "left in {tmp:?}: {left:?}");
 
     // No php to run the oracle with.
     let out = Command::new(env!("CARGO_BIN_EXE_pun-harness"))

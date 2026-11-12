@@ -16,6 +16,8 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
+  # The PCRE2 the release binaries bundle, not the runner's older system library.
+  PCRE2_SYS_STATIC: 1
 
 jobs:
   lint:
