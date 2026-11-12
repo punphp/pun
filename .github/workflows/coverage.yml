@@ -1,0 +1,54 @@
+name: Coverage
+
+# The instrumented run of every test takes over half an hour, so it runs each night and on request, not on a push.
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverage
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  # The PCRE2 the release binaries bundle, not the runner's older system library.
+  PCRE2_SYS_STATIC: 1
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/oracle
+      # pun-cli's tests run Pint's and Pun's Blade preflight with a Bun lock file.
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: rui314/setup-mold@v1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: coverage
+          cache-on-failure: true
+          cache-directories: target/coverage
+      # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            corpus/pinkary
+            corpus/laravel-framework
+            corpus/larastan
+            corpus/laravel-pint
+          key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
+      - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
+      # every crate but punphp-analyse, for the reason in the test job
+      - run: CARGO_BUILD_JOBS="$(nproc)" scripts/coverage.sh punphp-tokens punphp-format punphp-fixers punphp-config punphp-workspace punphp-problem punphp-phpstan punphp-lint punphp punphp-harness
+      - if: always()
+        run: cat context/reports/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"

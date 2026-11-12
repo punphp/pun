@@ -11,11 +11,14 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # A newer push makes the older run's result useless.
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
+  # No test reads debug info, and without it the workspace builds and links faster.
+  CARGO_PROFILE_DEV_DEBUG: 0
   # The PCRE2 the release binaries bundle, not the runner's older system library.
   PCRE2_SYS_STATIC: 1
 
@@ -28,9 +31,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - uses: rui314/setup-mold@v1
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: lint
+          cache-on-failure: true
       - name: rule mapping and generated docs
         run: |
           python3 scripts/check-rule-mapping.py
@@ -50,9 +55,11 @@ jobs:
       # pun-cli's tests run Pint's and Pun's Blade preflight with a Bun lock file.
       - uses: oven-sh/setup-bun@v2
       - uses: dtolnay/rust-toolchain@stable
+      - uses: rui314/setup-mold@v1
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: test
+          cache-on-failure: true
       # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
       - uses: actions/cache@v4
         with:
@@ -67,37 +74,6 @@ jobs:
       # runner has. Run them with scripts/analyse-tests.sh before a release.
       - run: cargo test --workspace --exclude punphp-analyse --locked
 
-  coverage:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/oracle
-      # pun-cli's tests run Pint's and Pun's Blade preflight with a Bun lock file.
-      - uses: oven-sh/setup-bun@v2
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: llvm-tools-preview
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: coverage
-          cache-directories: target/coverage
-      # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
-      - uses: actions/cache@v4
-        with:
-          path: |
-            corpus/pinkary
-            corpus/laravel-framework
-            corpus/larastan
-            corpus/laravel-pint
-          key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
-      - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
-      # every crate but punphp-analyse, for the reason in the test job
-      - run: scripts/coverage.sh punphp-tokens punphp-format punphp-fixers punphp-config punphp-workspace punphp-problem punphp-phpstan punphp-lint punphp punphp-harness
-      - if: always()
-        run: cat context/reports/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"
-
   parity:
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -105,9 +81,11 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
+      - uses: rui314/setup-mold@v1
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: parity
+          cache-on-failure: true
       - uses: actions/cache@v4
         with:
           path: |
@@ -125,9 +103,11 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/oracle
       - uses: dtolnay/rust-toolchain@stable
+      - uses: rui314/setup-mold@v1
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: parity
+          cache-on-failure: true
       - uses: actions/cache@v4
         with:
           path: |
@@ -139,9 +119,11 @@ jobs:
       - run: npm install --prefix corpus/pinkary --no-audit --no-fund
       - run: cargo build --locked -p punphp
       # Fixed seeds, so a failure reproduces locally with the same command (scripts/fuzz-parity.sh header).
+      # The four runs use separate scratch directories, so they run side by side.
       - run: |
-          scripts/fuzz-parity.sh corpus/pinkary 1 app tests database config routes
-          scripts/fuzz-parity.sh corpus/pinkary 2 app tests database config routes
           echo '{"preset": "laravel"}' > /tmp/laravel.json
-          FUZZ_CONFIG=/tmp/laravel.json scripts/fuzz-parity.sh corpus/laravel-framework 3 src/Illuminate/Support src/Illuminate/Collections
-          FUZZ_CONFIG=/tmp/laravel.json scripts/fuzz-parity.sh corpus/laravel-framework 4 src/Illuminate/Database/Query tests/Support
+          scripts/fuzz-parity.sh corpus/pinkary 1 app tests database config routes & pids=($!)
+          scripts/fuzz-parity.sh corpus/pinkary 2 app tests database config routes & pids+=($!)
+          FUZZ_CONFIG=/tmp/laravel.json scripts/fuzz-parity.sh corpus/laravel-framework 3 src/Illuminate/Support src/Illuminate/Collections & pids+=($!)
+          FUZZ_CONFIG=/tmp/laravel.json scripts/fuzz-parity.sh corpus/laravel-framework 4 src/Illuminate/Database/Query tests/Support & pids+=($!)
+          status=0; for pid in "${pids[@]}"; do wait "$pid" || status=1; done; exit $status
