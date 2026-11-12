@@ -66,3 +66,49 @@ fn larastan_app_extensions() {
     want.sort();
     assert_eq!(got, want);
 }
+
+/// A Laravel app without Larastan in its vendor directory gets the stubs bundled in the binary. Kernel.stub's
+/// `@param-closure-this` makes `$this` a ClosureCommand inside the closure (so `comment()` exists and `missing()`
+/// does not); without the stub `$this` is an undefined variable. The framework is 13.3.0, so `stubs/13.3.0` loads
+/// too, and an analysed file of the same name as a stub that does not exist on disk is still a missing file.
+#[test]
+fn bundled_stubs_without_larastan() {
+    let root = std::env::temp_dir().join(format!("pun-bundled-stubs-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&root);
+    let framework = root.join("vendor/laravel/framework/src/Illuminate/Foundation");
+    std::fs::create_dir_all(&framework).unwrap();
+    std::fs::create_dir_all(root.join("routes")).unwrap();
+    std::fs::write(
+        framework.join("Application.php"),
+        "<?php\n\nnamespace Illuminate\\Foundation;\n\nclass Application\n{\n    const VERSION = '13.3.0';\n}\n",
+    )
+    .unwrap();
+    std::fs::write(
+        root.join("laravel.php"),
+        "<?php\n\nnamespace Illuminate\\Contracts\\Console {\n    interface Kernel {}\n}\n\nnamespace Illuminate\\Console {\n    class Command\n    {\n        public function comment(string $string): void {}\n    }\n}\n\nnamespace Illuminate\\Foundation\\Console {\n    class ClosureCommand extends \\Illuminate\\Console\\Command {}\n\n    class Kernel implements \\Illuminate\\Contracts\\Console\\Kernel\n    {\n        public function command($signature, \\Closure $callback)\n        {\n            return new ClosureCommand;\n        }\n    }\n}\n",
+    )
+    .unwrap();
+    std::fs::write(
+        root.join("routes/console.php"),
+        "<?php\n\n(new \\Illuminate\\Foundation\\Console\\Kernel)->command('inspire', function () {\n    $this->comment('hi');\n    $this->missing();\n});\n",
+    )
+    .unwrap();
+    let mut parameters = Array::new();
+    parameters.set(Key::from("level"), Parameter::Str("5".into()));
+    parameters.set(Key::from("noModelMake"), Parameter::Bool(true));
+    let mut project = Project::from_config(&root, &parameters);
+    project.analysed = vec![root.join("routes/console.php")];
+    project.scanned = vec![root.join("laravel.php"), framework.join("Application.php")];
+    let got: Vec<_> = (run(&project).unwrap().into_iter())
+        .map(|e| (e.line, e.identifier, e.message))
+        .collect();
+    std::fs::remove_dir_all(&root).unwrap();
+    assert_eq!(
+        got,
+        [(
+            5,
+            "method.notFound".to_string(),
+            "Call to an undefined method Illuminate\\Foundation\\Console\\ClosureCommand::missing().".to_string()
+        )]
+    );
+}

@@ -89,7 +89,12 @@ impl std::error::Error for CouldNotReadFile {
 pub(crate) fn read(path: &Path, file_type: FileType) -> Result<Option<File>, CouldNotReadFile> {
     let contents = match std::fs::read(path) {
         Ok(contents) => contents,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            match crate::larastan::stubs::bundled(path) {
+                Some(contents) => contents.to_vec(),
+                None => return Ok(None),
+            }
+        }
         Err(source) => {
             return Err(CouldNotReadFile {
                 path: path.to_path_buf(),
