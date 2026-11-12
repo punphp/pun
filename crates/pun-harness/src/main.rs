@@ -125,12 +125,16 @@ fn main() -> Result<ExitCode> {
         run(
             Command::new("php")
                 .arg(&pint)
+                // Same files as one process, in a fifth of the time on laravel-framework.
+                .arg("--parallel")
                 .args(&args)
-                // Pint 1.32 caches results in the temp dir; keep the file with the copies so it goes with them.
+                // Pint 1.32 caches results in the temp dir, and compiles the Blade views of its human output there;
+                // keep both with the copies so they go with them.
                 .arg(format!(
                     "--cache-file={}",
                     tmp.join(&p.name).join("pint.cache").display()
                 ))
+                .env("TMPDIR", tmp.join(&p.name))
                 .current_dir(&oracle_dir),
             "pint",
         )?;
