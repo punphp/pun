@@ -1,6 +1,6 @@
 ---
 title: Parity
-description: Recorded Pint comparisons, benchmark conditions, and compatibility limits.
+description: Recorded Pint comparisons and compatibility limits.
 ---
 
 Pun's formatter is compared with Pint 1.32.1 and PHP-CS-Fixer 3.95.25. The results below are recorded runs, not a guarantee for every configuration.
@@ -21,19 +21,6 @@ Package aliases override application aliases. An imported global `Blade` alias d
 Alias identity does not add method forwarding to container services. Pun does not execute service providers, dynamic config expressions, or programmatic `AliasLoader` changes. Custom bootstrap, config, cache, and vendor paths, and real-time `Facades\...` classes are not supported by this alias reader.
 
 An exact-spelling reference activates its alias throughout Pun's order-independent symbol graph. Unlike PHPStan, Pun does not model a differently cased lookup before that reference. Known class declarations win. Runtime load-order collisions, including differently cased aliases with different targets, are not simulated.
-
-## Speed
-
-The 2026-11-09 benchmark compared `pun format --test` with Pint 1.32.1's `pint --test` on an 8-core, 15 GB Linux machine, using a profiling build. These are median wall times from three runs:
-
-| | laravel/framework | Pinkary |
-| --- | --- | --- |
-| Pint | 294.7 s | 21.9 s |
-| Pint `--parallel` | 41.4 s | 7.4 s |
-| Pint, warm cache | 25.3 s | 1.0 s |
-| Pun | 1.8 s | 1.7 s |
-
-Pint keeps a result cache, so a repeat run on unchanged files is faster. The first two Pint rows delete the cache before every run. Pun has no result cache: every run checks every file. On Pinkary, a warm Pint cache is faster than Pun, because Pun formats the 137 Blade templates through Prettier on every run. Pinkary's Pun time was re-measured on 2026-11-10, after Blade scheduling changes.
 
 ## Byte-for-byte output
 
@@ -68,4 +55,4 @@ scripts/corpus.sh pinkary
 cargo run -p punphp-harness -- format --corpus pinkary --diffs 5
 ```
 
-The [scoreboard](https://github.com/punphp/pun/blob/main/context/reports/scoreboard.md) records the full results, commands, and benchmark conditions.
+The [scoreboard](https://github.com/punphp/pun/blob/main/context/reports/scoreboard.md) records the full results and commands.

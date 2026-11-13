@@ -8,12 +8,12 @@ The brand is **Sticker Pop**: cream paper, pastel fills, thick ink outlines, and
 
 ## Voice
 
-Pun talks like a fast friend who also reads the benchmark methodology.
+Pun talks like a fast friend who never oversells.
 
-- **Lead with the number, then the joke.** "Format laravel/framework in 3.7 s. Pint takes 190." Use one pun or wink per page, and none in docs headings.
+- **Say it is fast, plainly.** "Very, very fast" is the claim. Give format, lint and analyse the same weight. Use one pun or wink per page, and none in docs headings.
 - **Keep it short.** Headlines have fewer than eight words. A lede is one sentence: "One Rust binary for format, lint, analyse and migrate."
 - **Use concrete nouns.** Name the tool that Pun replaces (Pint, PHP-CS-Fixer, Rector, PHPStan, Larastan), the file (`pint.json`, `pun.toml`), and the flag (`--test`). Do not write "blazing", "revolutionary", "seamless", or "supercharge".
-- **Prove it.** Publish only timings that the repo measured. Today that is laravel/framework: Pint 294.7 s, Pun 1.8 s, which gives "167×". Every chart links to "reproduce →".
+- **No speed figures.** Do not publish timings, multiples, or charts comparing Pun with other tools. Say it in words.
 - **Casing.** The product is "Pun" in sentences. It is "pun" in the wordmark, in commands, and in the Ribbon. Headings and buttons use sentence case. Commands are always in mono, with a `$` prompt.
 - **No emoji** in product UI or docs. The mascot and the bolt carry the personality.
 - **Say "you", not "we".** Write "your pint.json" and "your CI". Use "we" only in the changelog.
@@ -72,7 +72,6 @@ Fredoka's round terminals and circular bowls match the hand-drawn "pun" letterin
 
 - Headlines are bold (700) with light negative tracking, from -0.01em to -0.03em. Rounded letters need more air than a grotesque.
 - Headline sizes: `display` for the hero, `h1` for sections, `h2` for docs and the CTA, `h3` for cards.
-- `mega` is for the one speed multiple on a page (167×).
 - Body copy is `body` at 16/1.6, with a maximum width of 68ch. A lede is `lede` in `ink-2`, with a maximum width of 30ch.
 - Mono covers commands, flags, file names, numbers in charts, Tags, Pills, and the uppercase `kicker` above section headlines.
 - Never set "pun" in a font as a logo. Use the wordmark SVG.
@@ -100,7 +99,7 @@ Fredoka's round terminals and circular bowls match the hand-drawn "pun" letterin
   - Bursts use `tilt-burst`.
   - Each page gets one Ribbon at `tilt-ribbon`.
   - Body text, tables, and code are never tilted.
-- **Texture:** `dot-grid` at 15% on lilac panels. `stripe` marks the slow lane (competitors) in benchmarks.
+- **Texture:** `dot-grid` at 15% on lilac panels. `stripe` is a quiet fill for inactive or empty areas.
 - **Spacing:** the base unit is 4px. Card padding is `space-6`, and card gaps are `space-5`. Sections sit `space-24` apart. The closing CTA sits `space-28` after the last section.
 - **Focus:** every interactive element gets a 3px solid `focus` ring with a 3px offset.
 
