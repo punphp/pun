@@ -192,7 +192,21 @@ impl Cx {
             assert_eq!(want.code, Some(1), "{args:?}");
             want.code = code;
         }
-        if common::human(args) {
+        if common::human(args) && pun.get(1) == Some(&"check") {
+            // `pun check` prints its own grouped view (output.md, Build 5), which lists failing files, not fixed
+            // ones: it must name each file Pint reports an error for (`!`); exit code and files must match.
+            for line in want.stdout.lines() {
+                if let Some(rest) = line.trim_start().strip_prefix("! ") {
+                    let file = rest.split("  ").next().unwrap().trim_end_matches('…');
+                    assert!(
+                        got.stdout.contains(file),
+                        "{args:?}: {file} not named\n{}",
+                        got.stdout
+                    );
+                }
+            }
+            (want.stdout, got.stdout) = (String::new(), String::new());
+        } else if common::human(args) {
             (want.stdout, got.stdout) = common::human_pair(
                 &want.stdout,
                 &got.stdout,

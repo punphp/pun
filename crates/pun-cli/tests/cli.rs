@@ -215,8 +215,31 @@ fn matches_pint() {
     }
     // A coding agent in the environment switches Pint to its JSON agent reporter; Pun prints its own agent format
     // there (tests/agent.rs), and that reporter only with --format=agent (above).
-    // `pun check` is `pun format --test` here (no lint rules); `--check` is `--test`.
-    cx.same_as(&dir, &tree, &["check"], &[], &["--test"], &[], b"");
+    // `pun check` is `pun format --test` here (no lint rules): same exit code and files as `pint --test`. Its
+    // screen is Pun's own grouped output (output.md), so it only has to name each file Pint flags.
+    reset(&dir, &tree);
+    let (want, _) = cx.pint(&dir, &["--test"], &[], b"");
+    reset(&dir, &tree);
+    migrate(&dir);
+    let (got, err) = run(Path::new(PUN), &["check"], &dir, &[], &[], b"");
+    assert_eq!(
+        (got.code, &got.files),
+        (want.code, &want.files),
+        "check (our stderr: {err})"
+    );
+    for file in [
+        "app/Fix.php",
+        "app/Long/VeryLongDirectoryNameToForceTruncationOfTheDescription/File.php",
+        "app/with spaçe.php",
+    ] {
+        assert!(
+            want.stdout.contains(file.get(..20).unwrap_or(file)),
+            "{}",
+            want.stdout
+        );
+        assert!(got.stdout.contains(file), "{}", got.stdout);
+    }
+    // `--check` is `--test`.
     cx.same_as(
         &dir,
         &tree,
