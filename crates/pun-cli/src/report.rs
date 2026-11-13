@@ -579,10 +579,10 @@ fn check_human(ctx: &Ctx, results: &[FileResult]) -> String {
             let (p, _, index) = syntax_error(f);
             let at = index.line_col(p.span.start);
             let item = CheckItem {
-                path: p.path.clone(),
+                path: p.path,
                 at: format!(":{}:{}", at.line, at.column),
-                rules: vec![p.rule.clone()],
-                message: Some(p.message.clone()),
+                rules: vec![p.rule],
+                message: Some(p.message),
                 below: String::new(),
             };
             format.add(&f.rel, item, false, false);
