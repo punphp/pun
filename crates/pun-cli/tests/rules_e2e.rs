@@ -70,8 +70,8 @@ fn every_rule_matches_pint() {
                 case["test_exit"]
             ));
         }
-        // Pun's own output (output.md §1): a fixable file is a ✖ file line naming the rule's Pun ID; Pint's `!` (a
-        // syntax error) is a problem block at the file.
+        // Pun's own output: a fixable file is a problem line naming the rule's Pun ID; Pint's `!` (a syntax error)
+        // is a `syntax-error` problem at the file.
         let pint_error =
             (case.get("test_stdout").and_then(Value::as_str)).is_some_and(|s| s.contains("\n  ! "));
         // `pun migrate` folds the deprecated visibility_required into modifier_keywords.
@@ -81,13 +81,15 @@ fn every_rule_matches_pint() {
             rule
         };
         let id = pun_config::rule_of(fixer).unwrap_or(rule);
-        let named = if pint_error {
-            stdout.contains(" ✖ syntax-error  ")
-                && stdout.contains(&format!("╭─ {}:", case["file"].as_str().unwrap()))
-        } else {
-            let line = format!(" ✖ {} ", case["file"].as_str().unwrap());
-            (stdout.lines()).any(|l| l.starts_with(&line) && l.split([' ', ',']).any(|w| w == id))
-        };
+        // `pun check` lists problems under each step as `path[:line:col]  rule[, rule…]` (output.md, Build 5).
+        let file = case["file"].as_str().unwrap();
+        let want = if pint_error { "syntax-error" } else { id };
+        let named = (stdout.lines()).any(|l| {
+            let l = l.trim_start();
+            l.strip_prefix(file)
+                .is_some_and(|rest| rest.starts_with([' ', ':']))
+                && l.split([' ', ',']).any(|w| w == want)
+        });
         if !named {
             failures.push(format!(
                 "{rule}: `check` output does not name `{id}`\n{stdout}"
