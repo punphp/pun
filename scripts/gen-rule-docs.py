@@ -382,7 +382,8 @@ Layout-only Rector rules map to format and are left to `[format]`. The migration
 | strict-rules or deprecation-rules includes | Their built-in Pun checks, only when their parameter enables them |
 | `@phpstan-ignore method.notFound` | `@pun-ignore analyse/undefined/method` |
 | Baselines | Not copied. Run `pun analyse --generate-baseline`. |
-| Custom extensions, bleeding edge | Reported and skipped |
+| `bleedingEdge.neon` include | `[analyse] bleeding-edge = true`; the rules it turns on get `"on"` lines |
+| Custom extensions | Reported and skipped |
 
 The table maps PHPStan identifiers. Exact identifiers take precedence over patterns.
 
