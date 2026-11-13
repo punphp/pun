@@ -146,20 +146,32 @@ impl MethodReturnTypeProvider for ModelForwards {
         invocation: &InvocationInfo<'_, 'ast, 'arena>,
     ) -> Vec<CallbackInvocation<'ast, 'arena>> {
         let codebase = context.codebase();
-        if !codebase.is_instance_of(class, MODEL) || codebase.method_exists(class, method) {
+        if codebase.method_exists(class, method) {
             return Vec::new();
         }
-        let Some(model) = codebase.get_class_like(class) else {
+        let (builder, this) = if codebase.is_instance_of(class, MODEL) {
+            let Some(model) = codebase.get_class_like(class) else {
+                return Vec::new();
+            };
+            let builder = builder_of(codebase, &TNamedObject::new(model.original_name));
+            (builder.clone(), builder)
+        } else if let Some(target) = invocation.inner().target.get_method_context()
+            && let StaticClassType::Object(TObject::Named(receiver)) = &target.class_type
+            && codebase.is_instance_of(receiver.name.as_bytes(), RELATION)
+            && let Some(related) = relation_model(codebase, receiver)
+        {
+            // RelationForwardsCallsExtension: the relation's related model's builder
+            (builder_of(codebase, &related), receiver.clone())
+        } else {
             return Vec::new();
         };
-        let builder = builder_of(codebase, &TNamedObject::new(model.original_name));
         let (Some(function), Some(templates)) = (
             codebase.get_declaring_method(builder.name.as_bytes(), method),
             object_templates(codebase, builder.name.as_bytes(), &builder, method),
         ) else {
             return Vec::new();
         };
-        callbacks(codebase, function, &templates, invocation)
+        callbacks(codebase, function, &templates, invocation, Some(&this))
     }
 
     fn get_return_type(
@@ -662,26 +674,7 @@ fn forward_builder_or_relation(
     if !is(RELATION) {
         return None;
     }
-    let metadata = codebase.get_class_like(receiver.name.as_bytes())?;
-    let relation = codebase.get_class_like(RELATION)?;
-    let related = get_specialized_template_type(
-        codebase,
-        mago_word::word("TRelatedModel"),
-        relation.name,
-        metadata,
-        receiver.type_parameters.as_deref(),
-    )
-    .and_then(|r| match r.types.first() {
-        Some(TAtomic::Object(TObject::Named(n))) => Some(TNamedObject::new(n.name)),
-        _ => None,
-    })
-    .unwrap_or_else(|| TNamedObject::new(mago_word::word("Illuminate\\Database\\Eloquent\\Model")));
-    if !related.name.as_bytes().eq_ignore_ascii_case(MODEL)
-        && !codebase.is_instance_of(related.name.as_bytes(), MODEL)
-    {
-        return None;
-    }
-    let builder = builder_of(codebase, &related);
+    let builder = builder_of(codebase, &relation_model(codebase, receiver)?);
     let name = builder.name;
     let (ty, late) = if codebase.method_exists(name.as_bytes(), method) {
         // `(new ObjectType(Builder::class))->isSuperTypeOf($returnType)->yes()` asks before the call resolves the
@@ -1113,42 +1106,142 @@ fn callbacks<'ast, 'arena>(
     function: &mago_codex::metadata::function_like::FunctionLikeMetadata,
     templates: &TemplateResult,
     invocation: &InvocationInfo<'_, 'ast, 'arena>,
+    this: Option<&TNamedObject>,
 ) -> Vec<CallbackInvocation<'ast, 'arena>> {
-    use mago_codex::ttype::atomic::callable::TCallable;
-    use mago_syntax::cst::Expression;
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
+    use mago_codex::ttype::atomic::callable::{TCallable, TCallableSignature};
+    use mago_codex::ttype::atomic::scalar::TScalar;
+    use mago_syntax::cst::{
+        Array as ArrayExpression, ArrayElement, Expression, LegacyArray, Literal,
+    };
+    let literal_string = |e: &Expression| match e.unparenthesized() {
+        Expression::Literal(Literal::String(s)) => Some(TAtomic::Scalar(TScalar::literal_string(
+            mago_word::word(s.value?),
+        ))),
+        _ => None,
+    };
+    let argument_of =
+        |i: usize, parameter: &mago_codex::metadata::parameter::FunctionLikeParameterMetadata| {
+            let name = parameter.get_name().0;
+            let name = name
+                .as_bytes()
+                .strip_prefix(b"$")
+                .unwrap_or(name.as_bytes());
+            invocation.get_argument(i, &[name])
+        };
+    // a method template a literal string argument binds (`with('parent', fn ...)`'s `TRelation`)
+    let mut templates = templates.clone();
+    for (i, parameter) in function.parameters.iter().enumerate() {
+        if let Some(literal) = argument_of(i, parameter).and_then(literal_string)
+            && let Some(TAtomic::GenericParameter(g)) = parameter
+                .get_type_metadata()
+                .and_then(|t| t.type_union.types.iter().find(|t| matches!(t, TAtomic::GenericParameter(g) if matches!(g.defining_entity, GenericParent::FunctionLike(_)))))
+        {
+            templates.add_lower_bound(g.parameter_name, g.defining_entity, TUnion::from_atomic(literal));
+        }
+    }
+    let templates = &templates;
+    // the forwarded method's `$this`: the relation (RelationForwardsCallsExtension) or the model's builder
+    // (ModelForwardsCallsExtension), which `when()`'s and `orWhere()`'s callbacks get
+    let this = this.map(|object| TypeExpansionOptions {
+        self_class: Some(object.name),
+        static_class_type: StaticClassType::Object(TObject::Named(object.clone())),
+        ..Default::default()
+    });
     let mut out = Vec::new();
     for (i, parameter) in function.parameters.iter().enumerate() {
-        let name = parameter.get_name().0;
-        let name = name
-            .as_bytes()
-            .strip_prefix(b"$")
-            .unwrap_or(name.as_bytes());
-        let Some(callback @ (Expression::Closure(_) | Expression::ArrowFunction(_))) =
-            invocation.get_argument(i, &[name])
-        else {
+        let Some(argument) = argument_of(i, parameter) else {
             continue;
         };
-        let Some(TAtomic::Callable(TCallable::Signature(signature))) = parameter
-            .get_type_metadata()
-            .and_then(|t| t.type_union.types.iter().find(|t| t.is_callable()))
-        else {
+        let Some(declared) = parameter.get_type_metadata().map(|t| &t.type_union) else {
             continue;
         };
-        let arguments = signature
-            .parameters
-            .iter()
-            .map(|p| {
-                let declared = p
-                    .get_type_signature()
-                    .cloned()
-                    .unwrap_or_else(mago_codex::ttype::get_mixed);
-                inferred_type_replacer::replace(&declared, templates, codebase)
-            })
-            .collect();
-        out.push(CallbackInvocation {
-            callback,
-            arguments,
-        });
+        let typed = |signature: &TCallableSignature, templates: &TemplateResult| -> Vec<TUnion> {
+            signature
+                .parameters
+                .iter()
+                .map(|p| {
+                    let mut declared = p
+                        .get_type_signature()
+                        .cloned()
+                        .unwrap_or_else(mago_codex::ttype::get_mixed);
+                    if let Some(options) = &this {
+                        expand_union(codebase, &mut declared, options);
+                    }
+                    inferred_type_replacer::replace(&declared, templates, codebase)
+                })
+                .collect()
+        };
+        match argument.unparenthesized() {
+            callback @ (Expression::Closure(_) | Expression::ArrowFunction(_)) => {
+                let Some(TAtomic::Callable(TCallable::Signature(signature))) =
+                    declared.types.iter().find(|t| t.is_callable())
+                else {
+                    continue;
+                };
+                out.push(CallbackInvocation {
+                    callback,
+                    arguments: typed(signature, templates),
+                });
+            }
+            // ArgumentsHandler passes an array literal its parameter's type: `array<TKey, Closure(...)>` types each
+            // closure item, with `TKey` the array's literal string keys
+            Expression::Array(ArrayExpression { elements, .. })
+            | Expression::LegacyArray(LegacyArray { elements, .. }) => {
+                let Some((key, value)) = declared.types.iter().find_map(|t| match t {
+                    TAtomic::Array(TArray::Keyed(TKeyedArray {
+                        parameters: Some((k, v)),
+                        ..
+                    })) => Some((k, v)),
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                let Some(TAtomic::Callable(TCallable::Signature(signature))) =
+                    value.types.iter().find(|t| t.is_callable())
+                else {
+                    continue;
+                };
+                let mut templates = templates.clone();
+                let keys: Vec<TAtomic> = elements
+                    .iter()
+                    .filter_map(|e| match e {
+                        ArrayElement::KeyValue(kv) => literal_string(kv.key),
+                        _ => None,
+                    })
+                    .collect();
+                if let Some(TAtomic::GenericParameter(g)) = key
+                    .types
+                    .iter()
+                    .find(|t| matches!(t, TAtomic::GenericParameter(_)))
+                    && !keys.is_empty()
+                {
+                    templates.add_lower_bound(
+                        g.parameter_name,
+                        g.defining_entity,
+                        TUnion::from_vec(keys),
+                    );
+                }
+                let arguments = typed(signature, &templates);
+                for element in elements {
+                    let value = match element {
+                        ArrayElement::KeyValue(kv) => kv.value,
+                        ArrayElement::Value(v) => v.value,
+                        _ => continue,
+                    };
+                    if let callback @ (Expression::Closure(_) | Expression::ArrowFunction(_)) =
+                        value.unparenthesized()
+                    {
+                        out.push(CallbackInvocation {
+                            callback,
+                            arguments: arguments.clone(),
+                        });
+                    }
+                }
+            }
+            _ => {}
+        }
     }
     out
 }
@@ -1212,7 +1305,7 @@ fn infer_method_templates(
             };
             // an inline callback typed again against the parameter (callbacks())
             let priced = invocation.get_argument(i, &[name]).and_then(|callback| {
-                let arguments = callbacks(codebase, function, templates, invocation)
+                let arguments = callbacks(codebase, function, templates, invocation, None)
                     .into_iter()
                     .find(|c| std::ptr::eq(c.callback, callback))?
                     .arguments;
@@ -1415,6 +1508,25 @@ pub(crate) fn late_builder(
         }
         _ => None,
     }
+}
+
+/// A relation's `TRelatedModel`, `Model` when it has none, or `None` when it is not a model.
+fn relation_model(codebase: &CodebaseMetadata, receiver: &TNamedObject) -> Option<TNamedObject> {
+    let metadata = codebase.get_class_like(receiver.name.as_bytes())?;
+    let relation = codebase.get_class_like(RELATION)?;
+    let related = get_specialized_template_type(
+        codebase,
+        mago_word::word("TRelatedModel"),
+        relation.name,
+        metadata,
+        receiver.type_parameters.as_deref(),
+    )
+    .and_then(|r| match r.types.first() {
+        Some(TAtomic::Object(TObject::Named(n))) => Some(TNamedObject::new(n.name)),
+        _ => None,
+    })
+    .unwrap_or_else(|| TNamedObject::new(mago_word::word("Illuminate\\Database\\Eloquent\\Model")));
+    is_model(codebase, related.name.as_bytes()).then_some(related)
 }
 
 fn is_model(codebase: &CodebaseMetadata, class: &[u8]) -> bool {

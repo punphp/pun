@@ -160,6 +160,8 @@ pub struct Class {
     pub is_final: bool,
     /// public instance properties, declared or inherited
     pub properties: Vec<String>,
+    /// `ClassReflection::allowsDynamicProperties()`: a missing property of a final class is maybe, not no
+    pub allows_dynamic_properties: bool,
     pub constants: Vec<(String, String)>,
     /// by lowercase name
     pub methods: HashMap<String, Function>,
@@ -381,6 +383,7 @@ fn read_class(v: RawClass) -> Class {
         is_trait: false,
         is_final: v.is_final,
         properties: v.properties,
+        allows_dynamic_properties: false,
         constants: v.constants.0,
         methods: v
             .methods

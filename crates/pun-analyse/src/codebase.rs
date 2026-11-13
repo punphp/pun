@@ -339,6 +339,11 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         if !ret.type_union.types.iter().all(plain) {
             continue;
         }
+        let is_name = |p: &str| {
+            !p.is_empty()
+                && p.bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\')
+        };
         let reflected: Option<Vec<TAtomic>> = variant
             .ret
             .trim_start_matches('(')
@@ -346,16 +351,26 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             .split(" | ")
             .map(|part| match part {
                 "null" => Some(TAtomic::Null),
-                p if !p.is_empty()
-                    && p.bytes()
-                        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\') =>
-                {
-                    get_named_object(mago_word::word(p), None)
-                        .types
-                        .first()
-                        .cloned()
+                p if is_name(p) => get_named_object(mago_word::word(p), None)
+                    .types
+                    .first()
+                    .cloned(),
+                // a generic class of one class argument (`Dom\NodeList<Dom\Element>`)
+                p => {
+                    let (class, argument) = p.strip_suffix('>')?.split_once('<')?;
+                    if !is_name(class) || !is_name(argument) {
+                        return None;
+                    }
+                    let argument = get_named_object(mago_word::word(argument), None);
+                    Some(TAtomic::Object(
+                        mago_codex::ttype::atomic::object::TObject::Named(
+                            mago_codex::ttype::atomic::object::named::TNamedObject::new_with_type_parameters(
+                                mago_word::word(class),
+                                Some(vec![argument]),
+                            ),
+                        ),
+                    ))
                 }
-                _ => None,
             })
             .collect();
         let Some(reflected) = reflected else { continue };

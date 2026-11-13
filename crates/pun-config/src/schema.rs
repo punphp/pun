@@ -316,6 +316,8 @@ pub struct Analyse {
     pub larastan: bool,
     /// Every enabled rule, by ID.
     pub rules: Vec<AnalyseRule>,
+    /// `[analyse] bleeding-edge`: PHPStan's bleeding-edge type inference (`bleedingEdge.neon`'s inference toggles).
+    pub bleeding_edge: bool,
 }
 
 /// One `[[analyse.ignore]]`: an `ignoreErrors` entry of PHPStan's under a Pun rule. An error is ignored when it
@@ -386,6 +388,8 @@ pub(crate) struct AnalyseToml {
     ignore: Vec<Ignore>,
     #[serde(default)]
     rules: toml::Table,
+    #[serde(default, rename = "bleeding-edge")]
+    bleeding_edge: bool,
     /// PHPStan's `level`: an error naming the preset.
     level: Option<toml::Value>,
 }
@@ -852,5 +856,6 @@ pub(crate) fn analyse(
         rules: (on.into_iter())
             .map(|(id, options)| AnalyseRule { id, options })
             .collect(),
+        bleeding_edge: t.bleeding_edge,
     })
 }

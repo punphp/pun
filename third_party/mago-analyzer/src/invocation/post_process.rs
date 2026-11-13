@@ -124,6 +124,19 @@ where
         return Ok(());
     };
 
+    // Pun: MethodCallHandler assigns a method's `@phpstan-this-out` type, resolved for the call, to the receiver
+    if let Some(this_variable) = this_variable
+        && let Some(this_out) = metadata.method_metadata.as_ref().and_then(|method| method.this_out_type.as_ref())
+    {
+        let resolved = resolve_invocation_type(context, invoication, template_result, parameters, this_out.type_union.clone());
+        let variable = mago_word::word(this_variable);
+        let resolved = Rc::new(resolved);
+        if let Some(existing) = block_context.locals.get(&variable).cloned() {
+            block_context.remove_descendants(context, variable, &existing, Some(&resolved));
+        }
+        block_context.locals.insert(variable, resolved);
+    }
+
     let callable_kind_str = match identifier {
         FunctionLikeIdentifier::Function(_) => "function",
         FunctionLikeIdentifier::Method(_, _) => "method",

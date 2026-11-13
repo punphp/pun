@@ -116,6 +116,14 @@ impl Analyse {
                 }
             }
         }
+        // bleedingEdge.neon's toggles of the type inference itself, not of a rule
+        if self.bleeding_edge {
+            set(
+                &mut p,
+                "featureToggles.unresolvedTemplateArguments",
+                Value::Bool(true),
+            );
+        }
         // phpstan-deprecation-rules' rules.neon sets it: included when one of its rules is on.
         let deprecations = classes.values().any(|e| {
             e.get("package").and_then(toml::Value::as_str) == Some("phpstan-deprecation-rules")

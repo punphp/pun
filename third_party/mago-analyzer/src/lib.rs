@@ -43,6 +43,7 @@ pub mod observations;
 pub mod plugin;
 pub mod property_initialization;
 pub mod settings;
+pub mod template_arguments;
 pub mod variable_flow;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod telemetry;
@@ -276,6 +277,7 @@ where
         analyze_statements(statements, &mut context, &mut block_context, &mut artifacts)?;
         artifacts.call_scope_observations.extend(std::mem::take(&mut context.observations.completed));
         artifacts.variable_writes = std::mem::take(&mut context.variable_flow.completed);
+        artifacts.template_arguments = context.template_arguments.take();
         #[cfg(not(target_arch = "wasm32"))]
         if let Some(start) = statements_start {
             telemetry::record_statements(start.elapsed());

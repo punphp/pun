@@ -69,6 +69,8 @@ pub fn replace_with_polarity(
 
     let mut new_types = Vec::with_capacity(union.types.len());
     let mut never_kind = union.never_kind().unwrap_or_default();
+    // Pun: a template replaced by a benevolent union (Pun's two ignore flags, `array-key`)
+    let mut benevolent: Option<TUnion> = None;
 
     for atomic_type in union.types.as_ref() {
         let mut atomic_type = atomic_type.clone();
@@ -122,6 +124,9 @@ pub fn replace_with_polarity(
 
                 if let Some(template_type) = template_type {
                     never_kind = never_kind.max(template_type.never_kind().unwrap_or_default());
+                    if template_type.ignore_nullable_issues() && template_type.ignore_falsable_issues() {
+                        benevolent = Some(template_type.clone());
+                    }
                     new_types.extend(template_type.types.into_owned());
                 } else {
                     new_types.push(atomic_type);
@@ -190,13 +195,22 @@ pub fn replace_with_polarity(
         return get_never();
     }
 
-    union
+    let mut replaced = union
         .clone_with_types(combiner::combine_preserving_array_shapes(
             new_types,
             codebase,
             combiner::CombinerOptions::default(),
         ))
-        .with_never_kind(never_kind)
+        .with_never_kind(never_kind);
+    // Pun: TypeCombinator::union() keeps a BenevolentUnionType that absorbs the other members (`TKey|int`)
+    if let Some(benevolent) = benevolent
+        && replaced.types.len() == benevolent.types.len()
+        && replaced.types.iter().all(|t| benevolent.types.contains(t))
+    {
+        replaced.set_ignore_nullable_issues(true);
+        replaced.set_ignore_falsable_issues(true);
+    }
+    replaced
 }
 
 fn replace_template_parameter(

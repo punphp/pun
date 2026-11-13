@@ -671,20 +671,43 @@ where
 
         // MutatingScope::enterAnonymousFunctionWithoutReflection(): a declared type is intersected with the
         // callable's parameter type (`intersectButNotNever()`), which is the inferred type when it is narrower
+        let contained = |t: &TUnion| {
+            union_comparator::is_contained_by(
+                context.codebase,
+                t,
+                &declared_parameter_type,
+                true,
+                true,
+                false,
+                &mut ComparisonResult::default(),
+            )
+        };
         let mut final_parameter_type = if let Some(inferred_map) = inferred_parameter_types.as_mut()
             && let Some(inferred_type) = inferred_map.remove(&i)
             && !is_unresolved_template_with_mixed_bound(&inferred_type)
             && (!declared_type_is_specific || !inferred_type.is_mixed())
-            && (parameter_metadata.get_type_metadata().is_none()
-                || union_comparator::is_contained_by(
-                    context.codebase,
-                    &inferred_type,
-                    &declared_parameter_type,
-                    true,
-                    true,
-                    false,
-                    &mut ComparisonResult::default(),
-                ))
+            // intersected with a declared type, an unresolved template argument is its delegate
+            && let inferred_type = if parameter_metadata.get_type_metadata().is_some()
+                && crate::template_arguments::contains_marker(&inferred_type)
+            {
+                crate::template_arguments::unwrap_bare(&inferred_type, context.codebase)
+            } else {
+                inferred_type
+            }
+            // the intersection keeps the members of an inferred union that the declared type contains
+            && let Some(inferred_type) = if parameter_metadata.get_type_metadata().is_none() || contained(&inferred_type) {
+                Some(inferred_type)
+            } else if inferred_type.types.len() > 1 {
+                let members: Vec<_> = inferred_type
+                    .types
+                    .iter()
+                    .filter(|a| contained(&TUnion::from_atomic((*a).clone())))
+                    .cloned()
+                    .collect();
+                (!members.is_empty()).then(|| TUnion::from_vec(members))
+            } else {
+                None
+            }
         {
             if parameter_metadata.get_type_metadata().is_some()
                 && !declared_parameter_type.can_be_null()

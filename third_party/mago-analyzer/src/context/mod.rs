@@ -79,6 +79,14 @@ where
     pub(super) ensured_non_null_types: Vec<WordMap<TUnion>>,
     pub(crate) consume_stored_expression_results: bool,
     pub(crate) called_method_properties: crate::property_initialization::CalledMethods,
+    /// The observation pass's template argument constraints (see [`crate::template_arguments`]).
+    pub(crate) template_arguments: std::cell::RefCell<crate::template_arguments::Observed>,
+    /// ExpressionContext's in-assign-right-side variable: inside `$v = RHS`, a closure's `use (&$v)` enters with
+    /// `$v`'s type before the assignment (null when undefined) joined with the right side's (ClosureProcessor).
+    pub(crate) assign_by_ref_seed: Option<(Word, TUnion)>,
+    /// A closure being assigned to one of its own by-ref uses (`$f = function () use (&$f)`): its invocations
+    /// through that variable cannot all be followed, so its signature is not inferred from usages.
+    pub(crate) self_capturing_closure: Option<mago_span::Span>,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -121,8 +129,11 @@ where
             observations: crate::observations::ObservationState::default(),
             observation_program: None,
             ensured_non_null_types: Vec::new(),
+            assign_by_ref_seed: None,
+            self_capturing_closure: None,
             consume_stored_expression_results: false,
             called_method_properties: crate::property_initialization::CalledMethods::default(),
+            template_arguments: std::cell::RefCell::default(),
         }
     }
 
@@ -278,7 +289,7 @@ where
 
     /// Run a raw callable gather without retaining diagnostics or mutable analysis state.
     /// Restore before the caller propagates a Result error, just as on success.
-    pub(super) fn gather_callback<T>(&mut self, callback: impl FnOnce(&mut Self) -> T) -> T {
+    pub(crate) fn gather_callback<T>(&mut self, callback: impl FnOnce(&mut Self) -> T) -> T {
         let scope = self.scope.clone();
         let resolution = self.type_resolution_context.clone();
         let statement = self.statement_span;

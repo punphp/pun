@@ -124,7 +124,7 @@ impl<'metadata> InheritedMethodResolver<'metadata> {
         let mut cyclic = false;
         for ancestor in self.direct_method_sources(method) {
             if source
-                .is_some_and(|current| !self.codebase.can_replace_inherited_method(current, ancestor.get_class_name()))
+                .is_some_and(|current| !self.codebase.can_replace_inherited_method(current, ancestor))
             {
                 continue;
             }

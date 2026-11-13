@@ -1393,6 +1393,11 @@ where
     }
 
     artifacts.begin_expression_type_checkpoint();
+    // Pun: the replay shares the condition's spans; the condition's own operand scopes must survive it
+    let condition_span = condition.span();
+    let within = move |(start, end): &(u32, u32)| *start >= condition_span.start.offset && *end <= condition_span.end.offset;
+    let condition_scopes: Vec<_> =
+        artifacts.boolean_expression_scopes.iter().filter(|(key, _)| within(key)).map(|(key, scopes)| (*key, scopes.clone())).collect();
     let expressions = get_definitely_evaluated_ored_expressions(condition);
 
     // The condition was analysed where it stands; this replay only carries its assignments past the `if`, so
@@ -1414,6 +1419,8 @@ where
         Result::<_, AnalysisError>::Ok(())
     });
     context.raw_callback_gather_depth -= 1;
+    artifacts.boolean_expression_scopes.retain(|key, _| !within(key));
+    artifacts.boolean_expression_scopes.extend(condition_scopes);
 
     artifacts.finish_expression_type_checkpoint(if result.is_ok() {
         CheckpointAction::Rollback

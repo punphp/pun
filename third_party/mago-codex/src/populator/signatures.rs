@@ -96,7 +96,7 @@ pub fn populate_function_like_metadata(
     }
 
     if let Some(method_metadata) = metadata.method_metadata.as_mut() {
-        for where_constraint in method_metadata.where_constraints.values_mut() {
+        for where_constraint in method_metadata.where_constraints.values_mut().chain(method_metadata.this_out_type.as_mut()) {
             populate_union_type(
                 &mut where_constraint.type_union,
                 codebase_symbols,

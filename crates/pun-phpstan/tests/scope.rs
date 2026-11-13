@@ -88,6 +88,7 @@ fn class(name: &str) -> Option<Arc<Class>> {
             is_enum: false,
             is_final: false,
             properties: Vec::new(),
+            allows_dynamic_properties: false,
             constants: constants
                 .iter()
                 .map(|(n, t)| (n.to_string(), t.to_string()))

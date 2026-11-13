@@ -4,7 +4,7 @@
 //! joins, replacements and reference escapes forget origins. Offset unsets preserve source metadata, not values;
 //! conversion still requires Mago's actual expression type, including its post-unset narrowing.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use mago_codex::metadata::CodebaseMetadata;
@@ -38,7 +38,8 @@ pub(in super::super) struct MethodCallGuard {
 
 #[derive(Clone, PartialEq, Eq)]
 pub(in super::super) enum Origin {
-    Parameter(Function, usize),
+    /// The function's parameter at the index; `true` when the function is a closure written as a call's argument.
+    Parameter(Function, usize, bool),
     Annotation(Span, String, Option<Function>),
     Copy(Span),
     /// A literal's key/value expressions, in PHP insertion order. No unknown keys or unpacks are invented.
@@ -82,6 +83,7 @@ pub(super) fn collect(
         locals: HashMap::new(),
         current: None,
         calls: Vec::new(),
+        arguments: HashSet::new(),
         unset_targets: Vec::new(),
         control_depth: 0,
         found: HashMap::new(),
@@ -140,6 +142,8 @@ struct Sources<'a, 'arena> {
     locals: HashMap<Vec<u8>, Origin>,
     current: Option<Function>,
     calls: Vec<Option<Arc<Call>>>,
+    /// The value spans of every argument walked so far.
+    arguments: HashSet<Span>,
     unset_targets: Vec<Span>,
     control_depth: usize,
     found: Origins,
@@ -150,10 +154,13 @@ impl Sources<'_, '_> {
         self.stack
             .push((std::mem::take(&mut self.locals), self.current));
         self.current = self.functions.get(&span).copied();
+        let argument = self.arguments.contains(&span);
         for (i, p) in params.parameters.iter().enumerate() {
             if let Some(function) = self.current {
-                self.locals
-                    .insert(p.variable.name.to_vec(), Origin::Parameter(function, i));
+                self.locals.insert(
+                    p.variable.name.to_vec(),
+                    Origin::Parameter(function, i, argument),
+                );
             }
         }
     }
@@ -164,7 +171,7 @@ impl Sources<'_, '_> {
 
     fn explicit_mixed_parameter(&self, origin: &Origin) -> bool {
         match origin {
-            Origin::Parameter(function, index) => self
+            Origin::Parameter(function, index, _) => self
                 .codebase
                 .function_likes
                 .get(function)
@@ -269,6 +276,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
     }
     fn walk_out_method(&mut self, _: &'ast Method<'arena>, (): &mut ()) {
         self.leave();
+    }
+    fn walk_in_argument_list(&mut self, list: &'ast ArgumentList<'arena>, (): &mut ()) {
+        // PHPStan infers a closure's parameters from the parameter type it is passed to, also as an array value
+        fn add(arguments: &mut HashSet<Span>, e: &Expression) {
+            arguments.insert(e.span());
+            if let Expression::Array(a) = e.unparenthesized() {
+                for element in &a.elements {
+                    if let ArrayElement::KeyValue(kv) = element {
+                        add(arguments, kv.value);
+                    } else if let ArrayElement::Value(v) = element {
+                        add(arguments, v.value);
+                    }
+                }
+            }
+        }
+        for argument in &list.arguments {
+            add(&mut self.arguments, argument.value());
+        }
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, (): &mut ()) {
         self.closure(f.span(), &f.parameter_list);

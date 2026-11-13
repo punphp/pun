@@ -214,6 +214,7 @@ fn own_class(name: &str) -> Class {
         is_enum: false,
         is_final: false,
         properties: vec![],
+        allows_dynamic_properties: false,
         constants: vec![],
         methods: HashMap::new(),
         iterable: None,

@@ -52,6 +52,9 @@ pub struct MethodMetadata {
     /// is the `TUnion` type constraint that `T` must satisfy for this specific method
     /// to be considered callable.
     pub where_constraints: WordMap<TypeMetadata>,
+
+    /// The type of the object after the call, from `@phpstan-this-out` or `@phpstan-self-out` (Pun).
+    pub this_out_type: Option<TypeMetadata>,
 }
 
 /// Distinguishes between different kinds of callable constructs in PHP.

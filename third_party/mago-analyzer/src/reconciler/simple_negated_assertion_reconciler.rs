@@ -1550,10 +1550,12 @@ where
             TAtomic::Array(TArray::Keyed(TKeyedArray { known_items, parameters, .. })) => {
                 if let Some(known_items) = known_items {
                     if let Some(known_item) = known_items.get(key_name) {
-                        if known_item.0 {
-                            Arc::make_mut(known_items).shift_remove(key_name);
-                            did_remove_type = true;
+                        did_remove_type = true;
+                        if !known_item.0 {
+                            // Pun: an alternative that surely has the key cannot lack it
+                            continue;
                         }
+                        Arc::make_mut(known_items).shift_remove(key_name);
                     } else if let Some((key_parameter, _)) = parameters
                         && union_comparator::can_expression_types_be_identical(
                             context.codebase,
@@ -1583,10 +1585,11 @@ where
                 if let ArrayKey::Integer(i) = key_name {
                     if let Some(known_elements) = known_elements {
                         if let Some(known_element) = known_elements.get(&(*i as usize)) {
-                            if known_element.0 {
-                                Arc::make_mut(known_elements).remove(&(*i as usize));
-                                did_remove_type = true;
+                            did_remove_type = true;
+                            if !known_element.0 {
+                                continue;
                             }
+                            Arc::make_mut(known_elements).remove(&(*i as usize));
                         } else if !element_type.is_never() {
                             did_remove_type = true;
                         }

@@ -151,7 +151,7 @@ pub(crate) fn preg_match_matches_variables<A>(
     }
 }
 
-/// `($a ?? V) !== V` for a constant string or integer `V`: CoalesceHandler's `createTypesCallback()` narrows the left
+/// `($a ?? V) !== V` for a constant string, integer or empty array `V`: CoalesceHandler's `createTypesCallback()` narrows the left
 /// side only where the type rules the right side out, so `$a !== V` there (with `isset()` of an offset fetch) and
 /// nothing in the other branch (a synthetic clause on the comparison keeps the negation a disjunction); `=== V` is
 /// its negation.
@@ -171,25 +171,54 @@ where
     let literal = |expression: &Expression| {
         let t = artifacts.get_expression_type(expression)?;
         let value = t.get_single_literal_string_value().map(<[u8]>::to_vec);
-        value.or_else(|| t.get_single_literal_int_value().map(|i| i.to_string().into_bytes().into_iter().chain([0]).collect()))
+        value
+            .or_else(|| t.get_single_literal_int_value().map(|i| i.to_string().into_bytes().into_iter().chain([0]).collect()))
+            // Pun: `[]` is a constant value too (`($a['k'] ?? []) !== []`)
+            .or_else(|| t.is_empty_array().then(|| vec![0, b'[', b']']))
     };
-    let (coalesce, value) = [(binary.lhs, binary.rhs), (binary.rhs, binary.lhs)].into_iter().find_map(|(coalesce, value)| {
-        let Expression::Binary(coalesce) = unwrap_expression(coalesce) else { return None };
-        (matches!(coalesce.operator, BinaryOperator::NullCoalesce(_))
-            && literal(value).is_some_and(|v| literal(coalesce.rhs) == Some(v)))
-        .then_some((coalesce, value))
-    })?;
-    let not_identical = Expression::Binary(Binary { lhs: coalesce.lhs, operator: BinaryOperator::NotIdentical(span), rhs: value });
+    // Pun: a right side `V` cannot be (`null`, another literal) narrows the left side to `V` in the true context of
+    // `=== V`, the other way round (`$type->isSuperTypeOf($rightType)->no()`)
+    let disjoint = |coalesce: &Binary, value: &Expression| {
+        let (Some(default), Some(value)) = (artifacts.get_expression_type(coalesce.rhs), artifacts.get_expression_type(value))
+        else {
+            return false;
+        };
+        !default.has_mixed()
+            && !mago_codex::ttype::comparator::union_comparator::can_expression_types_be_identical(
+                assertion_context.codebase,
+                default,
+                value,
+                false,
+                false,
+            )
+    };
+    let (coalesce, value, narrows_identical) =
+        [(binary.lhs, binary.rhs), (binary.rhs, binary.lhs)].into_iter().find_map(|(coalesce, value)| {
+            let Expression::Binary(coalesce) = unwrap_expression(coalesce) else { return None };
+            if !matches!(coalesce.operator, BinaryOperator::NullCoalesce(_)) {
+                return None;
+            }
+            let v = literal(value)?;
+            if literal(coalesce.rhs) == Some(v) {
+                return Some((coalesce, value, false));
+            }
+            disjoint(coalesce, value).then_some((coalesce, value, true))
+        })?;
+    let narrowed = Expression::Binary(Binary {
+        lhs: coalesce.lhs,
+        operator: if narrows_identical { BinaryOperator::Identical(span) } else { BinaryOperator::NotIdentical(span) },
+        rhs: value,
+    });
     let mut formula = get_base_formula(
         conditional_object_id,
         creating_object_id,
-        &not_identical,
+        &narrowed,
         assertion_context,
         artifacts,
         algebra_thresholds,
         formula_size_threshold,
     )?;
-    let identical = matches!(binary.operator, BinaryOperator::Identical(_));
+    let negated = matches!(binary.operator, BinaryOperator::Identical(_)) != narrows_identical;
     // narrowing an offset fetch's type sets the offset (`setExistingOffsetValueType()`): the array has the key. Its
     // clause comes before the offset's, so the array loses its members without the key before the offset's narrowing
     // writes into them; `negate_formula()` takes the clauses from the end, so for `=== V` it goes last.
@@ -204,7 +233,7 @@ where
         let has_key = Assertion::HasNonnullEntryForKey(key);
         let mut map = AssertionMap::default();
         map.insert(array_id, AssertionMap::from_iter([(has_key.to_hash(), has_key)]));
-        let at = if identical { formula.len() } else { 0 };
+        let at = if negated { formula.len() } else { 0 };
         formula.insert(at, Clause::new(map, conditional_object_id, creating_object_id, None, None, None));
     }
     let span = binary.span();
@@ -212,7 +241,7 @@ where
     let mut map = AssertionMap::default();
     map.insert(synthetic, AssertionMap::from_iter([(Assertion::Truthy.to_hash(), Assertion::Truthy)]));
     formula.push(Clause::new(map, conditional_object_id, creating_object_id, None, None, None));
-    if identical { negate_formula(formula, algebra_thresholds) } else { Some(formula) }
+    if negated { negate_formula(formula, algebra_thresholds) } else { Some(formula) }
 }
 
 /// `(bool) preg_match(...)`: PHPStan's CastHandler narrows a bool cast as `$expr == true`, the call's truthiness.

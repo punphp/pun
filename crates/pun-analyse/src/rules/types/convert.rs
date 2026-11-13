@@ -262,7 +262,8 @@ impl Checker<'_, '_> {
             // a callee Pun cannot resolve (a call forwarded by `__call`) keeps Mago's inferred arguments
             return source.map_or(!WITHOUT_SIGNATURE.replace(false), |t| has_arguments(&t));
         }
-        let Some(infer::Origin::Parameter(key, _)) = origin else {
+        // a closure that is not an argument keeps its native type, as PHPStan's ObjectType
+        let Some(infer::Origin::Parameter(key, _, true)) = origin else {
             return false;
         };
         self.codebase.function_likes.get(key).is_some_and(|f| {
@@ -315,7 +316,7 @@ impl Checker<'_, '_> {
                     origin = self.origins.get(from)?;
                 }
                 infer::Origin::AfterMethodCall(_, previous) => origin = previous,
-                infer::Origin::Parameter(key, _) | infer::Origin::Annotation(_, _, Some(key)) => {
+                infer::Origin::Parameter(key, ..) | infer::Origin::Annotation(_, _, Some(key)) => {
                     break key;
                 }
                 _ => return None,
@@ -407,7 +408,7 @@ impl Checker<'_, '_> {
             ))
         };
         match origin {
-            infer::Origin::Parameter(key, i) => {
+            infer::Origin::Parameter(key, i, _) => {
                 let (f, k) = function(key)?;
                 declared::codex_params(self, f, k)
                     .into_iter()
@@ -1726,6 +1727,14 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
                 restore_metadata(actual.bound, &source.bound, restore_list)
             };
             Type::Template(actual)
+        }
+        // a union inferred for a template bounded by a benevolent union (`TKey of array-key`) is not benevolent;
+        // only the bound itself, as the fallback, is
+        (Type::Union(actual), Type::Template(source))
+            if matches!(&source.bound, Type::Benevolent(bound)
+                if !(actual.len() == bound.len() && actual.iter().all(|a| bound.contains(a)))) =>
+        {
+            Type::Union(actual)
         }
         (actual, Type::Template(source)) => restore_metadata(
             pun_phpstan::types::remove_final_by_keyword_overrides(&actual),

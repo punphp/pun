@@ -606,10 +606,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         }
         let found: Vec<Member<'a>> = classes
             .iter()
-            .filter_map(|k| {
-                members::method(self.c, k, name)
-                    .or_else(|| members::annotation_method(self.c, k, name))
-            })
+            .filter_map(|k| members::reflected_method(self.c, k, name))
             .collect();
         // a union keeps its members that have the method
         if found.is_empty() {

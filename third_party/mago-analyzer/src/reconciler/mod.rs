@@ -121,6 +121,7 @@ pub fn reconcile_keyed_types<'ctx, A>(
     }
 
     add_nested_assertions(&mut new_types, &mut active_new_types, block_context);
+    add_negated_isset_parent_assertions(&mut new_types, block_context);
     if new_types.len() > 1 {
         new_types
             .to_mut()
@@ -1080,6 +1081,48 @@ static INTEGER_REGEX: LazyLock<Regex> = LazyLock::new(|| unsafe {
     // SAFETY: `unwrap_unchecked` is safe here because the regex is valid and will not panic.
     Regex::new("^[0-9]+$").unwrap_unchecked()
 });
+
+/// Pun: IssetHandler's falsey context of `isset($a['k'])` on a defined `$a`: the alternatives of `$a` that surely
+/// have a non-null `'k'` are removed (`array{a: int}|array{b: int}` becomes `array{b: int}`).
+fn add_negated_isset_parent_assertions(
+    new_types: &mut Cow<'_, AssertionMap<Word, AssertionSet>>,
+    context: &BlockContext<'_>,
+) {
+    let mut parents = vec![];
+    for (key, assertions) in new_types.iter() {
+        if !matches!(assertions.as_slice(), [clause] if matches!(clause.as_slice(), [Assertion::IsNotIsset])) {
+            continue;
+        }
+        let parts = borrow_path_parts(key.as_bytes());
+        let [base, b"[", offset, b"]"] = parts.as_slice() else {
+            continue;
+        };
+        if !base.starts_with(b"$") {
+            continue;
+        }
+        let array_key = if (offset.starts_with(b"'") || offset.starts_with(b"\"")) && offset.len() >= 2 {
+            ArrayKey::String(word(&offset[1..offset.len() - 1]))
+        } else if let Some(value) = std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()) {
+            ArrayKey::Integer(value)
+        } else {
+            continue;
+        };
+        let base = word(base);
+        let defined = context.locals.get(&base).is_some_and(|t| {
+            !t.is_nullable() && !t.possibly_undefined() && !t.possibly_undefined_from_try()
+        });
+        if defined {
+            parents.push((base, array_key));
+        }
+    }
+    if parents.is_empty() {
+        return;
+    }
+    let new_types = new_types.to_mut();
+    for (base, array_key) in parents {
+        new_types.entry(base).or_default().push(vec![Assertion::DoesNotHaveNonnullEntryForKey(array_key)]);
+    }
+}
 
 #[allow(clippy::multiple_unsafe_ops_per_block)]
 #[allow(clippy::semicolon_inside_block)]

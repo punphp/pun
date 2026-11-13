@@ -112,6 +112,8 @@ bitflags::bitflags! {
         const UNINITIALIZED_PROPERTIES = 1 << 30;
         /// [`ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE`](crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE).
         const MISSING_CALLABLE_SIGNATURE = 1 << 31;
+        /// [`ProjectOptions::UNRESOLVED_TEMPLATE_ARGUMENTS`](crate::ProjectOptions::UNRESOLVED_TEMPLATE_ARGUMENTS).
+        const TEMPLATE_ARGUMENTS = 1 << 32;
     }
 }
 
@@ -415,6 +417,12 @@ impl Checks {
                 .options
                 .contains(crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE),
         );
+        switches.set(
+            Switches::TEMPLATE_ARGUMENTS,
+            project
+                .options
+                .contains(crate::ProjectOptions::UNRESOLVED_TEMPLATE_ARGUMENTS),
+        );
         Checks {
             switches,
             natives: Natives::load(project.php_version),
@@ -677,6 +685,7 @@ fn checker<'a, 'arena>(
         trait_class,
         &facts.comments,
         functions,
+        project.switches.contains(Switches::TEMPLATE_ARGUMENTS),
     );
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(

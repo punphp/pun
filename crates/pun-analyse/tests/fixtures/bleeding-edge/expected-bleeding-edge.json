@@ -1,0 +1,62 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 8
+    },
+    "files": {
+        "b.php": {
+            "errors": 8,
+            "messages": [
+                {
+                    "message": "Dumped type: App\\Box<0|1, 1|null>",
+                    "line": 36,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Box<0|1, 1|null>",
+                    "line": 37,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Box<int, int|null>",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<mixed>",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<mixed>",
+                    "line": 43,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 1|2",
+                    "line": 49,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: string",
+                    "line": 52,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Parameter #1 $c of method App\\B::each() expects callable(string): void, Closure(string): mixed given.",
+                    "line": 53,
+                    "ignorable": true,
+                    "identifier": "argument.type"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

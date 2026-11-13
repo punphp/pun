@@ -20,6 +20,7 @@ use mago_analyzer::plugin::provider::method::{MethodReturnTypeProvider, MethodTa
 use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
@@ -90,7 +91,8 @@ fn constant_string(context: &ProviderContext<'_, '_, '_>, span: Span) -> Option<
     }
 }
 
-pub(crate) struct Functions(pub(crate) Arc<App>);
+/// The app, and CollectExtension's `inferFromUsage`.
+pub(crate) struct Functions(pub(crate) Arc<App>, pub(crate) bool);
 
 impl Provider for Functions {
     fn meta() -> &'static ProviderMeta {
@@ -124,7 +126,7 @@ impl FunctionReturnTypeProvider for Functions {
             }
             "auth" => Some(stateful_guard(codebase)),
             "now" | "today" => Some(TUnion::from_atomic(object(codebase, &self.0.date_class))),
-            "collect" => collect(context, invocation),
+            "collect" => collect(context, invocation, self.1),
             "__" if invocation.has_no_arguments() => Some(get_null()),
             // TransHelperReturnTypeExtension
             "trans" if invocation.has_no_arguments() => Some(TUnion::from_atomic(object(
@@ -447,6 +449,7 @@ fn bound(t: TUnion) -> TUnion {
 fn collect(
     context: &ProviderContext<'_, '_, '_>,
     invocation: &InvocationInfo<'_, '_, '_>,
+    infer_from_usage: bool,
 ) -> Option<TUnion> {
     let codebase = context.codebase();
     let default = || {
@@ -457,9 +460,18 @@ fn collect(
         )
     };
     let Some(argument) = invocation.get_argument(0, &[b"value"]) else {
-        return Some(default());
+        // inferred from what the body does with the collection
+        return (!infer_from_usage).then(default);
     };
     let ty = context.get_expression_type(argument)?;
+    if infer_from_usage
+        && ty
+            .types
+            .iter()
+            .all(|t| matches!(t, TAtomic::Array(a) if a.is_empty()))
+    {
+        return None;
+    }
     let objects: Vec<&TNamedObject> = ty
         .types
         .iter()
@@ -831,8 +843,66 @@ fn narrow(
                 _ => ty,
             }
         }
+        // `isset($v['a'], $v['b'])`: in the true context each offset exists and is not null
+        Expression::Construct(mago_syntax::cst::Construct::Isset(isset)) if truthy => {
+            let mut ty = ty;
+            for value in &isset.values {
+                let Expression::ArrayAccess(access) = value.unparenthesized() else {
+                    return ty;
+                };
+                if !is_var(access.array) {
+                    return ty;
+                }
+                let Some(index) = context.get_expression_type(access.index) else {
+                    return ty;
+                };
+                let key = if let Some(s) = index.get_single_literal_string_value() {
+                    ArrayKey::String(mago_word::word(s))
+                } else if let Some(i) = index.get_single_literal_int_value() {
+                    ArrayKey::Integer(i)
+                } else {
+                    return ty;
+                };
+                ty = has_non_null_offset(&ty, &key);
+            }
+            ty
+        }
         e if truthy && is_var(e) => remove_falsey(&ty),
         _ => ty,
+    }
+}
+
+/// `$v` where `isset($v[key])` holds: shapes that declare the key make it required and non-null, sealed shapes without
+/// it are left out; other members stay.
+fn has_non_null_offset(ty: &TUnion, key: &ArrayKey) -> TUnion {
+    use mago_codex::ttype::atomic::array::TArray;
+    let mut kept = Vec::with_capacity(ty.types.len());
+    for atomic in ty.types.iter() {
+        let TAtomic::Array(TArray::Keyed(keyed)) = atomic else {
+            kept.push(atomic.clone());
+            continue;
+        };
+        let Some(item) = keyed.known_items.as_ref().and_then(|items| items.get(key)) else {
+            if keyed.parameters.is_some() || keyed.known_items.is_none() {
+                kept.push(atomic.clone());
+            }
+            continue;
+        };
+        let value = item.1.to_non_nullable();
+        if value.is_never() {
+            continue;
+        }
+        let mut keyed = keyed.clone();
+        if let Some(items) = keyed.known_items.as_mut() {
+            Arc::make_mut(items).insert(*key, (false, value));
+        }
+        keyed.non_empty = true;
+        kept.push(TAtomic::Array(TArray::Keyed(keyed)));
+    }
+    if kept.is_empty() {
+        mago_codex::ttype::get_never()
+    } else {
+        ty.clone_with_types(kept)
     }
 }
 
@@ -882,11 +952,23 @@ fn eloquent_collection_map(
         key = super::helpers::union(codebase, keys);
         value = super::helpers::union(codebase, values);
     }
+    // `(new ObjectType(Model::class))->isSuperTypeOf($mappedValueType)`: Some(true) yes, Some(false) no, None maybe
     let model = b"Illuminate\\Database\\Eloquent\\Model";
-    let models = !value.types.is_empty()
-        && value.types.iter().all(|a| {
-            matches!(a, TAtomic::Object(TObject::Named(n)) if codebase.is_instance_of(n.name.as_bytes(), model))
-        });
+    let is_model = |a: &TAtomic| match a {
+        TAtomic::Object(TObject::Named(n)) if codebase.is_instance_of(n.name.as_bytes(), model) => {
+            Some(true)
+        }
+        // another class is no model, an interface may be one
+        TAtomic::Object(TObject::Named(n)) => codebase
+            .get_class_like(n.name.as_bytes())
+            .is_some_and(|c| !c.kind.is_interface())
+            .then_some(false),
+        TAtomic::Object(_) | TAtomic::Mixed(_) | TAtomic::GenericParameter(_) => None,
+        _ => Some(false),
+    };
+    let verdicts: Vec<Option<bool>> = value.types.iter().map(is_model).collect();
+    let models = !verdicts.is_empty() && verdicts.iter().all(|v| *v == Some(true));
+    let no_models = verdicts.iter().all(|v| *v == Some(false));
     if models {
         let is_generic = codebase
             .get_class_like(called_on.name.as_bytes())
@@ -898,6 +980,19 @@ fn eloquent_collection_map(
         }
         let class = String::from_utf8_lossy(called_on.name.as_bytes()).into_owned();
         return Some(generic(codebase, &class, vec![key, value]));
+    }
+    // a value that surely is no model leaves `map()` to the stub's conditional return type, whose else branch this
+    // is; it is built here for a pinned subclass (no templates) and for open class templates (`$this->map()`), which
+    // the conditional's `static<TKey, ...>` branch does not resolve
+    let generic_receiver = codebase
+        .get_class_like(called_on.name.as_bytes())
+        .is_some_and(|k| !k.template_types.is_empty());
+    let open_key = key
+        .types
+        .iter()
+        .any(|a| matches!(a, TAtomic::GenericParameter(_)));
+    if method == "map" && no_models && generic_receiver && !open_key {
+        return None;
     }
     Some(generic(codebase, COLLECTION, vec![key, value]))
 }
@@ -928,23 +1023,45 @@ impl Methods {
         }
         let declaring =
             reflection_declaring_class(codebase, first.name.as_bytes(), method.as_bytes())?;
-        let key = bound(active_template(
-            codebase,
-            first,
-            declaring.as_bytes(),
-            "TKey",
-        )?);
-        let mut value = bound(active_template(
-            codebase,
-            first,
-            declaring.as_bytes(),
-            "TValue",
-        )?);
+        // `getTemplateType()` of an unresolved template argument is the argument itself
+        let key = active_template(codebase, first, declaring.as_bytes(), "TKey")?;
+        let key = if key
+            .types
+            .iter()
+            .any(|t| mago_analyzer::template_arguments::as_marker(t).is_some())
+        {
+            key
+        } else {
+            bound(key)
+        };
+        let unresolved = active_template(codebase, first, declaring.as_bytes(), "TValue")?;
+        let value = bound(unresolved.clone());
+        // an unresolved template argument the narrowing leaves as it is stays unresolved
+        let keep = |narrowed: TUnion| {
+            if narrowed == value
+                && unresolved
+                    .types
+                    .iter()
+                    .any(|t| mago_analyzer::template_arguments::as_marker(t).is_some())
+            {
+                unresolved.clone()
+            } else {
+                narrowed
+            }
+        };
         let class = String::from_utf8_lossy(first.name.as_bytes()).into_owned();
         let Some(callback) = invocation.get_argument(0, &[b"callback", b"key"]) else {
             return match method {
-                "filter" => Some(generic(codebase, &class, vec![key, remove_falsey(&value)])),
-                "reject" => Some(generic(codebase, &class, vec![key, remove_truthy(&value)])),
+                "filter" => Some(generic(
+                    codebase,
+                    &class,
+                    vec![key, keep(remove_falsey(&value))],
+                )),
+                "reject" => Some(generic(
+                    codebase,
+                    &class,
+                    vec![key, keep(remove_truthy(&value))],
+                )),
                 _ => None,
             };
         };
@@ -967,10 +1084,13 @@ impl Methods {
             _ if method == "where" => return None,
             _ => None,
         };
-        if let Some((name, condition)) = condition {
-            value = narrow(context, condition, name, value, method != "reject");
-        }
-        Some(generic(codebase, &class, vec![key, value]))
+        let narrowed = match condition {
+            Some((name, condition)) => {
+                narrow(context, condition, name, value.clone(), method != "reject")
+            }
+            None => value.clone(),
+        };
+        Some(generic(codebase, &class, vec![key, keep(narrowed)]))
     }
 
     /// CollectionWhereNotNullDynamicReturnTypeExtension: the called-on collection class with its `TKey` and its

@@ -75,8 +75,12 @@ pub(super) fn registry(
             Arc::clone(&larastan.app),
             contents.to_vec(),
         ));
-        registry
-            .register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
+        registry.register_function_provider(super::larastan::AppFunctions(
+            Arc::clone(&larastan.app),
+            larastan
+                .switches
+                .contains(crate::LarastanSwitches::INFER_FROM_USAGE),
+        ));
         registry.register_function_provider(super::larastan::Tap);
         registry.register_function_assertion_provider(super::larastan::AbortIf);
         registry.register_function_provider(super::larastan::HelperFunctions {
@@ -116,6 +120,8 @@ pub(super) fn registry(
     registry.register_function_provider(super::array_fill::ArrayFill);
     registry.register_function_provider(super::date_format::DateFormat);
     registry.register_method_provider(super::date_format::DateFormat);
+    registry.register_method_provider(super::randomizer::Randomizer);
+    registry.register_function_provider(super::flip_intersect::FlipIntersect);
     registry
 }
 

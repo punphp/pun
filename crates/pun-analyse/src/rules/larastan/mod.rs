@@ -133,6 +133,8 @@ bitflags::bitflags! {
         const CHECK_CONFIG_TYPES = 1 << 12;
         /// `generalizeEnvReturnType` (default false).
         const GENERALIZE_ENV_RETURN_TYPE = 1 << 13;
+        /// CollectExtension's `inferFromUsage`: `featureToggles.unresolvedTemplateArguments` (on with bleedingEdge).
+        const INFER_FROM_USAGE = 1 << 14;
     }
 }
 
@@ -287,6 +289,14 @@ impl Larastan {
         larastan.switches.set(
             LarastanSwitches::GENERALIZE_ENV_RETURN_TYPE,
             flag("generalizeEnvReturnType", false),
+        );
+        larastan.switches.set(
+            LarastanSwitches::INFER_FROM_USAGE,
+            params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str("unresolvedTemplateArguments"))
+                == Some(&Value::Bool(true)),
         );
         larastan.switches.set(
             LarastanSwitches::NO_UNNECESSARY_ENUMERABLE_TO_ARRAY_CALLS,

@@ -618,6 +618,20 @@ where
         combiner_options.integer_combination_threshold = u16::MAX;
         combiner_options.string_combination_threshold = u16::MAX;
     }
+    // ConstantArrayTypeBuilder: unpacking an array of unknown keys degrades the literal to a general array of every
+    // item's keys and values
+    if array_creation_info.has_general_unpack
+        && array_creation_info.can_create_objectlike
+        && !array_creation_info.item_value_atomic_types.is_empty()
+    {
+        for (key, (_, value)) in std::mem::take(&mut array_creation_info.property_types) {
+            if !array_creation_info.is_list {
+                array_creation_info.item_key_atomic_types.push(key.to_atomic());
+            }
+            array_creation_info.item_value_atomic_types.extend(value.types.into_owned());
+        }
+        array_creation_info.can_create_objectlike = false;
+    }
     let item_key_type = if array_creation_info.item_key_atomic_types.is_empty() {
         None
     } else {

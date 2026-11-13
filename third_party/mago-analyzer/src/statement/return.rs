@@ -321,6 +321,14 @@ pub fn handle_return_value<'ctx, A>(
         artifacts.inferred_return_types.push(Rc::clone(&inferred_return_type));
     }
 
+    // the returned value is sent to the declared return type (bleeding edge, see crate::template_arguments)
+    if return_value.is_some()
+        && function_like_metadata.return_type_metadata.is_some()
+        && context.settings.template_arguments == crate::template_arguments::TemplateArgumentMode::Observe
+    {
+        context.template_arguments.borrow_mut().collect_send(context.codebase, &expected_return_type, &inferred_return_type);
+    }
+
     if let Some(return_value) = return_value {
         if expected_return_type.is_mixed() {
             return;

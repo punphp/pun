@@ -165,8 +165,7 @@ pub(super) fn check_this_method<'arena>(
             Err(()) => return,
         }
     } else {
-        members::method(c, class, name.value)
-            .or_else(|| members::annotation_method(c, class, name.value))
+        members::reflected_method(c, class, name.value)
     };
     let Some(method) = method else {
         // reportMagicMethods is off at level 0: a native __call() answers every name. ponytail: with Larastan,
@@ -500,8 +499,7 @@ pub(super) fn check_static_method<'arena>(
             Err(()) => return,
         }
     } else {
-        members::method(c, class, name.value)
-            .or_else(|| members::annotation_method(c, class, name.value))
+        members::reflected_method(c, class, name.value)
     };
     let Some(method) = method else {
         // FacadesMethodsExtension leaves a facade's method to MixinMethodsClassReflectionExtension: the `@mixin`

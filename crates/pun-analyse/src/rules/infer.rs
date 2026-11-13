@@ -17,6 +17,7 @@ use mago_analyzer::property_initialization::{
     PropertyInitializationCertainty, PropertyInitializationRequest,
 };
 use mago_analyzer::settings::Settings;
+use mago_analyzer::template_arguments::{Resolutions, TemplateArgumentMode};
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::symbol::SymbolKind;
@@ -144,6 +145,7 @@ pub(super) fn infer<'arena>(
     trait_class: Option<&str>,
     comments: &super::Comments,
     functions: &[(Span, origins::Function)],
+    template_arguments: bool,
 ) -> (
     HashMap<Span, TUnion>,
     HashMap<Span, Tri>,
@@ -200,6 +202,7 @@ pub(super) fn infer<'arena>(
         trait_class,
         comments,
         functions,
+        template_arguments,
     )
 }
 
@@ -251,7 +254,45 @@ pub(super) fn analyse<'arena>(
         None,
         comments,
         functions,
+        false,
     )
+}
+
+/// The observation pass of the bleeding-edge `unresolvedTemplateArguments` walk (StatementsHandler's
+/// `processBodyStmtNodesTwoPass()`), over the whole file: the template arguments of the bodies' generic calls, solved
+/// from what the bodies do with the results. Only the return-type providers are registered; the rules' recording
+/// hooks see the second pass alone.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the analyser run's inputs, as analyse_observed() takes them"
+)]
+fn observe_template_arguments<'arena>(
+    arena: &'arena LocalArena,
+    file: &File,
+    names: &ResolvedNames<'arena>,
+    codebase: &CodebaseMetadata,
+    program: &'arena Program<'arena>,
+    larastan: Option<&super::Larastan>,
+    php_version: u32,
+    settings: &Settings,
+) -> Resolutions {
+    let mut registry = super::return_types::registry(&file.contents, names, larastan);
+    super::regex_shapes::register(&mut registry, php_version);
+    let mut settings = settings.clone();
+    settings.template_arguments = TemplateArgumentMode::Observe;
+    settings.call_scope_observations = Vec::new();
+    settings.property_initialization_observations = Vec::new();
+    settings.track_variable_flow = false;
+    settings.track_native_types = false;
+    let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
+    let mut result = AnalysisResult::new(SymbolReferences::new());
+    let observed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        analyzer.analyze_with_artifacts(program, &mut result)
+    }));
+    match observed {
+        Ok(Ok(artifacts)) => artifacts.template_arguments.solve(codebase),
+        _ => Resolutions::default(),
+    }
 }
 
 fn analyse_observed<'arena>(
@@ -276,6 +317,7 @@ fn analyse_observed<'arena>(
     trait_class: Option<&str>,
     comments: &super::Comments,
     functions: &[(Span, origins::Function)],
+    template_arguments: bool,
 ) -> (
     HashMap<Span, TUnion>,
     HashMap<Span, Tri>,
@@ -382,8 +424,6 @@ fn analyse_observed<'arena>(
         .iter()
         .map(|(_, request)| *request)
         .collect();
-    let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
-    let mut result = AnalysisResult::new(SymbolReferences::new());
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
     // so the file's other functions and methods would only cost time (most of the rules' time on large classes).
     // Marker summaries also need real constructor/helper bodies, even without a requested operand in them.
@@ -396,6 +436,21 @@ fn analyse_observed<'arena>(
         .statements(&program.statements),
         ..program.clone()
     });
+    if template_arguments {
+        settings.template_arguments =
+            TemplateArgumentMode::Resolve(Arc::new(observe_template_arguments(
+                arena,
+                file,
+                names,
+                codebase,
+                program,
+                larastan,
+                php_version,
+                &settings,
+            )));
+    }
+    let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
+    let mut result = AnalysisResult::new(SymbolReferences::new());
     // ponytail: Mago's analyzer trips debug assertions on some code (an empty TUnion::from_vec); no types then
     let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         analyzer.analyze_with_artifacts(program, &mut result)
@@ -818,12 +873,18 @@ impl ExpressionHook for Definedness {
                 std::collections::hash_map::Entry::Occupied(mut previous)
                     if impossible || answered =>
                 {
-                    let combined = mago_codex::ttype::combine_union_types(
+                    let mut combined = mago_codex::ttype::combine_union_types(
                         previous.get(),
                         ty,
                         context.codebase(),
                         Default::default(),
                     );
+                    // the combiner drops the flag: a null every evaluation got from a nullsafe short circuit
+                    // still is one
+                    let nullsafe = |t: &TUnion| !t.has_null() || t.has_nullsafe_null();
+                    if combined.has_null() && nullsafe(previous.get()) && nullsafe(ty) {
+                        combined.set_nullsafe_null(true);
+                    }
                     previous.insert(combined);
                 }
                 std::collections::hash_map::Entry::Occupied(mut previous) => {

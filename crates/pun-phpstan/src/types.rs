@@ -3350,6 +3350,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             _ if b.object_class_names().iter().any(|c| {
                 symbols::lookup(c).is_some_and(|c| {
                     c.is_final
+                        && !c.allows_dynamic_properties
                         && props
                             .iter()
                             .any(|(name, _, optional)| !optional && !c.properties.contains(name))

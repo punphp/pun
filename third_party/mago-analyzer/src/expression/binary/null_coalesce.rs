@@ -332,6 +332,18 @@ where
 
         result_type =
             combine_union_types(&non_null_lhs_type, &rhs_type, context.codebase, context.settings.combiner_options());
+        // Pun: TypeCombinator::union() keeps a benevolent union when every member of the result is one of its
+        // members (`?string ?? __()` stays `(array|string)`)
+        for side in [&non_null_lhs_type, rhs_type.as_ref()] {
+            if side.ignore_nullable_issues()
+                && side.ignore_falsable_issues()
+                && side.types.len() > 1
+                && result_type.types.iter().all(|atomic| side.types.contains(atomic))
+            {
+                result_type.set_ignore_nullable_issues(true);
+                result_type.set_ignore_falsable_issues(true);
+            }
+        }
     }
 
     let mut continuing_scopes = vec![lhs_scope];

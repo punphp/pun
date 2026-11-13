@@ -75,11 +75,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         });
         let unrolled_arrays = unroll_array_mutations(context, block_context, artifacts, self, is_by_reference)?;
 
-        if key_type.is_never() {
+        // Pun: an empty array's key and value stay never (ForeachHandler's `getIterableValueType()` of `array{}`)
+        if key_type.is_never() && !never_enters_loop {
             key_type = get_mixed();
         }
 
-        if value_type.is_never() {
+        if value_type.is_never() && !never_enters_loop {
             value_type = get_mixed();
         }
 

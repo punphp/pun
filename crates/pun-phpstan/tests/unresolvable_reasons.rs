@@ -416,6 +416,7 @@ fn reflected_class(row: &Value) -> Arc<Class> {
             .filter(|p| p["public"].as_bool().unwrap())
             .map(|p| p["name"].as_str().unwrap().into())
             .collect(),
+        allows_dynamic_properties: false,
         ancestors: vec![],
         templates: vec![],
         cases: vec![],

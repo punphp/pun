@@ -707,7 +707,24 @@ where
 
             arguments_analyzed = true;
         } else if !arguments_analyzed {
+            // the inline callbacks a provider forwards to a method take that method's parameter types, as
+            // ArgumentsHandler types them against the forwarded method's parameters
+            let requests = context.plugin_registry.callback_invocations(
+                context.codebase,
+                context.source_file,
+                block_context,
+                artifacts,
+                &requested_identifier,
+                &invocation,
+            );
+            let callbacks: Vec<Span> = requests.iter().map(|r| r.callback.span()).collect();
+            for request in requests {
+                artifacts.callback_parameter_types.insert(request.callback.span(), request.arguments);
+            }
             argument_list.analyze(context, block_context, artifacts)?;
+            for span in callbacks {
+                artifacts.callback_parameter_types.remove(&span);
+            }
             evaluated_arguments.remember(&InvocationArgumentsSource::ArgumentList(argument_list), artifacts);
             arguments_analyzed = true;
         }
@@ -744,6 +761,7 @@ where
                     &invocation,
                     &invocation_template_result,
                     &parameter_types,
+                    block_context.scope.get_function_like().is_some(),
                 )
             }
         };

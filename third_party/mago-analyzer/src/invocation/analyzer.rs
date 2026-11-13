@@ -636,6 +636,8 @@ where
 {
     let first_analysis = !arguments.entered;
     arguments.entered = true;
+    // ArgumentsHandler: a function's or method's `isPure()->yes()`
+    let callee_is_pure = invocation.target.get_function_like_metadata().is_some_and(|f| f.flags.is_pure());
     if arguments.targets.is_empty()
         && context.external_analysis_session.is_some()
         && !invocation.target.has_effective_signature()
@@ -1401,6 +1403,10 @@ where
                 method_class_type,
             );
 
+            let observed_parameter_type = (context.settings.template_arguments
+                == crate::template_arguments::TemplateArgumentMode::Observe)
+                .then(|| base_parameter_type.clone());
+
             let final_parameter_type = resolve_parameter_type_for_invocation(
                 context,
                 invocation,
@@ -1409,6 +1415,17 @@ where
                 base_class_metadata,
                 base_parameter_type,
             );
+
+            if let Some(declared) = &observed_parameter_type {
+                observe_template_argument(
+                    context,
+                    template_result,
+                    declared,
+                    &final_parameter_type,
+                    &argument_value_type,
+                    callee_is_pure,
+                );
+            }
 
             let check_is_deferred_to_partial_invocation =
                 matches!(invocation.arguments_source, InvocationArgumentsSource::PartialArgumentList(_))
@@ -1659,6 +1676,9 @@ where
                     method_class_type,
                 );
 
+                let observed_variadic_parameter_type = (context.settings.template_arguments
+                    == crate::template_arguments::TemplateArgumentMode::Observe)
+                    .then(|| base_variadic_parameter_type.clone());
                 let final_variadic_parameter_type =
                     if template_result.has_template_types() || !template_result.lower_bounds.is_empty() {
                         let mut replaced_type = inferred_type_replacer::replace(
@@ -1690,6 +1710,19 @@ where
 
                     let argument_value_type =
                         artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed); // Get type of the iterable
+
+                    // ArgumentsHandler's observeUnpackedArgument(): each unpacked value goes to the variadic parameter
+                    if let Some(declared) = &observed_variadic_parameter_type {
+                        let element = get_unpacked_argument_type(context, &argument_value_type, argument_expression.span());
+                        observe_template_argument(
+                            context,
+                            template_result,
+                            declared,
+                            &final_variadic_parameter_type,
+                            &element,
+                            callee_is_pure,
+                        );
+                    }
 
                     let (minimum_unpacked_size, has_keyed_array_with_named_args) = argument_value_type
                         .types
@@ -2180,6 +2213,45 @@ fn remove_template_bounds_from_argument(template_result: &mut TemplateResult, ar
 
         !bounds_by_parent.is_empty()
     });
+}
+
+/// ArgumentsHandler's `collectArgument()` (bleeding edge, see [`crate::template_arguments`]): the argument against
+/// the declared parameter type with the receiver's class-level arguments in place and the call's own templates left
+/// as templates (an argument cannot decide what it is observed against). A closure argument's parameters take the
+/// parameter types of `resolved`, the parameter type with the call's templates inferred.
+fn observe_template_argument<A: Arena>(
+    context: &Context<'_, '_, A>,
+    template_result: &TemplateResult,
+    declared: &TUnion,
+    resolved: &TUnion,
+    argument: &TUnion,
+    pure: bool,
+) {
+    use crate::template_arguments::contains_marker;
+    use mago_codex::misc::GenericParent;
+    let receiver_markers = template_result.lower_bounds.values().flat_map(|by| by.iter()).any(|(entity, bounds)| {
+        matches!(entity, GenericParent::ClassLike(_)) && bounds.iter().any(|b| contains_marker(&b.bound_type))
+    });
+    if !receiver_markers && !contains_marker(argument) && !contains_marker(declared) {
+        return;
+    }
+    let mut class_level = template_result.clone();
+    // the receiver's arguments come first; the bounds the call's own arguments add after them are no part of the
+    // declared type
+    for by in class_level.lower_bounds.values_mut() {
+        by.retain(|entity, _| matches!(entity, GenericParent::ClassLike(_)));
+        for bounds in by.values_mut() {
+            bounds.truncate(1);
+        }
+    }
+    class_level.lower_bounds.retain(|_, by| !by.is_empty());
+    let declared = inferred_type_replacer::replace_with_polarity(
+        declared,
+        &class_level,
+        context.codebase,
+        mago_codex::ttype::template::variance::Variance::Contravariant,
+    );
+    context.template_arguments.borrow_mut().collect_argument(context.codebase, &declared, resolved, argument, pure);
 }
 
 /// Gets the effective parameter type, expanding class-relative types based on call context.

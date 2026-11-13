@@ -933,6 +933,9 @@ where
                 for (condition_offset, pre_condition) in pre_conditions.iter().enumerate() {
                     if is_do {
                         context.collector.start_recording();
+                        // Pun: a do-while's condition runs after the body; this evaluation at the loop's head only
+                        // narrows the next pass, so observers must not read it (PHPStan never evaluates it there)
+                        context.raw_callback_gather_depth += 1;
                     }
 
                     let result = apply_pre_condition_to_loop_context(
@@ -952,6 +955,7 @@ where
                     );
 
                     if is_do {
+                        context.raw_callback_gather_depth -= 1;
                         context.collector.finish_recording();
                     }
 

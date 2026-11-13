@@ -1202,3 +1202,24 @@ multiplied the union out to hundreds of `A&B&C` members per branch and did not f
 `scanner/class_like.rs`: a backed enum always gets `BackedEnum` as a direct parent interface. Pun's built-in symbols
 have no `__internal_do_not_use__*BackedEnum` interface, so through that name alone the enum was not an instance of
 `BackedEnum` and a `class-string<TEnum of BackedEnum>` argument did not bind its template.
+
+## Self-out types
+
+`metadata/function_like.rs` `MethodMetadata::this_out_type` holds a method's `@phpstan-this-out` or
+`@phpstan-self-out` type (PhpDocBlock::getSelfOutTag()). `scanner/function_like.rs` reads the most trusted tag on a
+non-static method, and `populator/signatures.rs` populates it with the `@where` constraints. Pun's analyser replaces
+the receiver's type with it after the call.
+
+## Trait `@method` tags beside a sibling trait's method
+
+`metadata/mod.rs` `can_replace_inherited_method()` takes the candidate's `MethodIdentifier`, not only its class
+(callers in `metadata/inherited_methods.rs` and `populator/methods.rs`). A trait's `@method` tag does not hide a real
+method that a sibling trait declares: Carbon's `Comparison` tags `yesterday()` and `Creator` declares it. Pun's
+reflection picks between the two as PHPStan's PhpClassReflectionExtension does.
+
+## Benevolent template replacements
+
+`ttype/template/inferred_type_replacer.rs` `replace_with_polarity()`: when a template is replaced by a benevolent
+union (`array-key`) and the result has only that union's members (`TKey|int`), the result stays benevolent.
+TypeCombinator::union() keeps a BenevolentUnionType that absorbs the other members, so the key of
+`Collection<TKey|int, ...>` prints `(int|string)`.

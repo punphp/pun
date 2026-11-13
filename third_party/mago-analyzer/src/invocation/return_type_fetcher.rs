@@ -33,7 +33,8 @@ pub fn fetch_invocation_return_type<'ctx, 'arena, A>(
 where
     A: Arena,
 {
-    let declared = fetch_declared_invocation_return_type(context, invocation, template_result, parameters);
+    let in_body = block_context.scope.get_function_like().is_some();
+    let declared = fetch_declared_invocation_return_type(context, invocation, template_result, parameters, in_body);
     // PHPStan resolves forwarding as a value rewrite after reading the builtin's mixed acceptor.
     // Mago's prelude instead expresses that rewrite as a generic return; it must not become an exit edge.
     let forwarded = matches!(
@@ -150,6 +151,7 @@ pub(crate) fn fetch_declared_invocation_return_type<A>(
     invocation: &Invocation<'_, '_, '_>,
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
+    in_body: bool,
 ) -> TUnion
 where
     A: Arena,
@@ -182,9 +184,20 @@ where
     };
 
     let mut resulting_type = if let Some(return_type) = target_return_type {
+        let return_type = if in_body && context.settings.template_arguments.is_on() {
+            template_argument_sites(context, invocation, template_result, return_type)
+        } else {
+            return_type
+        };
         let generalized = generalize_template_arguments(context, &return_type, template_result);
         let template_result = generalized.as_ref().unwrap_or(template_result);
-        resolve_invocation_type(context, invocation, template_result, parameters, return_type)
+        let resolved = resolve_invocation_type(context, invocation, template_result, parameters, return_type);
+        // a value read out of an object whose arguments are open is derived, see unwrap_bare()
+        if context.settings.template_arguments == crate::template_arguments::TemplateArgumentMode::Observe {
+            crate::template_arguments::unwrap_bare(&resolved, context.codebase)
+        } else {
+            resolved
+        }
     } else {
         get_mixed()
     };
@@ -196,6 +209,198 @@ where
     }
 
     resulting_type
+}
+
+/// ResolvedFunctionVariantWithOriginal::getReturnTypeWithUnresolvedTemplateArguments() under the bleeding-edge
+/// `unresolvedTemplateArguments` toggle: in a function-like body, the call's own templates inside an object of its
+/// return type are the call site's template arguments. The observation pass hands out a marker for each (none for a
+/// template only in covariant positions that something was inferred for); the second pass reads the resolution, else
+/// the exact inferred type, else the template's default or bound. Nothing is generalized.
+fn template_argument_sites<A: Arena>(
+    context: &Context<'_, '_, A>,
+    invocation: &Invocation<'_, '_, '_>,
+    template_result: &TemplateResult,
+    return_type: TUnion,
+) -> TUnion {
+    use crate::template_arguments::{self as ta, TemplateArgumentMode};
+    use mago_codex::misc::GenericParent;
+    use mago_codex::ttype::TType;
+    use mago_codex::ttype::atomic::object::TObject;
+    use mago_codex::ttype::template::bounds::get_most_specific_type_from_bounds;
+    use mago_codex::ttype::template::variance::Variance;
+
+    /// Calls `f` for each of the call's templates inside an object, with whether its position is covariant.
+    fn visit(
+        codebase: &mago_codex::metadata::CodebaseMetadata,
+        t: &TUnion,
+        in_object: bool,
+        covariant: bool,
+        own: &dyn Fn(&TAtomic) -> bool,
+        f: &mut dyn FnMut(&TAtomic, bool) -> Option<TUnion>,
+    ) -> Option<TUnion> {
+        let mut changed = false;
+        let mut types = Vec::with_capacity(t.types.len());
+        for atomic in t.types.iter() {
+            if in_object && own(atomic) {
+                if let Some(replacement) = f(atomic, covariant) {
+                    types.extend(replacement.types.iter().cloned());
+                    changed = true;
+                    continue;
+                }
+                types.push(atomic.clone());
+                continue;
+            }
+            match atomic {
+                TAtomic::Object(TObject::Named(named)) if named.type_parameters.is_some() => {
+                    let variances = codebase.get_class_like(named.name.as_bytes()).map(|k| k.template_variance.clone());
+                    let mut named = named.clone();
+                    let mut inner = false;
+                    if let Some(parameters) = named.get_type_parameters_mut() {
+                        for (i, parameter) in parameters.iter_mut().enumerate() {
+                            let variance =
+                                variances.as_ref().and_then(|v| v.get(i)).copied().unwrap_or(Variance::Invariant);
+                            let covariant = covariant && variance == Variance::Covariant;
+                            if let Some(replaced) = visit(codebase, parameter, true, covariant, own, f) {
+                                *parameter = replaced;
+                                inner = true;
+                            }
+                        }
+                    }
+                    changed |= inner;
+                    types.push(TAtomic::Object(TObject::Named(named)));
+                }
+                // a conditional return type is the branch it resolves to: each branch's objects are the call's
+                TAtomic::Conditional(conditional) => {
+                    let then = visit(codebase, &conditional.then, in_object, covariant, own, f);
+                    let otherwise = visit(codebase, &conditional.otherwise, in_object, covariant, own, f);
+                    if then.is_none() && otherwise.is_none() {
+                        types.push(atomic.clone());
+                    } else {
+                        let mut conditional = conditional.clone();
+                        if let Some(then) = then {
+                            conditional.then = std::sync::Arc::new(then);
+                        }
+                        if let Some(otherwise) = otherwise {
+                            conditional.otherwise = std::sync::Arc::new(otherwise);
+                        }
+                        changed = true;
+                        types.push(TAtomic::Conditional(conditional));
+                    }
+                }
+                TAtomic::Array(array) if in_object => {
+                    let (key, value) = mago_codex::ttype::get_array_parameters(array, codebase);
+                    let key = visit(codebase, &key, true, covariant, own, f);
+                    let value = visit(codebase, &value, true, covariant, own, f);
+                    if key.is_none() && value.is_none() {
+                        types.push(atomic.clone());
+                    } else {
+                        // an array argument of an object: its general key and value are what PHPStan maps
+                        let mut array = array.clone();
+                        if let (TArray::Keyed(keyed), Some(key)) = (&mut array, &key)
+                            && let Some((k, _)) = &mut keyed.parameters
+                        {
+                            *std::sync::Arc::make_mut(k) = key.clone();
+                        }
+                        if let Some(value) = &value {
+                            match &mut array {
+                                TArray::Keyed(keyed) => {
+                                    if let Some((_, v)) = &mut keyed.parameters {
+                                        *std::sync::Arc::make_mut(v) = value.clone();
+                                    }
+                                }
+                                TArray::List(list) => *std::sync::Arc::make_mut(&mut list.element_type) = value.clone(),
+                            }
+                        }
+                        changed = true;
+                        types.push(TAtomic::Array(array));
+                    }
+                }
+                _ => types.push(atomic.clone()),
+            }
+        }
+        changed.then(|| t.clone_with_types(types))
+    }
+
+    let Some(templates) = invocation.target.get_template_types() else {
+        return return_type;
+    };
+    if templates.is_empty() || !return_type.has_template_types() {
+        return return_type;
+    }
+    let own = |atomic: &TAtomic| {
+        matches!(atomic, TAtomic::GenericParameter(p)
+            if matches!(p.defining_entity, GenericParent::FunctionLike(_))
+                && templates.contains_key(&p.parameter_name)
+                && ta::as_marker(atomic).is_none())
+    };
+    // the templates referenced only covariantly
+    let mut covariant_only: std::collections::HashMap<mago_word::Word, bool> = std::collections::HashMap::new();
+    visit(context.codebase, &return_type, false, true, &own, &mut |atomic, covariant| {
+        if let TAtomic::GenericParameter(p) = atomic {
+            let entry = covariant_only.entry(p.parameter_name).or_insert(true);
+            *entry = *entry && covariant;
+        }
+        None
+    });
+    // a template a parameter with an unpassed default mentions is inferred from that default: an empty array's
+    // key and value are never (GenericParametersAcceptorResolver)
+    let passed = invocation.arguments_source.argument_count();
+    let from_default = |name: mago_word::Word| {
+        invocation.target.get_parameters().iter().enumerate().any(|(i, parameter)| {
+            i >= passed
+                && parameter.get_default_type().is_some()
+                && parameter.get_type().is_some_and(|t| {
+                    t.any_child_node(|node| {
+                        matches!(node, mago_codex::ttype::TypeRef::Atomic(TAtomic::GenericParameter(p)) if p.parameter_name == name)
+                    })
+                })
+        })
+    };
+    let site = invocation.span;
+    let mode = &context.settings.template_arguments;
+    visit(context.codebase, &return_type, false, true, &own, &mut |atomic, _| {
+        let TAtomic::GenericParameter(p) = atomic else {
+            return None;
+        };
+        let template = templates.get(&p.parameter_name)?;
+        let inferred = template_result
+            .lower_bounds
+            .get(&p.parameter_name)
+            .and_then(|by| by.get(&p.defining_entity))
+            .filter(|bounds| !bounds.is_empty())
+            .map(|bounds| get_most_specific_type_from_bounds(bounds, context.codebase))
+            .or_else(|| from_default(p.parameter_name).then(mago_codex::ttype::get_never));
+        let unconstrained = template.default.clone().unwrap_or_else(|| (*p.constraint).clone());
+        match mode {
+            TemplateArgumentMode::Off => None,
+            TemplateArgumentMode::Observe => {
+                if covariant_only.get(&p.parameter_name).copied().unwrap_or(false)
+                    && inferred.as_ref().is_some_and(|t| !t.is_never())
+                {
+                    return inferred;
+                }
+                if let Some(initial) = &inferred
+                    && let [only] = initial.types.as_ref()
+                    && ta::as_marker(only).is_some()
+                {
+                    return inferred;
+                }
+                let marker = ta::marker(site, p.parameter_name, inferred, unconstrained.clone(), false);
+                if let Some(m) = ta::as_marker(&marker) {
+                    context.template_arguments.borrow_mut().site(&m, unconstrained);
+                }
+                Some(TUnion::from_atomic(marker))
+            }
+            TemplateArgumentMode::Resolve(resolutions) => Some(
+                resolutions
+                    .get(&ta::SiteKey::new(site, p.parameter_name))
+                    .cloned()
+                    .or(inferred)
+                    .unwrap_or(unconstrained),
+            ),
+        }
+    })
+    .unwrap_or(return_type)
 }
 
 /// PHPStan's ResolvedFunctionVariantWithOriginal::resolveResolvableTemplateTypes(): a function or method template

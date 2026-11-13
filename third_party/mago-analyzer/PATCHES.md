@@ -3955,3 +3955,62 @@ Each case is in `crates/pun-analyse/tests/fixtures/inference-parity/` with PHPSt
   its offsets (TypeSpecifier::specifyTypesForCountFuncCall()).
 - `statement/if.rs`: the replay of a condition that carries its assignments past the `if` runs with observers off, so
   its reads are not taken for the condition's own.
+
+## Bleeding edge: unresolved template arguments
+
+`template_arguments.rs` ports PHPStan 2.3.5's bleeding-edge `featureToggles.unresolvedTemplateArguments`
+(src/Analyser/Generics). `settings.rs` `template_arguments` is the mode: `Off` (PHPStan without the toggle),
+`Observe` (the first pass) or `Resolve` (the second pass, with the first pass's resolutions). Pun walks a file twice,
+as StatementsHandler walks a body twice.
+
+- A marker is a `TGenericParameter` whose defining entity names the call site; its constraint is its delegate. It
+  flows through variables, unions and method calls like the template it stands for.
+- `invocation/return_type_fetcher.rs` `template_argument_sites()` (getReturnTypeWithUnresolvedTemplateArguments()):
+  in a function-like body, the call's own templates inside an object of its return type are site arguments. A
+  conditional return type's branches are visited. A template only in covariant positions that something was inferred
+  for gets no marker. A template a parameter's unpassed default mentions is inferred from that default.
+- `expression/instantiation.rs` does the same for `new` (NewHandler).
+- Observers (TemplateArgumentObserver): `invocation/analyzer.rs` `observe_template_argument()` (collectArgument(),
+  with the receiver's class-level arguments in place, the call's own templates left open and the callee's
+  `isPure()->yes()`; each unpacked value goes to the variadic parameter), `statement/return.rs` (the returned value
+  against the declared return type) and `expression/assignment/mod.rs` (the assigned value against a `@var` type).
+  `context/mod.rs` holds the pass's constraints; `lib.rs` hands them to `artifacts.rs` `template_arguments`, and
+  `Observed::solve()` is TemplateArgumentSolver.
+- closureSignaturesFromUsages, simplified: a closure written outside of a call's arguments
+  (`expression/closure.rs`, `expression/arrow_function.rs`) has marker parameters in the observation pass, and the
+  callable signatures it is sent to give their lower bounds. The second pass types the parameters with the
+  resolutions. Invocation return inference is not ported, so `$g(1); $g(2)` types `$x` as `1|2` in both calls where
+  PHPStan gives `1` and `2`.
+- `statement/function_like/mod.rs`: a marker inferred for a parameter with a declared type is unwrapped to its
+  delegate, and the declared type is intersected with an inferred union member by member
+  (`intersectButNotNever()`).
+
+## Inference on a Larastan application
+
+Each case was compared with PHPStan 2.3.5 on dev-null.sh, with and without bleeding edge.
+
+- `expression/call/method_call.rs`: the inline callbacks a provider forwards to another method
+  (`plugin_registry.callback_invocations()`) take that method's parameter types while the arguments are analysed
+  (`artifacts.rs` `callback_parameter_types`, read by `expression/closure.rs` and `expression/arrow_function.rs`).
+- `invocation/post_process.rs`: a method's `@phpstan-this-out` type, resolved for the call, becomes the receiver's
+  type (MethodCallHandler).
+- `expression/assignment/mod.rs`: AssignHandler's ternary sure types. After `$x = $c ? null : $y`, `$x` being the
+  part only one arm produces brings that arm's narrowing of `$c`. Only a trackable expression and a one-atomic
+  remainder are recorded.
+- `expression/assignment/mod.rs`, `expression/closure.rs`: ClosureProcessor's in-assign-right-side seed. In
+  `$v = RHS`, a closure inside RHS that uses `&$v` enters with `$v` before the assignment (null when undefined)
+  joined with RHS's type. A by-ref use undefined where the closure is created is null (processClosureScope()).
+- `expression/array.rs`: unpacking an array of unknown keys degrades the literal to a general array of every item's
+  keys and values (ConstantArrayTypeBuilder), so `[...$a, 'x' => 1]` is `non-empty-array<mixed>`.
+- `expression/binary/null_coalesce.rs`: the result stays benevolent when every member is a member of a benevolent
+  side (`?string ?? __()` stays `(array|string)`), as TypeCombinator::union() keeps it.
+- `formula.rs`: `[]` is a constant value for CoalesceHandler's `($a ?? V) !== V`. A right side the left cannot be
+  narrows the left to `V` in the true context of `=== V`.
+- `reconciler/mod.rs` `add_negated_isset_parent_assertions()`: the falsey context of `isset($a['k'])` on a defined
+  `$a` removes the alternatives of `$a` that surely have a non-null `'k'` (IssetHandler).
+  `reconciler/simple_negated_assertion_reconciler.rs` drops an alternative whose key is not optional instead of
+  keeping it.
+- `statement/if.rs`: the replay of a condition keeps the condition's own boolean operand scopes.
+- `statement/loop/mod.rs`: a do-while's condition evaluated at the loop's head runs with observers off; PHPStan only
+  evaluates it after the body.
+- `statement/loop/foreach.rs`: an empty array's key and value stay `never` (`getIterableValueType()` of `array{}`).

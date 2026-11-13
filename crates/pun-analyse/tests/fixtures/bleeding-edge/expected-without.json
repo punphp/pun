@@ -1,0 +1,175 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 26
+    },
+    "files": {
+        "a.php": {
+            "errors": 18,
+            "messages": [
+                {
+                    "message": "Dumped type: array<int, string>",
+                    "line": 12,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array<string, int<0, max>>",
+                    "line": 13,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<string, int<0, max>>",
+                    "line": 14,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{a: 2, b: 1}",
+                    "line": 15,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{1: 'x', 2: 'y', '02': 'z'}",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<string, 0|1>",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{a: 1, b: 0}",
+                    "line": 18,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{1: 'a', '': 'b'}",
+                    "line": 19,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Parameter #1 $array of function array_flip expects array<int|string>, array<string, true|null> given.",
+                    "line": 19,
+                    "ignorable": true,
+                    "identifier": "argument.type"
+                },
+                {
+                    "message": "Dumped type: list<string>",
+                    "line": 20,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{}",
+                    "line": 21,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{}",
+                    "line": 22,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array<'a', int>",
+                    "line": 23,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{a?: 1, b?: 2}",
+                    "line": 24,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{a?: 1, b?: 2}",
+                    "line": 25,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{a: 1, b: 2}",
+                    "line": 26,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{1, 2}",
+                    "line": 27,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array{}",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        },
+        "b.php": {
+            "errors": 8,
+            "messages": [
+                {
+                    "message": "Dumped type: App\\Box<int, int|null>",
+                    "line": 36,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Box<int, int|null>",
+                    "line": 37,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Box<int, int|null>",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<mixed>",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-array<mixed>",
+                    "line": 43,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 49,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 52,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Parameter #1 $c of method App\\B::each() expects callable(string): void, Closure(mixed): mixed given.",
+                    "line": 53,
+                    "ignorable": true,
+                    "identifier": "argument.type"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

@@ -89,6 +89,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
             }
         }
 
+        // the right side's seed applies to this closure's uses only, never inside its body
+        let assign_by_ref_seed = context.assign_by_ref_seed.take();
         let mut variable_spans = HashMap::default();
         if let Some(use_clause) = self.use_clause.as_ref() {
             for use_variable in &use_clause.variables {
@@ -147,8 +149,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
                 variable_spans.insert(variable_bytes, variable_span);
 
                 let variable_atom = word(variable_bytes);
-                let mut variable_type =
-                    block_context.locals.get(&variable_atom).cloned().unwrap_or_else(|| Rc::new(get_mixed()));
+                // processClosureScope(): a by-ref use undefined where the closure is created is null
+                let mut variable_type = match &assign_by_ref_seed {
+                    Some((name, seed)) if is_by_reference && *name == variable_atom => Rc::new(seed.clone()),
+                    _ => block_context.locals.get(&variable_atom).cloned().unwrap_or_else(|| {
+                        Rc::new(if is_by_reference { mago_codex::ttype::get_null() } else { get_mixed() })
+                    }),
+                };
 
                 if is_by_reference {
                     let captures_itself = is_closure_itself(&variable_type, context.source_file, s);
@@ -234,7 +241,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
             self.return_type_hint.as_ref(),
         );
 
-        let inferred_parameter_types = artifacts.inferred_parameter_types.take();
+        let inferred_parameter_types = artifacts.inferred_parameter_types.take().or_else(|| {
+            artifacts.callback_parameter_types.remove(&self.span()).map(|types| types.into_iter().enumerate().collect())
+        });
+        // ClosureTypeResolver: nothing types a closure written outside of a call's arguments
+        let context_free = inferred_parameter_types.is_none()
+            && !block_context.flags.inside_call()
+            && context.self_capturing_closure != Some(self.span());
+        let resolved_signature = match &context.settings.template_arguments {
+            crate::template_arguments::TemplateArgumentMode::Resolve(resolutions) if context_free => {
+                crate::template_arguments::closure_signature_parameters(
+                    resolutions,
+                    self.span(),
+                    self.parameter_list.parameters.iter().map(|p| mago_word::word(p.variable.name)),
+                )
+            }
+            _ => None,
+        };
+        let inferred_parameter_types = match &resolved_signature {
+            Some(types) => Some(types.clone().into_iter().collect()),
+            None => inferred_parameter_types,
+        };
         let inner_artifacts = analyze_function_like(
             context,
             artifacts,
@@ -283,7 +310,21 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
             inner_artifacts,
         );
 
+        let resulting_closure = if context_free
+            && context.settings.template_arguments == crate::template_arguments::TemplateArgumentMode::Observe
+        {
+            crate::template_arguments::closure_signature_markers(
+                resulting_closure,
+                self.span(),
+                &mut context.template_arguments.borrow_mut(),
+            )
+        } else if let Some(resolved) = &resolved_signature {
+            crate::template_arguments::closure_signature_resolved(resulting_closure, resolved, context.codebase)
+        } else {
+            resulting_closure
+        };
         artifacts.set_expression_type(self, resulting_closure);
+        context.assign_by_ref_seed = assign_by_ref_seed;
 
         if context.settings.find_unused_parameters {
             unused_parameter::check_unused_params(

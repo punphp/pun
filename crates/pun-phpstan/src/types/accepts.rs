@@ -464,7 +464,13 @@ fn object_shape(a: &Type, props: &[(String, Type, bool)], b: &Type, strict: bool
     props
         .iter()
         .filter(|(name, _, optional)| !optional && !class.properties.contains(name))
-        .map(|_| if class.is_final { Tri::No } else { Tri::Maybe })
+        .map(|_| {
+            if class.is_final && !class.allows_dynamic_properties {
+                Tri::No
+            } else {
+                Tri::Maybe
+            }
+        })
         .fold(Tri::Yes, Tri::and)
 }
 

@@ -536,6 +536,7 @@ fn analyse() {
             ecosystems: vec![],
             larastan: false,
             rules: a.rules.clone(),
+            bleeding_edge: false,
         }
     );
     assert_eq!(a.rules.len(), 150 + 106 + 75 - 11);

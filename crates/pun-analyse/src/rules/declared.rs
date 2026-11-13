@@ -1993,7 +1993,17 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             is_trait: k.kind == SymbolKind::Trait,
             is_enum: k.kind == SymbolKind::Enum,
             is_final: k.flags.contains(MetadataFlags::FINAL),
-            properties: Vec::new(),
+            properties: k
+                .declaring_property_ids
+                .iter()
+                .filter(|(name, declaring)| {
+                    c.codebase
+                        .get_property(declaring.as_bytes(), name.as_bytes())
+                        .is_some_and(|p| !p.flags.is_static())
+                })
+                .map(|(name, _)| text(&name.as_bytes()[1..]))
+                .collect(),
+            allows_dynamic_properties: super::property_access::allows_dynamic_properties(c, k),
             constants: k
                 .constants
                 .values()

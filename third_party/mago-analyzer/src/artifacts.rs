@@ -147,6 +147,8 @@ pub struct AnalysisArtifacts {
     /// ArrayHandler's passed-to type: the value type an argument's parameter expects of the array literal analysed
     /// next, whose closure items take their parameter types from its callables.
     pub(crate) array_passed_to_type: Option<TUnion>,
+    /// A magic call's inline callbacks, by span, with the parameter types a provider's forwarded method gives them.
+    pub(crate) callback_parameter_types: HashMap<Span, Vec<TUnion>>,
     /// Results of providers' typed callback invocations, local to the asking call.
     pub(crate) callback_returns: Vec<(Span, Vec<TUnion>, TUnion)>,
     pub method_initialized_properties: HashMap<(Word, Word), WordSet>,
@@ -171,6 +173,9 @@ pub struct AnalysisArtifacts {
     pub property_offset_writes: HashMap<Span, TUnion>,
     /// Body-boundary value-read/write answers, separate from type and definedness observations.
     pub variable_writes: HashMap<Span, crate::variable_flow::VariableWritesNode>,
+    /// The observation pass's template argument constraints; [`crate::template_arguments::Observed::solve()`]
+    /// gives the second pass's resolutions.
+    pub template_arguments: crate::template_arguments::Observed,
     /// Types an expression takes after its own analysis, by span: an argument-less generic `new` sent to an
     /// unconstraining parameter (its templates' defaults or bounds), a returned expression under a `@var` tag.
     pub late_expression_types: HashMap<Span, TUnion>,
@@ -214,6 +219,7 @@ impl AnalysisArtifacts {
             fully_matched_switch_offsets: HashSet::default(),
             inferred_parameter_types: None,
             array_passed_to_type: None,
+            callback_parameter_types: HashMap::default(),
             callback_returns: Vec::new(),
             method_initialized_properties: HashMap::default(),
             method_calls_this_methods: HashMap::default(),
@@ -229,6 +235,7 @@ impl AnalysisArtifacts {
             nullsafe_method_receiver_types: HashMap::default(),
             property_offset_writes: HashMap::default(),
             variable_writes: HashMap::default(),
+            template_arguments: crate::template_arguments::Observed::default(),
             late_expression_types: HashMap::default(),
             editor: None,
             variable_definedness: HashMap::default(),

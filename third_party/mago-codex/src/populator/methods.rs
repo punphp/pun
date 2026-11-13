@@ -127,7 +127,7 @@ pub fn inherit_methods_from_parent(
                     return;
                 }
                 if implementing_method_id.get_class_name() == class_like_name
-                    || !codebase.can_replace_inherited_method(*implementing_method_id, parent_metadata.name)
+                    || !codebase.can_replace_inherited_method(*implementing_method_id, *declaring_method_id)
                 {
                     return;
                 }

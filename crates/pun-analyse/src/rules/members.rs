@@ -21,6 +21,8 @@ pub(super) enum Method<'a> {
         name: mago_word::Word,
         original_name: mago_word::Word,
         visibility: Visibility,
+        /// An `@method` tag's holder, which the declaring class (the class using its trait) does not name.
+        storage: Option<mago_word::Word>,
     },
     Builtin {
         declaring: &'static symbols::Class,
@@ -96,11 +98,19 @@ impl Method<'_> {
     pub(super) fn variants(&self) -> Variants {
         match self {
             Method::User {
-                f, declaring, name, ..
+                f,
+                declaring,
+                name,
+                storage: holder,
+                ..
             } => {
                 let mut v = Variants::of(f);
                 for a in &mut v.all {
-                    let storage = declaring.declaring_method_ids.get(name);
+                    let storage = holder
+                        .map(|holder| {
+                            mago_codex::identifier::method::MethodIdentifier::new(holder, *name)
+                        })
+                        .or_else(|| declaring.declaring_method_ids.get(name).copied());
                     a.class = Some(declaring.name.to_string());
                     a.callee = Some(super::params::UserCallee {
                         class: Some(
@@ -154,6 +164,100 @@ pub(super) fn method<'a>(
         .find_map(|i| declared(c, i, &lower))
 }
 
+/// `ClassReflection::getMethod()`: the native method, else the `@method` tag. A tag wins over the native method when
+/// the class it counts at (a used trait's tag counts at the class using it) is no farther in
+/// `getClassHierarchyDistances()` than the native method's trait or declaring class
+/// (PhpClassReflectionExtension::getMethod()): Carbon's `Difference` tags `lessThan($date)`, `Comparison` declares it.
+pub(super) fn reflected_method<'a>(
+    c: &Checker<'a, '_>,
+    class: &'a ClassLikeMetadata,
+    name: &[u8],
+) -> Option<Method<'a>> {
+    let native = method(c, class, name);
+    let annotation = annotation_method(c, class, name);
+    if let (
+        Some(Method::User {
+            declaring: native_class,
+            name: native_name,
+            ..
+        }),
+        Some(Method::User {
+            declaring: tag_class,
+            ..
+        }),
+    ) = (&native, &annotation)
+    {
+        let codebase = c.codebase;
+        let native_at = native_class
+            .declaring_method_ids
+            .get(native_name)
+            .map(mago_codex::identifier::method::MethodIdentifier::get_class_name)
+            .filter(|t| {
+                codebase
+                    .get_class_like(t.as_bytes())
+                    .is_some_and(|t| t.kind.is_trait())
+            })
+            .unwrap_or(native_class.name);
+        let distances = hierarchy_distances(c, class);
+        if let (Some(tag), Some(native)) =
+            (distances.get(&tag_class.name), distances.get(&native_at))
+            && tag <= native
+        {
+            return annotation;
+        }
+    }
+    native.or(annotation)
+}
+
+/// `ClassReflection::getClassHierarchyDistances()`: the class, its traits (recursively, breadth first), each parent
+/// with its traits, then its interfaces, each one further than the one before.
+fn hierarchy_distances(
+    c: &Checker,
+    class: &ClassLikeMetadata,
+) -> std::collections::HashMap<mago_word::Word, usize> {
+    let codebase = c.codebase;
+    let get = |n: mago_word::Word| codebase.get_class_like(n.as_bytes());
+    let traits = |k: &ClassLikeMetadata| {
+        let mut out = Vec::new();
+        let mut queue: std::collections::VecDeque<_> = k.direct_trait_names().collect();
+        let mut seen = HashSet::new();
+        while let Some(t) = queue.pop_front() {
+            if !seen.insert(t) {
+                continue;
+            }
+            out.push(t);
+            if let Some(t) = get(t) {
+                queue.extend(t.direct_trait_names());
+            }
+        }
+        out
+    };
+    let mut distance = 0;
+    let mut distances = std::collections::HashMap::from([(class.name, distance)]);
+    for t in traits(class) {
+        distance += 1;
+        distances.entry(t).or_insert(distance);
+    }
+    let mut current = class;
+    let mut seen = HashSet::from([class.name]);
+    while let Some(parent) = current.direct_parent_class.and_then(get)
+        && seen.insert(parent.name)
+    {
+        distance += 1;
+        distances.entry(parent.name).or_insert(distance);
+        for t in traits(parent) {
+            distance += 1;
+            distances.entry(t).or_insert(distance);
+        }
+        current = parent;
+    }
+    for interface in &class.all_parent_interfaces {
+        distance += 1;
+        distances.entry(*interface).or_insert(distance);
+    }
+    distances
+}
+
 /// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits, its parents or its
 /// interfaces, which `getMethod()` falls back to when the class has no such native method.
 pub(super) fn annotation_method<'a>(
@@ -175,7 +279,11 @@ pub(super) fn annotation_method<'a>(
                 .get(&(k.name, lower))
                 .map(Box::as_ref)
         {
-            return Some(user(c, declaring, f, lower));
+            let mut found = user(c, declaring, f, lower);
+            if let Method::User { storage, .. } = &mut found {
+                *storage = Some(k.name);
+            }
+            return Some(found);
         }
         // findClassReflectionWithMethod(): traits first, then the parent, then interfaces, depth first.
         let start = pending.len();
@@ -326,5 +434,6 @@ fn user<'a>(
         name,
         original_name,
         visibility,
+        storage: None,
     }
 }

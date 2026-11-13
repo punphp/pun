@@ -391,6 +391,7 @@ where
                     &constructor_call,
                     &template_result,
                     &argument_types,
+                    false,
                 );
                 declared.is_explicit_never().then_some(declared)
             });
@@ -415,6 +416,8 @@ where
             None,
         );
 
+        let in_body = block_context.scope.get_function_like().is_some();
+        let passed = argument_list.as_ref().map_or(0, |list| list.arguments.len());
         let mut resolved_template_types = vec![];
         for (offset, (template_name, template)) in metadata.template_types.iter().enumerate() {
             let mut template_type = if let Some(lower_bounds) =
@@ -457,6 +460,32 @@ where
             };
 
             let variance = metadata.template_variance.get(offset).copied().unwrap_or(Variance::Invariant);
+            if in_body && context.settings.template_arguments.is_on() {
+                // a template an unpassed parameter's default mentions is inferred from it: an empty array's key and
+                // value are never (GenericParametersAcceptorResolver)
+                if template_type.is_placeholder()
+                    && constructor.parameters.iter().enumerate().any(|(i, parameter)| {
+                        i >= passed
+                            && parameter.default_type.is_some()
+                            && parameter.type_metadata.as_ref().is_some_and(|t| {
+                                t.type_union.any_child_node(|node| {
+                                    matches!(node, mago_codex::ttype::TypeRef::Atomic(TAtomic::GenericParameter(p)) if p.parameter_name == *template_name)
+                                })
+                            })
+                    })
+                {
+                    template_type = get_never();
+                }
+                resolved_template_types.push(new_template_argument(
+                    context,
+                    instantiation_span,
+                    *template_name,
+                    template,
+                    template_type,
+                    matches!(variance, Variance::Covariant),
+                ));
+                continue;
+            }
             if matches!(variance, Variance::Invariant) {
                 template_type.widen_scalars();
             }
@@ -640,6 +669,43 @@ where
         };
 
     Ok(wrap_atomic(result_atomic))
+}
+
+/// NewHandler under the bleeding-edge `unresolvedTemplateArguments` toggle (see [`crate::template_arguments`]): in a
+/// function-like body a template argument of `new` is the site's. The observation pass hands out a marker (none for
+/// a covariant template something was inferred for); the second pass reads the resolution, else the exact inferred
+/// type, else the template's default or bound. Nothing is generalized.
+fn new_template_argument<A: Arena>(
+    context: &Context<'_, '_, A>,
+    site: Span,
+    name: mago_word::Word,
+    template: &mago_codex::ttype::template::GenericTemplate,
+    inferred: TUnion,
+    covariant: bool,
+) -> TUnion {
+    use crate::template_arguments::{self as ta, TemplateArgumentMode};
+
+    let inferred = (!inferred.is_placeholder()).then_some(inferred);
+    let unconstrained = template.default.clone().unwrap_or_else(|| template.constraint.clone());
+    match &context.settings.template_arguments {
+        TemplateArgumentMode::Off => inferred.unwrap_or(unconstrained),
+        TemplateArgumentMode::Observe => {
+            if let Some(initial) = &inferred
+                && ((covariant && !initial.is_never())
+                    || matches!(initial.types.as_ref(), [only] if ta::as_marker(only).is_some()))
+            {
+                return initial.clone();
+            }
+            let marker = ta::marker(site, name, inferred, unconstrained.clone(), covariant);
+            if let Some(m) = ta::as_marker(&marker) {
+                context.template_arguments.borrow_mut().site(&m, unconstrained);
+            }
+            TUnion::from_atomic(marker)
+        }
+        TemplateArgumentMode::Resolve(resolutions) => {
+            resolutions.get(&ta::SiteKey::new(site, name)).cloned().or(inferred).unwrap_or(unconstrained)
+        }
+    }
 }
 
 /// Analyzes the constructor invocation for an anonymous class.

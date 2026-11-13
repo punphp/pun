@@ -206,6 +206,29 @@ fn offset(row: &TUnion, offset: &TUnion) -> Option<(TUnion, Tri)> {
         let (value, certainty) = match atomic {
             TAtomic::Mixed(_) => (Some(get_mixed()), Tri::Maybe),
             TAtomic::Array(array) => union_offset(array, &wanted),
+            // an object shape's readable properties (`getOffsetOrProperty()`'s property branch)
+            TAtomic::Object(mago_codex::ttype::atomic::object::TObject::WithProperties(shape)) => {
+                let mut types: Option<TUnion> = None;
+                for name in offset.types.iter() {
+                    let TAtomic::Scalar(TScalar::String(name)) = name else {
+                        return Some((get_mixed(), Tri::Maybe));
+                    };
+                    let Some(name) = name.get_known_literal_value() else {
+                        return Some((get_mixed(), Tri::Maybe));
+                    };
+                    match shape.known_properties.get(&mago_word::word(name)) {
+                        Some((true, _)) => return Some((get_mixed(), Tri::Maybe)),
+                        Some((false, property)) => {
+                            types = Some(match types {
+                                Some(types) => merge(types, property),
+                                None => property.clone(),
+                            });
+                        }
+                        None => {}
+                    }
+                }
+                (types, Tri::Yes)
+            }
             // neither property access nor offset access
             TAtomic::Null
             | TAtomic::Scalar(TScalar::Integer(_) | TScalar::Float(_) | TScalar::Bool(_)) => {

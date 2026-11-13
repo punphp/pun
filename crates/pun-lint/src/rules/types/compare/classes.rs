@@ -80,6 +80,7 @@ fn build(codebase: &CodebaseMetadata, name: &str) -> Option<Class> {
         is_enum: k.kind == SymbolKind::Enum,
         is_final: k.flags.is_final(),
         properties: Vec::new(),
+        allows_dynamic_properties: k.flags.allows_dynamic_properties(),
         // a constant whose value is not a literal reads as `mixed`, as in pun-analyse
         constants: (k.constants.values())
             .map(|m| {

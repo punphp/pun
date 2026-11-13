@@ -217,9 +217,12 @@ impl<'a> Checker<'a, '_> {
                 .yes()
             })
         };
-        let native =
-            members::method(self, k, name).or_else(|| members::annotation_method(self, k, name));
-        if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
+        // (a `@method` tag of a trait another trait uses counts at that trait)
+        let native = members::reflected_method(self, k, name);
+        if let Some(m) = native.filter(|m| {
+            matches!(m, members::Method::User { declaring, .. } if declaring.kind.is_trait())
+                || nominal(&m.declaring_name())
+        }) {
             let mut method = method_reflection::Method::leaf(self, t, m);
             // Keep the declaring class's supplied arguments in semantic parameter types too, not just their
             // descriptions. Re-reading a User parameter later would otherwise restore its unbound template and

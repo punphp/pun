@@ -94,6 +94,9 @@ bitflags::bitflags! {
         const CHECK_MISSING_CALLABLE_SIGNATURE = 1 << 35;
         /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
         const DEPRECATION_RULES = 1 << 36;
+        /// `featureToggles.unresolvedTemplateArguments` (on with bleedingEdge): a body decides the template arguments of
+        /// its generic calls from what it does with their results (see `mago_analyzer::template_arguments`).
+        const UNRESOLVED_TEMPLATE_ARGUMENTS = 1 << 37;
     }
 }
 
@@ -607,6 +610,10 @@ impl Project {
         );
         options.set(ProjectOptions::NEW_ON_NON_OBJECT, toggle("newOnNonObject"));
         options.set(
+            ProjectOptions::UNRESOLVED_TEMPLATE_ARGUMENTS,
+            toggle("unresolvedTemplateArguments"),
+        );
+        options.set(
             ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES,
             flag("checkUninitializedProperties"),
         );
@@ -739,6 +746,7 @@ impl Project {
         options.set(ProjectOptions::UNUSED_VARIABLE, false);
         options.set(ProjectOptions::UNUSED_PARAMETERS, false);
         options.set(ProjectOptions::NEW_ON_NON_OBJECT, false);
+        options.set(ProjectOptions::UNRESOLVED_TEMPLATE_ARGUMENTS, false);
         options.set(ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES, false);
         options.set(ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE, false);
         options.set(ProjectOptions::DEPRECATION_RULES, false);

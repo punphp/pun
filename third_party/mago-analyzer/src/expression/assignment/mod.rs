@@ -202,7 +202,33 @@ where
 
         match assignment_operator {
             None => {
-                source_expression.analyze(context, block_context, artifacts)?;
+                let seed = match &target_variable_id {
+                    Some(variable) if matches!(target_expression, Expression::Variable(_)) => {
+                        by_ref_assign_seed(context, block_context, source_expression, *variable)
+                    }
+                    _ => None,
+                };
+                let previous_seed = std::mem::replace(&mut context.assign_by_ref_seed, seed);
+                // ClosureSignatureInference::isAssignedToByRefUse()
+                let self_capturing = match (&target_variable_id, unwrap_expression(source_expression)) {
+                    (Some(variable), Expression::Closure(closure))
+                        if matches!(target_expression, Expression::Variable(_))
+                            && closure.use_clause.as_ref().is_some_and(|clause| {
+                                clause
+                                    .variables
+                                    .iter()
+                                    .any(|v| v.ampersand.is_some() && v.variable.name == variable.as_bytes())
+                            }) =>
+                    {
+                        Some(closure.span())
+                    }
+                    _ => None,
+                };
+                let previous_self_capturing = std::mem::replace(&mut context.self_capturing_closure, self_capturing);
+                let result = source_expression.analyze(context, block_context, artifacts);
+                context.assign_by_ref_seed = previous_seed;
+                context.self_capturing_closure = previous_self_capturing;
+                result?;
             }
             // this rewrites $a += 4 and $a ??= 4 to $a = $a + 4 and $a = $a ?? 4 respectively
             Some(assignment_operator) => {
@@ -328,6 +354,12 @@ where
     } else {
         VariableState::default()
     };
+    let mut pending_conditions = pending_conditions;
+    if let (Some(target), Some(source), None) = (target_variable_id, source_expression, assignment_operator)
+        && let Expression::Conditional(conditional) = unwrap_expression(source)
+    {
+        ternary_assignment_conditions(context, block_context, artifacts, conditional, target, &mut pending_conditions);
+    }
 
     if let (Some(target_variable_id), Some(existing_target_type)) = (&target_variable_id, &existing_target_type) {
         block_context.remove_descendants(context, *target_variable_id, existing_target_type, Some(&source_type));
@@ -806,6 +838,11 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
             variable_type_span,
             source_expression,
         );
+
+        // the assigned value is sent to the @var type (bleeding edge, see crate::template_arguments)
+        if context.settings.template_arguments == crate::template_arguments::TemplateArgumentMode::Observe {
+            context.template_arguments.borrow_mut().collect_send(context.codebase, &variable_type, &assigned_type);
+        }
 
         assigned_type = Rc::new(variable_type);
         from_docblock = true;
@@ -1665,6 +1702,143 @@ fn handle_assignment_with_boolean_logic<'ctx, 'arena, A>(
         .into_iter()
         .map(Rc::new),
     );
+}
+
+/// Pun: AssignHandler's ternary sure types. The part of an arm's type the other arm cannot produce proves that arm
+/// ran: after `$x = $c ? null : $y` with `$y` an object, `$x` being that object brings `$c`'s falsey narrowing. Each
+/// is a conditional holder guarded by the variable; only an arm remainder of one atomic is recorded.
+fn ternary_assignment_conditions<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    conditional: &mago_syntax::cst::Conditional<'arena>,
+    variable_id: Word,
+    pending: &mut VariableState,
+) where
+    A: Arena,
+{
+    let then = conditional.then.unwrap_or(conditional.condition);
+    let (Some(then_type), Some(else_type)) =
+        (artifacts.get_expression_type(then).cloned(), artifacts.get_expression_type(conditional.r#else).cloned())
+    else {
+        return;
+    };
+    if then_type.has_mixed() || else_type.has_mixed() {
+        return;
+    }
+    let codebase = context.codebase;
+    let remainder = |arm: &TUnion, other: &TUnion| -> Option<TUnion> {
+        let mut left = arm.types.iter().filter(|atomic| {
+            !union_comparator::is_contained_by(
+                codebase,
+                &TUnion::from_atomic((*atomic).clone()),
+                other,
+                false,
+                false,
+                false,
+                &mut ComparisonResult::new(),
+            )
+        });
+        let (Some(only), None) = (left.next(), left.next()) else {
+            return None;
+        };
+        let only = TUnion::from_atomic(only.clone());
+        (!union_comparator::can_expression_types_be_identical(codebase, &only, other, false, false)).then_some(only)
+    };
+    for (remainder, truthy) in [(remainder(&then_type, &else_type), true), (remainder(&else_type, &then_type), false)] {
+        let Some(remainder) = remainder else { continue };
+        let Some(mut clauses) = crate::formula::get_formula(
+            conditional.condition.span(),
+            conditional.condition.span(),
+            conditional.condition,
+            context.get_assertion_context_from_block(block_context),
+            artifacts,
+            &context.settings.algebra_thresholds(),
+            context.settings.formula_size_threshold,
+        ) else {
+            return;
+        };
+        if !truthy {
+            clauses = crate::formula::negate_or_synthesize(
+                clauses,
+                conditional.condition,
+                context.get_assertion_context_from_block(block_context),
+                artifacts,
+                &context.settings.algebra_thresholds(),
+                context.settings.formula_size_threshold,
+            );
+        }
+        let (assertions, _) =
+            mago_algebra::find_satisfying_assignments(&clauses, None, &mut WordSet::default());
+        let mut scope = block_context.clone();
+        crate::reconciler::reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut scope,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &conditional.condition.span(),
+            false,
+            false,
+        );
+        let remainder = Rc::new(remainder);
+        for key in assertions.keys() {
+            // isTrackableExpression(): a variable, a property fetch or an offset fetch
+            if *key == variable_id || !key.as_bytes().starts_with(b"$") || key.as_bytes().ends_with(b")") {
+                continue;
+            }
+            if let Some(target_type) = scope.locals.get(key) {
+                pending.add_expression_condition(variable_id, Rc::clone(&remainder), *key, Rc::clone(target_type));
+            }
+        }
+    }
+}
+
+/// ClosureProcessor's in-assign-right-side seed for `$v = RHS` where a closure in RHS (other than RHS itself) uses
+/// `&$v`: `$v` before the assignment (null when undefined) joined with RHS's type, read on a scratch walk.
+fn by_ref_assign_seed<'ctx, 'ast, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    source_expression: &'ast Expression<'arena>,
+    variable: Word,
+) -> Option<(Word, TUnion)> {
+    fn captures(node: mago_syntax::cst::Node<'_, '_>, name: &[u8]) -> bool {
+        match node {
+            mago_syntax::cst::Node::Closure(closure) => closure.use_clause.as_ref().is_some_and(|clause| {
+                clause.variables.iter().any(|v| v.ampersand.is_some() && v.variable.name == name)
+            }),
+            _ => node.children().into_iter().any(|child| captures(child, name)),
+        }
+    }
+    if get_closure_expression_span(source_expression).is_some()
+        || !captures(mago_syntax::cst::Node::Expression(source_expression), variable.as_bytes())
+    {
+        return None;
+    }
+    let mut scratch_block = block_context.clone();
+    scratch_block.if_body_context = None;
+    scratch_block.finally_scope = None;
+    let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
+    let assigned = context.gather_callback(|context| {
+        source_expression.analyze(context, &mut scratch_block, &mut scratch).ok()?;
+        scratch.get_expression_type(source_expression).cloned()
+    })?;
+    let seed = match block_context.locals.get(&variable) {
+        Some(existing) => mago_codex::ttype::combine_union_types(
+            existing,
+            &assigned,
+            context.codebase,
+            context.settings.combiner_options(),
+        ),
+        None => mago_codex::ttype::combine_union_types(
+            &get_null(),
+            &assigned,
+            context.codebase,
+            context.settings.combiner_options(),
+        ),
+    };
+    Some((variable, seed))
 }
 
 fn is_closure_expression<'arena>(expression: &'arena Expression<'arena>) -> bool {

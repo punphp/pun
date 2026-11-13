@@ -109,6 +109,7 @@ Laravel, Pest, and PHPUnit set rules depend on packages detected in `composer.lo
 | `exclude` | Added to `[files] exclude`, for analyse only |
 | `baseline` | The baseline file. It must be inside the project; a path that leaves it is a config error |
 | `stubs` | Stub files, as PHPStan's `stubFiles`: their PHPDoc refines vendor symbols |
+| `bleeding-edge` | `true` infers types as PHPStan does with `bleedingEdge.neon`: a generic call or `new` takes its template arguments from how the code uses the result, and a closure outside a call takes its parameter types from what it is passed to. Bleeding edge's sealed and unsealed array shapes are not ported yet. Default `false` |
 | `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
 | `[[analyse.ignore]]` | Errors to ignore, as PHPStan's `ignoreErrors` |
 

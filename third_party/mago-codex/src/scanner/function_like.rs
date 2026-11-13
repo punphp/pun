@@ -124,6 +124,7 @@ where
             Visibility::Public
         },
         where_constraints: WordMap::default(),
+        this_out_type: None,
     };
 
     if let MethodBody::Concrete(block) = &method.body {
@@ -681,6 +682,19 @@ fn scan_function_like_docblock<A>(
                 ));
             }
         }
+    }
+
+    // Pun: `@phpstan-this-out` / `@phpstan-self-out` (PHPStan's PhpDocBlock::getSelfOutTag())
+    let self_out_tag = find_most_trusted_tag(&document, |tag| match &tag.value {
+        TagValue::SelfOut(self_out) => Some(*self_out),
+        _ => None,
+    });
+    if let Some(self_out) = self_out_tag
+        && metadata.method_metadata.as_ref().is_some_and(|m| !m.is_static)
+        && let Ok(self_out_type) = get_type_metadata_from_type(self_out.r#type, classname, &type_context, scope)
+        && let Some(method_metadata) = metadata.get_method_metadata_mut()
+    {
+        method_metadata.this_out_type = Some(self_out_type);
     }
 
     for tag in document.tags() {

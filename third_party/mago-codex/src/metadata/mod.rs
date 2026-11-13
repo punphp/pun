@@ -634,12 +634,17 @@ impl CodebaseMetadata {
         self.get_method_by_words(lowercase_class, lowercase_method)
     }
 
-    pub(crate) fn can_replace_inherited_method(&self, current: MethodIdentifier, parent: Word) -> bool {
+    pub(crate) fn can_replace_inherited_method(&self, current: MethodIdentifier, candidate: MethodIdentifier) -> bool {
         let Some(method) = self.get_method_by_id(&current) else { return false };
+        let parent = candidate.get_class_name();
         method.method_metadata.as_ref().is_some_and(|metadata| metadata.is_abstract)
             || (method.flags.is_magic_method()
                 && self.class_likes.get(&current.get_class_name()).is_some_and(|class| class.kind.is_trait())
-                && self.class_likes.get(&parent).is_some_and(|class| !class.kind.is_trait()))
+                && (self.class_likes.get(&parent).is_some_and(|class| !class.kind.is_trait())
+                    // Pun: a trait's `@method` tag does not hide a sibling trait's real method (Carbon's `Comparison`
+                    // tags `yesterday()`, `Creator` declares it); Pun's reflection picks between the two as
+                    // PHPStan's PhpClassReflectionExtension does
+                    || self.get_method_by_id(&candidate).is_some_and(|candidate| !candidate.flags.is_magic_method())))
     }
 
     /// Retrieves the declaring method metadata, following the inheritance chain.
