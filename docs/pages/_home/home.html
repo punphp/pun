@@ -3,7 +3,7 @@
   <section class="hero wrap">
     <div class="hero-copy">
       <h1 class="rise">PHP tooling, <span class="sticker pop-in">zero</span> waiting.</h1>
-      <p class="lede rise" style="--d:.12s">Format, lint, analyse and migrate with one Rust binary. Same bytes as Pint, a whole lot sooner. Lint and analyse are in beta.</p>
+      <p class="lede rise" style="--d:.12s">Format, lint and analyse your PHP with one Rust binary that is very, very fast. Lint and analyse are in beta.</p>
 
       <div class="install rise" style="--d:.18s" data-install>
         <div class="tabs" role="tablist" aria-label="Install with">
@@ -16,7 +16,7 @@
       </div>
 
       <div class="actions rise" style="--d:.24s">
-        <a class="btn zap" href="/docs/quickstart">Get started <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn zap" href="/docs/quickstart">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn" href="/docs">Read the docs</a>
       </div>
     </div>
@@ -31,65 +31,75 @@
     </div>
   </section>
 
-  <div class="ribbon" aria-label="one binary, pint.json in, pun.toml out, byte-for-byte, built in Rust, one pun.toml, no levels, no PHP to check">
+  <div class="ribbon" aria-label="very, very fast, format, lint, analyse, one binary, built in Rust, one pun.toml, no levels, no PHP to check">
     <div class="ribbon-track" aria-hidden="true">
-      <span>one binary</span><span>pint.json in, pun.toml out</span><span>byte-for-byte</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
-      <span>one binary</span><span>pint.json in, pun.toml out</span><span>byte-for-byte</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
+      <span>very, very fast</span><span>format</span><span>lint</span><span>analyse</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
+      <span>very, very fast</span><span>format</span><span>lint</span><span>analyse</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
     </div>
   </div>
 
-  <!-- RACE -->
-  <section class="wrap sec" data-race>
+  <!-- RUN: the one authored moment. pun check does all three jobs in one pass. -->
+  <section class="wrap sec run-sec" data-run>
     <div class="sec-head">
-      <h2>Blink and it's done.</h2>
-      <button class="btn sm" type="button" data-race-replay><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>Race again</button>
+      <h2>Three jobs. One pass. <span class="sticker">Done.</span></h2>
+      <button class="btn sm" type="button" data-run-replay><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>Run again</button>
     </div>
-
-    <div class="race-grid">
-      <div class="term slow">
-        <div class="term-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>pint</span><span class="clock" data-clock="slow">0.0 s</span></div>
-        <pre class="term-body"><span class="cmdline"><span class="prompt">$</span> vendor/bin/pint --test</span>
-<span class="progress" data-progress="slow"></span>
-<span class="result" data-result="slow"></span></pre>
-      </div>
-      <div class="term fast">
-        <div class="term-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>pun</span><span class="clock" data-clock="fast">0.0 s</span></div>
-        <pre class="term-body"><span class="cmdline"><span class="prompt">$</span> pun format --test</span>
-<span class="progress" data-progress="fast"></span>
-<span class="result" data-result="fast"></span>
-<span class="waiting" data-waiting></span></pre>
-      </div>
+    <p class="sec-lede">pun check formats, lints and analyses your project in a single run. By the time you look back at the terminal, all three are finished.</p>
+    <div class="term">
+      <div class="term-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>~/blog</span></div>
+<pre class="term-body" data-run-body><span class="cmdline"><span class="prompt">$</span> pun check</span><span class="step" style="--i:0"><span class="ok">✔</span> <b class="cmd-chip zap">format</b> All files formatted</span><span class="step" style="--i:1"><span class="bad">✖</span> <b class="cmd-chip gum">lint</b> 1 error in 1 file · 1 fixable</span><span class="step sub" style="--i:2">   <span class="path">app/Http/Controllers/PostController.php:24:9</span>  <span class="rule">lint/laravel/no-request-all</span>
+   Pass only validated input, not $request-&gt;all().</span><span class="step" style="--i:3"><span class="bad">✖</span> <b class="cmd-chip lilac">analyse</b> 1 error in 1 file</span><span class="step sub" style="--i:4">   <span class="path">app/Models/Post.php:18:16</span>  <span class="rule">analyse/undefined/method</span>
+   Call to an undefined method App\Models\Post::publsh().</span><span class="step total" style="--i:5"><span class="bad">✖</span> 2 errors · 1 fixable (run pun check --fix)</span></pre>
     </div>
-    <p class="race-note">laravel/framework, 3,158 files. Played at 1/30 speed, so Pint finishes in your lifetime. Times shown are the real ones.</p>
+    <p class="note">Example output from a small Laravel app.</p>
   </section>
 
-  <!-- BENCHMARKS -->
-  <section class="wrap sec bench-sec" data-bench>
-    <div class="bench-copy">
-      <h2>Fast is the feature.</h2>
-      <div class="mega"><span data-mega>167</span><sup>×</sup></div>
-      <p class="mega-note" data-mega-note>faster than Pint.</p>
-    </div>
-    <div class="bench-card">
-      <div class="bench-tabs" role="tablist" data-bench-tabs></div>
-      <figure class="bench" data-bench-chart>
-        <div class="bench-title"><span data-bench-title></span><span>lower is better</span></div>
-        <div data-bench-rows></div>
-        <figcaption><span data-bench-caption></span><a href="/docs/parity">how it's measured →</a></figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <!-- TOOLS -->
+  <!-- TOOLS: format, lint and analyse get the same weight -->
   <section class="wrap sec">
-    <h2>Five tools. <span class="sticker gum">One</span> binary.</h2>
-    <div class="tools">
-      <a class="tool stick" href="/docs/commands/format" style="--tilt:-1deg;--d:0s"><span class="tag mint">behaviour-safe</span><h3>Format</h3><span class="replaces">replaces Pint · PHP-CS-Fixer</span><p>Layout only, in seconds where Pint takes minutes. Made for format on save.</p><code>$ pun format</code></a>
-      <a class="tool stick" href="/docs/commands/lint" style="--tilt:1deg;--d:.06s"><span class="tag zap">you choose the fixes</span><h3>Lint</h3><span class="replaces">replaces Rector · risky fixers · Mago</span><p>Rules that change behaviour, applied only when you say so.</p><code>$ pun lint --fix</code></a>
-      <a class="tool stick" href="/docs/commands/analyse" style="--tilt:-1deg;--d:.12s"><span class="tag lilac">beta</span><h3>Analyse</h3><span class="replaces">replaces PHPStan · Larastan</span><p>Type errors, no levels to juggle.</p><code>$ pun analyse</code></a>
-      <a class="tool stick" href="/docs/commands/check" style="--tilt:1deg;--d:.18s"><span class="tag">Pint-identical</span><h3>Check</h3><span class="replaces">all three, one pass</span><p>With --fix, it writes exactly what pint wrote.</p><code>$ pun check --fix</code></a>
-      <a class="tool stick" href="/docs/commands/migrate" style="--tilt:-1deg;--d:.24s"><span class="tag gum">reports what it skips</span><h3>Migrate</h3><span class="replaces">replaces hand-editing configs</span><p>pint.json, phpstan.neon, rector.php become one file.</p><code>$ pun migrate</code></a>
+    <h2>Every job gets the <span class="sticker gum">same</span> speed.</h2>
+    <div class="trio">
+      <a class="job zap" href="/docs/commands/format">
+        <div class="job-head"><h3>Format</h3><span class="tag">behaviour-safe</span></div>
+        <p>Layout only. Fast enough to run on every save.</p>
+        <div class="mini"><span class="del">-$a = array( 1 );</span>
+<span class="add">+$a = [1];</span></div>
+        <span class="replaces">Replaces Pint and PHP-CS-Fixer</span>
+        <code>$ pun format</code>
+      </a>
+      <a class="job gum" href="/docs/commands/lint">
+        <div class="job-head"><h3>Lint</h3><span class="tag">you choose the fixes</span></div>
+        <p>Better ways to write the same code, applied only when you say so.</p>
+        <div class="mini"><span class="del">-$response-&gt;assertStatus(404);</span>
+<span class="add">+$response-&gt;assertNotFound();</span></div>
+        <span class="replaces">Replaces Rector, risky fixers and Mago</span>
+        <code>$ pun lint --fix</code>
+      </a>
+      <a class="job lilac" href="/docs/commands/analyse">
+        <div class="job-head"><h3>Analyse</h3><span class="tag">beta</span></div>
+        <p>Finds the bugs before your users do, with no levels to juggle.</p>
+        <div class="mini"><span class="dim">Post.php:18</span>
+<span class="hot">Undefined method Post::publsh()</span></div>
+        <span class="replaces">Replaces PHPStan and Larastan</span>
+        <code>$ pun analyse</code>
+      </a>
     </div>
+    <div class="duo">
+      <a class="strip" href="/docs/commands/check"><h3>Check</h3><p>All three in one pass. With --fix it applies lint fixes, formats, then analyses what is left.</p><code>$ pun check --fix</code></a>
+      <a class="strip" href="/docs/commands/migrate"><h3>Migrate</h3><p>pint.json, phpstan.neon and rector.php become one pun.toml, and it names anything it skips.</p><code>$ pun migrate</code></a>
+    </div>
+  </section>
+
+  <!-- SPEED: copy only, no figures -->
+  <section class="wrap sec speed-sec">
+    <div>
+      <h2>Very, very fast. On purpose.</h2>
+      <p class="sec-lede">Speed is the feature, not a side effect. Pun is built so you never sit and wait for your tools, whether that is one file on save or a whole monorepo in CI.</p>
+    </div>
+    <ul class="points">
+      <li><h3>Native, all the way down</h3><p>One Rust binary. There is no PHP process to boot before it can read your code.</p></li>
+      <li><h3>Every core, every file</h3><p>Format, lint and analyse spread the work across every core your machine has.</p></li>
+      <li><h3>Fast enough to forget</h3><p>Put it on save, in a pre-commit hook and in every CI run. It keeps up with all three.</p></li>
+    </ul>
   </section>
 
   <!-- LARAVEL -->
@@ -118,8 +128,8 @@ preset = <span class="str">"laravel"</span></pre>
   <section class="wrap sec config-sec" data-merge>
     <div>
       <h2>Three configs walk in. One walks out.</h2>
-      <p class="sec-lede">pint.json, phpstan.neon and rector.php become one pun.toml with Pun's rule names, and your PHPStan level expanded into the exact rules it ran. Then pun check --fix writes exactly what Pint wrote.</p>
-      <a class="btn sm" href="/docs/commands/migrate">How migrate works →</a>
+      <p class="sec-lede">pint.json, phpstan.neon and rector.php become one pun.toml with Pun's rule names, and your PHPStan level expanded into the exact rules it ran.</p>
+      <a class="btn sm" href="/docs/commands/migrate">How migrate works <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <div class="merge">
       <div class="files" aria-hidden="true">
@@ -144,32 +154,15 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
     </div>
   </section>
 
-  <!-- PARITY -->
+  <!-- PARITY: same answers as each tool Pun replaces -->
   <section class="wrap sec">
-    <h2>Same bytes as Pint.</h2>
-    <div class="parity">
-      <div class="code">
-        <div class="code-bar"><span>pint --test</span><span>PHP</span></div>
-<pre><span class="dim">@@ -1,3 +1,3 @@</span>
- &lt;?php
-<span class="del">-$a = array( 1 );</span>
-<span class="add">+$a = [1];</span></pre>
-      </div>
-      <div class="eq" aria-label="identical">=<small>identical</small></div>
-      <div class="code">
-        <div class="code-bar"><span>pun check</span><span>Rust</span></div>
-<pre><span class="dim">@@ -1,3 +1,3 @@</span>
- &lt;?php
-<span class="del">-$a = array( 1 );</span>
-<span class="add">+$a = [1];</span></pre>
-      </div>
-    </div>
-    <div class="score">
-      <div><b data-count-to="7">7</b><span>real projects</span></div>
-      <div><b data-count-to="9193" data-format="thousands">9,193</b><span>files compared</span></div>
-      <div><b>0</b><span>files differing</span></div>
-      <a class="btn sm" href="/docs/parity">See the scoreboard</a>
-    </div>
+    <h2>Same answers as the tools you trust.</h2>
+    <ul class="points three">
+      <li><h3>Format</h3><p>Byte for byte with Pint and PHP-CS-Fixer. Every project on the scoreboard has zero differing files.</p></li>
+      <li><h3>Lint</h3><p>Rector, rector-laravel, Mago and the risky fixers, under one set of rule names. pun migrate maps your config.</p></li>
+      <li><h3>Analyse</h3><p>Every PHPStan identifier maps to one Pun rule, with Larastan built in. Analyse is in beta.</p></li>
+    </ul>
+    <a class="btn sm" href="/docs/parity">See the parity scoreboard <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </section>
 
   <!-- AGENTS -->
@@ -184,7 +177,7 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
     <div>
       <h2>Fewer tokens. Same answers.</h2>
       <p class="sec-lede">Under Claude Code, Cursor, Codex and friends, every command switches to one line per problem. The docs ship llms.txt and a Markdown copy of every page.</p>
-      <a class="btn sm" href="/docs/guides/coding-agents">Pun for agents →</a>
+      <a class="btn sm" href="/docs/guides/coding-agents">Pun for agents <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </section>
 
@@ -194,7 +187,7 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
       <img class="cta-mascot" src="/mascot-512.png" width="512" height="512" alt="" />
       <h2>Stop waiting<br />on your tools.</h2>
       <div class="actions">
-        <a class="btn zap" href="/docs/quickstart">Get started <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn zap" href="/docs/quickstart">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn" href="https://github.com/punphp/pun">Star on GitHub</a>
       </div>
     </div>
