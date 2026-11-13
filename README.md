@@ -19,11 +19,12 @@ Pint compatibility is checked against pinned upstream tools on a project corpus 
 ## Install
 
 ```sh
-composer require --dev punphp/pun:@beta
+composer require --dev punphp/pun
 vendor/bin/pun --version
+vendor/bin/pun check
 ```
 
-The package (`composer.json` and `composer/bin/pun`) is a PHP shim that downloads the native binary for your platform on first run, checks its SHA-256 checksum, and runs it (Linux and macOS, x86_64 and arm64). Drop `:@beta` once a stable release is out.
+The package (`composer.json` and `composer/bin/pun`) is a PHP shim that downloads the native binary for your platform on first run, checks its SHA-256 checksum, and runs it (Linux and macOS, x86_64 and arm64).
 
 PHP files need no PHP or Node runtime. Blade formatting requires Node.js (or Bun) and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
 

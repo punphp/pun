@@ -6,15 +6,13 @@ description: Install Pun with Composer and check its runtime requirements.
 ## Composer
 
 ```bash
-composer require --dev punphp/pun:@beta
+composer require --dev punphp/pun
 vendor/bin/pun --version
 ```
 
 The package is a small PHP script. On first run, it downloads the release binary for its version and platform (Linux or macOS, x86_64 or arm64) from GitHub Releases, checks its SHA-256 checksum, and keeps it in `vendor/bin`. Later runs start that binary directly. Windows is not supported.
 
-Pun is in beta, so every release is a pre-release and Composer needs the `@beta` stability flag shown above. Drop it once a stable release is out.
-
-These docs write commands as `pun`. In a project, run them as `vendor/bin/pun`, or from a Composer script, where `vendor/bin` is on the `PATH`:
+These docs write commands as `pun`. In a project, run them as `vendor/bin/pun`, for example `vendor/bin/pun check`, or from a Composer script, where `vendor/bin` is on the `PATH`:
 
 ```json composer.json
 "scripts": {
