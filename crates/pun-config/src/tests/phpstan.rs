@@ -169,11 +169,11 @@ fn reads_level_paths_ignores_and_includes() {
         p.extensions.iter().collect::<Vec<_>>(),
         ["larastan/larastan", "phpstan/phpstan-strict-rules"]
     );
+    assert!(p.bleeding_edge);
     let names: Vec<&str> = p.unsupported.iter().map(|u| u.0.as_str()).collect();
     assert_eq!(
         names,
         [
-            "vendor/phpstan/phpstan/conf/bleedingEdge.neon",
             "build/custom.neon",
             "foo/bar",
             "phpstan/phpstan-mockery",
@@ -257,6 +257,7 @@ fn reads_level_paths_ignores_and_includes() {
     }
     assert_eq!(done.options, 3);
     let cfg = crate::from_toml(&d, &text).unwrap();
+    assert!(cfg.analyse.bleeding_edge);
     let function = cfg
         .analyse
         .rules
@@ -271,7 +272,7 @@ fn reads_level_paths_ignores_and_includes() {
         parts.render().contains(
             "\"dead-code/no-unused-private-method\" = \"error\"\n"
         ) && parts.render().contains(
-            "\n\n[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\n"
+            "\n\n[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\nbleeding-edge = true\n"
         ),
         "{}",
         parts.render()
@@ -403,21 +404,16 @@ fn reads_max_and_rejects_bad_levels() {
 }
 
 /// The include PHPStan's docs recommend, `phar://phpstan.phar/conf/bleedingEdge.neon`, is PHPStan's bleeding edge, not
-/// a project config, and keeps its `phar://` path.
+/// a project config: it becomes `bleeding-edge = true`.
 #[test]
-fn names_phar_bleeding_edge() {
+fn takes_phar_bleeding_edge() {
     let d = project(
         "includes:\n    - phar://phpstan.phar/conf/bleedingEdge.neon\nparameters:\n    level: 0\n",
         &[],
     );
     let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
-    assert_eq!(
-        p.unsupported,
-        [(
-            "phar://phpstan.phar/conf/bleedingEdge.neon".to_string(),
-            "Pun checks as PHPStan does without bleeding edge".to_string()
-        )]
-    );
+    assert!(p.bleeding_edge);
+    assert!(p.unsupported.is_empty(), "{:?}", p.unsupported);
 }
 
 /// Level 5 is the `recommended` preset: every core rule up to level 5 stays on, deprecation-rules' checks (in

@@ -36,6 +36,8 @@ pub struct Phpstan {
     pub unsupported: Vec<(String, String)>,
     /// The built-in extensions the config includes, by package (`larastan/larastan`).
     pub extensions: BTreeSet<String>,
+    /// The config includes PHPStan's `bleedingEdge.neon`.
+    pub bleeding_edge: bool,
     /// The resolved parameters, for the rules a parameter turns on (`gated_by`).
     pub parameters: Array,
     /// Parameters the project changed from PHPStan's value at its level that rules read as options: (dotted name,
@@ -177,13 +179,7 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
         let rel = relative(root, inc);
         match package(&rel) {
             Some(pkg) if pkg == "phpstan/phpstan" => {
-                out.unsupported
-                    .extend((inc.ends_with("/bleedingEdge.neon")).then(|| {
-                        (
-                            rel,
-                            "Pun checks as PHPStan does without bleeding edge".into(),
-                        )
-                    }));
+                out.bleeding_edge |= inc.ends_with("/bleedingEdge.neon");
             }
             Some(pkg) if BUILT_IN.iter().any(|b| b.0 == pkg) => {
                 out.extensions.insert(pkg);
@@ -577,6 +573,9 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
     }
     if !phpstan.stubs.is_empty() {
         writeln!(parts.analyse, "stubs = {}", list(&phpstan.stubs)).unwrap();
+    }
+    if phpstan.bleeding_edge {
+        writeln!(parts.analyse, "bleeding-edge = true").unwrap();
     }
     let cfg = resolve(root, &parts.render())?;
     let on: BTreeSet<&str> = cfg.analyse.rules.iter().map(|r| r.id.as_str()).collect();
