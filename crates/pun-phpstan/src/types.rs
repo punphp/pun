@@ -1631,8 +1631,24 @@ fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
         .as_ref()
         .map(|(k, v)| if key { k } else { v })
         .map_or(Type::Error, |s| {
-            with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, args)
+            let t = with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, args);
+            with_ancestor_args(&t, &c, args)
         })
+}
+
+/// `t` with the templates of the class's generic ancestors replaced by the arguments the class gives them: an
+/// inherited `getIterator()` is declared over its own class's templates.
+fn with_ancestor_args(t: &Type, c: &symbols::Class, args: &[Type]) -> Type {
+    if let Type::Template(tpl) = t
+        && let Some(ancestor) = tpl.scope.strip_prefix("class ")
+        && let Some(given) = ancestor_args(c, ancestor, args)
+        && let Some(i) = symbols::lookup(ancestor)
+            .and_then(|a| a.templates.iter().position(|x| x.name == tpl.name))
+        && let Some(arg) = given.get(i)
+    {
+        return arg.clone();
+    }
+    t.traverse(&|x| with_ancestor_args(x, c, args))
 }
 
 /// The type arguments `c<args>` gives its generic ancestor `ancestor` (`getAncestorWithClassName()`), `None` when
@@ -3343,7 +3359,29 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 Tri::No
             }
             T::ObjectWithoutClass => Tri::Maybe,
-            T::ObjectShape(_) => Tri::from(a == b).or(Tri::Maybe),
+            // each property of this shape: the other shape has it (an optional one maybe) with a sub type
+            T::ObjectShape(others) => {
+                let mut result = Tri::Yes;
+                for (name, ty, optional) in props {
+                    let Some((_, other, other_optional)) = others.iter().find(|(n, ..)| n == name)
+                    else {
+                        if !optional {
+                            result = Tri::No;
+                        }
+                        continue;
+                    };
+                    if *other_optional && !optional {
+                        result = result.and(Tri::Maybe);
+                        continue;
+                    }
+                    let property = is_super_type_of(ty, other);
+                    if property.no() {
+                        return Tri::No;
+                    }
+                    result = result.and(property);
+                }
+                result
+            }
             T::Object(..) | T::Static(..) | T::This(_) => Tri::Maybe,
             _ => Tri::No,
         },

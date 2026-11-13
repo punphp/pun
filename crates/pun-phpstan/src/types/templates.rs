@@ -431,7 +431,13 @@ pub fn resolve_template_types(t: &Type, map: &TemplateMap) -> Type {
             with => with.clone(),
         };
     }
-    t.traverse(&|inner| resolve_template_types(inner, map))
+    match t.traverse(&|inner| resolve_template_types(inner, map)) {
+        // a late-resolvable type node an extension kept under its own name (no class name has a `-`)
+        Type::Object(name, args, _) if name.contains('-') => {
+            crate::resolve::type_node(&name, &args).unwrap_or(Type::Object(name, args, false))
+        }
+        t => t,
+    }
 }
 
 impl TemplateMap {

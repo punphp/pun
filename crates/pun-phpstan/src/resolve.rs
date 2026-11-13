@@ -55,7 +55,7 @@ pub fn with_type_nodes<R>(
     f()
 }
 
-fn type_node(name: &str, args: &[Type]) -> Option<Type> {
+pub(crate) fn type_node(name: &str, args: &[Type]) -> Option<Type> {
     let extensions = TYPE_NODES.with(std::cell::Cell::get)?;
     // SAFETY: set by `with_type_nodes()`, whose borrow outlives every call made while it is set.
     let extensions = unsafe { &*extensions };
