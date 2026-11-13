@@ -434,7 +434,7 @@ fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant)
                     .map_err(|e| unsupported_format(&e))?
             );
         }
-        None if agent::enabled() => print!("{}", agent_report(analysed)),
+        None if agent::enabled() => print!("{}", agent_report(analysed, a.verbose > 0)),
         None if a.quiet => {}
         None => {
             let look = Look::stdout(a.color.unwrap_or(render::ColorChoice::Auto));
@@ -609,8 +609,8 @@ pub(crate) fn annotations(analysed: &Analysed) -> String {
     out
 }
 
-/// Agent mode: the summary line, then `path:line rule message` per finding.
-fn agent_report(analysed: &Analysed) -> String {
+/// Agent mode: the summary line, then `path:line rule message` per finding, all of them with `-v`.
+fn agent_report(analysed: &Analysed, all: bool) -> String {
     let items = agent_items(analysed);
     let errors = items.len();
     let (result, detail) = match errors {
@@ -635,7 +635,7 @@ fn agent_report(analysed: &Analysed) -> String {
         ));
     }
     let checked = format!("{} checked", analysed.files);
-    agent::render(result, &detail, &checked, &items, false)
+    agent::render(result, &detail, &checked, &items, all)
 }
 
 /// One agent line per finding: `path:line rule message`.

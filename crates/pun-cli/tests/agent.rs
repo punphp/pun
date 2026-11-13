@@ -644,3 +644,36 @@ fn analyse_lines() {
         )
     );
 }
+
+#[test]
+fn analyse_caps_long_lists() {
+    let calls: String = (1..=21).map(|n| format!("    nope{n}();\n")).collect();
+    let d = common::project(
+        "agent",
+        "analyse-cap",
+        &[
+            ("pun.toml", "[analyse]\npaths = [\"src\"]\n"),
+            (
+                "src/a.php",
+                &format!("<?php\n\nfunction f(): void\n{{\n{calls}}}\n"),
+            ),
+        ],
+    );
+    let line = |n: usize| {
+        format!(
+            "src/a.php:{} analyse/undefined/function Function nope{n} not found.\n",
+            n + 4
+        )
+    };
+    let head = "pun analyse: fail, 21 errors in 1 file (1 checked, Ts)\n";
+    let first: String = (1..=20).map(line).collect();
+    assert_eq!(
+        agent(&d, &["analyse"]).0,
+        format!("{head}{first}+1 more; run with -v for all\n")
+    );
+    // `-v` is the flag the cap names, so it lists every error.
+    assert_eq!(
+        agent(&d, &["analyse", "-v"]).0,
+        format!("{head}{first}{}", line(21))
+    );
+}
