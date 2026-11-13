@@ -5,12 +5,14 @@
 //! caller writes it. [`Look`] decides colour, glyphs and links; [`Spinner`] is the progress line. `pun format`'s
 //! own pieces (format.md §9) are its summary wording and the `-v` diff.
 
+mod check;
 mod look;
 mod spinner;
 #[cfg(test)]
 mod tests;
 
-pub(crate) use look::{ColorChoice, Look, Role};
+pub(crate) use check::{CheckItem, StepLine};
+pub(crate) use look::{ColorChoice, Look, Role, Step};
 #[cfg(test)]
 pub(crate) use look::{Depth, Theme, nearest_256};
 pub(crate) use spinner::Spinner;
@@ -451,7 +453,7 @@ impl Renderer {
 
     /// A rule ID in the rule colour, linked to its page on the docs site. Only a rule has a page: a name such as
     /// `syntax` stays plain.
-    fn rule(&self, id: &str) -> String {
+    pub(crate) fn rule(&self, id: &str) -> String {
         let painted = self.look.paint(Role::Rule, id);
         if !self.look.links || pun_config::rule(id).is_none() {
             return painted;
@@ -460,7 +462,7 @@ impl Renderer {
     }
 
     /// `shown` linked to the file `path` (relative to the root) as a `file://` URL.
-    fn path_link(&self, path: &Path, shown: &str) -> String {
+    pub(crate) fn path_link(&self, path: &Path, shown: &str) -> String {
         if !self.look.links {
             return shown.to_string();
         }
@@ -482,7 +484,7 @@ fn expand(text: &str) -> String {
 }
 
 /// `n` and the noun: `one` for 1, else `many`.
-fn plural(n: usize, one: &str, many: &str) -> String {
+pub(crate) fn plural(n: usize, one: &str, many: &str) -> String {
     format!("{n} {}", if n == 1 { one } else { many })
 }
 

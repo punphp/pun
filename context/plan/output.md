@@ -229,3 +229,16 @@ the plan is silent:
   config errors, which Pint has no box for, are Pun's run error there too. Agent mode keeps `agent::error`.
 - **Pint parity:** `scripts/cli-parity.sh` expects Pint 1 and Pun 2 for the argument sets in its `ABORTS`
   allow-list, and still compares their machine stdout byte for byte.
+
+Built 2026-11-13 (`pun check`'s grouped view, Build 5, matched to Pushpak's brand mockup), where the mockup differs
+from the plan above:
+
+- **Step lines** start with the status glyph, then a coloured pill (format `zap`, lint `gum`, analyse `lilac`, bold
+  `code-bg` ink; bright yellow/magenta/blue backgrounds at 16 colours; the plain padded label without colour). No
+  per-step time: the steps don't run separately, so there is none to show.
+- **Problems under a step** are two lines, `path:line:col  rule` then the message dim, not code frames. `--concise`
+  puts them on one line. Lint fixes without `--fix` show at the first line they change, with the rule's summary.
+- **The summary** drops `N files in Xs` and is bold `zap` (bold only on light terminals).
+- **Token roles changed** for every command, as in the mockup: ✖ `gum` (was `bad`), ✔ `mint` (was `ok`), rule IDs
+  `ok` light blue (was `lilac-deep`). Light terminals keep `bad`, the terminal's green, and `ok` for rule IDs.
+- Agent mode and every `--format` stay exactly as they were.

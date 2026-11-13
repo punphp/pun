@@ -5,7 +5,8 @@
 use crate::console::{self, format as fmt};
 use crate::fix_report::{self, Change};
 use crate::render::{
-    ColorChoice, FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Summary,
+    CheckItem, ColorChoice, FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Step,
+    StepLine, Summary,
 };
 use crate::{github, pint_error};
 use anyhow::{Result, bail};
@@ -398,8 +399,11 @@ fn annotations(ctx: &Ctx, results: &[FileResult]) -> String {
 /// `pun check` count each lint fix as an error (fixable without `--fix`) and each file needing format rules as
 /// needing formatting (output.md §1).
 fn human(ctx: &Ctx, results: &[FileResult]) -> String {
-    let r = Renderer::new(ctx.look, ctx.root);
     let cmd = crate::agent::cmd();
+    if cmd == "check" {
+        return check_human(ctx, results);
+    }
+    let r = Renderer::new(ctx.look, ctx.root);
     let ids = |f: &FileResult| -> Vec<String> {
         (f.applied.iter())
             .map(|n| pun_config::rule_of(n).unwrap_or(n).to_string())
@@ -503,6 +507,191 @@ fn human(ctx: &Ctx, results: &[FileResult]) -> String {
         warnings: c.warnings,
         fixable: c.fixable,
         fix_command: &fix_command,
+        need_formatting: c.need_formatting,
+        files: ctx.total,
+        elapsed: ctx.elapsed,
+    }));
+    out
+}
+
+/// `pun check`'s grouped view (output.md Build 5): a status line per step (format, lint, analyse) with its problems
+/// under it, the files Pun failed on, then one summary line. Format lists the files that need formatting (or the
+/// syntax errors that stop it); lint its problems and, without `--fix`, each lint fix as a fixable problem at the
+/// first line it changes; analyse the rest.
+fn check_human(ctx: &Ctx, results: &[FileResult]) -> String {
+    let mut r = Renderer::new(ctx.look, ctx.root);
+    r.concise = ctx.concise;
+    let mut sorted: Vec<&FileResult> = results.iter().collect();
+    sorted.sort_by(|a, b| a.rel.cmp(&b.rel));
+    #[derive(Default)]
+    struct Group {
+        items: Vec<CheckItem>,
+        errors: usize,
+        warnings: usize,
+        fixable: usize,
+        files: Vec<String>,
+    }
+    impl Group {
+        fn add(&mut self, rel: &str, item: CheckItem, warning: bool, fixable: bool) {
+            if warning {
+                self.warnings += 1;
+            } else {
+                self.errors += 1;
+            }
+            self.fixable += usize::from(fixable);
+            if self.files.last().is_none_or(|f| f != rel) {
+                self.files.push(rel.to_string());
+            }
+            self.items.push(item);
+        }
+    }
+    let (mut format, mut lint, mut analyse) =
+        (Group::default(), Group::default(), Group::default());
+    let mut formatted = 0;
+    let summary_of = |id: &str| {
+        pun_config::rule(id)
+            .and_then(|m| m.summary)
+            .map(String::from)
+    };
+    let lint_fixes = |g: &mut Group, f: &FileResult, fixable: bool| {
+        for n in f
+            .applied
+            .iter()
+            .filter(|n| !rule_id(n).starts_with("format/"))
+        {
+            let id = rule_id(n);
+            let item = CheckItem {
+                path: f.rel.clone().into(),
+                at: if f.line > 0 {
+                    format!(":{}", f.line)
+                } else {
+                    String::new()
+                },
+                rules: vec![id.to_string()],
+                message: summary_of(id),
+                below: String::new(),
+            };
+            g.add(&f.rel, item, f.warned.contains(n), fixable);
+        }
+    };
+    for f in &sorted {
+        if f.status == Status::Invalid {
+            let (p, _, index) = syntax_error(f);
+            let at = index.line_col(p.span.start);
+            let item = CheckItem {
+                path: p.path,
+                at: format!(":{}:{}", at.line, at.column),
+                rules: vec![p.rule],
+                message: Some(p.message),
+                below: String::new(),
+            };
+            format.add(&f.rel, item, false, false);
+        }
+        if f.status == Status::Fixed {
+            let rules: Vec<String> = (f.applied.iter())
+                .map(|n| rule_id(n))
+                .filter(|id| id.starts_with("format/"))
+                .map(String::from)
+                .collect();
+            if ctx.dry_run && !rules.is_empty() {
+                let below = if ctx.verbose && !f.diff.is_empty() {
+                    r.diff(&f.diff)
+                } else {
+                    String::new()
+                };
+                format.items.push(CheckItem {
+                    path: f.rel.clone().into(),
+                    rules,
+                    below,
+                    ..CheckItem::default()
+                });
+            } else if !rules.is_empty() {
+                formatted += 1;
+            }
+            if ctx.dry_run {
+                lint_fixes(&mut lint, f, true);
+            }
+        }
+        if !f.problems.is_empty() {
+            let index = LineIndex::new(&f.source);
+            for p in &f.problems {
+                let at = index.line_col(p.span.start);
+                let item = CheckItem {
+                    path: p.path.clone(),
+                    at: format!(":{}:{}", at.line, at.column),
+                    rules: vec![p.rule.clone()],
+                    message: Some(p.message.clone()),
+                    below: String::new(),
+                };
+                let group = if p.rule.starts_with("lint/") {
+                    &mut lint
+                } else {
+                    &mut analyse
+                };
+                let fixable = ctx.dry_run && p.fix.is_some();
+                group.add(&f.rel, item, p.level == Level::Warning, fixable);
+            }
+        }
+    }
+    let mut remaining: Vec<&FileResult> = ctx.remaining.iter().collect();
+    remaining.sort_by(|a, b| a.rel.cmp(&b.rel));
+    for f in remaining {
+        lint_fixes(&mut lint, f, false);
+    }
+    let need = format.items.len() - format.errors;
+    let format_text = if need > 0 {
+        let verb = if need == 1 { "needs" } else { "need" };
+        let mut text = format!(
+            "{} {verb} formatting",
+            crate::render::plural(need, "file", "files")
+        );
+        if format.errors > 0 {
+            text.push_str(&format!(
+                ", {}",
+                crate::render::plural(format.errors, "syntax error", "syntax errors")
+            ));
+        }
+        Some(text)
+    } else if format.errors > 0 {
+        None
+    } else if formatted > 0 {
+        Some(format!(
+            "Formatted {}",
+            crate::render::plural(formatted, "file", "files")
+        ))
+    } else {
+        Some("All files formatted".into())
+    };
+    fn step(step: Step, g: &Group, text: Option<String>, failed: bool) -> StepLine<'_> {
+        StepLine {
+            step,
+            errors: g.errors,
+            warnings: g.warnings,
+            fixable: g.fixable,
+            files: g.files.len(),
+            text,
+            failed,
+            items: &g.items,
+        }
+    }
+    let mut out = r.check_step(&step(Step::Format, &format, format_text, need > 0));
+    out.push_str(&r.check_step(&step(Step::Lint, &lint, None, false)));
+    out.push_str(&r.check_step(&step(Step::Analyse, &analyse, None, false)));
+    for f in sorted
+        .iter()
+        .filter(|f| f.is_error() && f.status != Status::Invalid)
+    {
+        out.push_str(&fixer_error(&r, f));
+    }
+    if ctx.unmatched_baseline > 0 {
+        out.push_str(&crate::analyse::baseline_note(&r, ctx.unmatched_baseline));
+    }
+    let c = counts(ctx, results);
+    out.push_str(&r.check_summary(&Summary {
+        errors: c.errors,
+        warnings: c.warnings,
+        fixable: c.fixable,
+        fix_command: "pun check --fix",
         need_formatting: c.need_formatting,
         files: ctx.total,
         elapsed: ctx.elapsed,
