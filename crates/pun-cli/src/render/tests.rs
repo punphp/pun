@@ -1,15 +1,15 @@
 //! The renderer against output.md §1's samples, copied from the plan by hand, with and without colour. Colour codes
-//! are written out from design/tokens.json by hand (`#FF9466` is `255;148;102`).
+//! are written out from design/tokens.json by hand (`#FF7AB8` is `255;122;184`).
 
 use super::*;
 use pun_problem::{Edit, Fix, Span};
 use std::io::Write;
 use std::sync::{Arc, Mutex};
 
-/// `bad`, `ok`, `lilac-deep`, `ink-3` and `zap`, dark variants, at 24 bits; and the reset.
-const E: &str = "\x1b[38;2;255;148;102m";
-const OK: &str = "\x1b[38;2;143;184;255m";
-const R: &str = "\x1b[38;2;179;163;255m";
+/// `gum`, `mint`, `ok`, `ink-3` and `zap`, dark variants, at 24 bits; and the reset.
+const E: &str = "\x1b[38;2;255;122;184m";
+const OK: &str = "\x1b[38;2;142;240;200m";
+const R: &str = "\x1b[38;2;143;184;255m";
 const D: &str = "\x1b[38;2;156;146;174m";
 const W: &str = "\x1b[38;2;255;229;61m";
 const Z: &str = "\x1b[0m";
@@ -598,20 +598,20 @@ fn colour_depths_and_themes() {
             "\x1b[2mx\x1b[0m"
         ]
     );
-    // Light variants at 24 bits; warnings fall back to the terminal's yellow.
+    // Light variants at 24 bits; warnings and ✔ fall back to the terminal's yellow and green.
     let light = at(Depth::TrueColor, Theme::Light);
     assert_eq!(
         light.paint(Role::Error, "x"),
         "\x1b[38;2;185;58;10mx\x1b[0m"
     );
-    assert_eq!(light.paint(Role::Ok, "x"), "\x1b[38;2;29;95;204mx\x1b[0m");
-    assert_eq!(light.paint(Role::Rule, "x"), "\x1b[38;2;91;63;217mx\x1b[0m");
+    assert_eq!(light.paint(Role::Ok, "x"), "\x1b[32mx\x1b[0m");
+    assert_eq!(light.paint(Role::Rule, "x"), "\x1b[38;2;29;95;204mx\x1b[0m");
     assert_eq!(light.paint(Role::Dim, "x"), "\x1b[38;2;107;98;128mx\x1b[0m");
     assert_eq!(light.paint(Role::Warning, "x"), "\x1b[33mx\x1b[0m");
-    // 256 colours: bad (255,148,102) -> cube (5,2,1) = 209; zap (255,229,61) -> (5,4,1) = 221; ink-3
+    // 256 colours: gum (255,122,184) -> cube (5,2,3) = 211; zap (255,229,61) -> (5,4,1) = 221; ink-3
     // (156,146,174) -> grey 158 = 247, nearer than the cube's (175,135,175).
     let xterm = at(Depth::Ansi256, Theme::Dark);
-    assert_eq!(xterm.paint(Role::Error, "x"), "\x1b[38;5;209mx\x1b[0m");
+    assert_eq!(xterm.paint(Role::Error, "x"), "\x1b[38;5;211mx\x1b[0m");
     assert_eq!(xterm.paint(Role::Warning, "x"), "\x1b[38;5;221mx\x1b[0m");
     assert_eq!(xterm.paint(Role::Dim, "x"), "\x1b[38;5;247mx\x1b[0m");
     assert_eq!(nearest_256((0, 0, 0)), 16);
@@ -885,5 +885,83 @@ fn format_summary_samples() {
     assert_eq!(
         plain().format_summary(&one),
         "Formatted 1 file, 0 unchanged · 2 errors · 3 files in 0.21s\n"
+    );
+}
+
+#[test]
+fn check_summary_and_pills() {
+    let at = |depth, theme| Look {
+        depth,
+        theme,
+        unicode: true,
+        links: false,
+    };
+    let dark = at(Depth::TrueColor, Theme::Dark);
+    // The summary: bold zap on dark, bold only on light, bold yellow at 16 colours.
+    assert_eq!(
+        dark.paint(Role::Summary, "x"),
+        "\x1b[1;38;2;255;229;61mx\x1b[0m"
+    );
+    assert_eq!(
+        at(Depth::TrueColor, Theme::Light).paint(Role::Summary, "x"),
+        "\x1b[1mx\x1b[0m"
+    );
+    assert_eq!(
+        at(Depth::Ansi16, Theme::Dark).paint(Role::Summary, "x"),
+        "\x1b[1;33mx\x1b[0m"
+    );
+    // Pills: the label centred in 9 columns, bold code-bg ink on the step's colour; plain without colour.
+    assert_eq!(
+        dark.pill(Step::Lint),
+        "\x1b[1;38;2;23;18;31;48;2;255;122;184m  lint   \x1b[0m"
+    );
+    assert_eq!(
+        at(Depth::Ansi16, Theme::Dark).pill(Step::Format),
+        "\x1b[1;30;103m format  \x1b[0m"
+    );
+    assert_eq!(Look::plain().pill(Step::Analyse), " analyse ");
+
+    let r = Renderer::new(Look::plain(), "/project");
+    let items = [CheckItem {
+        path: "app/Models/Post.php".into(),
+        at: ":18:16".into(),
+        rules: vec!["analyse/undefined/method".into()],
+        message: Some("Call to an undefined method App\\Models\\Post::publsh().".into()),
+        below: String::new(),
+    }];
+    let line = |step, errors, fixable, text: Option<&str>, items| StepLine {
+        step,
+        errors,
+        warnings: 0,
+        fixable,
+        files: errors,
+        text: text.map(String::from),
+        failed: false,
+        items,
+    };
+    let out = [
+        r.check_step(&line(Step::Format, 0, 0, Some("All files formatted"), &[])),
+        r.check_step(&line(Step::Analyse, 1, 1, None, &items)),
+        r.check_summary(&Summary {
+            errors: 2,
+            warnings: 0,
+            fixable: 1,
+            fix_command: "pun check --fix",
+            need_formatting: 0,
+            files: 2,
+            elapsed: Duration::from_millis(310),
+        }),
+    ]
+    .concat();
+    assert_eq!(
+        out,
+        "\
+✔  format    All files formatted
+✖  analyse   1 error in 1 file · 1 fixable
+   app/Models/Post.php:18:16  analyse/undefined/method
+   Call to an undefined method App\\Models\\Post::publsh().
+
+✖ 2 errors · 1 fixable (run pun check --fix)
+"
     );
 }
