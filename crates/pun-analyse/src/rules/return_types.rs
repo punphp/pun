@@ -103,7 +103,12 @@ pub(super) fn registry(
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
     );
     registry.register_function_provider(ConstantArrayMap);
+    registry.register_function_provider(
+        mago_analyzer::plugin::libraries::stdlib::json::JsonEncodeProvider,
+    );
+    registry.register_function_provider(super::array_column::ArrayColumn);
     registry.register_function_provider(ParseUrl);
+    registry.register_function_provider(MinMax);
     let builtins = BuiltinFunctions::default();
     registry.register_function_call_hook(builtins.clone());
     registry.register_function_provider(builtins);
@@ -112,6 +117,46 @@ pub(super) fn registry(
     registry.register_function_provider(super::date_format::DateFormat);
     registry.register_method_provider(super::date_format::DateFormat);
     registry
+}
+
+/// PHPStan 2.3.5's MinMaxFunctionReturnTypeExtension for integers, through Mago's providers. Two arguments are the
+/// extension's `$a < $b ? $a : $b` rewrite, whose narrowing of two integers is Mago's bound arithmetic. Three or
+/// more are `processType()`, which only picks a winner among constants; every other call keeps the union of its
+/// arguments that the signature already gives.
+struct MinMax;
+
+impl Provider for MinMax {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for MinMax {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::ExactMultiple(&[b"min", b"max"])
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        use mago_analyzer::plugin::libraries::stdlib::math::{MaxProvider, MinProvider};
+        let count = invocation.argument_count();
+        if count >= 3 {
+            for index in 0..count {
+                let argument = invocation.get_argument(index, &[])?;
+                context
+                    .get_expression_type(argument)?
+                    .get_single_literal_int_value()?;
+            }
+        }
+        if invocation.function_name().eq_ignore_ascii_case("max") {
+            MaxProvider.get_return_type(context, invocation)
+        } else {
+            MinProvider.get_return_type(context, invocation)
+        }
+    }
 }
 
 /// PHPStan 2.3.5's ArrayMapFunctionReturnTypeExtension with one array, through Mago's ArrayMapProvider: a `null`

@@ -1198,3 +1198,7 @@ removes an object intersection that another named-object member contains, and th
 and `B&A`). TypeCombinator::union() drops a member another one is a supertype of. Without it, narrowing a `mixed`
 through a chain of instanceof checks on unknown classes (Laravel's `Router::toResponse()` without `vendor/`)
 multiplied the union out to hundreds of `A&B&C` members per branch and did not finish.
+
+`scanner/class_like.rs`: a backed enum always gets `BackedEnum` as a direct parent interface. Pun's built-in symbols
+have no `__internal_do_not_use__*BackedEnum` interface, so through that name alone the enum was not an instance of
+`BackedEnum` and a `class-string<TEnum of BackedEnum>` argument did not bind its template.

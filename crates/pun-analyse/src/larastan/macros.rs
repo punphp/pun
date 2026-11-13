@@ -1,13 +1,13 @@
 //! The macros MacroMethodsClassReflectionExtension finds in a Macroable class's static `$macros`, read from the
 //! code that registers them instead (Pun never runs PHP): `X::macro('name', $definition)` calls in PHPStan's
-//! `bootstrapFiles`, the files they include, the app's service providers (`app/Providers`) and the framework's
-//! FoundationServiceProvider.
+//! `bootstrapFiles`, the files they include, the app's service providers (`app/Providers`), the framework's
+//! FoundationServiceProvider and the packages' discovered providers (`extra.laravel.providers`).
 //!
 //! A macro's return type is what Larastan reflects of its definition: a closure's native return type
 //! (ClosureTypeFactory::fromClosureObject(), mixed without one), a function's (`'trim'`), or a method's
 //! (`'Class::method'`, `[$this, 'method']`, `[X::class, 'method']`, getNativeMethod()).
 //!
-//! ponytail: macros that other vendor service providers register and `mixin()` are not seen.
+//! ponytail: macros that a provider registered by another provider registers and `mixin()` are not seen.
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -55,6 +55,56 @@ enum Definition {
     Method(String, String),
 }
 
+/// The files of the providers Laravel's package discovery registers (PackageManifest::build()): each installed
+/// package's `extra.laravel.providers`, found through the package's psr-4 directories.
+fn discovered_providers(root: &Path) -> Vec<PathBuf> {
+    let composer = root.join("vendor/composer");
+    let Some(installed) = std::fs::read(composer.join("installed.json"))
+        .ok()
+        .and_then(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes).ok())
+    else {
+        return Vec::new();
+    };
+    let packages = installed.get("packages").unwrap_or(&installed).as_array();
+    let mut files = Vec::new();
+    for package in packages.into_iter().flatten() {
+        let providers = package["extra"]["laravel"]["providers"].as_array();
+        let (Some(path), Some(psr4)) = (
+            package["install-path"].as_str(),
+            package["autoload"]["psr-4"].as_object(),
+        ) else {
+            continue;
+        };
+        for provider in providers.into_iter().flatten().filter_map(|p| p.as_str()) {
+            for (prefix, directories) in psr4 {
+                let Some(rest) = provider
+                    .trim_start_matches('\\')
+                    .strip_prefix(prefix.as_str())
+                else {
+                    continue;
+                };
+                let directories = match directories {
+                    serde_json::Value::String(directory) => vec![directory.as_str()],
+                    other => other
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .filter_map(|d| d.as_str())
+                        .collect(),
+                };
+                let file = format!("{}.php", rest.replace('\\', "/"));
+                files.extend(
+                    directories
+                        .into_iter()
+                        .map(|directory| composer.join(path).join(directory).join(&file))
+                        .filter(|file| file.is_file()),
+                );
+            }
+        }
+    }
+    files
+}
+
 impl Macros {
     pub(crate) fn load(
         files: &[PathBuf],
@@ -69,6 +119,7 @@ impl Macros {
         files.extend(crate::php_files(&framework.join("Support/Facades"), &php));
         // the framework's own macros (`Request::validate()`)
         files.push(framework.join("Foundation/Providers/FoundationServiceProvider.php"));
+        files.extend(discovered_providers(root));
         let mut seen = HashSet::new();
         let mut read_files = Reader::default();
         while let Some(path) = files.pop() {

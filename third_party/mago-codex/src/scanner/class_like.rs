@@ -349,13 +349,14 @@ where
 
             match enum_type {
                 Some(backing_type) => {
+                    // Pun's builtin symbols carry no `__internal_do_not_use__*BackedEnum` interface, so the
+                    // enum would not be an instance of `BackedEnum` (or `UnitEnum`) through it alone.
+                    class_like_metadata.add_direct_parent_interface(word("backedenum"));
                     if backing_type.hint.is_string() {
                         class_like_metadata
                             .add_direct_parent_interface(word("__internal_do_not_use__stringbackedenum"));
                     } else if backing_type.hint.is_int() {
                         class_like_metadata.add_direct_parent_interface(word("__internal_do_not_use__intbackedenum"));
-                    } else {
-                        class_like_metadata.add_direct_parent_interface(word("backedenum"));
                     }
                 }
                 None => {

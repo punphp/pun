@@ -222,8 +222,8 @@ impl MethodReturnTypeProvider for Methods {
             "get" if is("Illuminate\\Contracts\\Translation\\Translator") => {
                 return Some(translation());
             }
-            // GuardDynamicStaticMethodReturnTypeExtension: the default guard's driver's class without an argument,
-            // else the class of the driver its constant string names (the argument is matched as a driver)
+            // GuardDynamicStaticMethodReturnTypeExtension: the class of the driver of the default guard without an
+            // argument, else of the guard its constant string names
             "guard"
                 if receiver.eq_ignore_ascii_case(b"Illuminate\\Support\\Facades\\Auth")
                     || class.eq_ignore_ascii_case(b"Illuminate\\Support\\Facades\\Auth") =>
@@ -231,7 +231,7 @@ impl MethodReturnTypeProvider for Methods {
                 let class = match invocation.arguments().as_slice() {
                     [] => self.0.guard_class(None),
                     [argument, ..] => constant_string(context, argument.value()?.span())
-                        .and_then(|d| crate::larastan::app::driver_class(&d)),
+                        .and_then(|guard| self.0.guard_class(Some(&guard))),
                 };
                 return Some(match class {
                     Some(class) => TUnion::from_atomic(object(codebase, class)),

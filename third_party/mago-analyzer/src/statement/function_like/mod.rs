@@ -456,6 +456,9 @@ where
     parent_artifacts.if_false_assertions.extend(std::mem::take(&mut artifacts.if_false_assertions));
     parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
     parent_artifacts.property_offset_writes.extend(std::mem::take(&mut artifacts.property_offset_writes));
+    parent_artifacts
+        .late_expression_types
+        .extend(std::mem::take(&mut artifacts.late_expression_types));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
     for (span, observations) in std::mem::take(&mut artifacts.property_initialization_observations) {
@@ -671,10 +674,7 @@ where
         let mut final_parameter_type = if let Some(inferred_map) = inferred_parameter_types.as_mut()
             && let Some(inferred_type) = inferred_map.remove(&i)
             && !is_unresolved_template_with_mixed_bound(&inferred_type)
-            // ponytail: a literal scalar inferred from an argument may stand for a generalized template (array_reduce's
-            // initial `0` is `int` to PHPStan); a declared parameter keeps its type then
-            && (!declared_type_is_specific
-                || (!inferred_type.is_mixed() && !inferred_type.types.iter().any(|t| matches!(t, TAtomic::Scalar(s) if s.is_literal_value()))))
+            && (!declared_type_is_specific || !inferred_type.is_mixed())
             && (parameter_metadata.get_type_metadata().is_none()
                 || union_comparator::is_contained_by(
                     context.codebase,

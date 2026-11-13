@@ -74,10 +74,11 @@ pub(super) fn check(c: &mut Checker, at: Span, names: Span) {
             offset: start as u32,
         },
     };
-    let scope = scope(c, names);
     let mut errors: Vec<(Span, &'static str, String, Option<&'static str>)> = Vec::new();
     let mut classes = Vec::new();
     declared::with_classes(c, || {
+        // (an imported type alias asks for the class it comes from)
+        let scope = scope(c, names);
         for (name, ty) in entry.doc.var_types(&scope) {
             let what = if name.is_empty() {
                 "PHPDoc tag @var".to_string()

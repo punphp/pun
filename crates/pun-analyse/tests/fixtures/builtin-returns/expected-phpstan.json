@@ -1,0 +1,152 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 23
+    },
+    "files": {
+        "types.php": {
+            "errors": 23,
+            "messages": [
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 18,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<min, 5>",
+                    "line": 19,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 20,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 1|float",
+                    "line": 21,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<5, 10>",
+                    "line": 22,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<0, 5>",
+                    "line": 23,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 24,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 3",
+                    "line": 25,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 1",
+                    "line": 26,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<3, 9>",
+                    "line": 27,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<3, 9>",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 1|string",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-string",
+                    "line": 31,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: non-empty-string",
+                    "line": 32,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<0, max>|false",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int<0, 255>",
+                    "line": 34,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: list<int>",
+                    "line": 35,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 36,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: list<int|string>",
+                    "line": 37,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: array<int, int>",
+                    "line": 38,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

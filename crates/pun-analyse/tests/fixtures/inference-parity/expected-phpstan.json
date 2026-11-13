@@ -1,0 +1,191 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 27
+    },
+    "files": {
+        "a.php": {
+            "errors": 11,
+            "messages": [
+                {
+                    "message": "Function App\\mk() never returns TEnum of BackedEnum so it can be removed from the return type.",
+                    "line": 28,
+                    "ignorable": true,
+                    "identifier": "return.unusedType"
+                },
+                {
+                    "message": "Function App\\mu() never returns TEnum of UnitEnum so it can be removed from the return type.",
+                    "line": 39,
+                    "ignorable": true,
+                    "identifier": "return.unusedType"
+                },
+                {
+                    "message": "Function App\\mm() never returns T of App\\Marker so it can be removed from the return type.",
+                    "line": 50,
+                    "ignorable": true,
+                    "identifier": "return.unusedType"
+                },
+                {
+                    "message": "Function App\\mo() never returns T of object so it can be removed from the return type.",
+                    "line": 61,
+                    "ignorable": true,
+                    "identifier": "return.unusedType"
+                },
+                {
+                    "message": "Dumped type: App\\Suit|null",
+                    "line": 83,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Suit|null",
+                    "line": 84,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Plain|null",
+                    "line": 85,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Impl|null",
+                    "line": 86,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Suit|null",
+                    "line": 87,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Suit|null",
+                    "line": 88,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: App\\Suit|null",
+                    "line": 89,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        },
+        "c.php": {
+            "errors": 5,
+            "messages": [
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 'a'",
+                    "line": 48,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type #1: 'a'",
+                    "line": 53,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type #2: 'a'",
+                    "line": 53,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        },
+        "d.php": {
+            "errors": 10,
+            "messages": [
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 18,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 22,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 26,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int",
+                    "line": 32,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: int|null",
+                    "line": 36,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 'x'|null",
+                    "line": 42,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 55,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Function App\\t2() should return int but returns mixed.",
+                    "line": 57,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                }
+            ]
+        },
+        "e.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Dumped type: array{non-falsy-string, non-empty-string, string, non-falsy-string}",
+                    "line": 12,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

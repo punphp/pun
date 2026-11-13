@@ -171,6 +171,9 @@ pub struct AnalysisArtifacts {
     pub property_offset_writes: HashMap<Span, TUnion>,
     /// Body-boundary value-read/write answers, separate from type and definedness observations.
     pub variable_writes: HashMap<Span, crate::variable_flow::VariableWritesNode>,
+    /// Types an expression takes after its own analysis, by span: an argument-less generic `new` sent to an
+    /// unconstraining parameter (its templates' defaults or bounds), a returned expression under a `@var` tag.
+    pub late_expression_types: HashMap<Span, TUnion>,
     pub(crate) editor: Option<EditorArtifacts>,
     pub(crate) variable_definedness: HashMap<(u32, u32), WordMap<VariableDefinedness>>,
     pub(crate) variable_throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
@@ -226,6 +229,7 @@ impl AnalysisArtifacts {
             nullsafe_method_receiver_types: HashMap::default(),
             property_offset_writes: HashMap::default(),
             variable_writes: HashMap::default(),
+            late_expression_types: HashMap::default(),
             editor: None,
             variable_definedness: HashMap::default(),
             variable_throw_scopes: HashMap::default(),

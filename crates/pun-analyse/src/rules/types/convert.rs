@@ -1600,7 +1600,16 @@ impl Checker<'_, '_> {
                             // builder intentionally normalizes newly declared empty shapes to ArrayType.
                             Type::ConstArray(Box::new(shape))
                         } else {
-                            finish_shape(shape)
+                            // A truthy shape whose keys are all optional: `non-empty-array{0?: int}`.
+                            let non_empty = k.non_empty
+                                && !shape.keys.is_empty()
+                                && shape.optional.len() == shape.keys.len();
+                            let shape = finish_shape(shape);
+                            if non_empty {
+                                intersect(vec![shape, Type::Accessory(Accessory::NonEmptyArray)])
+                            } else {
+                                shape
+                            }
                         }
                     }
                 }

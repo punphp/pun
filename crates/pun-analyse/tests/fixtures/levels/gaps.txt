@@ -75,7 +75,6 @@
 5 Methods/CallMethodsRuleTest::testBug12544
 5 Methods/CallMethodsRuleTest::testBug3465
 5 Methods/CallMethodsRuleTest::testBug5536
-5 Methods/CallMethodsRuleTest::testBug6828
 5 Methods/CallMethodsRuleTest::testBug7369
 5 Methods/CallMethodsRuleTest::testBug8048
 5 Methods/CallMethodsRuleTest::testBug8888
@@ -91,7 +90,6 @@
 9 Methods/CallMethodsRuleTest::testBug12544
 9 Methods/CallMethodsRuleTest::testBug3465
 9 Methods/CallMethodsRuleTest::testBug5536
-9 Methods/CallMethodsRuleTest::testBug6828
 9 Methods/CallMethodsRuleTest::testBug7369
 9 Methods/CallMethodsRuleTest::testBug8048
 9 Methods/CallMethodsRuleTest::testBug8888
@@ -102,12 +100,8 @@
 9 Methods/CallStaticMethodsRuleTest::testBug7489
 # an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
 # Mago's closure return types differ (`<=>` is -1|0|1)
-5 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
-5 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUkey
-5 Functions/CallToFunctionParametersRuleTest::testArrayFindCallback
-5 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUkey
 5 Functions/CallToFunctionParametersRuleTest::testArrayUdiffAssoc
@@ -121,12 +115,8 @@
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
 5 Methods/CallStaticMethodsRuleTest::testBug1971Php8
-9 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
-9 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUkey
-9 Functions/CallToFunctionParametersRuleTest::testArrayFindCallback
-9 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUkey
 9 Functions/CallToFunctionParametersRuleTest::testArrayReduceArrowFunctionCallback
@@ -236,7 +226,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug7156
 9 Functions/CallToFunctionParametersRuleTest::testBug7823
 9 Functions/CallToFunctionParametersRuleTest::testBug8389
-9 Functions/CallToFunctionParametersRuleTest::testBug8506
 9 Functions/CallToFunctionParametersRuleTest::testBug8659
 9 Functions/CallToFunctionParametersRuleTest::testBug9167
 9 Functions/CallToFunctionParametersRuleTest::testBug9559
@@ -719,7 +708,6 @@
 4 Variables/IssetRuleTest::testPr4374
 # preg_match()'s named groups: isset() on the right of `&&` reads a by-reference out variable (`$matches`) without the
 # left side's narrowing
-4 Comparison/BooleanAndConstantConditionRuleTest::testBug5365
 # offsetAssign.valueType of `new ArrayObject()` (another rule), as in OffsetAccessValueAssignmentRuleTest::testBug10783
 4 Variables/EmptyRuleTest::testBug10783
 # variable.undefined is EXACT, so a differing case cannot be listed here: DefinedVariableRuleTest::testBug10228 is left

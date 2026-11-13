@@ -170,6 +170,20 @@ impl MethodReturnTypeProvider for ModelForwards {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         let codebase = context.codebase();
+        // ModelForwardsCallsExtension is asked before the `@method` tags of the SoftDeletes trait, which declare
+        // the Eloquent builder where the model may have its own
+        if class.eq_ignore_ascii_case(SOFT_DELETES)
+            && [&b"withtrashed"[..], b"onlytrashed", b"withouttrashed"]
+                .iter()
+                .any(|name| name.eq_ignore_ascii_case(method))
+        {
+            let model = match &invocation.inner().target.get_method_context()?.class_type {
+                StaticClassType::Object(TObject::Named(receiver)) => receiver.name,
+                StaticClassType::Exact(name) | StaticClassType::Name(name) => *name,
+                _ => return None,
+            };
+            return model_forward(context, model.as_bytes(), method, invocation);
+        }
         // RedirectResponseMethodsClassReflectionExtension and ViewWithMethodsClassReflectionExtension: a `with*`
         // method the class lacks returns the class
         if let Some(receiver) = with_method_class(codebase, class, method) {
@@ -617,11 +631,10 @@ fn builder_forward(
     match name.as_str() {
         "restore" => Some(mago_codex::ttype::get_int()),
         "restoreorcreate" | "createorrestore" => Some(model),
-        "withtrashed" | "onlytrashed" | "withouttrashed" => {
-            Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(
-                TNamedObject::new_with_type_parameters(k.original_name, Some(vec![model])),
-            ))))
-        }
+        "withtrashed" | "onlytrashed" | "withouttrashed" => Some(builder_result(
+            codebase,
+            &TNamedObject::new_with_type_parameters(k.original_name, Some(vec![model])),
+        )),
         _ => None,
     }
 }
@@ -881,7 +894,7 @@ fn facade_mixin(
             let TAtomic::Object(TObject::Named(named)) = t else {
                 continue;
             };
-            let found = if codebase.method_exists(named.name.as_bytes(), method) {
+            let own = || {
                 method_type(
                     codebase,
                     named.name.as_bytes(),
@@ -889,7 +902,8 @@ fn facade_mixin(
                     method,
                     Some((context, invocation)),
                 )
-            } else {
+            };
+            let deeper = || {
                 facade_mixin(
                     context,
                     named.name.as_bytes(),
@@ -897,6 +911,20 @@ fn facade_mixin(
                     invocation,
                     depth + 1,
                 )
+            };
+            // ClassReflection::getMethod(): a method the scope cannot call yields to a later extension's, here
+            // MixinMethodsClassReflectionExtension's (`Router`'s protected `prefix()` to `RouteRegistrar`'s tag)
+            let found = match codebase.get_declaring_method(named.name.as_bytes(), method) {
+                Some(m)
+                    if m.method_metadata
+                        .as_ref()
+                        .is_some_and(|mm| !mm.visibility.is_public()) =>
+                {
+                    deeper().or_else(own)
+                }
+                Some(_) => own(),
+                None if codebase.method_exists(named.name.as_bytes(), method) => own(),
+                None => deeper(),
             };
             if found.is_some() {
                 return found;
@@ -926,8 +954,19 @@ pub(crate) fn facade_mixin_method<'a>(
                 return None;
             };
             let k = c.codebase.get_class_like(named.name.as_bytes())?;
-            super::super::members::method(c, k, method)
-                .or_else(|| facade_mixin_method(c, k, method, depth + 1))
+            let own = super::super::members::method(c, k, method);
+            let deeper = || {
+                super::super::members::annotation_method(c, k, method)
+                    .or_else(|| facade_mixin_method(c, k, method, depth + 1))
+            };
+            // as [`facade_mixin`]: a method the scope cannot call yields to a later extension's
+            match own {
+                Some(m) if m.visibility() != mago_codex::visibility::Visibility::Public => {
+                    deeper().or(Some(m))
+                }
+                Some(m) => Some(m),
+                None => deeper(),
+            }
         })
 }
 

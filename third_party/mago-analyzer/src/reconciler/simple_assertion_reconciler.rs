@@ -1666,6 +1666,13 @@ where
     let mut existing_var_type = existing_var_type.clone();
 
     for atomic in existing_var_types {
+        // null has no size other than 0
+        if count > 0 && matches!(atomic, TAtomic::Null) {
+            existing_var_type.remove_type(atomic);
+            did_remove_type = true;
+            continue;
+        }
+
         // ConstantArrayType::truncateListToSize(): a list shape keeps its first `count` values, now required
         let list_shape: Option<(Vec<(usize, &(bool, TUnion))>, Option<&Arc<TAtomic>>)> = match atomic {
             TAtomic::Array(TArray::List(list)) if list.element_type.is_never() => list
@@ -1723,7 +1730,16 @@ where
 
             if needs_replacement {
                 existing_var_type.remove_type(atomic);
-                if !element_type.is_never() {
+                // TypeSpecifier::specifyTypesForCountFuncCall(): a list of a constant size below
+                // ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT is the shape of its offsets' value types
+                if exact && count < 256 && !element_type.is_never() {
+                    let value = |i| known_elements.as_ref().and_then(|known| known.get(&i)).map(|(_, value)| value.clone());
+                    let mut list = TList::from_known_elements(
+                        (0..count).map(|i| (i, (false, value(i).unwrap_or_else(|| (**element_type).clone())))).collect(),
+                    );
+                    list.callable = callable.clone();
+                    existing_var_type.types.to_mut().push(TAtomic::Array(TArray::List(list)));
+                } else if !element_type.is_never() {
                     let new_known_count = if exact { Some(count) } else { known_count.map(|_| count) };
 
                     existing_var_type.types.to_mut().push(TAtomic::Array(TArray::List(TList {

@@ -614,6 +614,7 @@ where
             });
 
     let final_type = common_math_with_mixed(binary, &left_type, &right_type).unwrap_or(final_type);
+    let final_type = integer_division(binary, &left_type, &right_type).unwrap_or(final_type);
 
     assign_arithmetic_type(artifacts, final_type, binary);
 
@@ -680,6 +681,33 @@ fn common_math_with_mixed(binary: &Binary<'_>, left_type: &TUnion, right_type: &
         return Some(TUnion::from_atomic(TAtomic::Scalar(TScalar::Float(TFloat::general()))));
     }
     let mut number = TUnion::from_vec(vec![TAtomic::Scalar(TScalar::Integer(TInteger::Unspecified)), TAtomic::Scalar(TScalar::Float(TFloat::general()))]);
+    number.set_ignore_nullable_issues(true);
+    number.set_ignore_falsable_issues(true);
+    Some(number)
+}
+
+/// InitializerExprTypeResolver::resolveCommonMath(): a division of two integer types that integerRangeMath() does not
+/// take (the left side is a plain `int`, or the right side is) is the benevolent union `(float|int)`.
+fn integer_division(binary: &Binary<'_>, left_type: &TUnion, right_type: &TUnion) -> Option<TUnion> {
+    if !matches!(binary.operator, BinaryOperator::Division(_)) {
+        return None;
+    }
+    let integers = |t: &TUnion| t.types.iter().all(|a| matches!(a, TAtomic::Scalar(TScalar::Integer(_))));
+    let plain = |t: &TUnion| {
+        t.is_single() && matches!(t.get_single(), TAtomic::Scalar(TScalar::Integer(i)) if i.is_unspecified())
+    };
+    if !integers(left_type) || !integers(right_type) || !(plain(left_type) || plain(right_type)) {
+        return None;
+    }
+    // getDivTypeFromTypes(): a divisor that may be zero is an ErrorType
+    if right_type.types.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::Integer(i)) if i.get_literal_value() == Some(0)))
+    {
+        return None;
+    }
+    let mut number = TUnion::from_vec(vec![
+        TAtomic::Scalar(TScalar::Integer(TInteger::Unspecified)),
+        TAtomic::Scalar(TScalar::Float(TFloat::general())),
+    ]);
     number.set_ignore_nullable_issues(true);
     number.set_ignore_falsable_issues(true);
     Some(number)

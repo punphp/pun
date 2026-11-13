@@ -20,7 +20,9 @@ use mago_codex::ttype::get_keyed_array;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::wrap_atomic;
 use mago_span::HasSpan;
+use mago_codex::assertion::Assertion;
 use mago_syntax::cst::Expression;
+use mago_syntax::cst::PartialApplication;
 use mago_syntax::cst::Statement;
 use mago_word::Word;
 use mago_word::WordSet;
@@ -55,9 +57,12 @@ where
     }
     let info = InvocationInfo::new(invocation);
     let array_argument = info.get_argument(0, &[b"array"])?;
-    let callback = info.get_argument(1, &[b"callback"])?;
+    // a missing or `null` callback removes the falsey values (`filterArrayRemovingFalsey()`)
+    let callback = info
+        .get_argument(1, &[b"callback"])
+        .filter(|callback| !artifacts.get_expression_type(callback).is_some_and(TUnion::is_null));
     // determineMode(): ARRAY_FILTER_USE_BOTH is 1 and ARRAY_FILTER_USE_KEY 2; anything else uses the item
-    let (use_key, use_item) = match info.get_argument(2, &[b"mode"]) {
+    let (use_key, use_item) = match info.get_argument(2, &[b"mode"]).filter(|_| callback.is_some()) {
         None => (false, true),
         Some(mode) => match artifacts.get_expression_type(mode)?.get_single_literal_int_value()? {
             1 => (true, true),
@@ -65,43 +70,61 @@ where
             _ => (false, true),
         },
     };
+    // createDummyArgs(): a function named by a constant string or a first-class callable is called with `$item`
+    // (and `$key`); its assertions on those arguments narrow them
+    let dummies = || match (use_key, use_item) {
+        (false, _) => vec![word("$item")],
+        (true, false) => vec![word("$key")],
+        (true, true) => vec![word("$item"), word("$key")],
+    };
+    let called = |context: &Context<'ctx, 'arena, A>, name: &[u8]| {
+        let function = context.codebase.get_function(name)?;
+        let dummies = dummies();
+        let rename = |assertions: &std::collections::BTreeMap<Word, Vec<mago_codex::assertion::Assertion>>| {
+            let mut map: AssertionMap<Word, AssertionSet> = AssertionMap::default();
+            for (parameter, dummy) in function.parameters.iter().zip(&dummies) {
+                if let Some(found) = assertions.get(&parameter.get_name().0) {
+                    map.insert(*dummy, found.iter().map(|a| vec![a.clone()]).collect());
+                }
+            }
+            map
+        };
+        let body = Body::Assertions(rename(&function.if_true_assertions), rename(&function.if_false_assertions));
+        Some((dummies, body))
+    };
     let (names, body): (Vec<Word>, Body<'_, '_>) = match callback {
-        Expression::ArrowFunction(arrow) => {
+        None => {
+            let only = |assertion| {
+                let mut map: AssertionMap<Word, AssertionSet> = AssertionMap::default();
+                map.insert(word("$item"), vec![vec![assertion]]);
+                map
+            };
+            (vec![word("$item")], Body::Assertions(only(Assertion::Truthy), only(Assertion::Falsy)))
+        }
+        Some(Expression::ArrowFunction(arrow)) => {
             (arrow.parameter_list.parameters.iter().map(|p| word(p.variable.name)).collect(), Body::Expression(arrow.expression))
         }
-        Expression::Closure(closure) => match closure.body.statements.as_slice() {
+        Some(Expression::Closure(closure)) => match closure.body.statements.as_slice() {
             [Statement::Return(ret)] => (
                 closure.parameter_list.parameters.iter().map(|p| word(p.variable.name)).collect(),
                 Body::Expression(ret.value?),
             ),
             _ => return None,
         },
-        // createDummyArgs(): a function named by a constant string is called with `$item` (and `$key`); its
-        // assertions on those arguments narrow them
-        _ => {
+        Some(Expression::PartialApplication(PartialApplication::Function(partial)))
+            if partial.argument_list.is_first_class_callable() =>
+        {
+            let Expression::Identifier(identifier) = partial.function else { return None };
+            let name = context.resolve_function_name(identifier);
+            called(context, name)?
+        }
+        Some(callback) => {
             let callback_type = artifacts.get_expression_type(callback)?;
             let [TAtomic::Scalar(mago_codex::ttype::atomic::scalar::TScalar::String(name))] = callback_type.types.as_ref() else {
                 return None;
             };
             let name = name.get_known_literal_atom()?;
-            let name = name.as_bytes().strip_prefix(b"\\").unwrap_or(name.as_bytes());
-            let function = context.codebase.get_function(name)?;
-            let dummies = match (use_key, use_item) {
-                (false, _) => vec![word("$item")],
-                (true, false) => vec![word("$key")],
-                (true, true) => vec![word("$item"), word("$key")],
-            };
-            let rename = |assertions: &std::collections::BTreeMap<Word, Vec<mago_codex::assertion::Assertion>>| {
-                let mut map: AssertionMap<Word, AssertionSet> = AssertionMap::default();
-                for (parameter, dummy) in function.parameters.iter().zip(&dummies) {
-                    if let Some(found) = assertions.get(&parameter.get_name().0) {
-                        map.insert(*dummy, found.iter().map(|a| vec![a.clone()]).collect());
-                    }
-                }
-                map
-            };
-            let body = Body::Assertions(rename(&function.if_true_assertions), rename(&function.if_false_assertions));
-            (dummies, body)
+            called(context, name.as_bytes().strip_prefix(b"\\").unwrap_or(name.as_bytes()))?
         }
     };
     let (item, key) = match (use_key, use_item) {
@@ -114,7 +137,7 @@ where
         return None;
     }
 
-    let mut filter = Filter { block_context, artifacts, body, span: callback.span(), item, key };
+    let mut filter = Filter { block_context, artifacts, body, span: callback.map_or_else(|| array_argument.span(), HasSpan::span), item, key };
     let mut result: Option<TUnion> = None;
     for atomic in array_type.types.iter() {
         let TAtomic::Array(array) = atomic else { return None };

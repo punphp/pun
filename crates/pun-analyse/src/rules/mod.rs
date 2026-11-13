@@ -2,6 +2,7 @@
 //! registered for that node type, in PHPStan's source order.
 
 mod anonymous;
+mod array_column;
 mod array_fill;
 mod arrays;
 mod assert_tags;

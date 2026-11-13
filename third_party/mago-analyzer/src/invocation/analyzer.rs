@@ -209,6 +209,29 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
 }
 
 /// Analyzes and verifies arguments passed to a function, method, or callable.
+/// PHPStan keeps `new Collection()` sent to a bare template (or to `mixed` on an impure callee) as the class with
+/// its templates at their defaults or bounds, so the call infers from those and nothing is unresolvable.
+fn unconstrained_instantiation<A: Arena>(context: &Context<'_, '_, A>, argument_type: &TUnion) -> Option<TUnion> {
+    let [TAtomic::Object(TObject::Named(object))] = argument_type.types.as_ref() else {
+        return None;
+    };
+    let parameters = object.type_parameters.as_deref().filter(|parameters| !parameters.is_empty())?;
+    if !parameters.iter().all(|parameter| parameter.is_placeholder() || parameter.is_never()) {
+        return None;
+    }
+    let metadata = context.codebase.get_class_like_by_name(object.name)?;
+    if metadata.template_types.len() != parameters.len() {
+        return None;
+    }
+    let resolved = metadata
+        .template_types
+        .values()
+        .map(|template| template.default.clone().unwrap_or_else(|| template.constraint.clone()))
+        .collect();
+
+    Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(object.clone().with_type_parameters(Some(resolved))))))
+}
+
 pub fn analyze_invocation<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
@@ -796,6 +819,61 @@ where
         } else {
             None
         };
+        // ParametersAcceptorSelector::selectFromArgs() resolves the templates from the array's own type first, so
+        // `array<TKey, Closure(relation-of<TModel, TKey>)>` types each closure by the literal keys
+        let passed_to_type = match (passed_to_type, parameter) {
+            (Some(unresolved), Some((_, parameter_ref)))
+                if parameter_ref.get_type().is_some_and(TUnion::has_template_types) =>
+            {
+                let mut block = block_context.clone();
+                block.if_body_context = None;
+                block.finally_scope = None;
+                let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
+                let target = &invocation.target;
+                let gathered = context.gather_callback(|context| {
+                    analyze_and_store_argument_type(
+                        context,
+                        &mut block,
+                        &mut scratch,
+                        target,
+                        argument_expression,
+                        usize::MAX,
+                        &mut [],
+                        false,
+                        Some(&unresolved),
+                        None,
+                        None,
+                        None,
+                    )?;
+                    Ok::<_, AnalysisError>(scratch.get_expression_type(argument_expression).cloned())
+                })?;
+                let parameter_type = get_parameter_type(
+                    context,
+                    Some(parameter_ref),
+                    base_class_metadata,
+                    calling_class_like_metadata,
+                    calling_instance_type,
+                    method_class_type,
+                );
+                match gathered {
+                    Some(gathered) => {
+                        let mut keyed = template_result.clone();
+                        infer_parameter_templates_from_argument(
+                            context,
+                            &parameter_type,
+                            &gathered,
+                            &mut keyed,
+                            *argument_offset,
+                            argument_expression.span(),
+                            false,
+                        );
+                        closure_parameter_bounds(context, Some(&parameter_type), &keyed)
+                    }
+                    None => Some(unresolved),
+                }
+            }
+            (passed_to_type, _) => passed_to_type,
+        };
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -810,6 +888,31 @@ where
             arguments.reference_context(&argument, *argument_offset),
             arguments.expression_issues.as_mut(),
         )?;
+        if matches!(crate::utils::misc::unwrap_expression(argument_expression), Expression::Instantiation(_))
+            && let Some((argument_type, _)) = &mut analyzed_argument_types[*argument_offset]
+            && let Some((_, parameter_ref)) = parameter
+        {
+            let parameter_type = get_parameter_type(
+                context,
+                Some(parameter_ref),
+                base_class_metadata,
+                calling_class_like_metadata,
+                calling_instance_type,
+                method_class_type,
+            );
+            let is_pure = invocation.target.get_function_like_metadata().is_some_and(|metadata| metadata.flags.is_pure());
+            // Only a bare template takes the argument whole; `EventCollection<WrittenEvent<ID>>` infers `ID`
+            // from the argument's own (still unconstrained) parameters
+            let bare_template = parameter_type.types.iter().any(|atomic| matches!(atomic, TAtomic::GenericParameter(_)));
+            if (bare_template || (parameter_type.is_mixed() && !is_pure))
+                && let Some(resolved) = unconstrained_instantiation(context, argument_type)
+            {
+                let resolved = Rc::new(resolved);
+                artifacts.late_expression_types.insert(argument_expression.span(), (*resolved).clone());
+                artifacts.set_rc_expression_type(argument_expression, Rc::clone(&resolved));
+                *argument_type = resolved;
+            }
+        }
         arguments.types[*argument_offset].clone_from(&analyzed_argument_types[*argument_offset]);
 
         if let Some((argument_type, _)) = &mut analyzed_argument_types[*argument_offset]
@@ -887,6 +990,23 @@ where
 
     let global_closure_bind_scope = detect_closure_bind_scope(context, artifacts, invocation, &analyzed_argument_types);
     let previous_bind_scope = artifacts.closure_bind_scope.take();
+
+    // an omitted argument reads as its default while the closures are typed, so `($operator is null ? static : …)`
+    // in a `Closure(…)` parameter resolves the way ParametersAcceptorSelector::selectFromArgs() does
+    for parameter in invocation.target.iter_parameters() {
+        let Some(parameter_name) = parameter.get_name() else {
+            continue;
+        };
+        let deferred = closure_arguments
+            .iter()
+            .any(|(_, closure)| closure.is_some_and(|(_, p)| p.get_name().is_some_and(|n| n.0 == parameter_name.0)));
+        if deferred || parameter_types.contains_key(&parameter_name.0) {
+            continue;
+        }
+        if let Some(default) = parameter.get_default_type() {
+            parameter_types.insert(parameter_name.0, default.clone());
+        }
+    }
 
     for (argument_offset, parameter) in &closure_arguments {
         let Some(argument) = invocation.arguments_source.get_argument(*argument_offset) else {

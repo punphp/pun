@@ -175,7 +175,11 @@ fn infer(
         if let Some(p) = *p
             && let Some(t) = e.value_type(c)
         {
-            let t = if e.unpack { t.iterable_value_type() } else { t };
+            let t = if e.unpack {
+                declared::with_classes(c, || t.iterable_value_type())
+            } else {
+                t
+            };
             passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
         }
     }
@@ -484,12 +488,12 @@ pub(in super::super) fn arguments(
             && (!c.on(crate::rules::Switches::CHECK_THIS_ONLY) || e.is_this)
         {
             let ty = e.value_type(c);
-            let found = c.find_type_to_check_of(ty, &|t| t.is_iterable().yes());
-            if let Some(t) = found
-                && !t.is_iterable().yes()
-            {
-                let described =
-                    declared::with_classes(c, || t.describe(pun_phpstan::types::Level::TypeOnly));
+            let described = declared::with_classes(c, || {
+                c.find_type_to_check_of(ty, &|t| t.is_iterable().yes())
+                    .filter(|t| !t.is_iterable().yes())
+                    .map(|t| t.describe(pun_phpstan::types::Level::TypeOnly))
+            });
+            if let Some(described) = described {
                 let message = format!(
                     "Only iterables can be unpacked, {described} given in argument #{}.",
                     i + 1
@@ -502,9 +506,13 @@ pub(in super::super) fn arguments(
         };
         super::super::params::check_named(c, acceptor, e, call, positional_fix);
         let by_ref = acceptor.by_ref[p];
-        let value = e
-            .value_type(c)
-            .map(|t| if e.unpack { t.iterable_value_type() } else { t });
+        let value = e.value_type(c).map(|t| {
+            if e.unpack {
+                declared::with_classes(c, || t.iterable_value_type())
+            } else {
+                t
+            }
+        });
         // a by-reference parameter that creates the variable takes anything from a built-in's caller, and an
         // undefined variable (ErrorType) from any caller
         if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES)

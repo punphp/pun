@@ -735,6 +735,10 @@ where
                 } else {
                     if_types.insert(array_variable_id, vec![vec![Assertion::HasExactCount(number_on_right as usize)]]);
                 }
+            } else if number_on_right != 0
+                && let Some(array_variable_id) = get_coalesced_count_argument_id(assertion_context, left)
+            {
+                if_types.insert(array_variable_id, vec![vec![Assertion::HasExactCount(number_on_right as usize)]]);
             }
 
             return if if_types.is_empty() { vec![] } else { vec![if_types] };
@@ -748,6 +752,10 @@ where
                 } else {
                     if_types.insert(array_variable_id, vec![vec![Assertion::HasExactCount(number_on_left as usize)]]);
                 }
+            } else if number_on_left != 0
+                && let Some(array_variable_id) = get_coalesced_count_argument_id(assertion_context, right)
+            {
+                if_types.insert(array_variable_id, vec![vec![Assertion::HasExactCount(number_on_left as usize)]]);
             }
 
             return if if_types.is_empty() { vec![] } else { vec![if_types] };
@@ -824,6 +832,11 @@ where
                         vec![vec![Assertion::DoesNotHaveExactCount(number_on_right as usize)]],
                     );
                 }
+            } else if number_on_right != 0
+                && let Some(array_variable_id) = get_coalesced_count_argument_id(assertion_context, left)
+            {
+                if_types
+                    .insert(array_variable_id, vec![vec![Assertion::DoesNotHaveExactCount(number_on_right as usize)]]);
             }
 
             return if if_types.is_empty() { vec![] } else { vec![if_types] };
@@ -840,6 +853,11 @@ where
                         vec![vec![Assertion::DoesNotHaveExactCount(number_on_left as usize)]],
                     );
                 }
+            } else if number_on_left != 0
+                && let Some(array_variable_id) = get_coalesced_count_argument_id(assertion_context, right)
+            {
+                if_types
+                    .insert(array_variable_id, vec![vec![Assertion::DoesNotHaveExactCount(number_on_left as usize)]]);
             }
 
             return if if_types.is_empty() { vec![] } else { vec![if_types] };
@@ -2190,6 +2208,26 @@ where
     }
 
     if if_types.is_empty() { vec![] } else { vec![if_types] }
+}
+
+/// The `$a` of `count($a ?? [])`. A count other than 0 rules the `[]` out, so the count is `$a`'s and `$a` is not null
+/// (CoalesceHandler's `createTypesCallback()`).
+fn get_coalesced_count_argument_id<A>(assertion_context: AssertionContext<'_, '_, A>, expression: &Expression) -> Option<Word>
+where
+    A: Arena,
+{
+    let Expression::Call(Call::Function(FunctionCall { argument_list, .. })) = expression else { return None };
+    let [argument] = argument_list.arguments.as_slice() else { return None };
+    let Expression::Binary(mago_syntax::cst::Binary { lhs, operator: BinaryOperator::NullCoalesce(_), rhs }) = unwrap_expression(argument.value())
+    else {
+        return None;
+    };
+    let empty = match unwrap_expression(rhs) {
+        Expression::Array(array) => array.elements.is_empty(),
+        Expression::LegacyArray(array) => array.elements.is_empty(),
+        _ => false,
+    };
+    empty.then(|| assertion_context.get_expression_id(lhs)).flatten()
 }
 
 #[inline]

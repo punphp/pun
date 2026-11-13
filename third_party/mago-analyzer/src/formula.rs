@@ -127,6 +127,30 @@ fn preg_match_arguments(expression: &Expression, all: bool) -> Option<usize> {
         .then_some(call.argument_list.arguments.len())
 }
 
+/// The matches variables of the `preg_match()` calls a condition is built from (through parentheses, `!`, a bool
+/// cast, comparisons and `&&`). The call writes its matches by reference, and the condition's assertion on them
+/// describes that written value, so the write is no reason to drop the assertion.
+pub(crate) fn preg_match_matches_variables<A>(
+    expression: &Expression,
+    assertion_context: AssertionContext<'_, '_, A>,
+    variables: &mut mago_word::WordSet,
+) where
+    A: Arena,
+{
+    match unwrap_expression(expression) {
+        Expression::Binary(binary) => {
+            preg_match_matches_variables(binary.lhs, assertion_context, variables);
+            preg_match_matches_variables(binary.rhs, assertion_context, variables);
+        }
+        Expression::UnaryPrefix(unary) => preg_match_matches_variables(unary.operand, assertion_context, variables),
+        call @ Expression::Call(Call::Function(function)) if preg_match_arguments(call, true).is_some() => {
+            let matches = function.argument_list.arguments.get(2).map(|argument| argument.value());
+            variables.extend(matches.and_then(|matches| assertion_context.get_expression_id(matches)));
+        }
+        _ => {}
+    }
+}
+
 /// `($a ?? V) !== V` for a constant string or integer `V`: CoalesceHandler's `createTypesCallback()` narrows the left
 /// side only where the type rules the right side out, so `$a !== V` there (with `isset()` of an offset fetch) and
 /// nothing in the other branch (a synthetic clause on the comparison keeps the negation a disjunction); `=== V` is

@@ -689,6 +689,63 @@ fn with_key(
     }
 }
 
+/// BuilderOfType and RelationOfType (`builder-of<TModel[, TRelation]>`, `relation-of<TModel, TRelation>`): their
+/// `getResult()` once no argument holds a template or `static` (`isResolvable()`), else the node kept under its own
+/// name, which no class has, for `resolve_template_types()` to ask again.
+fn late_of(
+    codebase: &mago_codex::metadata::CodebaseMetadata,
+    name: &str,
+    args: &[pun_phpstan::types::Type],
+) -> pun_phpstan::types::Type {
+    use pun_phpstan::types::{NeverKind, Type, union};
+    fn late(t: &Type) -> bool {
+        let found = std::cell::Cell::new(matches!(t, Type::Static(..)));
+        t.traverse(&|inner| {
+            found.set(found.get() || late(inner));
+            inner.clone()
+        });
+        found.get() || super::declared::has_template(t)
+    }
+    if args.iter().any(late) {
+        return Type::Object(name.into(), args.to_vec(), false);
+    }
+    let models: Vec<TAtomic> = (args[0].object_class_names().iter())
+        .map(|n| TAtomic::Object(TObject::Named(TNamedObject::new(mago_word::word(n)))))
+        .collect();
+    if models.is_empty() {
+        return Type::Never(NeverKind::Implicit);
+    }
+    let model = TUnion::from_vec(models);
+    // (a key that is no constant string names no relation)
+    let key = args.get(1).map(|key| match key.constant_strings() {
+        keys if keys.is_empty() => mago_codex::ttype::get_string(),
+        keys => TUnion::from_vec(
+            (keys.iter())
+                .map(|s| {
+                    mago_codex::ttype::get_literal_string(mago_word::word(s)).get_single_owned()
+                })
+                .collect(),
+        ),
+    });
+    fn from(t: &TUnion) -> Type {
+        union(
+            (t.types.iter())
+                .map(|a| match a {
+                    TAtomic::Object(TObject::Named(n)) => Type::Object(
+                        crate::text(n.name.as_bytes()),
+                        n.type_parameters.iter().flatten().map(from).collect(),
+                        false,
+                    ),
+                    _ => pun_phpstan::types::mixed(),
+                })
+                .collect(),
+        )
+    }
+    let arguments: Vec<TUnion> = std::iter::once(model).chain(key).collect();
+    forwards::late_builder(codebase, name.as_bytes(), &arguments)
+        .map_or(Type::Never(NeverKind::Implicit), |t| from(&t))
+}
+
 /// Larastan's TypeNodeResolverExtensions: `view-string` (ViewStringType), `model-property<TModel>`
 /// (ModelPropertyTypeNodeResolverExtension: GenericModelPropertyType with `checkModelProperties`, else a string),
 /// `collection-of<TModel>` (CollectionOfType, the model's own collection) and GenericEloquentBuilderTypeNodeResolverExtension's
@@ -734,6 +791,9 @@ pub(crate) fn type_node(
             Type::String,
             Type::Accessory(Accessory::ViewString),
         ])),
+        ("builder-of", [_] | [_, _]) | ("relation-of", [_, _]) => {
+            Some(late_of(codebase, name, args))
+        }
         ("model-property", _)
             if !larastan
                 .switches

@@ -29,10 +29,17 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::get_empty;
 use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_false;
+use mago_codex::ttype::get_int;
 use mago_codex::ttype::get_int_or_float;
+use mago_codex::ttype::get_int_range;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_named_object;
+use mago_codex::ttype::get_non_empty_string;
+use mago_codex::ttype::get_null;
 use mago_codex::ttype::get_object;
+use mago_codex::ttype::get_string;
+use mago_codex::ttype::get_truthy_string;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
@@ -236,6 +243,67 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
                 "No" => ReflectedSideEffects::No,
                 _ => ReflectedSideEffects::Maybe,
             });
+        }
+    }
+    // PHPStan's functionMap narrows some built-in functions' scalars where the prelude has the native type (`time()`'s
+    // `int<1, max>`, `sodium_crypto_sign_keypair()`'s `non-empty-string`). When both are the same union of an
+    // integer, a string, false and null, the function returns PHPStan's ranges and string accessories.
+    for ((class, name), function) in &mut metadata.function_likes {
+        if !class.is_empty() {
+            continue;
+        }
+        let Some([variant]) = builtins
+            .functions
+            .get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+            .map(|function| function.variants.as_slice())
+        else {
+            continue;
+        };
+        let Some(ret) = function
+            .return_type_metadata
+            .as_ref()
+            .or(function.return_type_declaration_metadata.as_ref())
+        else {
+            continue;
+        };
+        let bound = |b: &str| match b {
+            "min" | "max" => Some(None),
+            b => b.parse::<i64>().ok().map(Some),
+        };
+        let mut narrowed = false;
+        let reflected: Option<Vec<TAtomic>> = variant
+            .ret
+            .strip_prefix('(')
+            .and_then(|r| r.strip_suffix(')'))
+            .unwrap_or(&variant.ret)
+            .split(" | ")
+            .map(|part| {
+                let (general, union) = match part {
+                    "null" => (get_null(), get_null()),
+                    "false" => (get_false(), get_false()),
+                    "non-empty-string" => (get_string(), get_non_empty_string()),
+                    "non-falsy-string" => (get_string(), get_truthy_string()),
+                    part => {
+                        let (from, to) = part
+                            .strip_prefix("int<")?
+                            .strip_suffix('>')?
+                            .split_once(", ")?;
+                        (get_int(), get_int_range(bound(from)?, bound(to)?))
+                    }
+                };
+                // (the prelude's own refinements and conditional returns stay)
+                narrowed |= general != union;
+                ret.type_union
+                    .types
+                    .contains(general.types.first()?)
+                    .then(|| union.types.first().cloned())?
+            })
+            .collect();
+        let Some(reflected) = reflected else { continue };
+        if narrowed && reflected.len() == ret.type_union.types.len() {
+            let span = ret.span;
+            function.return_type_metadata =
+                Some(TypeMetadata::new(TUnion::from_vec(reflected), span));
         }
     }
     // PHPStan's own stubs type some built-in methods with other classes than Mago's prelude (ReflectionType for

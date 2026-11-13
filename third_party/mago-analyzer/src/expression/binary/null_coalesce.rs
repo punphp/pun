@@ -120,8 +120,14 @@ where
         false
     };
     let mut lhs_context = block_context.clone();
+    // An always-null variable on the left has no isset-success scope: specifying it would leave `mixed` behind.
+    // A `static` variable keeps that `mixed`, as PHPStan reads it; a by-reference capture does not.
+    // An always-null offset is still specified, which removes it from the scope after the `??`.
     if let Some(root) = get_root_expression_id(binary.lhs)
         && !block_context.variable_certainty(root).is_absent()
+        && (!lhs_type.is_null()
+            || matches!(unwrap_expression(binary.lhs), Expression::ArrayAccess(_))
+            || (is_static_var && !block_context.references_to_external_scope.contains(&root)))
     {
         let subject = match unwrap_expression(binary.lhs) {
             Expression::ArrayAccess(access)

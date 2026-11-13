@@ -169,7 +169,20 @@ where
         matches!(unwrap_expression(argument_expression), Expression::Array(_) | Expression::LegacyArray(_));
     let inferred_parameter_types = closure_parameter_type
         .filter(|_| !is_array_literal)
-        .map(|closure_parameter_type| callable_parameter_types(context, closure_parameter_type));
+        .map(|closure_parameter_type| callable_parameter_types(context, closure_parameter_type))
+        .map(|mut types| {
+            // array_reduce()'s carry is its initial value and what the callback returns (`0|1`), which the initial
+            // value alone (`0`) is not; ponytail: a literal carry keeps the callback's declared type
+            if matches!(
+                invocation_target.get_function_like_identifier(),
+                Some(FunctionLikeIdentifier::Function(name)) if name.as_str().is_some_and(|n| n.eq_ignore_ascii_case("array_reduce"))
+            ) && types.get(&0).is_some_and(|carry| {
+                carry.types.iter().any(|t| matches!(t, TAtomic::Scalar(s) if s.is_literal_value()))
+            }) {
+                types.remove(&0);
+            }
+            types
+        });
     // ArgumentsHandler passes an array literal its parameter's type (enterPassedToType())
     let passed_to_type = closure_parameter_type
         .filter(|_| is_array_literal)

@@ -1395,6 +1395,9 @@ where
     artifacts.begin_expression_type_checkpoint();
     let expressions = get_definitely_evaluated_ored_expressions(condition);
 
+    // The condition was analysed where it stands; this replay only carries its assignments past the `if`, so
+    // observers must not take its reads for the condition's own (the left side of `||` is not narrowed here).
+    context.raw_callback_gather_depth += 1;
     let (result, _) = context.record(|context| {
         for expression in expressions {
             let negated_expression = new_synthetic_negation(context.arena, expression);
@@ -1410,6 +1413,7 @@ where
 
         Result::<_, AnalysisError>::Ok(())
     });
+    context.raw_callback_gather_depth -= 1;
 
     artifacts.finish_expression_type_checkpoint(if result.is_ok() {
         CheckpointAction::Rollback

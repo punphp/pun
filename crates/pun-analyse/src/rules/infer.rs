@@ -423,6 +423,8 @@ fn analyse_observed<'arena>(
     let mut found =
         std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
     types.extend(found.read);
+    // the hook read each `new` before the call it is sent to resolved its template arguments
+    types.extend(artifacts.late_expression_types.clone());
     keep_void_types.extend(found.keep_void_types);
     for (span, ty) in found.native_read {
         if let Some(ty) = ty {

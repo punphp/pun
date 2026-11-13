@@ -3917,3 +3917,41 @@ inline closure with `$this` as the first argument's type, as MethodCallHandler d
 argument is analysed first on a scratch scope and artifacts inside `gather_callback()`, so it reports nothing and
 keeps no state (PHPStan's NoopNodeCallback pass), then again as call()'s argument. `call()` on any closure type
 returns the closure's return type (ClosureCallMethodReflection).
+
+## Inference at level max on an application
+
+Each case is in `crates/pun-analyse/tests/fixtures/inference-parity/` with PHPStan 2.3.5's output.
+
+- `artifacts.rs` `late_expression_types`: the type an expression takes after its own analysis, by span.
+  `statement/function_like/mod.rs` carries it out of a function body. `statement/return.rs` writes it: a returned
+  expression under a `@var` tag has the tag's type, as PHPStan gives it in the statement's scope.
+- `invocation/analyzer.rs` `analyze_invocation()`: an array literal sent to a parameter with templates is analysed
+  once on a scratch scope to infer the templates from its own keys, so `array<TKey, Closure(relation-of<TModel,
+  TKey>)>` types each closure by its literal key (ParametersAcceptorSelector::selectFromArgs()). While the closures
+  are typed, an omitted argument reads as its parameter's default, so a conditional `($operator is null ? ... : ...)`
+  inside a `Closure(...)` parameter resolves.
+- `invocation/analyzer.rs` `unconstrained_instantiation()`: `new Collection()` sent to a parameter that is a bare
+  template (`TGetDefault|(Closure(): TGetDefault)`), or to `mixed` on an impure callee, takes its templates' defaults
+  or bounds, so `->get($id, new Collection())` has no unresolvable type. A generic object that only contains templates
+  (`EventCollection<WrittenEvent<ID>>`) keeps the unconstrained argument, as PHPStan's
+  `testTemplateArgumentNestedCollection` expects.
+- `invocation/arguments.rs`: array_reduce()'s callback does not take a literal initial value as its carry's type; the
+  carry is also what the callback returns. This replaces the wider rule in `statement/function_like/mod.rs` that kept
+  the declared type of every closure parameter whose inferred type held a literal.
+- `invocation/array_filter.rs`: a missing or `null` callback removes the falsey values
+  (`filterArrayRemovingFalsey()`), and a first-class callable of a named function narrows through that function's
+  assertions like a constant string (`createDummyArgs()`).
+- `expression/binary/arithmetic.rs` `integer_division()`: a division of two integer types that
+  integerRangeMath() does not take is the benevolent `(float|int)`
+  (InitializerExprTypeResolver::resolveCommonMath()).
+- `expression/binary/null_coalesce.rs`: an always-null variable on the left has no isset-success scope, except for a
+  `static` variable that is not a by-reference capture. An always-null offset is still specified.
+- `expression/binary/logical.rs`, `formula.rs` `preg_match_matches_variables()`: the left side of `&&` keeps its
+  assertion on a matches variable that its own `preg_match()` call wrote, so `preg_match(...) === 1 && $x` narrows
+  `$matches` in the body.
+- `assertion.rs` `get_coalesced_count_argument_id()`: `count($a ?? [])` compared with a number other than 0 is the
+  count of `$a` (CoalesceHandler's `createTypesCallback()`). `reconciler/simple_assertion_reconciler.rs`: null has
+  no size above 0, and a list of an exact size below ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT becomes the shape of
+  its offsets (TypeSpecifier::specifyTypesForCountFuncCall()).
+- `statement/if.rs`: the replay of a condition that carries its assignments past the `if` runs with observers off, so
+  its reads are not taken for the condition's own.

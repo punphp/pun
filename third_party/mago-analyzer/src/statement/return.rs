@@ -106,9 +106,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Return<'arena> {
                         None,
                     );
 
+                    // PHPStan gives the returned expression its `@var` type in the statement's scope
+                    artifacts.late_expression_types.insert(return_value.span(), docblock_type.clone());
                     Rc::new(docblock_type)
                 }
-                (None, Some((docblock_type, _))) => Rc::new(docblock_type),
+                (None, Some((docblock_type, _))) => {
+                    artifacts.late_expression_types.insert(return_value.span(), docblock_type.clone());
+                    Rc::new(docblock_type)
+                }
                 (Some(inferred_type), None) => inferred_type,
                 (None, None) => Rc::new(get_mixed()),
             }

@@ -604,6 +604,8 @@ pub(super) fn from_tunion_in(
             Type::Object(text(name.as_bytes()), vec![], false)
         }
         TAtomic::Object(TObject::Any) => Type::ObjectWithoutClass,
+        // (an enum's name is an enum type once the enum is known)
+        TAtomic::Object(TObject::Enum(e)) => Type::Object(text(e.name.as_bytes()), vec![], false),
         _ => Type::Mixed { explicit: true },
     };
     union(t.types.iter().map(atom).collect())

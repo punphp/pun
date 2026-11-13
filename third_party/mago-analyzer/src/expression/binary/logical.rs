@@ -147,7 +147,15 @@ where
     );
 
     if !left_block_context.parent_conflicting_clause_variables.is_empty() {
-        left_assertions.retain(|var_id, _| !left_block_context.parent_conflicting_clause_variables.contains(var_id));
+        let mut written = WordSet::default();
+        crate::formula::preg_match_matches_variables(
+            binary.lhs,
+            context.get_assertion_context_from_block(block_context),
+            &mut written,
+        );
+        left_assertions.retain(|var_id, _| {
+            written.contains(var_id) || !left_block_context.parent_conflicting_clause_variables.contains(var_id)
+        });
     }
 
     let mut changed_var_ids = WordSet::default();
