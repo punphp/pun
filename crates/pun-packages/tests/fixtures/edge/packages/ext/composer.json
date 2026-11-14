@@ -1,0 +1,32 @@
+{
+    "name": "acme/ext",
+    "version": "1.0.0",
+    "require": {
+        "php-64bit": ">=8.3",
+        "ext-mbstring": "*",
+        "ext-zend-opcache": "*",
+        "ext-pcntl": "*",
+        "ext-ctype": "*",
+        "ext-foo": "*",
+        "ext-bar": "*",
+        "acme/legacy": "*"
+    },
+    "provide": {
+        "ext-foo": "1.0"
+    },
+    "replace": {
+        "ext-bar": "1.0"
+    },
+    "include-path": [
+        "lib/",
+        "/usr/share/php"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Acme\\Ext\\": "src/"
+        },
+        "files": {
+            "main": "src/functions.php"
+        }
+    }
+}

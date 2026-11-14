@@ -40,6 +40,7 @@ serde.workspace = true
 sha2.workspace = true
 md-5.workspace = true
 pun-tokens.workspace = true
+pun-packages.workspace = true
 pcre2.workspace = true
 notify.workspace = true
 dialoguer.workspace = true

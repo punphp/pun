@@ -1,0 +1,2 @@
+#!/usr/bin/php8.4
+<?php echo 1;

@@ -1,0 +1,11 @@
+{
+    "name": "acme/lib",
+    "version": "1.2.0",
+    "require": {"php": "^8.2", "ext-json": "*"},
+    "provide": {"psr/log-implementation": "3.0"},
+    "autoload": {
+        "psr-4": {"Acme\\Lib\\": "src/"},
+        "files": ["src/functions.php"]
+    },
+    "bin": ["bin/lib"]
+}

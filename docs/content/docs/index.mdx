@@ -17,13 +17,13 @@ Pun supports projects that target PHP 8.4 or later. Supporting current PHP only 
 | [`pun check`](/docs/commands/check) | Runs format, lint, and analyse in one pass |
 | [`pun migrate`](/docs/commands/migrate) | Converts your Pint, PHP-CS-Fixer, Rector, and PHPStan configs to `pun.toml` |
 | [`pun init`](/docs/commands/init) | Creates `pun.toml` for a new project |
-| `pun install` | Installs your dependencies, as Composer does (in progress) |
+| [`pun install`](/docs/commands/install) | Installs the locked dependencies into `vendor/`, with the same files Composer writes |
 
 ## Status
 
 - **Format** matches Pint byte for byte on every project in the [parity scoreboard](/docs/parity). It changes layout only. Pint's risky and code-deleting fixers are lint rules, so a migrated Pint configuration uses `pun check --fix`.
 - **Lint** and **analyse** are previews. PHPStan, Larastan, and Rector support is incomplete; the [rule reference](/docs/rules) marks rules that are not ported yet as Planned.
-- **The package manager** is in progress and not in a release yet.
+- **The package manager** installs from a lock and writes the `vendor/` tree Composer writes. Choosing versions (`pun update`, `pun require`) is in progress, so `composer update` still creates the lock.
 
 PHP checks need no PHP runtime. Blade formatting requires Node.js (or Bun) and Prettier. Some config migrations require PHP and the original tool.
 

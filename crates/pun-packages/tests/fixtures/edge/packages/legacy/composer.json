@@ -1,0 +1,33 @@
+{
+    "name": "acme/legacy",
+    "version": "2.0.0",
+    "require": {
+        "php": ">8.2",
+        "acme/ext": "*",
+        "ext-ctype": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "code/"
+        ],
+        "psr-4": {
+            "": "code/"
+        }
+    },
+    "bin": [
+        "bin/direct",
+        "bin/envonly",
+        "bin/unsafe",
+        "bin/bash",
+        "bin/nofile",
+        "bin/",
+        "bin/escape",
+        "bin/bad$name",
+        "bin/dup",
+        "bin/plain",
+        "bin/envunsafe"
+    ],
+    "provide": {
+        "acme/virtual": "1.0"
+    }
+}

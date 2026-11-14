@@ -246,14 +246,15 @@ Pun's source ports the behaviour of the projects below, and the repository's tes
 | [sebastian/diff](https://github.com/sebastianbergmann/diff) | `crates/pun-cli` (`php_diff`) | none |
 | [PHPUnit](https://github.com/sebastianbergmann/phpunit) | none | `crates/pun-lint/tests/phpunit-stubs` |
 | [nikic/php-parser](https://github.com/nikic/PHP-Parser) | none | `crates/pun-lint/tests/php-parser-stubs` |
+| [Composer](https://github.com/composer/composer) 2.11.2, with [class-map-generator](https://github.com/composer/class-map-generator) 1.9 | `crates/pun-packages`, which also ships Composer's `ClassLoader.php` and `InstalledVersions.php` unchanged in every `vendor/composer` it writes (`crates/pun-packages/assets`, with Composer's license file) | `crates/pun-packages/tests/fixtures` (its output) |
 
 `crates/pun-analyse/tests/fixtures/larastan-types/root/vendor` holds trimmed copies of the Composer packages
 Larastan's tests load. Each package directory there carries its own license file.
 
 ### MIT license
 
-PHP-CS-Fixer, Laravel Pint, PHPStan, Larastan, Rector, rector-phpunit, rector-laravel and pest-plugin-rector are under
-the MIT license, with these copyright notices:
+PHP-CS-Fixer, Laravel Pint, PHPStan, Larastan, Rector, rector-phpunit, rector-laravel, pest-plugin-rector, Composer
+and class-map-generator are under the MIT license, with these copyright notices:
 
 ```text
 PHP-CS-Fixer:        Copyright (c) 2012+ Fabien Potencier, Dariusz Rumiński
@@ -265,6 +266,8 @@ Rector:              Copyright (c) 2017-present Tomas Votruba (https://tomasvotr
 rector-phpunit:      Copyright (c) 2017-present Tomáš Votruba (https://tomasvotruba.cz)
 rector-laravel:      Copyright (c) 2017-present Tomáš Votruba (https://tomasvotruba.cz)
 pest-plugin-rector:  Copyright (c) Pest and contributors
+Composer:            Copyright (c) Nils Adermann, Jordi Boggiano
+class-map-generator: Copyright (C) 2022 Composer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

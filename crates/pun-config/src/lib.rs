@@ -7,11 +7,13 @@ pub mod composer;
 mod constraint;
 mod explain;
 mod identifiers;
+pub mod manifest;
 mod mapping;
 pub mod migrate;
 pub mod options;
 mod phpstan_parameters;
 mod schema;
+pub mod toml_text;
 
 pub use explain::{RULE_DOCS_URL, explain};
 pub use identifiers::rule_of_identifier;
@@ -218,8 +220,14 @@ fn parse(
     composer: &Composer,
     sources: Vec<PathBuf>,
 ) -> Result<Config> {
-    let toml: PunToml =
+    let mut table: toml::Table =
         toml::from_str(text).with_context(|| format!("invalid {}", path.display()))?;
+    // The dependency sections are `pun install`'s; they are checked here so every command reports a broken one.
+    manifest::parse(path, &table)?;
+    table.retain(|k, _| !manifest::SECTIONS.contains(&k));
+    let toml: PunToml = table
+        .try_into()
+        .with_context(|| format!("invalid {}", path.display()))?;
     let PunToml {
         php,
         files,

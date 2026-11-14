@@ -1,6 +1,9 @@
 # Plan: the package manager (`pun install`, `pun update`, `pun require`, `pun remove`)
 
-Status: **planned, not built** (2026-11-14). Decisions with dates: §6. Beyond Composer: §7. Open questions: §8.
+Status: **`pun install` from a lock is built** (2026-11-14): pun.toml's dependency sections and pun.lock (§3), the
+autoload dump, `vendor/bin`, scripts, the pest-plugin port, and `pun migrate`'s composer.json step. On pinkary every
+file in `vendor/` matches Composer 2.11.2's, modes included. No resolver yet (step 8). Decisions with dates: §6.
+Beyond Composer: §7. Open questions: §8.
 
 ## 1. What it is
 
@@ -45,9 +48,13 @@ run error (exit 2) that names it; Pun does not shell out to the Composer CLI.
 
 ## 3. The decided behaviour
 
-- **Composer's files are the source of truth.** `composer.json` is read and, for `require` and `remove`, edited in
-  place keeping its formatting (Composer's JsonManipulator). `composer.lock` is written byte for byte as Composer
-  writes it, `content-hash` included. There is no `pun.toml` section for dependencies and no Pun lock file.
+- **pun.toml and pun.lock hold the dependencies** (superseding "Composer's files are the source of truth", §6).
+  pun.toml's dependency sections carry composer.json's keys under the same names (`[package]` for the root fields,
+  then `[require]`, `[autoload]`, `[[repositories]]` and the rest), so the manifest Pun hashes is composer.json's and
+  `content-hash` is Composer's (checked on pinkary and laravel-pint). pun.lock is composer.lock in TOML: the same
+  settings and packages in the same order, one `[[packages]]` table each with dotted keys. `pun migrate` writes both
+  from composer.json and composer.lock and moves credentials to `auth.json`. A project not migrated yet still installs
+  from composer.json and composer.lock.
 - **`vendor/` is Composer's layout:** package directories, `vendor/composer/` (`installed.json`, `installed.php`,
   `InstalledVersions.php`, `ClassLoader.php`, `autoload_*.php`, `platform_check.php`, `LICENSE`), `vendor/autoload.php`
   and the `vendor/bin` proxies, all byte-identical to Composer 2's. `ClassLoader.php` and `InstalledVersions.php` are
@@ -153,7 +160,10 @@ what CI and most teammates run, and it needs no resolver.
 
 - Top-level verbs `install`, `update`, `require`, `remove`; `pun composer <command>` for the rest (Pushpak,
   2026-11-13).
-- `composer.json` and `composer.lock` stay the source of truth; no Pun manifest or lock (Pushpak, 2026-11-13).
+- ~~`composer.json` and `composer.lock` stay the source of truth~~: the dependencies move to pun.toml and pun.lock,
+  "like phast" (Pushpak, 2026-11-14). The format is Pun's own: composer.json's keys in TOML, not phast's schema.
+  Importing composer.lock into pun.lock, so the first `pun install` installs the versions Composer locked, is the
+  assistant's call.
 - Port Composer's solver, not PubGrub, so the lock matches Composer's (assistant's call, AGENTS.md "Match the upstream
   tool").
 - Composer plugins must work (Pushpak, 2026-11-13): every allowed plugin runs through the plugin host on Composer's
@@ -161,7 +171,8 @@ what CI and most teammates run, and it needs no resolver.
 - No phast code is copied (Pushpak, 2026-11-13). Pun's code is written from Composer's behaviour and its own design;
   phast is a benchmark and a reference for ideas only. Composer's own files that `vendor/` must contain
   (`ClassLoader.php`, `InstalledVersions.php`) and the phar the host runs keep Composer's MIT notice.
-- `@composer` in a script runs Pun's command, not a Composer binary (assistant's call).
+- `@composer` in a script runs the `composer` on the PATH until `pun composer` has the command (assistant's call,
+  revised 2026-11-14: Pun has only `install` so far).
 - Composer 2.11.2 is the pinned oracle, and the plugin host runs that same phar; Pun follows Composer's minor releases
   as it follows PHPStan's (Pushpak, 2026-11-14).
 - A fresh clone needs no Composer: the standalone installer (`curl -fsSL https://pun.laravel.cloud/install | sh`,

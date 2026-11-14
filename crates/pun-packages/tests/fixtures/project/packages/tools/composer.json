@@ -1,0 +1,12 @@
+{
+    "name": "acme/tools",
+    "version": "0.3.1",
+    "require": {"acme/lib": "^1.0"},
+    "replace": {"acme/old-tools": "self.version"},
+    "autoload": {
+        "psr-0": {"Acme_Tools_": "lib/"},
+        "classmap": ["legacy/"],
+        "exclude-from-classmap": ["legacy/skip/"]
+    },
+    "bin": ["bin/tool.sh"]
+}

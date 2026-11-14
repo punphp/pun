@@ -1,0 +1,86 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "505e2931b9db2a3f50543bd9b4e608c1",
+    "packages": [
+        {
+            "name": "acme/lib",
+            "version": "1.2.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/lib",
+                "reference": "7aeb9537b4372d3b9b5a97c1da216175f3964bf7"
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.2"
+            },
+            "provide": {
+                "psr/log-implementation": "3.0"
+            },
+            "bin": [
+                "bin/lib"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Acme\\Lib\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "transport-options": {
+                "relative": true
+            }
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "acme/tools",
+            "version": "0.3.1",
+            "dist": {
+                "type": "path",
+                "url": "packages/tools",
+                "reference": "a6d854dda27357c0e870f612995cbea12f20d200"
+            },
+            "require": {
+                "acme/lib": "^1.0"
+            },
+            "replace": {
+                "acme/old-tools": "self.version"
+            },
+            "bin": [
+                "bin/tool.sh"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Acme_Tools_": "lib/"
+                },
+                "classmap": [
+                    "legacy/"
+                ],
+                "exclude-from-classmap": [
+                    "legacy/skip/"
+                ]
+            },
+            "transport-options": {
+                "relative": true
+            }
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.4"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.11.0"
+}

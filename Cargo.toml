@@ -78,6 +78,9 @@ zip = { version = "9.1.1", default-features = false }
 tar = { version = "0.4.46", default-features = false }
 flate2 = "1"
 sha1 = "0.11"
+# `pun install`: Packagist metadata and dist downloads over HTTPS (rustls with the Mozilla roots, gzip).
+ureq = "3.5"
+pun-packages = { path = "crates/pun-packages", package = "punphp-packages" }
 
 # The shared lint policy; every crate opts in with `[lints] workspace = true`. Lints that fight the
 # function-by-function upstream ports are allowed; the rest warn, and CI denies warnings.

@@ -287,7 +287,8 @@ fn terminal_offers_migrate() {
         "{out}"
     );
     assert!(
-        out.ends_with(" ✔ pint.json  → [format] preset psr12, 0 rules changed, 2 rules → [lint]\n ✔ Wrote pun.toml\n"),
+        // The fixture's composer.lock is hand-written without a content-hash, so it is reported and left out.
+        out.ends_with(" ✔ pint.json      → [format] preset psr12, 0 rules changed, 2 rules → [lint]\n ✔ composer.json  → [require] 2, [require-dev] 1\n ⚠ composer.lock  not read: composer.lock has no content-hash; pun.lock not written\n ✔ Wrote pun.toml\n"),
         "{out}"
     );
     assert!(read(&d, "pun.toml").starts_with("# Written by `pun migrate` from pint.json.\n"));

@@ -1,0 +1,23 @@
+{
+    "name": "acme/app",
+    "type": "project",
+    "require": {
+        "php": ">=8.4",
+        "acme/lib": "^1.2"
+    },
+    "require-dev": {
+        "acme/tools": "^0.3"
+    },
+    "repositories": [
+        {"type": "path", "url": "packages/*"}
+    ],
+    "autoload": {
+        "psr-4": {"App\\": "src/"}
+    },
+    "autoload-dev": {
+        "classmap": ["tests/"]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

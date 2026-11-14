@@ -1,0 +1,2 @@
+#!/usr/bin/php;rm
+<?php echo 1;

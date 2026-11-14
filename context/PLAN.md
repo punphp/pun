@@ -18,6 +18,10 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
   `curl -fsSL https://pun.laravel.cloud/install | sh` installs the latest release without Composer, and the release
   archives carry GitHub build attestations (Pushpak, 2026-11-14). No crate, npm package or Homebrew tap is published (`publish = false` in every crate).
   plan/foundations.md §4.
+- **Package manager** (plan/packages.md): `pun install` from pun.lock (or composer.lock) and `pun migrate`'s
+  composer.json step are built. On pinkary `pun install` writes Composer's exact `vendor/` in
+  1.7 s fresh and 0.65 s with nothing to do (Composer: 13.5 s and 6.7 s). Next: the resolver (packages.md step 8),
+  which `pun update`, `pun require` and `punx` need.
 - **Green on main** (54df451, 2026-11-08): every crate's tests, all 174 analyse targets, harness on pinkary 799/799
   identical, `scripts/cli-parity.sh` identical, and `cargo clippy --workspace --all-targets -- -D warnings` clean.
   `cargo fmt --all --check` is clean too (rustfmt.toml, default width).
@@ -496,7 +500,10 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | oracle 2.3.5 follow-up: `scripts/gen-phpstan-parameters.py` on 2.3.5 changes mapping.toml's [phpstan-parameters] (checkMaybeUndefinedVariables becomes `level = true`, phpVersion and the `fixer.*` parameters appear as rule options, more `exceptions.*` and `reportMaybes*` rows): decide which rows Pun takes before regenerating | needs Pushpak |
 | oracle 2.3.5 follow-up: IgnoreErrorsConfigFixer::findEntryLocation() is ported for NEON config files only; an unmatched pathless entry of a `.php` config file (findPhpEntries()) or of pun.toml's `[[analyse.ignore]]` is still a general error | todo |
 | oracle 2.3.5 follow-up: Larastan 3.11–3.14's type extensions (tests/fixtures/larastan-types/gaps.txt, 424 new entries by reason): closure parameters typed `relation-of<TModel, TRelation>`/`builder-of<TModel, TRelation>` once TRelation is inferred, ArrGetDynamicStaticMethodReturnTypeExtension, ModelSerializationDynamicMethodReturnTypeExtension, `#[UseEloquentBuilder]`/`#[CollectedBy]` on traits and parents, config file resolution, the collection key changes, Redis and Auth driver types, and the rest listed there | todo |
-| later: LSP; install, run, test; native Blade; extension system | after 1.0 |
+| packages: the resolver (plan/packages.md step 8), then `pun update`, `pun require` and `pun remove` (step 9) | todo |
+| packages: `punx <package> [args]`, a package runner like bunx and cpx (Pushpak, 2026-11-14): resolves the package's latest stable release, installs it once into Pun's cache with its dependencies, and runs its bin; needs the resolver | todo |
+| packages: the Composer plugin host (plan/packages.md §3); without it, allowed plugins other than pest-plugin and php-http/discovery are reported and skipped | todo |
+| later: LSP; run, test; native Blade; extension system | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
 | audit item 17 follow-up: add property.trait to IDENTIFIERS, take identifiers as &'static str (no format! in names.rs), assert in tests/rules.rs that every reported identifier is listed, drop testPromotedProperties from gaps.txt; waits for the rules/* claim | todo |
 | oracle: .oracle/phpstan's Composer project has symfony/polyfill-php85, so PHPStan run from it knows array_first() and friends at phpVersion 80400; take built-in-symbol expectations from the standalone phar outside a Composer project | todo |

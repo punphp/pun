@@ -120,7 +120,12 @@ pub fn strcasecmp(a: &[u8], b: &[u8]) -> i32 {
 }
 
 pub fn strnatcmp(a: &[u8], b: &[u8]) -> i32 {
-    strnatcmp_ex(a, b)
+    strnatcmp_ex(a, b, false)
+}
+
+/// `strnatcasecmp`: [`strnatcmp`] with ASCII letters compared as upper case.
+pub fn strnatcasecmp(a: &[u8], b: &[u8]) -> i32 {
+    strnatcmp_ex(a, b, true)
 }
 
 /// Default character list of trim()/rtrim()/ltrim().
@@ -245,7 +250,7 @@ pub fn isspace(c: u8) -> bool {
 }
 
 /// Port of strnatcmp_ex. Reads past the end yield NUL, as on PHP's NUL-terminated strings.
-fn strnatcmp_ex(a: &[u8], b: &[u8]) -> i32 {
+fn strnatcmp_ex(a: &[u8], b: &[u8], fold: bool) -> i32 {
     if a.is_empty() || b.is_empty() {
         return sign(a.len().cmp(&b.len()));
     }
@@ -288,6 +293,9 @@ fn strnatcmp_ex(a: &[u8], b: &[u8]) -> i32 {
             }
             ca = at(a, ap);
             cb = at(b, bp);
+        }
+        if fold {
+            (ca, cb) = (ca.to_ascii_uppercase(), cb.to_ascii_uppercase());
         }
         if ca < cb {
             return -1;
@@ -667,6 +675,21 @@ pub fn intval(s: &str) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// `strnatcasecmp` against PHP 8.5's (`php -r 'echo strnatcasecmp($a, $b);'`): case decides `a`/`B` the other way
+    /// from `strnatcmp`, and digit runs still compare by value.
+    #[test]
+    fn strnatcasecmp_matches_php() {
+        for (a, b, want) in [
+            ("a", "B", -1),
+            ("img12", "IMG10", 1),
+            ("Laravel/x", "laravel/y", -1),
+            ("b", "A", 1),
+        ] {
+            assert_eq!(strnatcasecmp(a.as_bytes(), b.as_bytes()), want, "{a} {b}");
+        }
+        assert_eq!(strnatcmp(b"a", b"B"), 1);
+    }
 
     /// Expected values from `php -r 'echo intval($s);'` (PHP 8.4).
     #[test]

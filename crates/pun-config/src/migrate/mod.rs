@@ -5,6 +5,7 @@
 //! take, expand into explicit rules. The Finder's `in` becomes `[files] paths`; its other keys stay format-only under
 //! `[format]`. What pun.toml can't hold is named in `Migration::unsupported` and skipped (context/plan/migrate.md §3).
 
+pub mod composer;
 pub mod phpstan;
 mod rector;
 

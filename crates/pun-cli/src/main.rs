@@ -14,6 +14,7 @@ mod console;
 mod fix_report;
 mod github;
 mod init;
+mod install;
 mod lint_plan;
 mod list_files;
 mod migrate;
@@ -67,6 +68,8 @@ enum Cmd {
     Analyse(Box<analyse::AnalyseArgs>),
     /// Write pun.toml from pint.json or .php-cs-fixer(.dist).php, rector.php and phpstan.neon, and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
+    /// Install the locked dependencies (pun.lock, or composer.lock) into vendor/, with Composer's autoloader.
+    Install(install::InstallArgs),
     /// Write pun.toml for a new project: asks the code style, lint sets and analysis preset (`--yes` takes the defaults).
     Init(init::InitArgs),
     /// Print the files a command would check with the current pun.toml.
@@ -289,6 +292,7 @@ fn run() -> ExitCode {
         Cmd::Analyse(_) => "analyse",
         Cmd::Migrate(_) => "migrate",
         Cmd::Init(_) => "init",
+        Cmd::Install(_) => "install",
         Cmd::ListFiles(_) => "list-files",
         Cmd::Config { .. } => "config",
         Cmd::Explain { .. } => "explain",
@@ -338,6 +342,7 @@ fn run() -> ExitCode {
         Cmd::Analyse(a) => analyse::run(*a),
         Cmd::Migrate(a) => migrate::run(a),
         Cmd::Init(a) => init::run(a),
+        Cmd::Install(a) => install::run(a),
         Cmd::ListFiles(a) => list_files::run(a),
         Cmd::Config {
             format,

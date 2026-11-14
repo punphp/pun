@@ -23,6 +23,7 @@ Pun looks in the project root:
 | Rector | `rector.php` | `[lint]` |
 | PHPStan | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | `[analyse]` |
 | Mago | `mago.toml` | Detected but not translated |
+| Composer | `composer.json`, `composer.lock` | The [dependency sections](/docs/configuration/pun-toml#dependencies) and `pun.lock` |
 
 On a terminal, a checklist selects the configs to migrate. All detected configs start selected.
 
@@ -65,6 +66,17 @@ Migration converts levels to an analyse preset with explicit rule differences. I
 The analysis CLI does not yet apply every migrated setting, including stubs and ignore tables. See [analysis limitations](/docs/commands/analyse#configuration), the [PHPStan mapping](/docs/migrate/from/phpstan), and the [Larastan mapping](/docs/migrate/from/larastan).
 
 PHPStan baselines are not copied. Generate a Pun baseline with `pun analyse --generate-baseline`, then configure `[analyse] baseline`.
+
+## Composer
+
+When the project has a `composer.json`, migrate appends its dependencies to `pun.toml` and writes `pun.lock` from `composer.lock`. [`pun install`](/docs/commands/install) then installs from those two files.
+
+- Every composer.json key keeps its name and value. Root fields such as `name`, `type`, and `minimum-stability` go under `[package]`. `require`, `autoload`, `scripts`, `config`, `extra`, and the other sections become tables of the same name, and `repositories` becomes `[[repositories]]`.
+- Credentials in `config` (`github-oauth`, `http-basic`, `bearer`, `gitlab-token`, and the other `auth.json` keys) move to the project's `auth.json`, which Composer also reads. If `.gitignore` does not list `auth.json`, migrate says so.
+- `pun.lock` keeps `composer.lock`'s content hash, packages, and order. The dependencies in `pun.toml` hash to the same value, so `pun install` treats the lock as current.
+- `$schema` is dropped. Keys that composer.json does not define, and `null` values, are reported and skipped.
+
+`composer.json` and `composer.lock` stay in place, so Composer keeps working. A `pun.toml` written by an earlier `pun migrate` without dependencies gets them added.
 
 ## Ignore comments
 

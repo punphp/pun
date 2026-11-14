@@ -1,0 +1,65 @@
+{
+    "name": "acme/edge",
+    "type": "project",
+    "require": {
+        "php": ">=8.4",
+        "acme/ext": "^1.0",
+        "acme/legacy": "^2.0",
+        "phpunit/phpunit": "^99.0"
+    },
+    "require-dev": {
+        "acme/devtool": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Edge\\": "src/",
+            "Phar\\": "box.phar/src/"
+        },
+        "psr-0": {
+            "Edge_": "lib/",
+            "Edge\\": "psr0/"
+        },
+        "classmap": [
+            "classes/",
+            "dup/",
+            "./"
+        ],
+        "files": [
+            "helpers.php"
+        ],
+        "exclude-from-classmap": [
+            "./classes/skip/",
+            "classes//skip2/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Edge\\": "tests/src/",
+            "EdgeTest\\": "tests/unit/"
+        },
+        "classmap": [
+            "tests/classes/"
+        ],
+        "files": [
+            "tests/helpers.php",
+            "helpers.php"
+        ]
+    },
+    "include-path": [
+        "inc/"
+    ],
+    "config": {
+        "platform-check": true,
+        "classmap-authoritative": true,
+        "apcu-autoloader": true,
+        "use-include-path": true,
+        "prepend-autoloader": false,
+        "autoloader-suffix": "Edge"
+    }
+}

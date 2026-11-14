@@ -1,0 +1,147 @@
+{
+    "packages": [
+        {
+            "name": "acme/devtool",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/devtool",
+                "reference": "58f5eaef5f94db7370748913709e3d45bdba6659"
+            },
+            "require": {
+                "ext-sodium-x": "*",
+                "php": ">=8.9"
+            },
+            "bin": [
+                "dup"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../acme/devtool"
+        },
+        {
+            "name": "acme/ext",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/ext",
+                "reference": "effb373720b80c400f08b44c73a023139f638477"
+            },
+            "require": {
+                "acme/legacy": "*",
+                "ext-bar": "*",
+                "ext-ctype": "*",
+                "ext-foo": "*",
+                "ext-mbstring": "*",
+                "ext-pcntl": "*",
+                "ext-zend-opcache": "*",
+                "php-64bit": ">=8.3"
+            },
+            "provide": {
+                "ext-foo": "1.0"
+            },
+            "replace": {
+                "ext-bar": "1.0"
+            },
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Acme\\Ext\\": "src/"
+                },
+                "files": {
+                    "main": "src/functions.php"
+                }
+            },
+            "include-path": [
+                "lib/",
+                "/usr/share/php"
+            ],
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../acme/ext"
+        },
+        {
+            "name": "acme/legacy",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/legacy",
+                "reference": "4fa1c4b0a215875e737db90becb26b9f3b8fe2e9"
+            },
+            "require": {
+                "acme/ext": "*",
+                "ext-ctype": "*",
+                "php": ">8.2"
+            },
+            "provide": {
+                "acme/virtual": "1.0"
+            },
+            "bin": [
+                "bin/direct",
+                "bin/envonly",
+                "bin/unsafe",
+                "bin/bash",
+                "bin/nofile",
+                "bin/",
+                "bin/escape",
+                "bin/bad$name",
+                "bin/dup",
+                "bin/plain",
+                "bin/envunsafe"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "code/"
+                ],
+                "psr-4": {
+                    "": "code/"
+                }
+            },
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../acme/legacy"
+        },
+        {
+            "name": "phpunit/phpunit",
+            "version": "99.0.0",
+            "version_normalized": "99.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/phpunit",
+                "reference": "605b0e8f0d50983f64365700e567c48a4c52506d"
+            },
+            "provide": {
+                "acme/virtual": "1.0"
+            },
+            "bin": [
+                "phpunit"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../phpunit/phpunit"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": [
+        "acme/devtool"
+    ]
+}

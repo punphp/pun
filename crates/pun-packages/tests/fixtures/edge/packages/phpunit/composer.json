@@ -1,0 +1,15 @@
+{
+    "name": "phpunit/phpunit",
+    "version": "99.0.0",
+    "bin": [
+        "phpunit"
+    ],
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "provide": {
+        "acme/virtual": "1.0"
+    }
+}

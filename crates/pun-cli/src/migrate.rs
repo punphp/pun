@@ -270,10 +270,16 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
             pint.display()
         ),
     };
-    let toml = format!("# Written by `pun migrate`{header}\n{}", m.toml);
+    let tooling = format!("# Written by `pun migrate`{header}\n{}", m.toml);
+    let (deps, problems) = composer(&root, a.dry_run)?;
+    let toml = match &deps {
+        Some(d) => format!("{tooling}\n{}", d.deps.toml),
+        None => tooling.clone(),
+    };
     let path = root.join("pun.toml");
     let old = std::fs::read_to_string(&path).ok();
-    if old.as_ref().is_some_and(|o| *o != toml) && !a.dry_run {
+    // A pun.toml migrate wrote before it moved dependencies gets them added.
+    if old.as_ref().is_some_and(|o| *o != toml && *o != tooling) && !a.dry_run {
         bail!(
             "pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)"
         );
@@ -286,6 +292,10 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
         let old = old.unwrap_or_default().into_bytes();
         edits.insert(0, (path, old, toml.into_bytes()));
     }
+    let deps = deps.map(|mut d| {
+        edits.extend(std::mem::take(&mut d.files));
+        d
+    });
     report.diffs = apply(&root, &edits, a.dry_run)?;
     let mut moved = format!(
         "{arrow} [format] preset {}, {} changed",
@@ -302,6 +312,69 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
         format!("{arrow} {analyse}"),
     ];
     report.configs(&rows, pint, &moved.each_ref().map(String::as_str));
+    if let Some(d) = deps {
+        let counts: Vec<String> = [
+            ("[require]", d.deps.require),
+            ("[require-dev]", d.deps.require_dev),
+        ]
+        .iter()
+        .filter(|c| c.1 > 0)
+        .map(|(s, n)| format!("{s} {n}"))
+        .collect();
+        let counts = if counts.is_empty() {
+            "pun.toml".to_string()
+        } else {
+            counts.join(", ")
+        };
+        report.line(Mark::Done, "composer.json", format!("{arrow} {counts}"));
+        report.findings.0.push("composer.json migrated".into());
+        if let Some(n) = d.locked {
+            let state = if d.lock_current {
+                "already up to date"
+            } else if a.dry_run {
+                "to write"
+            } else {
+                "written"
+            };
+            report.line(
+                Mark::Done,
+                "composer.lock",
+                format!("{arrow} pun.lock, {} ({state})", agent::count(n, "package")),
+            );
+            report
+                .findings
+                .0
+                .push(format!("composer.lock migrated {state}"));
+        }
+        if !d.deps.auth.is_empty() {
+            let keys: Vec<&str> = d.deps.auth.keys().map(String::as_str).collect();
+            let ignored = std::fs::read_to_string(root.join(".gitignore")).is_ok_and(|g| {
+                g.lines()
+                    .any(|l| matches!(l.trim(), "auth.json" | "/auth.json"))
+            });
+            let hint = if ignored {
+                ""
+            } else {
+                "; add auth.json to .gitignore"
+            };
+            report.line(
+                Mark::Warn,
+                "credentials",
+                format!("{arrow} auth.json ({}){hint}", keys.join(", ")),
+            );
+            report.findings.0.push(format!(
+                "credentials moved to auth.json ({}){hint}",
+                keys.join(", ")
+            ));
+        }
+        for (key, why) in &d.deps.skipped {
+            report.unsupported(key, why, format!("composer.json {key} skipped {why}"));
+        }
+    }
+    for (file, why) in problems {
+        report.line(Mark::Warn, file, why.clone());
+        report.findings.0.push(format!("{file} not-migrated {why}"));
+    }
     if rewritten > 0 {
         let files = agent::count(rewritten, "file");
         report.line(
@@ -356,6 +429,91 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
     };
     report.finish(mark, last, detail, &checked);
     Ok(0)
+}
+
+/// composer.json's dependencies for pun.toml, with the files they bring along.
+struct Composer {
+    deps: migrate::composer::Dependencies,
+    /// pun.lock (from composer.lock) and auth.json (the credentials moved out of `config`), when they change.
+    files: Vec<(PathBuf, Vec<u8>, Vec<u8>)>,
+    /// The packages composer.lock locks, when there is one.
+    locked: Option<usize>,
+    lock_current: bool,
+}
+
+/// Reads composer.json and composer.lock; `None` without a composer.json. A file migrate can't read is a problem,
+/// (file, why), that leaves only that file out. A dry run leaves pun.lock out of the diffs, which would print every
+/// locked package.
+fn composer(root: &Path, dry_run: bool) -> Result<(Option<Composer>, Vec<(&'static str, String)>)> {
+    let Ok(text) = std::fs::read_to_string(root.join("composer.json")) else {
+        return Ok((None, vec![]));
+    };
+    let deps = match migrate::composer::from_composer_json(&text) {
+        Ok(deps) => deps,
+        Err(e) => {
+            return Ok((
+                None,
+                vec![(
+                    "composer.json",
+                    format!("not read: {e:#}; dependencies not migrated"),
+                )],
+            ));
+        }
+    };
+    let mut problems = vec![];
+    let mut files = vec![];
+    let (mut locked, mut lock_current) = (None, true);
+    if let Ok(text) = std::fs::read_to_string(root.join("composer.lock")) {
+        match pun_packages::lock::Lock::from_composer_lock(&text) {
+            Ok(lock) => {
+                locked = Some(lock.packages.len() + lock.packages_dev.len());
+                let path = root.join("pun.lock");
+                let old = std::fs::read(&path).unwrap_or_default();
+                let new = lock.to_toml().into_bytes();
+                lock_current = old == new;
+                if !lock_current && !dry_run {
+                    files.push((path, old, new));
+                }
+            }
+            Err(e) => problems.push((
+                "composer.lock",
+                format!("not read: {e:#}; pun.lock not written"),
+            )),
+        }
+    }
+    if !deps.auth.is_empty() {
+        let path = root.join("auth.json");
+        let old = std::fs::read(&path).unwrap_or_default();
+        let mut auth: serde_json::Map<String, serde_json::Value> = match old.is_empty() {
+            true => serde_json::Map::new(),
+            false => serde_json::from_slice(&old).context("invalid auth.json")?,
+        };
+        for (kind, hosts) in &deps.auth {
+            match (auth.get_mut(kind), hosts) {
+                (Some(serde_json::Value::Object(have)), serde_json::Value::Object(add)) => {
+                    have.extend(add.iter().map(|(h, v)| (h.clone(), v.clone())));
+                }
+                _ => {
+                    auth.insert(kind.clone(), hosts.clone());
+                }
+            }
+        }
+        let new = format!(
+            "{}\n",
+            pun_packages::php::json_pretty(&serde_json::Value::Object(auth))
+        )
+        .into_bytes();
+        if new != old {
+            files.push((path, old, new));
+        }
+    }
+    let composer = Composer {
+        deps,
+        files,
+        locked,
+        lock_current,
+    };
+    Ok((Some(composer), problems))
 }
 
 /// `--from` names only detected configs.
