@@ -1,4 +1,5 @@
 import { defineConfig } from "blume";
+import { devModulePreload } from "./dev-modulepreload.ts";
 
 export default defineConfig({
   title: "Pun",
@@ -13,6 +14,8 @@ export default defineConfig({
   deployment: {
     site: "https://pun.laravel.cloud",
   },
+
+  integrations: [devModulePreload()],
 
   // The quickstart was merged into the introduction.
   redirects: [{ from: "/docs/quickstart", to: "/docs#get-started" }],
