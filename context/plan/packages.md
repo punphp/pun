@@ -173,6 +173,8 @@ what CI and most teammates run, and it needs no resolver.
   (`ClassLoader.php`, `InstalledVersions.php`) and the phar the host runs keep Composer's MIT notice.
 - `@composer` in a script runs the `composer` on the PATH until `pun composer` has the command (assistant's call,
   revised 2026-11-14: Pun has only `install` so far).
+- `pun self-update` replaces a standalone install with the latest release, checked as the installer checks it; a copy
+  Composer installed is updated by Composer (Pushpak, 2026-11-14).
 - Composer 2.11.2 is the pinned oracle, and the plugin host runs that same phar; Pun follows Composer's minor releases
   as it follows PHPStan's (Pushpak, 2026-11-14).
 - A fresh clone needs no Composer: the standalone installer (`curl -fsSL https://pun.laravel.cloud/install | sh`,

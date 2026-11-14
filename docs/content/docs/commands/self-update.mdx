@@ -1,0 +1,31 @@
+---
+title: pun self-update
+description: Replace pun with the latest release, verified the same way the installer verifies it.
+---
+
+```bash
+pun self-update
+pun self-update --check
+pun self-update v0.1.0
+```
+
+`pun self-update` replaces the running `pun` with the latest release. Name a version to install that release instead. `--check` reports whether a newer release is out and changes nothing.
+
+The new binary passes the same checks as the [install script](/docs/installation):
+
+1. Every request uses HTTPS.
+2. The archive matches the SHA-256 checksum published with the release.
+3. When a signed-in GitHub CLI (`gh`) is available, the GitHub build attestation proves that Pun's release workflow built the archive on a GitHub-hosted runner. Set `PUN_REQUIRE_ATTESTATION=1` to fail without it.
+4. The archive holds only regular files and directories under `punphp-<target>/`.
+5. The new binary runs and reports the expected version.
+
+Pun writes the new binary next to the old one and renames it into place, so a `pun` that is running never reads a partial file.
+
+If Composer installed Pun (`vendor/bin/pun`), update it with `composer update punphp/pun`. `pun self-update` exits 2 in that case.
+
+## Exit codes
+
+| Code | When |
+| --- | --- |
+| 0 | Updated, or already up to date |
+| 2 | A failed download or check, a Composer install, or another run error |

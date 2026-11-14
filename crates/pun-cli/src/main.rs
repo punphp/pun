@@ -26,6 +26,7 @@ mod report;
 mod run;
 #[cfg(feature = "pprof")]
 mod sampler;
+mod self_update;
 mod table;
 mod watch;
 
@@ -72,6 +73,8 @@ enum Cmd {
     Install(install::InstallArgs),
     /// Write pun.toml for a new project: asks the code style, lint sets and analysis preset (`--yes` takes the defaults).
     Init(init::InitArgs),
+    /// Replace this pun with the latest release (or the one named), verified as the installer verifies it.
+    SelfUpdate(self_update::SelfUpdateArgs),
     /// Print the files a command would check with the current pun.toml.
     ListFiles(list_files::ListFilesArgs),
     /// Print the resolved configuration.
@@ -293,6 +296,7 @@ fn run() -> ExitCode {
         Cmd::Migrate(_) => "migrate",
         Cmd::Init(_) => "init",
         Cmd::Install(_) => "install",
+        Cmd::SelfUpdate(_) => "self-update",
         Cmd::ListFiles(_) => "list-files",
         Cmd::Config { .. } => "config",
         Cmd::Explain { .. } => "explain",
@@ -343,6 +347,7 @@ fn run() -> ExitCode {
         Cmd::Migrate(a) => migrate::run(a),
         Cmd::Init(a) => init::run(a),
         Cmd::Install(a) => install::run(a),
+        Cmd::SelfUpdate(a) => self_update::run(a),
         Cmd::ListFiles(a) => list_files::run(a),
         Cmd::Config {
             format,
