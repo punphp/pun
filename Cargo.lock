@@ -1410,7 +1410,7 @@ dependencies = [
 
 [[package]]
 name = "punphp"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "agent-detector",
  "anyhow",
@@ -1438,7 +1438,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-analyse"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "bitflags 2.13.2",
  "flate2",
@@ -1472,7 +1472,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-config"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "punphp-phpstan",
@@ -1483,7 +1483,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-fixers"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -1497,7 +1497,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-format"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "pcre2",
@@ -1508,7 +1508,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-harness"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -1520,7 +1520,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-lint"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "mago-allocator",
  "mago-analyzer",
@@ -1548,7 +1548,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-phpstan"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "indexmap",
  "pcre2",
@@ -1559,14 +1559,14 @@ dependencies = [
 
 [[package]]
 name = "punphp-problem"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "punphp-tokens",
 ]
 
 [[package]]
 name = "punphp-tokens"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "libc",
  "pcre2",
@@ -1575,7 +1575,7 @@ dependencies = [
 
 [[package]]
 name = "punphp-workspace"
-version = "0.1.0-beta.3"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "mago-database",
