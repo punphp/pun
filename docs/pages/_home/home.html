@@ -2,15 +2,16 @@
   <!-- HERO -->
   <section class="hero wrap">
     <div class="hero-copy">
-      <h1 class="rise">PHP tooling, <span class="sticker pop-in">zero</span> waiting.</h1>
-      <p class="lede rise" style="--d:.12s">Format, lint and analyse your PHP with one Rust binary that is very, very fast. Lint and analyse are in beta.</p>
+      <h1 class="rise">The verified, <span class="sticker pop-in">unified</span> PHP toolchain.</h1>
+      <p class="lede rise" style="--d:.12s">One very, very fast Rust binary for your whole PHP workflow. Format, lint and analyse today, with installing your packages next.</p>
 
       <div class="install rise" style="--d:.18s" data-install>
         <div class="tabs" role="tablist" aria-label="Install with">
-          <button class="tab" role="tab" type="button" aria-selected="true" data-command="composer require --dev punphp/pun">composer</button>
+          <button class="tab" role="tab" type="button" aria-selected="true" data-command="curl -fsSL https://pun.laravel.cloud/install | sh">curl</button>
+          <button class="tab" role="tab" type="button" aria-selected="false" data-command="composer require --dev punphp/pun">composer</button>
         </div>
         <div class="cmd">
-          <code><span class="prompt" aria-hidden="true">$</span><span data-command-text>composer require <span class="nobr">--dev</span> punphp/pun</span></code>
+          <code><span class="prompt" aria-hidden="true">$</span><span data-command-text>curl -fsSL https://pun.laravel.cloud/install | sh</span></code>
           <button class="copy" type="button" data-copy>copy</button>
         </div>
       </div>
@@ -31,12 +32,35 @@
     </div>
   </section>
 
-  <div class="ribbon" aria-label="very, very fast, format, lint, analyse, one binary, built in Rust, one pun.toml, no levels, no PHP to check">
+  <div class="ribbon" aria-label="very, very fast, one toolchain, format, lint, analyse, migrate, packages next, one binary, built in Rust, one pun.toml, no PHP to check">
     <div class="ribbon-track" aria-hidden="true">
-      <span>very, very fast</span><span>format</span><span>lint</span><span>analyse</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
-      <span>very, very fast</span><span>format</span><span>lint</span><span>analyse</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no levels</span><span>no PHP to check</span>
+      <span>very, very fast</span><span>one toolchain</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages next</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no PHP to check</span>
+      <span>very, very fast</span><span>one toolchain</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages next</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no PHP to check</span>
     </div>
   </div>
+
+  <!-- TOOLCHAIN: what Pun covers today and what comes next -->
+  <section class="wrap sec">
+    <h2>One toolchain. <span class="sticker gum">Every</span> step.</h2>
+    <p class="sec-lede">Pun is growing into the whole PHP toolchain in one binary, as Bun is for JavaScript. It starts with your code. Your dependencies are next, with composer.json and composer.lock left as they are.</p>
+    <div class="trio">
+      <a class="job mint" href="/docs/installation">
+        <div class="job-head"><h3>Get Pun</h3><span class="tag">now</span></div>
+        <p>One command, without PHP or Composer. The installer verifies the checksum and, with the GitHub CLI, the build attestation.</p>
+        <code>$ curl -fsSL https://pun.laravel.cloud/install | sh</code>
+      </a>
+      <a class="job zap" href="/docs/commands/check">
+        <div class="job-head"><h3>Check your code</h3><span class="tag">now</span></div>
+        <p>Format, lint and analyse in one pass, configured by one pun.toml that pun migrate writes from your old configs.</p>
+        <code>$ pun check</code>
+      </a>
+      <div class="job lilac next">
+        <div class="job-head"><h3>Install packages</h3><span class="tag">next</span></div>
+        <p>pun install, update, require and remove, compatible with Composer: the same composer.lock, the same vendor/ and your Composer plugins.</p>
+        <code>$ pun install</code>
+      </div>
+    </div>
+  </section>
 
   <!-- RUN: the one authored moment. pun check does all three jobs in one pass. -->
   <section class="wrap sec run-sec" data-run>

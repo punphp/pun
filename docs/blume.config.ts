@@ -3,7 +3,7 @@ import { defineConfig } from "blume";
 export default defineConfig({
   title: "Pun",
   description:
-    "Format, lint, and analyse PHP 8.4+ projects with one binary and one pun.toml.",
+    "A very, very fast all-in-one PHP toolchain: format, lint, and analyse PHP 8.4+ projects with one binary and one pun.toml.",
   logo: { image: "/logo.svg", text: "" },
 
   content: {
