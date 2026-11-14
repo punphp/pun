@@ -45,7 +45,9 @@ for arg in "$@"; do
   cargo llvm-cov clean --profraw-only
   # `report` maps every test/bin/example executable under the target dir; a stale one adds phantom
   # uncovered lines, so drop them all. Only the executables relink; libraries and dependencies are reused.
-  find "$CARGO_LLVM_COV_TARGET_DIR/debug" "$CARGO_LLVM_COV_TARGET_DIR/debug/deps" "$CARGO_LLVM_COV_TARGET_DIR/debug/examples" -maxdepth 1 -type f -perm -u+x ! -name '*.*' -delete 2>/dev/null || true
+  # Cargo's build-dir layout keeps a workspace crate's test binaries in debug/build/<package>/<hash>/out.
+  find "$CARGO_LLVM_COV_TARGET_DIR/debug" "$CARGO_LLVM_COV_TARGET_DIR/debug/deps" "$CARGO_LLVM_COV_TARGET_DIR/debug/examples" \
+    "$CARGO_LLVM_COV_TARGET_DIR"/debug/build/punphp*/*/out -maxdepth 1 -type f -perm -u+x ! -name '*.*' -delete 2>/dev/null || true
   tests_ok=1
   filter=()
   # One fixer: only its own unit tests + the upstream fixture runner + tests/cases.rs oracle_* tests (which PUN_FIXERS_ONLY already narrows), so
