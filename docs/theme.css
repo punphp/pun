@@ -112,3 +112,8 @@
 .rule-icons .rule-dim { opacity: .25; }
 .rule-reference :focus-visible, .rule-copy:focus-visible { outline: 2px solid var(--blume-accent); outline-offset: 3px; }
 @media (max-width: 640px) { .rule-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* A table's first column names a command or rule: keep it on one line so narrow screens wrap the description instead. */
+.prose td:first-child code {
+  white-space: nowrap;
+}

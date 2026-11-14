@@ -14,6 +14,9 @@ export default defineConfig({
     site: "https://pun.laravel.cloud",
   },
 
+  // The quickstart was merged into the introduction.
+  redirects: [{ from: "/docs/quickstart", to: "/docs#get-started" }],
+
   github: {
     owner: "punphp",
     repo: "pun",
