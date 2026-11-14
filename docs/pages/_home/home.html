@@ -2,22 +2,18 @@
   <!-- HERO -->
   <section class="hero wrap">
     <div class="hero-copy">
-      <h1 class="rise">The verified, <span class="sticker pop-in">unified</span> PHP toolchain.</h1>
+      <h1 class="rise">The ultrafast <span class="sticker pop-in">unified</span> PHP toolchain.</h1>
       <p class="lede rise" style="--d:.12s">One very, very fast Rust binary for your whole PHP workflow. Format, lint and analyse today, with installing your packages next.</p>
 
       <div class="install rise" style="--d:.18s" data-install>
-        <div class="tabs" role="tablist" aria-label="Install with">
-          <button class="tab" role="tab" type="button" aria-selected="true" data-command="curl -fsSL https://pun.laravel.cloud/install | sh">curl</button>
-          <button class="tab" role="tab" type="button" aria-selected="false" data-command="composer require --dev punphp/pun">composer</button>
-        </div>
         <div class="cmd">
-          <code><span class="prompt" aria-hidden="true">$</span><span data-command-text>curl -fsSL https://pun.laravel.cloud/install | sh</span></code>
+          <code><span class="prompt" aria-hidden="true">$</span><span data-command-text><span class="nobr">curl -fsSL</span> <span class="nobr">https://pun.laravel.cloud/install</span> <span class="nobr">| sh</span></span></code>
           <button class="copy" type="button" data-copy>copy</button>
         </div>
       </div>
 
       <div class="actions rise" style="--d:.24s">
-        <a class="btn zap" href="/docs/quickstart">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn zap" href="/docs#get-started">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn" href="/docs">Read the docs</a>
       </div>
     </div>
@@ -32,33 +28,33 @@
     </div>
   </section>
 
-  <div class="ribbon" aria-label="very, very fast, one toolchain, format, lint, analyse, migrate, packages next, one binary, built in Rust, one pun.toml, no PHP to check">
+  <div class="ribbon" aria-label="ultrafast, format, lint, analyse, migrate, packages soon, one binary, one config, built in Rust, verified installs">
     <div class="ribbon-track" aria-hidden="true">
-      <span>very, very fast</span><span>one toolchain</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages next</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no PHP to check</span>
-      <span>very, very fast</span><span>one toolchain</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages next</span><span>one binary</span><span>built in Rust</span><span>one pun.toml</span><span>no PHP to check</span>
+      <span>ultrafast</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages, soon</span><span>one binary</span><span>one config</span><span>built in Rust</span><span>verified installs</span>
+      <span>ultrafast</span><span>format</span><span>lint</span><span>analyse</span><span>migrate</span><span>packages, soon</span><span>one binary</span><span>one config</span><span>built in Rust</span><span>verified installs</span>
     </div>
   </div>
 
-  <!-- TOOLCHAIN: what Pun covers today and what comes next -->
+  <!-- TOOLCHAIN: the everyday loop, install to fix -->
   <section class="wrap sec">
     <h2>One toolchain. <span class="sticker gum">Every</span> step.</h2>
-    <p class="sec-lede">Pun is growing into the whole PHP toolchain in one binary, as Bun is for JavaScript. It starts with your code. Your dependencies are next, with composer.json and composer.lock left as they are.</p>
+    <p class="sec-lede">Install your dependencies, check your code, fix what can be fixed. One binary covers the whole loop.</p>
     <div class="trio">
-      <a class="job mint" href="/docs/installation">
-        <div class="job-head"><h3>Get Pun</h3><span class="tag">now</span></div>
-        <p>One command, without PHP or Composer. The installer verifies the checksum and, with the GitHub CLI, the build attestation.</p>
-        <code>$ curl -fsSL https://pun.laravel.cloud/install | sh</code>
-      </a>
-      <a class="job zap" href="/docs/commands/check">
-        <div class="job-head"><h3>Check your code</h3><span class="tag">now</span></div>
-        <p>Format, lint and analyse in one pass, configured by one pun.toml that pun migrate writes from your old configs.</p>
-        <code>$ pun check</code>
-      </a>
       <div class="job lilac next">
-        <div class="job-head"><h3>Install packages</h3><span class="tag">next</span></div>
-        <p>pun install, update, require and remove, compatible with Composer: the same composer.lock, the same vendor/ and your Composer plugins.</p>
+        <div class="job-head"><h3>Install</h3><span class="tag">next</span></div>
+        <p>Resolve and install your project's packages from Packagist, with the same parallel speed as everything else.</p>
         <code>$ pun install</code>
       </div>
+      <a class="job zap" href="/docs/commands/check">
+        <div class="job-head"><h3>Check</h3><span class="tag">now</span></div>
+        <p>Format, lint and analyse the whole project in one pass, with one pun.toml.</p>
+        <code>$ pun check</code>
+      </a>
+      <a class="job mint" href="/docs/commands/check">
+        <div class="job-head"><h3>Fix</h3><span class="tag">now</span></div>
+        <p>Applies the lint fixes, formats, then analyses what is left for you to fix by hand.</p>
+        <code>$ pun check --fix</code>
+      </a>
     </div>
   </section>
 
@@ -80,8 +76,8 @@
 
   <!-- TOOLS: format, lint and analyse get the same weight -->
   <section class="wrap sec">
-    <h2>Every job gets the <span class="sticker gum">same</span> speed.</h2>
-    <div class="trio">
+    <h2>Everything gets <span class="sticker gum">fast</span>.</h2>
+    <div class="trio four">
       <a class="job zap" href="/docs/commands/format">
         <div class="job-head"><h3>Format</h3><span class="tag">behaviour-safe</span></div>
         <p>Layout only. Fast enough to run on every save.</p>
@@ -106,6 +102,14 @@
         <span class="replaces">Replaces PHPStan and Larastan</span>
         <code>$ pun analyse</code>
       </a>
+      <div class="job mint next">
+        <div class="job-head"><h3>Install</h3><span class="tag">next</span></div>
+        <p>A package manager for Packagist, built for speed: parallel downloads, a shared cache and an instant no-op install.</p>
+        <div class="mini"><span class="dim">$ pun require laravel/framework</span>
+<span class="add">+ vendor/ installed</span></div>
+        <span class="replaces">Replaces Composer</span>
+        <code>$ pun install</code>
+      </div>
     </div>
     <div class="duo">
       <a class="strip" href="/docs/commands/check"><h3>Check</h3><p>All three in one pass. With --fix it applies lint fixes, formats, then analyses what is left.</p><code>$ pun check --fix</code></a>
@@ -144,7 +148,6 @@ preset = <span class="str">"laravel"</span></pre>
       <li><h3>Pint's laravel preset</h3><p>The default for pun format. Same bytes Pint writes on every Laravel project.</p></li>
       <li><h3>Tests that read well</h3><p><code>assertStatus(404)</code> becomes <code>assertNotFound()</code>, <code>$this-&gt;faker</code> becomes <code>fake()</code>, and Pest expectations get specific.</p></li>
       <li><h3>App rules</h3><p>Flags <code>$request-&gt;all()</code>, <code>$casts</code> properties, named migrations and middleware set in controllers.</p></li>
-      <li><h3>Blade, too</h3><p><code>pun format --blade</code> formats your Blade templates in the same run as your PHP.</p></li>
     </ul>
   </section>
 
@@ -152,7 +155,7 @@ preset = <span class="str">"laravel"</span></pre>
   <section class="wrap sec config-sec" data-merge>
     <div>
       <h2>Three configs walk in. One walks out.</h2>
-      <p class="sec-lede">pint.json, phpstan.neon and rector.php become one pun.toml with Pun's rule names, and your PHPStan level expanded into the exact rules it ran.</p>
+      <p class="sec-lede">One unified config to manage everything. pun migrate writes it from your pint.json, phpstan.neon and rector.php.</p>
       <a class="btn sm" href="/docs/commands/migrate">How migrate works <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <div class="merge">
@@ -181,10 +184,11 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
   <!-- PARITY: same answers as each tool Pun replaces -->
   <section class="wrap sec">
     <h2>Same answers as the tools you trust.</h2>
-    <ul class="points three">
+    <ul class="points four">
       <li><h3>Format</h3><p>Byte for byte with Pint and PHP-CS-Fixer. Every project on the scoreboard has zero differing files.</p></li>
       <li><h3>Lint</h3><p>Rector, rector-laravel, Mago and the risky fixers, under one set of rule names. pun migrate maps your config.</p></li>
       <li><h3>Analyse</h3><p>Every PHPStan identifier maps to one Pun rule, with Larastan built in. Analyse is in beta.</p></li>
+      <li><h3>Install</h3><p>The same packages Composer resolves, installed into vendor/. Coming next.</p></li>
     </ul>
     <a class="btn sm" href="/docs/parity">See the parity scoreboard <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </section>
@@ -211,7 +215,7 @@ baseline = <span class="str">"pun-baseline.toml"</span></pre>
       <img class="cta-mascot" src="/mascot-512.png" width="512" height="512" alt="" />
       <h2>Stop waiting<br />on your tools.</h2>
       <div class="actions">
-        <a class="btn zap" href="/docs/quickstart">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn zap" href="/docs#get-started">Get started <svg class="icon arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn" href="https://github.com/punphp/pun">Star on GitHub</a>
       </div>
     </div>

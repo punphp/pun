@@ -35,12 +35,10 @@
 .pun-home .hero h1 { font-size: clamp(52px, 7.4vw, 92px); line-height: .92; font-weight: 700; letter-spacing: -.02em; margin: 0 0 20px; }
 .pun-home .lede { font-size: 20px; line-height: 1.45; color: var(--pun-ink-2); max-width: 34ch; margin: 0 0 30px; text-wrap: pretty; }
 .pun-home .install { max-width: 620px; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 16px; background: var(--pun-code-bg); color: var(--pun-code-ink); box-shadow: var(--pun-pop-lilac); overflow: hidden; }
-.pun-home .tabs { display: flex; gap: 2px; padding: 6px 6px 0; background: var(--pun-code-bar); }
-.pun-home .tab { font: 500 12px/1 var(--blume-font-mono); padding: 9px 12px; border: 0; border-radius: 8px 8px 0 0; background: transparent; color: var(--pun-code-ink); opacity: .7; cursor: pointer; }
-.pun-home .tab[aria-selected="true"] { background: var(--pun-code-bg); color: var(--pun-zap); opacity: 1; }
-.pun-home .cmd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; font: 500 14px/1.45 var(--blume-font-mono); }
-.pun-home .cmd code { overflow-x: auto; white-space: nowrap; font: inherit; color: inherit; background: none; border: 0; padding: 0; }
+.pun-home .cmd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; font: 500 13.5px/1.5 var(--blume-font-mono); }
+.pun-home .cmd code { min-width: 0; white-space: normal; overflow-wrap: anywhere; font: inherit; color: inherit; background: none; border: 0; padding: 0; }
 .pun-home .prompt { color: var(--pun-gum); margin-right: 10px; user-select: none; }
+.pun-home .nobr { white-space: nowrap; }
 .pun-home .copy { flex: none; font: 700 11px/1 var(--blume-font-mono); padding: 8px 10px; border: 0; border-radius: 10px; background: var(--pun-zap); color: var(--pun-on-fill); cursor: pointer; }
 
 .pun-home .stage { position: relative; aspect-ratio: 1; }
@@ -79,9 +77,11 @@
 .pun-home .dots { display: inline-flex; gap: 6px; } .pun-home .dots i { width: 10px; height: 10px; border-radius: 50%; background: #4a4256; }
 .pun-home .term-body { margin: 0; padding: 22px 22px 26px; min-height: 260px; font: 500 14px/1.8 var(--blume-font-mono); white-space: pre-wrap; overflow-wrap: anywhere; background: none; border: 0; color: inherit; }
 .pun-home .term-body .cmdline, .pun-home .term-body .step { display: block; }
-.pun-home .term-body .sub { margin-bottom: 6px; }
+.pun-home .term-body .cmdline { margin-bottom: 14px; }
+.pun-home .term-body .step:not(.sub) { margin-top: 12px; }
+.pun-home .term-body .cmdline + .step { margin-top: 0; }
 .pun-home .term-body .sub { color: var(--pun-code-dim); }
-.pun-home .term-body .total { margin-top: 8px; color: var(--pun-zap); font-weight: 700; }
+.pun-home .term-body .total { margin-top: 20px; color: var(--pun-zap); font-weight: 700; }
 .pun-home .term-body .ok { color: var(--pun-code-add); } .pun-home .term-body .bad { color: var(--pun-code-del); }
 .pun-home .term-body .path { color: var(--pun-code-ink); } .pun-home .term-body .rule { color: #8fd8ff; }
 .pun-home .cmd-chip { display: inline-block; width: 9ch; margin-right: 1ch; padding: 0 6px; border-radius: 4px; color: #17121f; font-weight: 700; text-align: center; }
@@ -91,6 +91,7 @@
 
 /* ---------- tools: three equal jobs, then check and migrate ---------- */
 .pun-home .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pun-home .trio.four { grid-template-columns: repeat(2, 1fr); }
 .pun-home .job { display: flex; flex-direction: column; gap: 14px; padding: 0 0 22px; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 24px; background: var(--pun-card); box-shadow: var(--pun-pop); text-decoration: none; overflow: hidden; transition: transform .15s ease, box-shadow .15s ease; }
 .pun-home .job:not(.next):hover, .pun-home .strip:hover { transform: translate(-2px, -2px); box-shadow: var(--pun-pop-hover); }
 .pun-home .job > :not(.job-head) { margin-inline: 22px; }
@@ -116,7 +117,7 @@
 .pun-home .points li { padding: 20px 0 22px; border-top: var(--pun-stroke) solid var(--pun-outline); }
 .pun-home .points h3 { font-size: 24px; line-height: 1.15; font-weight: 600; margin-bottom: 6px; letter-spacing: -.01em; }
 .pun-home .points p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--pun-ink-2); max-width: 52ch; }
-.pun-home .points.three { grid-template-columns: repeat(3, 1fr); gap: 0 40px; margin-bottom: 32px; }
+.pun-home .points.four { grid-template-columns: repeat(4, 1fr); gap: 0 32px; margin-bottom: 32px; }
 
 /* ---------- code ---------- */
 .pun-home .code { border: var(--pun-stroke) solid var(--pun-outline); border-radius: 24px; background: #17121f; color: #ede8f7; box-shadow: var(--pun-pop); overflow: hidden; }
@@ -132,6 +133,7 @@
 .pun-home .toml-mini { max-width: 320px; }
 .pun-home .laravel-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; margin: 0; padding: 0; list-style: none; }
 .pun-home .laravel-list li { padding: 20px 0 22px; border-top: var(--pun-stroke) solid var(--pun-outline); }
+.pun-home .laravel-list li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .pun-home .laravel-list h3 { font-weight: 600; font-size: 20px; line-height: 1.2; margin-bottom: 6px; }
 .pun-home .laravel-list p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--pun-ink-2); }
 .pun-home .laravel-list code { font: 500 .82em/1 var(--blume-font-mono); padding: 2px 5px; border-radius: 6px; background: var(--pun-paper-2); color: var(--pun-ink); }
@@ -162,19 +164,24 @@
 @keyframes pun-step { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
 
 /* ---------- responsive ---------- */
+/* Between the stacked layout and full width, the hero copy takes more room so the install command fits on one line. */
+@media (min-width: 961px) and (max-width: 1180px) {
+  .pun-home .hero { grid-template-columns: 1.4fr .6fr; gap: 40px; }
+}
 @media (max-width: 960px) {
   .pun-home .hero, .pun-home .speed-sec, .pun-home .config-sec, .pun-home .agents-sec, .pun-home .laravel-sec { grid-template-columns: 1fr; gap: 40px; }
   .pun-home .stage { max-width: 460px; width: 100%; justify-self: center; }
-  .pun-home .trio, .pun-home .points.three { grid-template-columns: 1fr; }
+  .pun-home .trio, .pun-home .trio.four { grid-template-columns: 1fr; }
+  .pun-home .points.four { grid-template-columns: 1fr 1fr; }
   .pun-home .duo { grid-template-columns: 1fr; }
   .pun-home .cta { grid-template-columns: 1fr; padding: 220px 32px 36px; }
   .pun-home .cta-mascot { left: 50%; top: -60px; bottom: auto; width: 240px; margin-left: -120px; }
 }
 @media (max-width: 560px) {
-  .pun-home .laravel-list { grid-template-columns: 1fr; }
+  .pun-home .laravel-list, .pun-home .points.four { grid-template-columns: 1fr; }
   .pun-home .strip { grid-template-columns: 1fr; } .pun-home .strip p, .pun-home .strip code { grid-column: 1; grid-row: auto; }
   .pun-home .term-body { font-size: 12.5px; padding: 18px 16px 22px; }
-  .pun-home .cmd code { white-space: normal; overflow-wrap: anywhere; } .pun-home .cmd .nobr { white-space: nowrap; }
+  .pun-home .cmd .nobr { white-space: normal; }
   .pun-home .burst { right: -6px; } .pun-home .loose { left: -6px; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -12,17 +12,10 @@ function onView(el, fn, threshold = 0.35) {
   io.observe(el);
 }
 
-function installTabs(root) {
+function installCopy(root) {
   for (const box of root.querySelectorAll("[data-install]")) {
     const text = box.querySelector("[data-command-text]");
     const copy = box.querySelector("[data-copy]");
-    const tabs = [...box.querySelectorAll("[role=tab]")];
-    for (const tab of tabs) {
-      tab.addEventListener("click", () => {
-        for (const t of tabs) t.setAttribute("aria-selected", t === tab ? "true" : "false");
-        text.textContent = tab.dataset.command;
-      });
-    }
     copy?.addEventListener("click", async () => {
       try { await navigator.clipboard.writeText(text.textContent); } catch {}
       copy.textContent = "copied";
@@ -50,7 +43,7 @@ export function initHome(root = document) {
   const home = root.querySelector(".pun-home");
   if (!home || home.dataset.ready) return;
   home.dataset.ready = "1";
-  installTabs(home);
+  installCopy(home);
   run(home);
 }
 
