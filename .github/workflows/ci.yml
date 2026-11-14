@@ -41,6 +41,9 @@ jobs:
           python3 scripts/check-rule-mapping.py
           python3 scripts/test-rule-docs.py
           python3 scripts/gen-rule-docs.py --check
+      # POSIX sh only: the installer runs under dash, BusyBox ash and macOS's sh.
+      - name: shellcheck install.sh
+        run: shellcheck -s sh install.sh
       - name: rustfmt
         run: cargo fmt --all --check
       - name: clippy

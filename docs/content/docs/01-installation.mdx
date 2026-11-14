@@ -1,7 +1,34 @@
 ---
 title: Installation
-description: Install Pun with Composer and check its runtime requirements.
+description: Install Pun with Composer or the standalone installer, and check its runtime requirements.
 ---
+
+## Standalone installer
+
+Every release from v0.1.0-beta.4 publishes an `install.sh`. It installs `pun` to `~/.pun/bin` without Composer or PHP:
+
+```bash
+version=0.1.0-beta.4
+url=https://github.com/punphp/pun/releases/download/v$version
+curl --proto '=https' --tlsv1.2 -sSf "$url/install.sh" | sh
+```
+
+The installer accepts HTTPS only, with TLS 1.2 or later, including on redirects. It installs only the archive its release was built with:
+
+- The release workflow writes each archive's SHA-256 into `install.sh`. The installer refuses an archive whose checksum differs.
+- When the GitHub CLI is installed and signed in, the installer also checks the archive's GitHub build attestation. The attestation proves that Pun's release workflow built the archive from the release tag.
+- The installer refuses an archive with links or unexpected paths, and a binary that does not report the release's version.
+- It never asks for `sudo` and does not edit your shell profile. If `~/.pun/bin` is not on your `PATH`, it prints the line to add.
+
+To check the installer before it runs, download it, verify its attestation, and require the archive's attestation too:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSfO "$url/install.sh"
+gh attestation verify install.sh --repo punphp/pun
+PUN_REQUIRE_ATTESTATION=1 sh install.sh
+```
+
+Set `PUN_INSTALL` to install somewhere other than `~/.pun`; the binary goes in `$PUN_INSTALL/bin`. To update, run a newer release's installer. To uninstall, delete `~/.pun`.
 
 ## Composer
 

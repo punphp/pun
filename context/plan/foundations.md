@@ -39,8 +39,11 @@ one page per rule from mapping.toml; output samples in the docs use the brand co
 root, `composer/bin/pun` is the shim, and `.gitattributes` export-ignores everything else, so a tag's zipball holds
 only `composer.json`, the shim, the README and the licenses. On first run the shim downloads `punphp-<target>.tar.gz` from the tag's GitHub release, checks its
 `.sha256` and caches the binary in Composer's bin directory (`vendor/bin/pun-<version>-<target>`); it supports Linux (musl) and macOS on x86_64 and arm64.
-cargo-dist builds those four archives on a tag push (`dist-workspace.toml`: no installers, no source tarball). No
-crate, npm package, Homebrew tap or install script is published.
+cargo-dist builds those four archives on a tag push (`dist-workspace.toml`: no dist installers, no source tarball).
+The release also carries `install.sh`, a standalone installer (Pushpak, 2026-11-14): `.github/workflows/installer.yml`
+stamps the top-level `install.sh` template with the version and each archive's SHA-256 (`scripts/stamp-installer.py`),
+and the host job attests the archives and `install.sh` with GitHub artifact attestations, which the installer checks
+through `gh` when it is signed in. No crate, npm package or Homebrew tap is published.
 Betas are tagged `v0.1.0-beta.N`; cargo-dist marks them pre-releases, and Composer installs them only with
 `punphp/pun:@beta`. The shim's `PUN_VERSION` follows the workspace version.
 **Build:** the first beta tag and its Composer install check, Packagist submission with the GitHub hook, then signing
@@ -50,5 +53,6 @@ and publishing 1.0 after ../PLAN.md §3 Step 4.
 
 - **LSP:** the last step, after 1.0's commands. Nothing is in the repo for it.
 - **`pun install`, `pun run`, `pun test`:** the archived plan's phases 5-7. In 1.0 or after is open (../PLAN.md §4).
+  The package manager's plan is packages.md.
 - **Native Blade formatter** and a Pun reprinting preset: after 1.0 (format.md).
 - **An extension system** (Mockery, Livewire, Filament, a project's own rules): after 1.0 (analyse.md §9).

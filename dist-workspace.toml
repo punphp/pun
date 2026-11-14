@@ -9,9 +9,15 @@ cargo-dist-version = "0.33.0"
 include = ["THIRD_PARTY_NOTICES.md", "THIRD_PARTY_LICENSES.md"]
 # CI backends to support
 ci = "github"
-# No installers or registries: Pun ships only as the punphp/pun Composer package (composer/bin/pun), which
-# downloads these archives from the GitHub release.
+# No dist installers or registries. Pun ships as the punphp/pun Composer package (composer/bin/pun) and as the
+# release's install.sh, which .github/workflows/installer.yml stamps; both download these archives.
 installers = []
+global-artifacts-jobs = ["./installer"]
+# Sigstore build provenance for the archives and install.sh, made where the release is created and checked by
+# install.sh with `gh attestation verify`.
+github-attestations = true
+github-attestations-phase = "host"
+github-attestations-filters = ["*.tar.gz", "install.sh"]
 # Target platforms to build apps for (Rust target-triple syntax)
 targets = ["aarch64-apple-darwin", "aarch64-unknown-linux-musl", "x86_64-apple-darwin", "x86_64-unknown-linux-musl"]
 # .tar.gz rather than .tar.xz: the Composer shim extracts with plain `tar xzf` (xz is missing on slim images)

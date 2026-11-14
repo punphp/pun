@@ -24,3 +24,11 @@ the project: `[files] paths` cannot point outside it.
 
 `vendor/bin/pun` downloads the binary for your platform from this repository's GitHub release and checks its
 SHA-256 checksum, which is published in the same release. The checksum detects a corrupt or incomplete download.
+
+## The standalone installer
+
+Each release's `install.sh` holds the SHA-256 of every archive in that release, written by the release workflow,
+and refuses any other archive. Pun's release workflow attests the archives and `install.sh` with GitHub artifact
+attestations (Sigstore build provenance). With a signed-in GitHub CLI, the installer checks the archive's
+attestation against `punphp/pun`'s `release.yml` and the release tag. Verify the installer itself with
+`gh attestation verify install.sh --repo punphp/pun`.

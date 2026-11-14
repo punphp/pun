@@ -13,9 +13,11 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
   (the rules Rector 2.8.4 and rector-laravel 2.7.3 added, §3), analyse 7. Ported rules keep their explicit parity
   gaps in the test gap lists (`crates/pun-analyse/tests/fixtures/**/gaps*.txt`, `GAPS` constants in the tests).
 - **Analyse keeps only what lint and format cannot fix** (Pushpak, 2026-11-02): rules.md §2 O5.
-- **Shipping:** Composer only, as Mago does. `composer.json` sits at the repo root and `composer/bin/pun` is the shim
-  that downloads the release archive for the platform, checks its SHA-256 and runs it. No crate, npm package,
-  Homebrew tap or install script is published (`publish = false` in every crate). plan/foundations.md §4.
+- **Shipping:** Composer, as Mago does, and a standalone installer. `composer.json` sits at the repo root and
+  `composer/bin/pun` is the shim that downloads the release archive for the platform, checks its SHA-256 and runs it.
+  Each release also carries a standalone `install.sh` with the archives' checksums stamped in, and attested builds
+  (Pushpak, 2026-11-14). No crate, npm package or Homebrew tap is published (`publish = false` in every crate).
+  plan/foundations.md §4.
 - **Green on main** (54df451, 2026-11-08): every crate's tests, all 174 analyse targets, harness on pinkary 799/799
   identical, `scripts/cli-parity.sh` identical, and `cargo clippy --workspace --all-targets -- -D warnings` clean.
   `cargo fmt --all --check` is clean too (rustfmt.toml, default width).

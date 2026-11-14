@@ -1,0 +1,39 @@
+# Stamps install.sh with this release's version and archive checksums (dist-workspace.toml global-artifacts-jobs).
+# The host job uploads it with the archives and attests both.
+name: Installer
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  stamp:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Fetch the archives
+        uses: actions/download-artifact@v8
+        with:
+          pattern: artifacts-build-local-*
+          path: dist
+          merge-multiple: true
+      - name: Stamp install.sh
+        env:
+          TAG: ${{ fromJson(inputs.plan).announcement_tag }}
+        run: |
+          mkdir out
+          python3 scripts/stamp-installer.py "${TAG#v}" dist install.sh > out/install.sh
+          sh -n out/install.sh
+      - name: Upload install.sh
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-installer
+          path: out/install.sh

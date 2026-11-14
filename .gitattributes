@@ -18,6 +18,7 @@ crates/pun-lint/tests/mago/style-require-todo-reference/Mago/*_comment_prefixes_
 /design export-ignore
 /dist-workspace.toml export-ignore
 /docs export-ignore
+/install.sh export-ignore
 /rustfmt.toml export-ignore
 /scripts export-ignore
 /third_party export-ignore
