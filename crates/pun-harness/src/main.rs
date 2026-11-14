@@ -291,8 +291,10 @@ fn compare(name: &str, src: &Path, oracle: &Path, pun: &Path) -> Result<Outcome>
     let (mut a, mut b) = (BTreeSet::new(), BTreeSet::new());
     list_files(oracle, "", &mut a)?;
     list_files(pun, "", &mut b)?;
-    // Written by `pun migrate`.
-    b.remove("pun.toml");
+    // Written by `pun migrate`: the config, composer.lock as pun.lock, and credentials moved out of composer.json.
+    for written in ["pun.toml", "pun.lock", "auth.json"] {
+        b.remove(written);
+    }
     let mut o = Outcome {
         name: name.into(),
         files: a.union(&b).count(),
