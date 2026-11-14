@@ -40,14 +40,16 @@ root, `composer/bin/pun` is the shim, and `.gitattributes` export-ignores everyt
 only `composer.json`, the shim, the README and the licenses. On first run the shim downloads `punphp-<target>.tar.gz` from the tag's GitHub release, checks its
 `.sha256` and caches the binary in Composer's bin directory (`vendor/bin/pun-<version>-<target>`); it supports Linux (musl) and macOS on x86_64 and arm64.
 cargo-dist builds those four archives on a tag push (`dist-workspace.toml`: no dist installers, no source tarball).
-The release also carries `install.sh`, a standalone installer (Pushpak, 2026-11-14): `.github/workflows/installer.yml`
-stamps the top-level `install.sh` template with the version and each archive's SHA-256 (`scripts/stamp-installer.py`),
-and the host job attests the archives and `install.sh` with GitHub artifact attestations, which the installer checks
-through `gh` when it is signed in. No crate, npm package or Homebrew tap is published.
-Betas are tagged `v0.1.0-beta.N`; cargo-dist marks them pre-releases, and Composer installs them only with
-`punphp/pun:@beta`. The shim's `PUN_VERSION` follows the workspace version.
-**Build:** the first beta tag and its Composer install check, Packagist submission with the GitHub hook, then signing
-and publishing 1.0 after ../PLAN.md §3 Step 4.
+The standalone installer (Pushpak, 2026-11-14) is `docs/public/install`, which the docs site serves as
+`https://pun.laravel.cloud/install`, as Bun serves `bun.sh/install`: `curl -fsSL https://pun.laravel.cloud/install | sh`
+installs the latest stable release (the newest pre-release while there is none), and `sh -s -- v0.1.0` a named one. It
+checks the archive's `.sha256`, and, with a signed-in `gh`, the GitHub artifact attestation the host job makes for every
+archive. No crate, npm package or Homebrew tap is published.
+The 0.1.0 betas (`v0.1.0-beta.1` to `beta.3`) were pre-releases; v0.1.0 is the first stable release (Pushpak,
+2026-11-14), so `composer require --dev punphp/pun` needs no `@beta`. The shim's `PUN_VERSION` follows the workspace
+version.
+**Build:** tag v0.1.0 and check its Composer and installer installs, Packagist submission with the GitHub hook, then
+publishing 1.0 after ../PLAN.md §3 Step 4.
 
 ## 5. Later (C10, C14)
 

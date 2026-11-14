@@ -15,8 +15,8 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
 - **Analyse keeps only what lint and format cannot fix** (Pushpak, 2026-11-02): rules.md §2 O5.
 - **Shipping:** Composer, as Mago does, and a standalone installer. `composer.json` sits at the repo root and
   `composer/bin/pun` is the shim that downloads the release archive for the platform, checks its SHA-256 and runs it.
-  Each release also carries a standalone `install.sh` with the archives' checksums stamped in, and attested builds
-  (Pushpak, 2026-11-14). No crate, npm package or Homebrew tap is published (`publish = false` in every crate).
+  `curl -fsSL https://pun.laravel.cloud/install | sh` installs the latest release without Composer, and the release
+  archives carry GitHub build attestations (Pushpak, 2026-11-14). No crate, npm package or Homebrew tap is published (`publish = false` in every crate).
   plan/foundations.md §4.
 - **Green on main** (54df451, 2026-11-08): every crate's tests, all 174 analyse targets, harness on pinkary 799/799
   identical, `scripts/cli-parity.sh` identical, and `cargo clippy --workspace --all-targets -- -D warnings` clean.
@@ -25,8 +25,8 @@ The launch phase has started: cleanup, then the first Composer release. CI stays
 - **Test time:** `scripts/analyse-tests.sh` takes about 40 minutes on 8 cores (about 10 of them building). `levels`
   and `rules` run their cases in parallel (390 s and 160 s alone, against 92 and about 30 minutes before), and test
   builds compile dependencies at `opt-level = 2` with line tables only. One analyse target dir is about 56 GB.
-- **Priorities, in order:** (1) beta launch: v0.1.0-beta.2 is released; tag v0.1.0-beta.3 (Packagist keeps beta.2 at its first tag commit, with `php >=8.1`), then
-  submit the repo to Packagist once (§3 Step 5). Until a stable release, installs need `punphp/pun:@beta`; (2) CI
+- **Priorities, in order:** (1) launch: v0.1.0-beta.3 is the last beta; tag v0.1.0, the first stable release (Pushpak,
+  2026-11-14), then submit the repo to Packagist once (§3 Step 5); (2) CI
   re-enable; (3) finish analyse level 0 and levels 1-10; (4) the 24 new lint rules; (5) `pun check` in one pass;
   (6) perf rounds with `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable, the
@@ -59,7 +59,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **Home and licence:** github.com/punphp/pun, MIT (LICENSE, THIRD_PARTY_NOTICES.md). Not a shipfastlabs project. The
   repo is public (2026-11-11). The docs site is https://pun.laravel.cloud.
 - **Positioning:** Pun is to PHP what Bun is to JavaScript. Laravel first, PHP 8.4+ projects only.
-- **1.0 ships everything at once.** Apart from the 0.1.0 betas (§0), nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
+- **1.0 ships everything at once.** Apart from the 0.1.0 betas and v0.1.0 (§0), nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
 - **The 1.0 bar:** every lint rule (all 719) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
   improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); deprecation-rules and strict-rules as plain rules. Speed and memory
@@ -430,7 +430,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | Work | Status |
 | --- | --- |
 | release: after the first tag, submit github.com/punphp/pun to Packagist once and turn on its GitHub hook; tags then publish the package | needs Pushpak |
-| release: beta dry run: push the tag v0.1.0-beta.3 (v0.1.0-beta.2 is released, but Packagist keeps it at its first tag commit; v0.1.0-beta.1 was tagged on 2026-11-09 and its release run was cancelled), check that cargo-dist publishes the four archives and their .sha256 as a GitHub pre-release, then `composer require --dev punphp/pun:@beta` and `vendor/bin/pun --version` on Linux and macOS (dist plan, the shim's names and a local x86_64 musl build are already checked) | needs Pushpak |
+| release: v0.1.0, the first stable release (v0.1.0-beta.3 is the last beta, released 2026-11-12): push the tag v0.1.0, check that cargo-dist publishes the four attested archives and their .sha256 as a GitHub release marked latest, then `composer require --dev punphp/pun`, `curl -fsSL https://pun.laravel.cloud/install | sh` and `pun --version` on Linux and macOS | needs Pushpak |
 | docs content: 369 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
 | release notices: the Zend sorting port requires the acknowledgment in THIRD_PARTY_NOTICES.md and the Zend Engine acknowledgment in advertising materials that mention its features or use (Zend Engine License clauses 5 and 6); verify those materials before publication | todo |
 

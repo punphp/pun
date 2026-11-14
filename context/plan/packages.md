@@ -164,8 +164,8 @@ what CI and most teammates run, and it needs no resolver.
 - `@composer` in a script runs Pun's command, not a Composer binary (assistant's call).
 - Composer 2.11.2 is the pinned oracle, and the plugin host runs that same phar; Pun follows Composer's minor releases
   as it follows PHPStan's (Pushpak, 2026-11-14).
-- A fresh clone needs no Composer: the standalone installer (`install.sh` on every release, foundations.md §4) gives a
-  global `pun` that runs `pun install` (Pushpak, 2026-11-14). `pun install` in a project that requires `punphp/pun`
+- A fresh clone needs no Composer: the standalone installer (`curl -fsSL https://pun.laravel.cloud/install | sh`,
+  foundations.md §4) gives a global `pun` that runs `pun install` (Pushpak, 2026-11-14). `pun install` in a project that requires `punphp/pun`
   rewrites the `vendor/punphp/pun` shim but not the binary it runs, which the shim keeps beside it; a test covers it.
 
 ## 7. Beyond Composer: what pnpm and Cargo add

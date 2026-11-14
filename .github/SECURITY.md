@@ -27,8 +27,8 @@ SHA-256 checksum, which is published in the same release. The checksum detects a
 
 ## The standalone installer
 
-Each release's `install.sh` holds the SHA-256 of every archive in that release, written by the release workflow,
-and refuses any other archive. Pun's release workflow attests the archives and `install.sh` with GitHub artifact
-attestations (Sigstore build provenance). With a signed-in GitHub CLI, the installer checks the archive's
-attestation against `punphp/pun`'s `release.yml` and the release tag. Verify the installer itself with
-`gh attestation verify install.sh --repo punphp/pun`.
+`https://pun.laravel.cloud/install` downloads the archive and its SHA-256 checksum from the GitHub release over HTTPS.
+Pun's release workflow attests every archive with GitHub artifact attestations (Sigstore build provenance). With a
+signed-in GitHub CLI, the installer checks the archive's attestation against `punphp/pun`'s `release.yml` and the
+release tag, so a replaced archive fails even when its checksum was replaced too. `PUN_REQUIRE_ATTESTATION=1` makes
+that check required.

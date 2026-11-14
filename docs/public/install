@@ -1,12 +1,11 @@
 #!/bin/sh
-# Installs Pun from its GitHub release:
+# Installs the latest Pun release, or the one you name:
 #
-#   curl --proto '=https' --tlsv1.2 -sSf https://github.com/punphp/pun/releases/download/v<version>/install.sh | sh
+#   curl -fsSL https://pun.laravel.cloud/install | sh
+#   curl -fsSL https://pun.laravel.cloud/install | sh -s -- v0.1.0
 #
-# This file is the template. The release workflow stamps the release's version and the SHA-256 of each archive into
-# it (scripts/stamp-installer.py) and publishes the result as that release's install.sh, so an installer only ever
-# installs the archives it was built with. Everything runs inside main(), called on the last line: a download cut
-# short defines a partial function or none, and runs nothing.
+# The docs site serves this file from docs/public/install. Everything runs inside main(), called on the last line:
+# a download cut short defines a partial function or none, and runs nothing.
 #
 # Environment:
 #   PUN_INSTALL              install root; the binary goes in $PUN_INSTALL/bin (default: ~/.pun)
@@ -14,18 +13,7 @@
 
 set -eu
 
-PUN_RELEASE='@PUN_VERSION@'
 PUN_REPO='punphp/pun'
-
-archive_sha256() {
-    case "$1" in
-        aarch64-apple-darwin) echo '@SHA256_aarch64-apple-darwin@' ;;
-        x86_64-apple-darwin) echo '@SHA256_x86_64-apple-darwin@' ;;
-        aarch64-unknown-linux-musl) echo '@SHA256_aarch64-unknown-linux-musl@' ;;
-        x86_64-unknown-linux-musl) echo '@SHA256_x86_64-unknown-linux-musl@' ;;
-        *) return 1 ;;
-    esac
-}
 
 say() {
     printf 'pun-installer: %s\n' "$1" >&2
@@ -63,15 +51,29 @@ detect_target() {
 }
 
 # HTTPS only, TLS 1.2 or newer, for the first request and every redirect, and an HTTP error is a failure.
-download() {
+# Prints nothing and returns 1 on failure, so callers choose the message.
+fetch() {
     if command -v curl >/dev/null 2>&1; then
-        curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error --retry 3 --output "$2" "$1" ||
-            fail "download failed: $1"
+        curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error --retry 3 --output "$2" "$1"
     elif command -v wget >/dev/null 2>&1; then
-        wget --https-only --secure-protocol=TLSv1_2 --quiet --output-document="$2" "$1" ||
-            fail "download failed: $1 (BusyBox wget cannot enforce HTTPS; install curl)"
+        wget --https-only --secure-protocol=TLSv1_2 --quiet --output-document="$2" "$1"
     else
         fail "curl or wget is required"
+    fi
+}
+
+download() {
+    fetch "$1" "$2" || fail "download failed: $1"
+}
+
+# The latest stable release; until there is one, the newest pre-release. GitHub's releases/latest skips pre-releases,
+# so this asks the API, and falls back to the releases feed when the API's rate limit is used up.
+latest_tag() {
+    api="https://api.github.com/repos/$PUN_REPO/releases"
+    if fetch "$api/latest" "$work/release" 2>/dev/null || fetch "$api?per_page=1" "$work/release" 2>/dev/null; then
+        sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' "$work/release" | head -n 1
+    elif fetch "https://github.com/$PUN_REPO/releases.atom" "$work/release" 2>/dev/null; then
+        sed -n 's|.*/releases/tag/\([^"<]*\).*|\1|p' "$work/release" | head -n 1
     fi
 }
 
@@ -87,33 +89,31 @@ sha256_of() {
     fi
 }
 
-# GitHub's build attestation proves the archive came from Pun's release workflow on GitHub Actions, which the
-# checksum alone cannot: the checksum shares the release with the archive. It needs gh signed in, so without one it
-# is skipped unless PUN_REQUIRE_ATTESTATION=1.
+# GitHub's build attestation proves the archive came from Pun's release workflow, run on a GitHub-hosted runner for
+# that tag, which the checksum alone cannot: the checksum comes from the same release as the archive. It needs gh
+# signed in, so without one it is skipped unless PUN_REQUIRE_ATTESTATION=1.
 verify_attestation() {
     if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
         gh attestation verify "$1" --repo "$PUN_REPO" \
             --signer-workflow "github.com/$PUN_REPO/.github/workflows/release.yml" \
-            --source-ref "refs/tags/v$PUN_RELEASE" --deny-self-hosted-runners >/dev/null ||
+            --source-ref "refs/tags/$tag" --deny-self-hosted-runners >/dev/null ||
             fail "the build attestation of $2 does not verify; the download may have been tampered with"
         say "verified the GitHub build attestation"
     elif [ "${PUN_REQUIRE_ATTESTATION:-0}" = 1 ]; then
         fail "PUN_REQUIRE_ATTESTATION=1 needs the GitHub CLI (gh), signed in"
     else
-        say "skipped the build attestation (needs a signed-in gh); the checksum is verified"
+        say "skipped the build attestation (needs a signed-in gh)"
     fi
 }
 
 main() {
-    case "$PUN_RELEASE" in
-        @*) fail "this is the installer template; run the install.sh of a release (https://github.com/$PUN_REPO/releases)" ;;
-    esac
+    [ $# -le 1 ] || fail "usage: sh install [version]"
     need uname
     need tar
     need mktemp
+    need sed
 
     target=$(detect_target)
-    expected=$(archive_sha256 "$target") || fail "no $target build in this release"
     root=${PUN_INSTALL:-}
     if [ -z "$root" ]; then
         [ -n "${HOME:-}" ] || fail "HOME is not set; set PUN_INSTALL"
@@ -125,14 +125,33 @@ main() {
     trap 'rm -rf "$work"' EXIT
     trap 'exit 1' HUP INT TERM
 
-    archive="punphp-$target.tar.gz"
-    url="https://github.com/$PUN_REPO/releases/download/v$PUN_RELEASE/$archive"
-    say "downloading Pun $PUN_RELEASE for $target"
-    download "$url" "$work/$archive"
+    if [ $# -eq 1 ]; then
+        tag="v${1#v}"
+    else
+        tag=$(latest_tag)
+        [ -n "$tag" ] || fail "could not find the latest release; name one: sh -s -- v0.1.0"
+    fi
+    # The tag goes into URLs and a version check, so it must be a plain release version.
+    case "$tag" in
+        v[0-9]*.[0-9]*.[0-9]*) ;;
+        *) fail "not a release version: $tag" ;;
+    esac
+    case "${tag#v}" in
+        *[!0-9A-Za-z.-]*) fail "not a release version: $tag" ;;
+    esac
+    version=${tag#v}
 
+    archive="punphp-$target.tar.gz"
+    url="https://github.com/$PUN_REPO/releases/download/$tag/$archive"
+    say "downloading Pun $version for $target"
+    download "$url" "$work/$archive"
+    download "$url.sha256" "$work/$archive.sha256"
+
+    expected=$(cut -d ' ' -f 1 "$work/$archive.sha256")
     actual=$(sha256_of "$work/$archive")
-    [ "$actual" = "$expected" ] ||
-        fail "checksum mismatch for $archive (expected $expected, got $actual); the download may have been tampered with"
+    if [ -z "$expected" ] || [ "$actual" != "$expected" ]; then
+        fail "checksum mismatch for $archive (expected $expected, got $actual); the download may be corrupt"
+    fi
     say "verified the SHA-256 checksum"
     verify_attestation "$work/$archive" "$archive"
 
@@ -157,18 +176,20 @@ main() {
     mkdir "$work/x"
     tar -xzf "$work/$archive" -C "$work/x" || fail "could not extract $archive"
     new="$work/x/punphp-$target/pun"
-    [ -f "$new" ] && [ ! -L "$new" ] || fail "$archive holds no pun binary"
+    if [ ! -f "$new" ] || [ -L "$new" ]; then
+        fail "$archive holds no pun binary"
+    fi
     chmod 755 "$new"
 
     reported=$("$new" --version 2>/dev/null) || fail "the downloaded pun does not run on this machine"
-    [ "$reported" = "pun $PUN_RELEASE" ] || fail "the downloaded pun reports '$reported', not 'pun $PUN_RELEASE'"
+    [ "$reported" = "pun $version" ] || fail "the downloaded pun reports '$reported', not 'pun $version'"
 
     mkdir -p "$bin" || fail "could not create $bin"
     # Copied next to the destination first, so the final rename stays on one filesystem: a running `pun` or a
     # second install never sees half a file.
     cp "$new" "$bin/.pun.$$" || fail "could not write to $bin"
     mv -f "$bin/.pun.$$" "$bin/pun" || fail "could not write $bin/pun"
-    say "installed pun $PUN_RELEASE to $bin/pun"
+    say "installed pun $version to $bin/pun"
 
     case ":${PATH:-}:" in
         *":$bin:"*) ;;
