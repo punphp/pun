@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::di::Files;
+use crate::phpstan_api::{self, ClassKind};
 use crate::value::{Array, Key, Value};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -9,6 +11,7 @@ pub enum Error {
     UndefinedVariable(String),
     NotAnArray(String),
     NoArrayReturned,
+    UnknownClass(String),
     NoExtensionsConstant,
     NoExtensionsValue,
     ExtensionsNotAnArray,
@@ -22,6 +25,7 @@ impl fmt::Display for Error {
             Error::UndefinedVariable(name) => write!(f, "undefined ${name}"),
             Error::NotAnArray(name) => write!(f, "${name} is not an array"),
             Error::NoArrayReturned => f.write_str("the config does not return an array"),
+            Error::UnknownClass(name) => write!(f, "{name} is neither a PHP nor a PHPStan class"),
             Error::NoExtensionsConstant => f.write_str("no EXTENSIONS constant"),
             Error::NoExtensionsValue => f.write_str("no EXTENSIONS value"),
             Error::ExtensionsNotAnArray => f.write_str("EXTENSIONS is not an array"),
@@ -31,14 +35,60 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
+enum Flow {
+    Next,
+    Return(Value),
+}
+
 struct P<'a> {
     s: &'a str,
     i: usize,
     dir: &'a str,
+    files: &'a dyn Files,
     vars: Vec<(String, Value)>,
+    run: bool,
 }
 
-impl P<'_> {
+fn class_exists(name: &str, interface: bool) -> Result<bool, Error> {
+    let name = name.trim_start_matches('\\');
+    if phpstan_api::owns(name) {
+        let kind = phpstan_api::class_kind(name);
+        return Ok(kind
+            == Some(if interface {
+                ClassKind::Interface
+            } else {
+                ClassKind::Class
+            }));
+    }
+    let class = crate::symbols::class(name).ok_or_else(|| Error::UnknownClass(name.to_string()))?;
+    Ok(if interface {
+        class.is_interface
+    } else {
+        !class.is_interface && !class.is_trait
+    })
+}
+
+fn truthy(v: &Value) -> bool {
+    match v {
+        Value::Null | Value::Bool(false) | Value::Int(0) => false,
+        Value::Str(s) => !s.is_empty() && s != "0",
+        Value::Array(a) => !a.is_empty(),
+        _ => true,
+    }
+}
+
+impl<'a> P<'a> {
+    fn new(s: &'a str, i: usize, dir: &'a str, files: &'a dyn Files) -> P<'a> {
+        P {
+            s,
+            i,
+            dir,
+            files,
+            vars: Vec::new(),
+            run: true,
+        }
+    }
+
     fn skip(&mut self) {
         loop {
             let rest = &self.s[self.i..];
@@ -154,6 +204,9 @@ impl P<'_> {
         }
         if rest.starts_with('$') {
             let name = self.var_name()?;
+            if !self.run {
+                return Ok(Value::Null);
+            }
             return self
                 .vars
                 .iter()
@@ -161,6 +214,34 @@ impl P<'_> {
                 .find(|(n, _)| *n == name)
                 .map(|(_, v)| v.clone())
                 .ok_or(Error::UndefinedVariable(name));
+        }
+        if self.eat("!") {
+            return Ok(Value::Bool(!truthy(&self.term()?)));
+        }
+        for function in ["glob", "is_file", "class_exists", "interface_exists"] {
+            let start = self.i;
+            if self.eat(function) && self.eat("(") {
+                let arg = self.expr()?.to_php_string().unwrap_or_default();
+                self.expect(")")?;
+                return Ok(match (self.run, function) {
+                    (false, _) => Value::Null,
+                    (true, "glob") => Value::Array(Array::list(
+                        crate::php::glob(&arg).into_iter().map(Value::Str),
+                    )),
+                    (true, "is_file") => Value::Bool(self.files.is_file(&arg)),
+                    _ => Value::Bool(class_exists(&arg, function == "interface_exists")?),
+                });
+            }
+            self.i = start;
+        }
+        let name: String = rest
+            .chars()
+            .take_while(|c| c.is_ascii_alphanumeric() || *c == '_' || *c == '\\')
+            .collect();
+        let class_constant = !name.is_empty() && rest[name.len()..].starts_with("::class");
+        if class_constant {
+            self.i += name.len() + "::class".len();
+            return Ok(Value::Str(name.trim_start_matches('\\').to_string()));
         }
         let num: String = rest
             .chars()
@@ -173,6 +254,126 @@ impl P<'_> {
             return Ok(Value::Int(n));
         }
         Err(self.unexpected())
+    }
+
+    fn statement(&mut self) -> Result<Flow, Error> {
+        if self.eat("declare") {
+            let end = self.s[self.i..]
+                .find(';')
+                .ok_or_else(|| self.unexpected())?;
+            self.i += end + 1;
+            return Ok(Flow::Next);
+        }
+        if self.eat("return") {
+            let v = self.expr()?;
+            if self.run {
+                return Ok(Flow::Return(v));
+            }
+            self.expect(";")?;
+            return Ok(Flow::Next);
+        }
+        if self.eat("foreach") {
+            return self.foreach();
+        }
+        if self.eat("if") {
+            return self.branches();
+        }
+        if self.eat("{") {
+            while !self.eat("}") {
+                if let Flow::Return(v) = self.statement()? {
+                    return Ok(Flow::Return(v));
+                }
+            }
+            return Ok(Flow::Next);
+        }
+        self.skip();
+        if !self.s[self.i..].starts_with('$') {
+            return Err(self.unexpected());
+        }
+        let name = self.var_name()?;
+        let push = self.eat("[");
+        if push {
+            self.expect("]")?;
+        }
+        self.expect("=")?;
+        let v = self.expr()?;
+        self.expect(";")?;
+        if !self.run {
+            return Ok(Flow::Next);
+        }
+        if push {
+            let Some((_, Value::Array(a))) = self.vars.iter_mut().rev().find(|(n, _)| *n == name)
+            else {
+                return Err(Error::NotAnArray(name));
+            };
+            a.push(v);
+        } else {
+            self.vars.push((name, v));
+        }
+        Ok(Flow::Next)
+    }
+
+    fn foreach(&mut self) -> Result<Flow, Error> {
+        self.expect("(")?;
+        let subject = self.expr()?;
+        self.expect("as")?;
+        let first = self.var_name()?;
+        let (key, value) = if self.eat("=>") {
+            (Some(first), self.var_name()?)
+        } else {
+            (None, first)
+        };
+        self.expect(")")?;
+        let body = self.i;
+        if let (true, Value::Array(items)) = (self.run, subject) {
+            for (k, v) in items.iter() {
+                if let Some(key) = &key {
+                    self.vars.push((key.clone(), Value::from(k.clone())));
+                }
+                self.vars.push((value.clone(), v.clone()));
+                self.i = body;
+                if let Flow::Return(v) = self.statement()? {
+                    return Ok(Flow::Return(v));
+                }
+            }
+        }
+        self.i = body;
+        self.skipped()
+    }
+
+    fn branches(&mut self) -> Result<Flow, Error> {
+        let run = self.run;
+        let mut taken = false;
+        loop {
+            self.run = run && !taken;
+            self.expect("(")?;
+            let condition = self.expr()?;
+            self.expect(")")?;
+            self.run = run && !taken && truthy(&condition);
+            taken |= self.run;
+            let flow = self.statement();
+            self.run = run;
+            if let Flow::Return(v) = flow? {
+                return Ok(Flow::Return(v));
+            }
+            if self.eat("elseif") {
+                continue;
+            }
+            if !self.eat("else") {
+                return Ok(Flow::Next);
+            }
+            if taken {
+                return self.skipped();
+            }
+            return self.statement();
+        }
+    }
+
+    fn skipped(&mut self) -> Result<Flow, Error> {
+        let run = std::mem::replace(&mut self.run, false);
+        let flow = self.statement();
+        self.run = run;
+        flow
     }
 
     fn items(&mut self, close: &str) -> Result<Value, Error> {
@@ -200,61 +401,29 @@ impl P<'_> {
     }
 }
 
-pub fn load_config(php: &str, dir: &str) -> Result<Array, Error> {
-    let mut p = P {
-        s: php,
-        i: 0,
-        dir,
-        vars: Vec::new(),
-    };
+pub fn load_config(php: &str, dir: &str, files: &dyn Files) -> Result<Array, Error> {
+    let mut p = P::new(php, 0, dir, files);
     p.expect("<?php")?;
     loop {
-        if p.eat("declare") {
-            let end = p.s[p.i..].find(';').ok_or_else(|| p.unexpected())?;
-            p.i += end + 1;
-        } else if p.eat("return") {
-            let v = p.expr()?;
+        if let Flow::Return(v) = p.statement()? {
             return match v {
                 Value::Array(a) => Ok(a),
                 _ => Err(Error::NoArrayReturned),
             };
-        } else {
-            p.skip();
-            if !p.s[p.i..].starts_with('$') {
-                return Err(p.unexpected());
-            }
-            let name = p.var_name()?;
-            let push = p.eat("[");
-            if push {
-                p.expect("]")?;
-            }
-            p.expect("=")?;
-            let v = p.expr()?;
-            p.expect(";")?;
-            if push {
-                let Some((_, Value::Array(a))) = p.vars.iter_mut().rev().find(|(n, _)| *n == name)
-                else {
-                    return Err(Error::NotAnArray(name));
-                };
-                a.push(v);
-            } else {
-                p.vars.push((name, v));
-            }
         }
     }
 }
 
-pub fn generated_config_extensions(php: &str, dir: &str) -> Result<Array, Error> {
+pub fn generated_config_extensions(
+    php: &str,
+    dir: &str,
+    files: &dyn Files,
+) -> Result<Array, Error> {
     let at = php
         .find("const EXTENSIONS")
         .ok_or(Error::NoExtensionsConstant)?;
     let eq = php[at..].find('=').ok_or(Error::NoExtensionsValue)? + at + 1;
-    let mut p = P {
-        s: php,
-        i: eq,
-        dir,
-        vars: Vec::new(),
-    };
+    let mut p = P::new(php, eq, dir, files);
     match p.expr()? {
         Value::Array(a) => Ok(a),
         _ => Err(Error::ExtensionsNotAnArray),

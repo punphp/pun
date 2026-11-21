@@ -1,0 +1,4 @@
+includes:
+	- phpstan.extension.php
+parameters:
+	paths: [src]

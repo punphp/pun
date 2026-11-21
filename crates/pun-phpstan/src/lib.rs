@@ -7,6 +7,7 @@ pub mod neon;
 pub mod php;
 pub mod phpdoc;
 pub mod phpfile;
+pub mod phpstan_api;
 pub mod resolve;
 pub mod schema;
 mod scoped;

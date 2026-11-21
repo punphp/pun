@@ -457,7 +457,7 @@ pub(crate) fn load_file(
             let contents = files
                 .read(file)
                 .ok_or_else(|| Error::Unreadable(file.to_string()))?;
-            crate::phpfile::load_config(&String::from_utf8_lossy(&contents), &dirname(file))
+            crate::phpfile::load_config(&String::from_utf8_lossy(&contents), &dirname(file), files)
                 .map_err(|error| Error::UnsupportedPhp {
                     file: file.to_string(),
                     error,

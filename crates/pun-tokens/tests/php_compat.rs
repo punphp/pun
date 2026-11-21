@@ -288,6 +288,45 @@ fn fnmatch_matches_php() {
 }
 
 #[test]
+fn glob_matches_php() {
+    let root = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("glob");
+    let _ = std::fs::remove_dir_all(&root);
+    for dir in ["a", "a-b", "B", ".hidden", "c/x.neon"] {
+        std::fs::create_dir_all(root.join(dir)).unwrap();
+    }
+    for file in [
+        "a/x.neon",
+        "a-b/x.neon",
+        "B/x.neon",
+        ".hidden/x.neon",
+        "top.neon",
+    ] {
+        std::fs::write(root.join(file), "").unwrap();
+    }
+    let root = root.to_string_lossy();
+    let patterns: Vec<String> = ["*/x.neon", "*", "[ab]*", "?/x.neon", "nope/*", "top.neon"]
+        .iter()
+        .map(|p| format!("{root}/{p}"))
+        .collect();
+    let want = php_lines(
+        r#"foreach (json_decode(stream_get_contents(STDIN)) as $p) echo json_encode(glob($p)), "\n";"#,
+        &serde_json::json!(patterns),
+    );
+    let got: Vec<serde_json::Value> = patterns
+        .iter()
+        .map(|p| {
+            glob(p.as_bytes())
+                .iter()
+                .map(|m| utf8(m))
+                .collect::<Vec<_>>()
+                .into()
+        })
+        .collect();
+    assert_eq!(got, want);
+    assert!(glob(b"a\0").is_empty());
+}
+
+#[test]
 fn preg_compile_matches_php() {
     let cases = [
         ("#^Foo$#", "Foo"),

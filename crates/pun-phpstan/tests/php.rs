@@ -75,6 +75,7 @@ fn php_helpers() {
 fn php_config_files() {
     let dir = format!("{}/tests/fixtures/phpfile", env!("CARGO_MANIFEST_DIR"));
     let want = &fixture("php.json")["phpfile"];
+    let files = pun_phpstan::config::ProjectFiles::new("");
     let mut names: Vec<String> = std::fs::read_dir(&dir)
         .unwrap()
         .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
@@ -82,7 +83,7 @@ fn php_config_files() {
     names.sort();
     for name in names {
         let php = std::fs::read_to_string(format!("{dir}/{name}")).unwrap();
-        let got = pun_phpstan::phpfile::load_config(&php, "{dir}");
+        let got = pun_phpstan::phpfile::load_config(&php, "{dir}", &files);
         if name.starts_with("ok-") {
             let got = crate::common::tagged(&pun_phpstan::Value::Array(got.unwrap()));
             assert_eq!(got, want[&name], "{name}");
@@ -92,6 +93,9 @@ fn php_config_files() {
                 "unsupported-push-scalar.php" => Some("$x is not an array"),
                 "unsupported-scalar.php" => Some("the config does not return an array"),
                 "unsupported-undefined.php" => Some("undefined $nope"),
+                "unsupported-unknown-class.php" => {
+                    Some("App\\Foo is neither a PHP nor a PHPStan class")
+                }
                 "unsupported-unterminated.php" => Some("unterminated string"),
                 _ => None,
             };
@@ -106,7 +110,7 @@ fn php_config_files() {
         ("<?php const EXTENSIONS;", "no EXTENSIONS value"),
         ("<?php const EXTENSIONS = 5;", "EXTENSIONS is not an array"),
     ] {
-        let got = pun_phpstan::phpfile::generated_config_extensions(not_generated, "/");
+        let got = pun_phpstan::phpfile::generated_config_extensions(not_generated, "/", &files);
         assert_eq!(got.unwrap_err().to_string(), message);
     }
 }

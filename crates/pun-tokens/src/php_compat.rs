@@ -362,6 +362,30 @@ pub fn fnmatch(pattern: &[u8], string: &[u8]) -> bool {
         .is_some_and(|(p, s)| unsafe { libc::fnmatch(p.as_ptr(), s.as_ptr(), 0) == 0 })
 }
 
+/// PHP's `glob($pattern)` without flags: the C library's sorted matches, or an empty list when
+/// nothing matches. Without `GLOB_ERR`, the C library skips unreadable folders, so PHP's `false`
+/// comes only from a pattern with a NUL byte (a `ValueError` in PHP) or from no memory.
+pub fn glob(pattern: &[u8]) -> Vec<Vec<u8>> {
+    use std::ffi::{CStr, CString};
+    let Ok(pattern) = CString::new(pattern) else {
+        return Vec::new();
+    };
+    // SAFETY: glob_t is a plain C struct, and all zeros is its empty state.
+    let mut found: libc::glob_t = unsafe { std::mem::zeroed() };
+    // SAFETY: pattern is NUL-terminated, and found is a valid glob_t that globfree releases below.
+    unsafe { libc::glob(pattern.as_ptr(), 0, None, &raw mut found) };
+    let paths = (0..found.gl_pathc)
+        .map(|i| {
+            // SAFETY: glob filled gl_pathv with gl_pathc NUL-terminated strings (none on no match).
+            let path = unsafe { CStr::from_ptr(*found.gl_pathv.add(i)) };
+            path.to_bytes().to_vec()
+        })
+        .collect();
+    // SAFETY: found came from one glob call and is released once.
+    unsafe { libc::globfree(&raw mut found) };
+    paths
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct PregModifiers {
     pub caseless: bool,

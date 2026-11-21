@@ -8,7 +8,7 @@ declare(strict_types=1);
  * every `phpstan analyse` run (extensions and rule tests use them), so Pun scans this stub when an analysed file
  * names one of those namespaces.
  *
- *   php scripts/export-phpstan-api-stub.php > crates/pun-analyse/data/phpstan-api.php
+ *   php scripts/export-phpstan-api-stub.php > crates/pun-phpstan/data/phpstan-api.php
  */
 
 $phar = dirname(__DIR__).'/.oracle/phpstan-phar';

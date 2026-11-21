@@ -214,7 +214,7 @@ Rule fixtures and corpus parity run the real PHAR at level 0. Two environment tr
 | script | writes |
 |---|---|
 | `php scripts/export-rule-fixtures.php [--resume] [--budget=SECONDS]` | `crates/pun-analyse/tests/fixtures/rules/<Dir>/<Test>.json`: every `analyse()` call of every level-0 RuleTestCase (data providers expanded, `RequiresPhp` applied), re-run as `phpstan analyse --level 0` on the same files, plus copies of the data files under `data/` |
-| `php scripts/export-phpstan-api-stub.php > crates/pun-analyse/data/phpstan-api.php` | the PHAR's unprefixed classes (PHPStan\, PhpParser\ with its `class_alias()` compatibility names, phpdoc-parser, BetterReflection), bodies stripped; Pun scans it when an analysed file names those namespaces |
+| `php scripts/export-phpstan-api-stub.php > crates/pun-phpstan/data/phpstan-api.php` | the PHAR's unprefixed classes (PHPStan\, PhpParser\ with its `class_alias()` compatibility names, phpdoc-parser, BetterReflection), bodies stripped; Pun scans it when an analysed file names those namespaces |
 | `python3 scripts/analyse-corpus.py setup\|oracle\|diff\|rank <project>` | corpus checkouts under `target-analyse/corpus` (larastan at tag v3.14.0), PHPStan's level-0 JSON in `target-analyse/oracle/<p>.json` (cold, one worker), and the per-identifier diff against `examples/analyse` |
 
 `tests/rules.rs` compares only the identifiers `pun_analyse::IDENTIFIERS` lists; cases that still differ are

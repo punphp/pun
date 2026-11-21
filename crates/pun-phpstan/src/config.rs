@@ -375,8 +375,9 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, Error> {
             .read(generated)
             .ok_or_else(|| Error::Unreadable(generated.clone()))?;
         let dir = dirname(generated);
-        let extensions = phpfile::generated_config_extensions(&String::from_utf8_lossy(&php), &dir)
-            .map_err(Error::GeneratedConfig)?;
+        let extensions =
+            phpfile::generated_config_extensions(&String::from_utf8_lossy(&php), &dir, files)
+                .map_err(Error::GeneratedConfig)?;
         for (name, ext) in extensions.iter() {
             let Some(ext) = ext.as_array() else { continue };
             let includes = get(ext, &["extra", "includes"])

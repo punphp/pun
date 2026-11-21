@@ -18,6 +18,13 @@ pub fn fnmatch(pattern: &str, string: &str) -> bool {
     php_compat::fnmatch(pattern.as_bytes(), string.as_bytes())
 }
 
+pub fn glob(pattern: &str) -> Vec<String> {
+    php_compat::glob(pattern.as_bytes())
+        .iter()
+        .map(|path| String::from_utf8_lossy(path).into_owned())
+        .collect()
+}
+
 pub fn normalize_path(original: &str) -> String {
     let local = original.starts_with('/') || original.as_bytes().get(1..3) == Some(b":\\");
     let (mut scheme, path) = match original.split_once("://") {

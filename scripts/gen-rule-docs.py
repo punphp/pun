@@ -383,7 +383,7 @@ def translation(tool: str) -> str:
 
 Layout-only Rector rules map to format rules. The migration reports any that `[format]` does not run.
 """,
-        "phpstan": """Run `pun migrate --from phpstan`. It follows the config's includes.
+        "phpstan": """Run `pun migrate --from phpstan`. It follows the config's includes, also the ones an included `.php` file builds with variables, `foreach`, `if`, `glob()`, `is_file()`, `class_exists()` and `interface_exists()`. `class_exists()` and `interface_exists()` know PHP's and PHPStan's own classes only.
 
 | phpstan.neon | pun.toml |
 | --- | --- |

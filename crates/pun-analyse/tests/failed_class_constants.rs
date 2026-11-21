@@ -168,7 +168,7 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
             Cow::Borrowed(b"phpstan-api.php"),
             FileType::Vendored,
             None,
-            Cow::Borrowed(include_bytes!("../data/phpstan-api.php")),
+            Cow::Borrowed(pun_phpstan::phpstan_api::PHPSTAN_API),
         );
         let api_program = parse_file(&arena, &api);
         let api_names = NameResolver::new(&arena).resolve(api_program);

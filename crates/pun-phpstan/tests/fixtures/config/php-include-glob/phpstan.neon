@@ -1,0 +1,4 @@
+includes:
+	- phpstan.modules.php
+parameters:
+	paths: [src]

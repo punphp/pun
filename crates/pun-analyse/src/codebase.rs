@@ -57,7 +57,7 @@ use crate::rules::Facts;
 use crate::{Project, autoload};
 
 /// PHPStan's unprefixed classes and functions (scripts/export-phpstan-api-stub.php): PHPStan always has them loaded.
-pub(crate) const PHPSTAN_API: &[u8] = include_bytes!("../data/phpstan-api.php");
+pub(crate) const PHPSTAN_API: &[u8] = pun_phpstan::phpstan_api::PHPSTAN_API;
 
 fn names_phpstan(code: &[u8]) -> bool {
     code.windows(8)

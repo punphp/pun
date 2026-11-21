@@ -9,7 +9,7 @@ pagination: false
 
 `pun migrate` keeps the old config and reports what it skips. Planned rules do not run.
 
-Run `pun migrate --from phpstan`. It follows the config's includes.
+Run `pun migrate --from phpstan`. It follows the config's includes, also the ones an included `.php` file builds with variables, `foreach`, `if`, `glob()`, `is_file()`, `class_exists()` and `interface_exists()`. `class_exists()` and `interface_exists()` know PHP's and PHPStan's own classes only.
 
 | phpstan.neon | pun.toml |
 | --- | --- |
